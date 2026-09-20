@@ -1,7 +1,7 @@
 import { ref } from "vue";
 import { useToast as usePrimeToast } from "primevue/usetoast";
 
-export type ToastAction = { label: string; onClick: () => void };
+type ToastAction = { label: string; onClick: () => void };
 
 /* 带 action 的提示共享状态：App.vue 的 <Toast> group="action" 模板读取渲染按钮 */
 const actionState = ref<ToastAction | undefined>(undefined);

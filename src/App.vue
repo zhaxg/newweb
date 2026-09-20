@@ -20,7 +20,6 @@ import type { ErpMenuNode } from "./data/erpMenu";
 import { LicenseManager } from "ag-grid-enterprise";
 import Dialog from "primevue/dialog";
 import Button from "primevue/button";
-import SelectButton from "primevue/selectbutton";
 import Select from "primevue/select";
 import Toast from "primevue/toast";
 import {
@@ -39,11 +38,6 @@ const { tabs, activeId, openTab } = useTabs();
 const { action: toastAction, toast, dismissToast } = useToast();
 const { editorSettings, updateEditorSettings } = useSettingsStore();
 
-const tabWidthOptions: { label: string; value: "fixed" | "content" }[] = [
-  { label: "固定宽度", value: "fixed" },
-  { label: "随标题内容", value: "content" },
-];
-
 const pageComponents: Record<string, unknown> = {
   home: HomePage,
   "sales-orders": SalesOrdersPage,
@@ -60,6 +54,17 @@ const settingsOpen = ref(false);
 const sidebarVisible = ref(true);
 
 onMounted(setupFontSettings);
+
+// PrimeVue 4.5.5 的 Select.onEscapeKey 无条件 stopPropagation，焦点在 Select 上时 Escape 到不了 Dialog 的
+// document 监听；在捕获阶段代理顶层对话框关闭钮。下拉正展开（aria-expanded=true）时交还组件自处理。
+function onEscapeCapture(event: KeyboardEvent) {
+  if (event.code !== "Escape" || event.isComposing) return;
+  const target = event.target as HTMLElement | null;
+  if (target?.getAttribute("aria-expanded") === "true") return;
+  const mask = [...document.querySelectorAll(".p-dialog-mask")].filter((m) => m.querySelector(".p-dialog")).pop();
+  mask?.querySelector<HTMLElement>(".p-dialog-close-button")?.click();
+}
+onMounted(() => document.addEventListener("keydown", onEscapeCapture, true));
 
 function onFontChange(kind: "zh" | "en", option: FontOption) {
   ensureFontLoaded(option);
@@ -117,16 +122,11 @@ function runToastAction() {
       <div class="space-y-3 text-sm text-muted-foreground">
         <p>· 主题：请通过右上角主题菜单切换浅色 / 深色 / 跟随系统</p>
         <div class="flex items-center justify-between gap-4">
-          <span>· 标签宽度模式</span>
-          <SelectButton :model-value="editorSettings.tabWidthMode" :options="tabWidthOptions" option-value="value"
-            option-label="label" size="small"
-            @update:model-value="updateEditorSettings({ tabWidthMode: $event })" />
-        </div>
-        <div class="flex items-center justify-between gap-4">
           <span>· 中文字体</span>
+          <!-- Select 丢弃 $attrs,autofocus 须走 pt 挂到 focusInput(span),供 Dialog 的 [autofocus] 查询命中 -->
           <Select :model-value="findFontOption(chineseFontOptions, editorSettings.fontChineseFamily)"
             :options="chineseFontOptions" option-label="label" data-key="family" size="small" class="w-40"
-            @update:model-value="onFontChange('zh', $event)" />
+            :pt="{ label: { autofocus: true } }" @update:model-value="onFontChange('zh', $event)" />
         </div>
         <div class="flex items-center justify-between gap-4">
           <span>· 英文字体</span>

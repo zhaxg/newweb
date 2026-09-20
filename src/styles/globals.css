@@ -188,7 +188,6 @@
 
 @supports (height: 100dvh) {
   :root {
-    --dbx-viewport-height: min(100vh, 100dvh);
   }
 }
 
@@ -200,7 +199,6 @@ html.theme-soft {
   --popover: rgb(255 255 255);
   --popover-foreground: rgb(36 40 48);
   --primary: rgb(46 95 166);
-  --dbx-primary-rgb: 46, 95, 166;
   --primary-foreground: rgb(247 250 255);
   --secondary: rgb(237 241 246);
   --secondary-foreground: rgb(47 53 63);
@@ -226,11 +224,6 @@ html.theme-soft {
   --sidebar-border: rgb(202 210 221);
   --sidebar-ring: rgb(110 128 154);
   --dbx-chrome: rgb(236 240 245);
-  --dbx-chrome-muted: rgb(231 236 243);
-  --dbx-content: rgb(255 255 255);
-  --dbx-editor-toolbar: rgb(246 248 251);
-  --dbx-gutter: rgb(229 234 241);
-  --dbx-sidebar-header: rgb(233 238 244);
 }
 
 html.theme-soft.dark {
@@ -241,7 +234,6 @@ html.theme-soft.dark {
   --popover: rgb(42 45 51);
   --popover-foreground: rgb(207 211 218);
   --primary: rgb(157 177 205);
-  --dbx-primary-rgb: 157, 177, 205;
   --primary-foreground: rgb(27 30 34);
   --secondary: rgb(47 51 58);
   --secondary-foreground: rgb(201 205 213);
@@ -267,11 +259,6 @@ html.theme-soft.dark {
   --sidebar-border: rgb(105 114 128 / 0.32);
   --sidebar-ring: rgb(138 148 164);
   --dbx-chrome: rgb(39 43 49);
-  --dbx-chrome-muted: rgb(43 47 54);
-  --dbx-content: rgb(33 36 41);
-  --dbx-editor-toolbar: rgb(36 39 44);
-  --dbx-gutter: rgb(27 30 34);
-  --dbx-sidebar-header: rgb(38 42 48);
 }
 
 html.theme-graphite {
@@ -282,7 +269,6 @@ html.theme-graphite {
   --popover: rgb(255 255 255);
   --popover-foreground: rgb(39 42 48);
   --primary: rgb(72 80 93);
-  --dbx-primary-rgb: 72, 80, 93;
   --primary-foreground: rgb(248 250 252);
   --secondary: rgb(238 240 244);
   --secondary-foreground: rgb(49 53 61);
@@ -308,11 +294,6 @@ html.theme-graphite {
   --sidebar-border: rgb(202 208 218);
   --sidebar-ring: rgb(116 125 139);
   --dbx-chrome: rgb(232 236 242);
-  --dbx-chrome-muted: rgb(226 231 238);
-  --dbx-content: rgb(255 255 255);
-  --dbx-editor-toolbar: rgb(246 248 251);
-  --dbx-gutter: rgb(224 229 237);
-  --dbx-sidebar-header: rgb(229 233 240);
 }
 
 html.theme-graphite.dark {
@@ -323,7 +304,6 @@ html.theme-graphite.dark {
   --popover: rgb(42 44 50);
   --popover-foreground: rgb(205 208 214);
   --primary: rgb(174 181 192);
-  --dbx-primary-rgb: 174, 181, 192;
   --primary-foreground: rgb(27 29 33);
   --secondary: rgb(47 50 57);
   --secondary-foreground: rgb(199 202 208);
@@ -349,11 +329,6 @@ html.theme-graphite.dark {
   --sidebar-border: rgb(104 110 122 / 0.32);
   --sidebar-ring: rgb(138 145 158);
   --dbx-chrome: rgb(38 41 47);
-  --dbx-chrome-muted: rgb(43 46 53);
-  --dbx-content: rgb(32 34 39);
-  --dbx-editor-toolbar: rgb(36 38 43);
-  --dbx-gutter: rgb(27 29 33);
-  --dbx-sidebar-header: rgb(37 40 46);
 }
 
 html.theme-cobalt {
@@ -364,7 +339,6 @@ html.theme-cobalt {
   --popover: rgb(255 255 255);
   --popover-foreground: rgb(30 41 56);
   --primary: rgb(43 99 183);
-  --dbx-primary-rgb: 43, 99, 183;
   --primary-foreground: rgb(247 250 255);
   --secondary: rgb(232 240 250);
   --secondary-foreground: rgb(38 52 70);
@@ -390,11 +364,6 @@ html.theme-cobalt {
   --sidebar-border: rgb(195 209 228);
   --sidebar-ring: rgb(85 119 165);
   --dbx-chrome: rgb(228 236 247);
-  --dbx-chrome-muted: rgb(221 231 245);
-  --dbx-content: rgb(255 255 255);
-  --dbx-editor-toolbar: rgb(244 248 253);
-  --dbx-gutter: rgb(218 229 243);
-  --dbx-sidebar-header: rgb(224 234 246);
 }
 
 html.theme-cobalt.dark {
@@ -405,7 +374,6 @@ html.theme-cobalt.dark {
   --popover: rgb(35 43 58);
   --popover-foreground: rgb(206 214 225);
   --primary: rgb(137 173 223);
-  --dbx-primary-rgb: 137, 173, 223;
   --primary-foreground: rgb(20 28 39);
   --secondary: rgb(43 53 70);
   --secondary-foreground: rgb(200 209 221);
@@ -431,11 +399,6 @@ html.theme-cobalt.dark {
   --sidebar-border: rgb(101 119 144 / 0.32);
   --sidebar-ring: rgb(133 154 184);
   --dbx-chrome: rgb(32 40 54);
-  --dbx-chrome-muted: rgb(37 47 63);
-  --dbx-content: rgb(27 34 46);
-  --dbx-editor-toolbar: rgb(30 38 51);
-  --dbx-gutter: rgb(22 28 38);
-  --dbx-sidebar-header: rgb(31 39 53);
 }
 
 html.theme-sage {
@@ -446,7 +409,6 @@ html.theme-sage {
   --popover: rgb(255 255 255);
   --popover-foreground: rgb(34 46 41);
   --primary: rgb(58 123 106);
-  --dbx-primary-rgb: 58, 123, 106;
   --primary-foreground: rgb(246 252 249);
   --secondary: rgb(233 241 237);
   --secondary-foreground: rgb(42 58 52);
@@ -472,11 +434,6 @@ html.theme-sage {
   --sidebar-border: rgb(197 213 206);
   --sidebar-ring: rgb(88 135 119);
   --dbx-chrome: rgb(231 239 235);
-  --dbx-chrome-muted: rgb(225 235 230);
-  --dbx-content: rgb(255 255 255);
-  --dbx-editor-toolbar: rgb(245 248 246);
-  --dbx-gutter: rgb(221 233 227);
-  --dbx-sidebar-header: rgb(228 237 233);
 }
 
 html.theme-sage.dark {
@@ -487,7 +444,6 @@ html.theme-sage.dark {
   --popover: rgb(38 48 45);
   --popover-foreground: rgb(206 216 212);
   --primary: rgb(138 184 169);
-  --dbx-primary-rgb: 138, 184, 169;
   --primary-foreground: rgb(22 32 29);
   --secondary: rgb(44 57 53);
   --secondary-foreground: rgb(200 210 206);
@@ -513,11 +469,6 @@ html.theme-sage.dark {
   --sidebar-border: rgb(100 122 113 / 0.32);
   --sidebar-ring: rgb(132 159 149);
   --dbx-chrome: rgb(34 45 41);
-  --dbx-chrome-muted: rgb(39 51 47);
-  --dbx-content: rgb(29 38 35);
-  --dbx-editor-toolbar: rgb(32 42 39);
-  --dbx-gutter: rgb(24 31 29);
-  --dbx-sidebar-header: rgb(33 43 40);
 }
 
 html.theme-amber {
@@ -528,7 +479,6 @@ html.theme-amber {
   --popover: rgb(255 255 250);
   --popover-foreground: rgb(51 44 30);
   --primary: rgb(149 95 28);
-  --dbx-primary-rgb: 149, 95, 28;
   --primary-foreground: rgb(255 250 236);
   --secondary: rgb(247 238 213);
   --secondary-foreground: rgb(68 56 36);
@@ -554,11 +504,6 @@ html.theme-amber {
   --sidebar-border: rgb(218 199 158);
   --sidebar-ring: rgb(166 119 47);
   --dbx-chrome: rgb(244 233 203);
-  --dbx-chrome-muted: rgb(239 226 191);
-  --dbx-content: rgb(255 255 250);
-  --dbx-editor-toolbar: rgb(252 247 232);
-  --dbx-gutter: rgb(235 219 181);
-  --dbx-sidebar-header: rgb(242 229 196);
 }
 
 html.theme-amber.dark {
@@ -569,7 +514,6 @@ html.theme-amber.dark {
   --popover: rgb(50 46 36);
   --popover-foreground: rgb(225 216 197);
   --primary: rgb(213 169 75);
-  --dbx-primary-rgb: 213, 169, 75;
   --primary-foreground: rgb(34 29 21);
   --secondary: rgb(59 53 40);
   --secondary-foreground: rgb(218 209 190);
@@ -595,11 +539,6 @@ html.theme-amber.dark {
   --sidebar-border: rgb(129 112 77 / 0.34);
   --sidebar-ring: rgb(185 151 84);
   --dbx-chrome: rgb(48 43 33);
-  --dbx-chrome-muted: rgb(54 48 36);
-  --dbx-content: rgb(39 36 28);
-  --dbx-editor-toolbar: rgb(43 39 31);
-  --dbx-gutter: rgb(32 29 23);
-  --dbx-sidebar-header: rgb(46 41 32);
 }
 
 html.theme-blush {
@@ -610,7 +549,6 @@ html.theme-blush {
   --popover: rgb(255 255 255);
   --popover-foreground: rgb(57 45 53);
   --primary: rgb(184 86 123);
-  --dbx-primary-rgb: 184, 86, 123;
   --primary-foreground: rgb(255 248 251);
   --secondary: rgb(246 232 239);
   --secondary-foreground: rgb(74 55 67);
@@ -636,11 +574,6 @@ html.theme-blush {
   --sidebar-border: rgb(220 195 208);
   --sidebar-ring: rgb(188 111 141);
   --dbx-chrome: rgb(246 230 238);
-  --dbx-chrome-muted: rgb(240 220 230);
-  --dbx-content: rgb(255 255 255);
-  --dbx-editor-toolbar: rgb(253 246 250);
-  --dbx-gutter: rgb(237 216 227);
-  --dbx-sidebar-header: rgb(243 225 235);
 }
 
 html.theme-blush.dark {
@@ -651,7 +584,6 @@ html.theme-blush.dark {
   --popover: rgb(58 47 55);
   --popover-foreground: rgb(230 214 222);
   --primary: rgb(226 160 184);
-  --dbx-primary-rgb: 226, 160, 184;
   --primary-foreground: rgb(39 29 35);
   --secondary: rgb(67 52 62);
   --secondary-foreground: rgb(222 206 215);
@@ -677,11 +609,6 @@ html.theme-blush.dark {
   --sidebar-border: rgb(139 108 124 / 0.33);
   --sidebar-ring: rgb(202 143 164);
   --dbx-chrome: rgb(55 44 52);
-  --dbx-chrome-muted: rgb(62 49 58);
-  --dbx-content: rgb(44 36 42);
-  --dbx-editor-toolbar: rgb(50 40 47);
-  --dbx-gutter: rgb(37 30 35);
-  --dbx-sidebar-header: rgb(52 42 49);
 }
 
 html.theme-vscode {
@@ -692,7 +619,6 @@ html.theme-vscode {
   --popover: rgb(255 255 255);
   --popover-foreground: rgb(45 45 45);
   --primary: rgb(0 122 204);
-  --dbx-primary-rgb: 0, 122, 204;
   --primary-foreground: rgb(255 255 255);
   --secondary: rgb(243 243 243);
   --secondary-foreground: rgb(51 51 51);
@@ -718,12 +644,6 @@ html.theme-vscode {
   --sidebar-border: rgb(216 216 216);
   --sidebar-ring: rgb(0 122 204);
   --dbx-chrome: rgb(221 221 221);
-  --dbx-chrome-muted: rgb(232 232 232);
-  --dbx-content: rgb(255 255 255);
-  --dbx-editor-toolbar: rgb(246 246 246);
-  --dbx-gutter: rgb(229 229 229);
-  --dbx-sidebar-header: rgb(236 236 236);
-  --dbx-tab-outline: rgb(178 178 178);
 }
 
 html.theme-vscode.dark {
@@ -734,7 +654,6 @@ html.theme-vscode.dark {
   --popover: rgb(45 45 48);
   --popover-foreground: rgb(212 212 212);
   --primary: rgb(0 122 204);
-  --dbx-primary-rgb: 0, 122, 204;
   --primary-foreground: rgb(255 255 255);
   --secondary: rgb(45 45 48);
   --secondary-foreground: rgb(204 204 204);
@@ -760,12 +679,6 @@ html.theme-vscode.dark {
   --sidebar-border: rgb(60 60 60);
   --sidebar-ring: rgb(0 122 204);
   --dbx-chrome: rgb(51 51 51);
-  --dbx-chrome-muted: rgb(45 45 48);
-  --dbx-content: rgb(30 30 30);
-  --dbx-editor-toolbar: rgb(37 37 38);
-  --dbx-gutter: rgb(27 27 28);
-  --dbx-sidebar-header: rgb(45 45 48);
-  --dbx-tab-outline: rgb(92 92 92);
 }
 
 html.theme-idea {
@@ -776,7 +689,6 @@ html.theme-idea {
   --popover: rgb(255 255 255);
   --popover-foreground: rgb(40 40 40);
   --primary: rgb(75 110 175);
-  --dbx-primary-rgb: 75, 110, 175;
   --primary-foreground: rgb(255 255 255);
   --secondary: rgb(239 240 242);
   --secondary-foreground: rgb(47 49 52);
@@ -802,11 +714,6 @@ html.theme-idea {
   --sidebar-border: rgb(207 210 216);
   --sidebar-ring: rgb(75 110 175);
   --dbx-chrome: rgb(230 231 235);
-  --dbx-chrome-muted: rgb(224 226 231);
-  --dbx-content: rgb(255 255 255);
-  --dbx-editor-toolbar: rgb(246 247 249);
-  --dbx-gutter: rgb(222 225 231);
-  --dbx-sidebar-header: rgb(229 231 236);
 }
 
 html.theme-idea.dark {
@@ -817,7 +724,6 @@ html.theme-idea.dark {
   --popover: rgb(67 70 72);
   --popover-foreground: rgb(200 200 200);
   --primary: rgb(106 135 197);
-  --dbx-primary-rgb: 106, 135, 197;
   --primary-foreground: rgb(30 32 34);
   --secondary: rgb(60 63 65);
   --secondary-foreground: rgb(187 187 187);
@@ -843,11 +749,6 @@ html.theme-idea.dark {
   --sidebar-border: rgb(85 86 87);
   --sidebar-ring: rgb(106 135 197);
   --dbx-chrome: rgb(60 63 65);
-  --dbx-chrome-muted: rgb(55 58 60);
-  --dbx-content: rgb(43 43 43);
-  --dbx-editor-toolbar: rgb(50 53 55);
-  --dbx-gutter: rgb(38 38 38);
-  --dbx-sidebar-header: rgb(55 58 60);
 }
 
 html.theme-xcode {
@@ -858,7 +759,6 @@ html.theme-xcode {
   --popover: rgb(255 255 255);
   --popover-foreground: rgb(29 39 53);
   --primary: rgb(10 132 255);
-  --dbx-primary-rgb: 10, 132, 255;
   --primary-foreground: rgb(255 255 255);
   --secondary: rgb(235 239 245);
   --secondary-foreground: rgb(43 55 72);
@@ -884,11 +784,6 @@ html.theme-xcode {
   --sidebar-border: rgb(201 211 224);
   --sidebar-ring: rgb(10 132 255);
   --dbx-chrome: rgb(233 237 243);
-  --dbx-chrome-muted: rgb(226 232 240);
-  --dbx-content: rgb(255 255 255);
-  --dbx-editor-toolbar: rgb(247 249 252);
-  --dbx-gutter: rgb(221 229 239);
-  --dbx-sidebar-header: rgb(235 240 247);
 }
 
 html.theme-xcode.dark {
@@ -899,7 +794,6 @@ html.theme-xcode.dark {
   --popover: rgb(45 51 59);
   --popover-foreground: rgb(224 229 237);
   --primary: rgb(10 132 255);
-  --dbx-primary-rgb: 10, 132, 255;
   --primary-foreground: rgb(255 255 255);
   --secondary: rgb(45 51 59);
   --secondary-foreground: rgb(216 222 232);
@@ -925,11 +819,6 @@ html.theme-xcode.dark {
   --sidebar-border: rgb(94 106 124 / 0.38);
   --sidebar-ring: rgb(86 160 255);
   --dbx-chrome: rgb(45 51 59);
-  --dbx-chrome-muted: rgb(39 45 53);
-  --dbx-content: rgb(31 35 41);
-  --dbx-editor-toolbar: rgb(35 39 46);
-  --dbx-gutter: rgb(25 29 34);
-  --dbx-sidebar-header: rgb(42 47 56);
 }
 
 html.theme-jetbrains {
@@ -940,7 +829,6 @@ html.theme-jetbrains {
   --popover: rgb(255 255 255);
   --popover-foreground: rgb(28 32 37);
   --primary: rgb(108 93 211);
-  --dbx-primary-rgb: 108, 93, 211;
   --primary-foreground: rgb(255 255 255);
   --secondary: rgb(235 237 241);
   --secondary-foreground: rgb(43 48 56);
@@ -966,11 +854,6 @@ html.theme-jetbrains {
   --sidebar-border: rgb(205 210 219);
   --sidebar-ring: rgb(108 93 211);
   --dbx-chrome: rgb(235 237 241);
-  --dbx-chrome-muted: rgb(228 231 236);
-  --dbx-content: rgb(255 255 255);
-  --dbx-editor-toolbar: rgb(247 248 250);
-  --dbx-gutter: rgb(224 228 235);
-  --dbx-sidebar-header: rgb(237 239 243);
 }
 
 html.theme-jetbrains.dark {
@@ -981,7 +864,6 @@ html.theme-jetbrains.dark {
   --popover: rgb(49 51 56);
   --popover-foreground: rgb(231 233 237);
   --primary: rgb(123 97 255);
-  --dbx-primary-rgb: 123, 97, 255;
   --primary-foreground: rgb(255 255 255);
   --secondary: rgb(43 45 48);
   --secondary-foreground: rgb(223 225 229);
@@ -1007,11 +889,6 @@ html.theme-jetbrains.dark {
   --sidebar-border: rgb(77 80 86);
   --sidebar-ring: rgb(123 97 255);
   --dbx-chrome: rgb(43 45 48);
-  --dbx-chrome-muted: rgb(37 39 42);
-  --dbx-content: rgb(30 31 34);
-  --dbx-editor-toolbar: rgb(35 37 40);
-  --dbx-gutter: rgb(24 25 28);
-  --dbx-sidebar-header: rgb(39 41 44);
 }
 
 html.theme-cursor {
@@ -1022,7 +899,6 @@ html.theme-cursor {
   --popover: rgb(255 255 255);
   --popover-foreground: rgb(28 33 42);
   --primary: rgb(59 130 246);
-  --dbx-primary-rgb: 59, 130, 246;
   --primary-foreground: rgb(255 255 255);
   --secondary: rgb(239 241 245);
   --secondary-foreground: rgb(42 49 60);
@@ -1048,11 +924,6 @@ html.theme-cursor {
   --sidebar-border: rgb(207 213 223);
   --sidebar-ring: rgb(59 130 246);
   --dbx-chrome: rgb(242 243 245);
-  --dbx-chrome-muted: rgb(234 237 242);
-  --dbx-content: rgb(255 255 255);
-  --dbx-editor-toolbar: rgb(247 248 250);
-  --dbx-gutter: rgb(228 232 239);
-  --dbx-sidebar-header: rgb(238 240 244);
 }
 
 html.theme-cursor.dark {
@@ -1063,7 +934,6 @@ html.theme-cursor.dark {
   --popover: rgb(27 30 39);
   --popover-foreground: rgb(223 225 232);
   --primary: rgb(107 164 255);
-  --dbx-primary-rgb: 107, 164, 255;
   --primary-foreground: rgb(8 12 20);
   --secondary: rgb(27 30 39);
   --secondary-foreground: rgb(214 216 223);
@@ -1089,11 +959,6 @@ html.theme-cursor.dark {
   --sidebar-border: rgb(82 91 111 / 0.38);
   --sidebar-ring: rgb(107 164 255);
   --dbx-chrome: rgb(27 30 39);
-  --dbx-chrome-muted: rgb(24 27 36);
-  --dbx-content: rgb(15 17 26);
-  --dbx-editor-toolbar: rgb(20 23 32);
-  --dbx-gutter: rgb(11 13 20);
-  --dbx-sidebar-header: rgb(25 28 38);
 }
 
 html.theme-claude {
@@ -1104,7 +969,6 @@ html.theme-claude {
   --popover: rgb(255 253 248);
   --popover-foreground: rgb(48 40 32);
   --primary: rgb(184 107 60);
-  --dbx-primary-rgb: 184, 107, 60;
   --primary-foreground: rgb(255 250 243);
   --secondary: rgb(242 231 219);
   --secondary-foreground: rgb(65 53 43);
@@ -1130,11 +994,6 @@ html.theme-claude {
   --sidebar-border: rgb(215 199 181);
   --sidebar-ring: rgb(184 107 60);
   --dbx-chrome: rgb(241 231 219);
-  --dbx-chrome-muted: rgb(234 222 209);
-  --dbx-content: rgb(255 253 248);
-  --dbx-editor-toolbar: rgb(248 241 233);
-  --dbx-gutter: rgb(230 216 199);
-  --dbx-sidebar-header: rgb(236 226 214);
 }
 
 html.theme-claude.dark {
@@ -1145,7 +1004,6 @@ html.theme-claude.dark {
   --popover: rgb(49 45 40);
   --popover-foreground: rgb(226 218 206);
   --primary: rgb(210 138 95);
-  --dbx-primary-rgb: 210, 138, 95;
   --primary-foreground: rgb(35 27 21);
   --secondary: rgb(55 49 43);
   --secondary-foreground: rgb(219 211 199);
@@ -1171,11 +1029,6 @@ html.theme-claude.dark {
   --sidebar-border: rgb(127 108 91 / 0.35);
   --sidebar-ring: rgb(210 138 95);
   --dbx-chrome: rgb(49 45 40);
-  --dbx-chrome-muted: rgb(55 49 43);
-  --dbx-content: rgb(33 31 28);
-  --dbx-editor-toolbar: rgb(39 36 32);
-  --dbx-gutter: rgb(27 25 23);
-  --dbx-sidebar-header: rgb(45 41 37);
 }
 
 @supports (color: oklch(1 0 0)) {
@@ -1221,11 +1074,6 @@ html.theme-claude.dark {
     --info-foreground: oklch(0.97 0.02 250);
     --info-bg: color-mix(in oklch, var(--info) 12%, transparent);
     --dbx-chrome: oklch(0.97 0 0);
-    --dbx-chrome-muted: oklch(0.95 0 0);
-    --dbx-content: oklch(1 0 0);
-    --dbx-editor-toolbar: oklch(0.985 0 0);
-    --dbx-gutter: oklch(0.965 0 0);
-    --dbx-sidebar-header: oklch(0.985 0 0);
   }
 
   .dark {
@@ -1270,11 +1118,6 @@ html.theme-claude.dark {
     --info-foreground: oklch(0.25 0.04 250);
     --info-bg: color-mix(in oklch, var(--info) 16%, transparent);
     --dbx-chrome: oklch(0.225 0.005 285);
-    --dbx-chrome-muted: oklch(0.25 0.006 285);
-    --dbx-content: oklch(0.19 0.004 285);
-    --dbx-editor-toolbar: oklch(0.215 0.005 285);
-    --dbx-gutter: oklch(0.205 0.004 285);
-    --dbx-sidebar-header: oklch(0.215 0.005 285);
   }
 
   html.theme-soft {
@@ -1310,11 +1153,6 @@ html.theme-claude.dark {
     --sidebar-border: oklch(0.855 0.014 255);
     --sidebar-ring: oklch(0.61 0.045 255);
     --dbx-chrome: oklch(0.948 0.008 255);
-    --dbx-chrome-muted: oklch(0.93 0.012 255);
-    --dbx-content: oklch(1 0 0);
-    --dbx-editor-toolbar: oklch(0.973 0.005 255);
-    --dbx-gutter: oklch(0.925 0.011 255);
-    --dbx-sidebar-header: oklch(0.94 0.009 255);
   }
 
   html.theme-soft.dark {
@@ -1350,11 +1188,6 @@ html.theme-claude.dark {
     --sidebar-border: oklch(0.62 0.018 260 / 32%);
     --sidebar-ring: oklch(0.68 0.025 260);
     --dbx-chrome: oklch(0.295 0.012 260);
-    --dbx-chrome-muted: oklch(0.32 0.013 260);
-    --dbx-content: oklch(0.255 0.01 260);
-    --dbx-editor-toolbar: oklch(0.275 0.01 260);
-    --dbx-gutter: oklch(0.215 0.01 260);
-    --dbx-sidebar-header: oklch(0.285 0.012 260);
   }
 }
 
@@ -1424,208 +1257,9 @@ a[href] {
   }
 }
 
-.dbx-desktop-window-frame {
-  position: relative;
-}
-
-.dbx-desktop-window-frame::before {
-  content: "";
-  position: absolute;
-  z-index: 80;
-  top: 0;
-  right: 0;
-  left: 0;
-  height: 1px;
-  pointer-events: none;
-  background: var(--dbx-window-top-border);
-}
-
-.dbx-editor-font-family {
-  font-family: var(--dbx-editor-font-family, var(--font-mono, monospace));
-}
-
-:root {
-  --dbx-data-grid-font-family: "Geist Variable Tabular", "Geist Variable", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-}
-
-.dbx-data-grid-font-family {
-  font-family: var(--dbx-data-grid-font-family);
-  font-size: 12.5px;
-}
-
-.dbx-data-grid-value-font {
-  font-family: var(--dbx-data-grid-font-family);
-}
-
-/* Panel resize handles */
-.app-panel-gutter {
-  background: var(--dbx-gutter);
-}
-.dark .app-panel-gutter {
-  background: var(--dbx-gutter);
-}
-.app-toolbar,
 .app-tab-bar {
   border-color: var(--border);
   background: var(--dbx-chrome);
-}
-.app-sidebar-panel {
-  color: var(--sidebar-foreground);
-  background: var(--sidebar);
-}
-.app-sidebar-toolbar,
-.connection-tree-search,
-.sticky-database-header {
-  border-color: var(--sidebar-border);
-  background: var(--dbx-sidebar-header);
-}
-.app-editor-toolbar {
-  border-color: var(--border);
-  background: var(--dbx-editor-toolbar);
-}
-.app-layout-classic > .min-w-0,
-.app-layout-classic > .flex-1 {
-  background: var(--dbx-content);
-}
-html.theme-vscode .app-tab-scroll.wrap-mode .app-tab-pill[data-active-tab="false"] {
-  border-color: var(--dbx-tab-outline);
-}
-.app-layout-classic .panel-resize-handle {
-  width: 3px;
-}
-.app-layout-classic .panel-resize-handle--right {
-  right: 0;
-  border-right: 1px solid var(--border);
-}
-.app-layout-classic .panel-resize-handle--left {
-  left: 0;
-  border-left: 1px solid var(--border);
-}
-.app-layout-classic .panel-resize-handle:hover,
-.app-layout-classic .panel-resize-handle:active {
-  background: var(--ring);
-}
-
-.panel-resize-handle {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 7px;
-  cursor: col-resize;
-  touch-action: none;
-  z-index: 10;
-  background: transparent;
-}
-.panel-resize-handle--right {
-  right: -4px;
-}
-.panel-resize-handle--left {
-  left: -4px;
-}
-.panel-resize-handle::before {
-  display: none;
-}
-
-/* Shared menu surfaces */
-.cn-menu-translucent {
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  background-color: rgb(255 255 255) !important;
-  background-color: oklch(1 0 0) !important;
-  box-shadow: none !important;
-  border: 0.5px solid rgb(0 0 0 / 0.12) !important;
-  border: 0.5px solid oklch(0 0 0 / 0.12) !important;
-  --tw-ring-shadow: none !important;
-}
-.dark .cn-menu-translucent {
-  background-color: rgb(23 23 23) !important;
-  background-color: oklch(0.205 0 0) !important;
-  border-color: rgb(255 255 255 / 0.1) !important;
-  border-color: oklch(1 0 0 / 0.1) !important;
-}
-
-.cn-menu-translucent {
-  background-color: rgb(255, 255, 255) !important;
-  border: 1px solid rgba(0, 0, 0, 0.1) !important;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12) !important;
-  --tw-ring-color: transparent !important;
-  --tw-ring-shadow: 0 0 transparent !important;
-  --tw-shadow: 0 0 transparent !important;
-}
-
-.dark .cn-menu-translucent {
-  background-color: rgb(23, 23, 23) !important;
-  border-color: rgba(255, 255, 255, 0.12) !important;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45) !important;
-}
-
-/* Tailwind 4 falls back from bg-destructive/<alpha> to solid --destructive
-   when color-mix() is unavailable in older WebKit. Keep dangerous-action
-   surfaces translucent so red text/icons remain legible on macOS 12 WebView. */
-.bg-destructive\/5 {
-  background-color: rgba(var(--destructive-rgb), 0.05);
-}
-.bg-destructive\/10,
-.hover\:bg-destructive\/10:hover,
-.focus\:bg-destructive\/10:focus,
-.focus-visible\:bg-destructive\/10:focus-visible {
-  background-color: rgba(var(--destructive-rgb), 0.1);
-}
-.bg-destructive\/15,
-.hover\:bg-destructive\/15:hover {
-  background-color: rgba(var(--destructive-rgb), 0.15);
-}
-.bg-destructive\/20,
-.\[a\]\:hover\:bg-destructive\/20:is(a):hover,
-.hover\:bg-destructive\/20:hover,
-.dark\:bg-destructive\/20:is(.dark *),
-.dark\:focus\:bg-destructive\/20:is(.dark *):focus,
-.dark\:hover\:bg-destructive\/20:is(.dark *):hover {
-  background-color: rgba(var(--destructive-rgb), 0.2);
-}
-.bg-destructive\/30,
-.dark\:hover\:bg-destructive\/30:is(.dark *):hover {
-  background-color: rgba(var(--destructive-rgb), 0.3);
-}
-
-@supports (background-color: color-mix(in oklab, red 10%, transparent)) {
-  .bg-destructive\/5 {
-    background-color: color-mix(in oklab, var(--destructive) 5%, transparent);
-  }
-  .bg-destructive\/10,
-.hover\:bg-destructive\/10:hover,
-.focus\:bg-destructive\/10:focus,
-.focus-visible\:bg-destructive\/10:focus-visible {
-    background-color: color-mix(in oklab, var(--destructive) 10%, transparent);
-  }
-  .bg-destructive\/15,
-.hover\:bg-destructive\/15:hover {
-    background-color: color-mix(in oklab, var(--destructive) 15%, transparent);
-  }
-  .bg-destructive\/20,
-.\[a\]\:hover\:bg-destructive\/20:is(a):hover,
-.hover\:bg-destructive\/20:hover,
-.dark\:bg-destructive\/20:is(.dark *),
-.dark\:focus\:bg-destructive\/20:is(.dark *):focus,
-.dark\:hover\:bg-destructive\/20:is(.dark *):hover {
-    background-color: color-mix(in oklab, var(--destructive) 20%, transparent);
-  }
-  .bg-destructive\/30,
-.dark\:hover\:bg-destructive\/30:is(.dark *):hover {
-    background-color: color-mix(in oklab, var(--destructive) 30%, transparent);
-  }
-}
-
-/* Wallpaper mode (html.dbx-bg-active is toggled by useBackgroundImage):
-   CodeMirror themes paint opaque editor backgrounds via EditorView.theme,
-  so
-   clear them app-wide to let the background image show through. Active line,
-  selection,
-  and search-highlight layers keep their own translucent colors
-   and stay readable on top. */
-html.dbx-bg-active .cm-editor,
-html.dbx-bg-active .cm-gutters {
-  background-color: transparent !important;
 }
 
 /* 全局滚动条：默认隐藏，鼠标悬停所在容器时低调显示。

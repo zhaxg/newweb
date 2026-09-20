@@ -139,7 +139,7 @@ function onSave() {
         <div class="grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2">
           <div class="min-w-0 space-y-1">
             <label class="text-xs font-medium text-muted-foreground">登录名<span class="ml-0.5 text-destructive">*</span></label>
-            <InputText v-model="form.id" :disabled="!!editing" placeholder="请输入登录名" autocapitalize="off"
+            <InputText v-model="form.id" :disabled="!!editing" placeholder="请输入登录名" autofocus autocapitalize="off"
               spellcheck="false" class="w-full min-w-0" @keydown.enter="onSave" />
           </div>
 

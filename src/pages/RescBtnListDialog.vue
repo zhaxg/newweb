@@ -116,7 +116,7 @@ function onSave() {
     :style="{ width: 'min(56rem, calc(100vw - 2rem))' }" @update:visible="emit('update:open', $event)">
     <!-- 对话框内工具栏 -->
     <div class="mb-2 flex items-center gap-1">
-      <Button text size="small" class="shrink-0 whitespace-nowrap" @click="reload" label="查询">
+      <Button text size="small" class="shrink-0 whitespace-nowrap" autofocus @click="reload" label="查询">
         <template #icon>
           <RefreshCw class="h-3.5 w-3.5" />
         </template>

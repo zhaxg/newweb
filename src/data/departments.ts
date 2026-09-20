@@ -90,19 +90,6 @@ export function buildDeptTree(rows: HmxDept[]): DeptTreeNode[] {
   return walk(null, 0);
 }
 
-/** 深度优先展开为扁平行（供表格展示），collapsed 集合内的节点跳过子级 */
-export function flattenDeptTree(nodes: DeptTreeNode[], collapsed: Set<string>): DeptTreeNode[] {
-  const out: DeptTreeNode[] = [];
-  const walk = (list: DeptTreeNode[]) => {
-    for (const node of list) {
-      out.push(node);
-      if (node.children.length && !collapsed.has(node.id)) walk(node.children);
-    }
-  };
-  walk(nodes);
-  return out;
-}
-
 /** 某节点的子孙 id 集合（编辑时父级下拉需排除自己及后代，避免成环） */
 export function descendantIds(rows: HmxDept[], id: string): Set<string> {
   const result = new Set<string>([id]);

@@ -6,11 +6,10 @@
  */
 import { reactive, watch } from "vue";
 
-export type EditorSettings = {
+type EditorSettings = {
   fontSize: number;
   tableFontFamily: string;
   theme: string;
-  tabWidthMode: "fixed" | "content";
   numericColumnRightAlign: boolean;
   cellDetailJsonFormatted: boolean;
   exportRowLimit: number;
@@ -30,7 +29,6 @@ const defaults: EditorSettings = {
   fontSize: 13,
   tableFontFamily: "Geist Variable Tabular",
   theme: "system",
-  tabWidthMode: "fixed",
   numericColumnRightAlign: true,
   cellDetailJsonFormatted: true,
   exportRowLimit: 10000,

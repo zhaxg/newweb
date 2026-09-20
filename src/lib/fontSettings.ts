@@ -17,7 +17,7 @@ export function findFontOption(list: FontOption[], family: string): FontOption {
   return list.find((f) => f.family === family) ?? list[0];
 }
 
-export function fontStack(): string {
+function fontStack(): string {
   const { fontEnglishFamily, fontChineseFamily } = useSettingsStore().editorSettings;
   const parts = [fontEnglishFamily, fontChineseFamily].filter(Boolean).map((f) => `"${f}"`);
   return parts.length ? `${parts.join(", ")}, ${BASE_STACK}` : BASE_STACK;

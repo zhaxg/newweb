@@ -132,8 +132,10 @@ function onSave() {
         <!-- 父节点 -->
         <div class="min-w-0 space-y-1">
           <label class="text-xs font-medium text-muted-foreground">父节点</label>
+          <!-- TreeSelect 丢弃 $attrs,autofocus 须走 pt 挂到隐藏 focusInput,供 Dialog 的 [autofocus] 查询命中 -->
           <TreeSelect :model-value="parentSelection" @update:model-value="onParentSelection"
-            :options="selectableTree" placeholder="-请选择-（根节点）" filter show-clear class="w-full min-w-0" />
+            :pt="{ hiddenInput: { autofocus: true } }" :options="selectableTree" placeholder="-请选择-（根节点）" filter show-clear
+            class="w-full min-w-0" />
         </div>
 
         <!-- 图标 -->

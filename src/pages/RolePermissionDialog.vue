@@ -173,7 +173,7 @@ function onSave() {
     </div>
     <template #footer>
       <Button label="取消" text @click="emit('update:open', false)" />
-      <Button label="保存" raised @click="onSave" />
+      <Button label="保存" raised autofocus @click="onSave" />
     </template>
   </Dialog>
 </template>

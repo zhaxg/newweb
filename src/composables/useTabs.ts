@@ -1,6 +1,6 @@
 import { computed, ref } from "vue";
 
-export interface ErpTab {
+interface ErpTab {
   id: string;
   title: string;
   page: string;

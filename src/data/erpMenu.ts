@@ -141,11 +141,3 @@ export const erpMenu: ErpMenuNode[] = [
   },
 ];
 
-export function findMenuPage(nodes: ErpMenuNode[], id: string): ErpMenuNode | null {
-  for (const node of nodes) {
-    if (node.id === id) return node;
-    const found = node.children ? findMenuPage(node.children, id) : null;
-    if (found) return found;
-  }
-  return null;
-}

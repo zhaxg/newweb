@@ -1,6 +1,6 @@
-export type GridCellValue = string | number | boolean | null;
+type GridCellValue = string | number | boolean | null;
 
-export interface GridColumnDef {
+interface GridColumnDef {
   name: string;
   type: string;
   comment?: string;
@@ -38,7 +38,7 @@ function dateStr(rand: () => number): string {
 }
 
 /** ag-grid 需要对象行；采购订单数据集独立于 GridDataset。 */
-export interface PurchaseFieldDef {
+interface PurchaseFieldDef {
   field: string;
   headerName: string;
   /** 数字列右对齐并参与选区求和/均值 */

@@ -61,7 +61,7 @@ onMounted(() => {
   const el = tabsEl.value;
   if (!el) return;
   el.locale = "zh";
-  el.widthMode = editorSettings.tabWidthMode;
+  el.widthMode = "content";
   el.addEventListener(erpChromeTabsEvents.activate, (e: Event) =>
     activate((e as CustomEvent<ErpChromeTabEventDetail>).detail.tabId),
   );
@@ -84,13 +84,6 @@ onMounted(() => {
 });
 
 watch([tabs, activeId], sync, { deep: true });
-watch(
-  () => editorSettings.tabWidthMode,
-  (mode) => {
-    const el = tabsEl.value;
-    if (el) el.widthMode = mode;
-  },
-);
 
 /* 标签字号走全局 fontSize；字体族跟随全站 --font-sans（含用户中/英文字体设置，可穿透 shadow DOM） */
 const tabsFont = computed(() => `${editorSettings.fontSize}px var(--font-sans)`);

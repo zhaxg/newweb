@@ -31,22 +31,28 @@ const themeIcons = [Sun, Moon, MonitorCog];
 
 /* 官方 Menu 示例（docs primevue/menu popup），图标换 lucide 占位 */
 const userItems: MenuItem[] = [
-  { label: "My Account", items: [
-    { label: "Profile" },
-    { label: "Billing" },
-    { label: "Settings" },
-  ] },
+  {
+    label: "My Account", items: [
+      { label: "Profile" },
+      { label: "Billing" },
+      { label: "Settings" },
+    ]
+  },
   { separator: true },
-  { label: "Notifications", items: [
-    { label: "Enable notifications" },
-    { label: "Play sound" },
-  ] },
+  {
+    label: "Notifications", items: [
+      { label: "Enable notifications" },
+      { label: "Play sound" },
+    ]
+  },
   { separator: true },
-  { label: "Appearance", items: [
-    { label: "Light" },
-    { label: "Dark" },
-    { label: "System" },
-  ] },
+  {
+    label: "Appearance", items: [
+      { label: "Light" },
+      { label: "Dark" },
+      { label: "System" },
+    ]
+  },
 ];
 const userIcons: Record<string, unknown> = { Profile: User, Billing: CreditCard, Settings };
 
@@ -61,6 +67,12 @@ function toMenuItems(nodes: ErpMenuNode[]): MenuItem[] {
 }
 const navMenuRef = ref<InstanceType<typeof TieredMenu> | null>(null);
 const navMenuItems = toMenuItems(erpMenu);
+/* TieredMenu 默认首次须点击分组项才允许 hover 展开子菜单（内部 dirty 门控）；
+   弹出即置 dirty，实现"展开后鼠标滑动自动展开子菜单" */
+function onNavShow() {
+  const menu = navMenuRef.value as unknown as { dirty?: boolean } | null;
+  if (menu) menu.dirty = true;
+}
 function navIcon(item: MenuItem) {
   const name = (item.data as ErpMenuNode | undefined)?.icon;
   return (name && (lucide as Record<string, unknown>)[name]) || File;
@@ -70,9 +82,11 @@ function navIcon(item: MenuItem) {
 <template>
   <header class="flex h-12 shrink-0 items-center justify-between border-b border-border bg-[#F4F4F4] px-3 dark:bg-card">
     <div class="flex min-w-0 items-center gap-2.5">
-      <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary text-sm font-bold text-primary-foreground shadow-sm">E</div>
+      <div
+        class="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary text-sm font-bold text-primary-foreground shadow-sm">
+        H</div>
       <div class="min-w-0">
-        <div class="truncate text-sm font-semibold leading-tight text-foreground">智能制造 ERP</div>
+        <div class="truncate text-sm font-semibold leading-tight text-foreground">HiMind工业互联网平台</div>
       </div>
       <div class="ml-[40px] flex shrink-0 items-center">
         <Button text size="small" title="收起/展开侧栏" @click="emit('toggleSidebar')">
@@ -85,7 +99,7 @@ function navIcon(item: MenuItem) {
             <Ellipsis class="h-4 w-4" />
           </template>
         </Button>
-        <TieredMenu ref="navMenuRef" :model="navMenuItems" popup class="w-48">
+        <TieredMenu ref="navMenuRef" :model="navMenuItems" popup class="w-48" @show="onNavShow">
           <template #itemicon="{ item }">
             <component :is="navIcon(item)" class="h-3.5 w-3.5 text-muted-foreground" />
           </template>
@@ -112,7 +126,8 @@ function navIcon(item: MenuItem) {
       </TieredMenu>
       <button type="button" class="flex items-center gap-1.5 rounded-md px-1.5 py-1 text-sm hover:bg-accent"
         @click="userMenu?.toggle($event)">
-        <span class="flex h-6 w-6 items-center justify-center rounded-full bg-primary/15 text-xs font-medium text-primary">管</span>
+        <span
+          class="flex h-6 w-6 items-center justify-center rounded-full bg-primary/15 text-xs font-medium text-primary">管</span>
         <span class="hidden text-foreground sm:inline">admin</span>
         <ChevronDown class="h-3.5 w-3.5 text-muted-foreground" />
       </button>

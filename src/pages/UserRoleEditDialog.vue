@@ -109,7 +109,7 @@ function onConfirm() {
 
       <template #footer>
         <Button label="取消" text @click="emit('update:open', false)" />
-        <Button label="确定" raised @click="onConfirm" />
+        <Button label="确定" raised autofocus @click="onConfirm" />
       </template>
   </Dialog>
 </template>

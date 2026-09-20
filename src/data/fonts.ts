@@ -19,8 +19,10 @@ export const chineseFontOptions: FontOption[] = [
 
 export const englishFontOptions: FontOption[] = [
   { label: "系统默认", family: "" },
-  { label: "Space Grotesk", family: "Space Grotesk", cssUrl: "https://cdn.jsdelivr.net/fontsource/css/space-grotesk@5.3.0/index.min.css" },
-  { label: "JetBrains Mono", family: "JetBrains Mono", cssUrl: "https://cdn.jsdelivr.net/fontsource/css/jetbrains-mono@5.3.0/400.min.css" },
-  { label: "Geist Mono", family: "Geist Mono", cssUrl: "https://cdn.jsdelivr.net/fontsource/css/geist-mono@5.2.8/index.min.css" },
-  { label: "Inter", family: "Inter", cssUrl: "https://cdn.jsdelivr.net/fontsource/css/inter@5.3.0/index.min.css" },
+  { label: "Inter", family: "Inter", cssUrl: "https://cdn.jsdelivr.net/npm/@fontsource/inter@5.3.0/index.min.css" },
+  { label: "Space Grotesk", family: "Space Grotesk", cssUrl: "https://cdn.jsdelivr.net/npm/@fontsource/space-grotesk@5.3.0/index.min.css" },
+  { label: "IBM Plex Sans", family: "IBM Plex Sans", cssUrl: "https://cdn.jsdelivr.net/npm/@fontsource/ibm-plex-sans@5.3.0/index.min.css" },
+  { label: "Public Sans", family: "Public Sans", cssUrl: "https://cdn.jsdelivr.net/npm/@fontsource/public-sans@5.3.0/index.min.css" },
+  { label: "JetBrains Mono", family: "JetBrains Mono", cssUrl: "https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.3.0/400.min.css" },
+  { label: "Geist Mono", family: "Geist Mono", cssUrl: "https://cdn.jsdelivr.net/npm/@fontsource/geist-mono@5.3.0/index.min.css" },
 ];

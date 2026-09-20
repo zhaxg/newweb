@@ -98,6 +98,6 @@ export function loadAuditLogs(): AuditLog[] {
   return seeded;
 }
 
-export function saveAuditLogs(rows: AuditLog[]): void {
+function saveAuditLogs(rows: AuditLog[]): void {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(rows));
 }

@@ -78,7 +78,7 @@ function onConfirm() {
         <div class="flex w-[42%] min-w-0 flex-col rounded-md border border-border/60">
           <div class="flex h-8 shrink-0 items-center border-b border-border/60 px-2 text-xs font-medium">所有用户列表</div>
           <div class="shrink-0 p-1.5">
-            <InputText v-model="leftKeyword" placeholder="关键字" maxlength="100" autocapitalize="off" spellcheck="false" class="w-full min-w-0" />
+            <InputText v-model="leftKeyword" placeholder="关键字" autofocus maxlength="100" autocapitalize="off" spellcheck="false" class="w-full min-w-0" />
           </div>
           <div class="flex h-7 shrink-0 items-center border-b border-border bg-[rgb(239,239,239)] text-xs font-medium dark:bg-[rgb(32,32,34)]">
             <span class="w-28 shrink-0 border-r border-border px-2">用户编码(UserId)</span>
