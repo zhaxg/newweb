@@ -1,0 +1,68 @@
+/* PrimeVue Aura 颜色 token → 项目 CSS 变量映射。
+   目的：PrimeVue 组件跟随现有 .dark + 12 个 html.theme-* 变体自动换肤。
+   选择器用 html:root / html.dark（特异度 0,1,1）压过 PrimeVue 运行时注入的 :root/.dark 调色板（0,1,0），
+   不依赖注入顺序。所有值引用项目变量，明暗切换由 tokens.css 自身翻转。
+   密度/字号/圆角等紧凑参数不在这里做——统一在 src/lib/primeTheme.ts 的 ErpCompact 主题预设中定义。 */
+
+html:root,
+html.dark {
+  /* 主色 */
+  --p-primary-color: var(--primary);
+  --p-primary-contrast-color: var(--primary-foreground);
+  --p-primary-hover-color: var(--primary);
+  --p-primary-active-color: var(--primary);
+
+  /* 内容面（Dialog/Listbox/Panel 等） */
+  --p-content-background: var(--popover);
+  --p-content-border-color: var(--border);
+  --p-content-color: var(--popover-foreground);
+  --p-content-hover-background: var(--accent);
+  --p-content-hover-color: var(--accent-foreground);
+
+  /* 表单控件 */
+  --p-form-field-background: var(--background);
+  --p-form-field-disabled-background: var(--muted);
+  --p-form-field-border-color: var(--input);
+  --p-form-field-hover-border-color: var(--ring);
+  --p-form-field-focus-border-color: var(--ring);
+  --p-form-field-invalid-border-color: var(--destructive);
+  --p-form-field-color: var(--foreground);
+  --p-form-field-disabled-color: var(--muted-foreground);
+  --p-form-field-placeholder-color: var(--muted-foreground);
+
+  /* 文本 */
+  --p-text-color: var(--foreground);
+  --p-text-hover-color: var(--foreground);
+  --p-text-muted-color: var(--muted-foreground);
+  --p-text-hover-muted-color: var(--foreground);
+
+  /* 高亮（选中项）走项目 accent，而非 Aura 的 primary 淡色 */
+  --p-highlight-background: var(--accent);
+  --p-highlight-color: var(--accent-foreground);
+  --p-highlight-focus-background: var(--accent);
+  --p-highlight-focus-color: var(--accent-foreground);
+
+  /* 遮罩 */
+  --p-mask-background: color-mix(in oklab, var(--foreground) 40%, transparent);
+}
+
+/* Toast 进出场动画：@primeuix/styles@3 的 toast 改为属性驱动（data-visible/
+   data-mounted，PrimeVue 5 机制），primevue@4.5.5 不设置这些属性，导致消息
+   恒为 opacity:0。用 html 前缀提特异度（0,2,1 > 0,2,0）反向解锁，
+   并按 v4 的 .p-toast-message-enter/leave-* 类名补回过渡。 */
+html .p-toast-message:not([data-visible]) {
+  opacity: 1;
+  pointer-events: auto;
+  user-select: text;
+}
+.p-toast-message-enter-active,
+.p-toast-message-leave-active {
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+html .p-toast-message.p-toast-message-enter-from,
+html .p-toast-message.p-toast-message-leave-to {
+  opacity: 0;
+  transform: translateY(8px);
+}

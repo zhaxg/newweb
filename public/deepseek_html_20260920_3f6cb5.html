@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>碳系统背景</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #0a1f12;
+        }
+
+        .carbon-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background: radial-gradient(ellipse at 20% 30%, #0e2a1b 0%, #07140d 70%, #030a06 100%);
+            overflow: hidden;
+        }
+
+        /* 碳网格 */
+        .carbon-bg::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background-image:
+                linear-gradient(rgba(0, 255, 180, 0.06) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 180, 0.06) 1px, transparent 1px);
+            background-size: 60px 60px;
+            transform: perspective(600px) rotateX(20deg);
+            animation: gridShift 40s linear infinite;
+        }
+
+        @keyframes gridShift {
+            from {
+                transform: perspective(600px) rotateX(20deg) translate(0, 0);
+            }
+
+            to {
+                transform: perspective(600px) rotateX(20deg) translate(60px, 60px);
+            }
+        }
+
+        /* 光晕 */
+        .carbon-bg::after {
+            content: '';
+            position: absolute;
+            top: -30%;
+            left: -30%;
+            width: 160%;
+            height: 160%;
+            background:
+                radial-gradient(circle at 30% 40%, rgba(0, 255, 170, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 70% 60%, rgba(0, 200, 120, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 50% 80%, rgba(80, 255, 200, 0.08) 0%, transparent 50%);
+            animation: auraPulse 12s ease-in-out infinite alternate;
+        }
+
+        @keyframes auraPulse {
+            from {
+                opacity: 0.6;
+                transform: scale(1);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1.1);
+            }
+        }
+
+        /* 粒子 */
+        .particles {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            bottom: -20px;
+            width: 3px;
+            height: 3px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(120, 255, 200, 0.95) 0%, rgba(0, 200, 140, 0.2) 100%);
+            box-shadow: 0 0 8px rgba(0, 255, 180, 0.6);
+            animation: floatUp linear infinite;
+        }
+
+        .particle:nth-child(1) {
+            left: 5%;
+            animation-duration: 18s;
+            animation-delay: 0s;
+        }
+
+        .particle:nth-child(2) {
+            left: 12%;
+            animation-duration: 22s;
+            animation-delay: 2s;
+            width: 4px;
+            height: 4px;
+        }
+
+        .particle:nth-child(3) {
+            left: 20%;
+            animation-duration: 15s;
+            animation-delay: 5s;
+        }
+
+        .particle:nth-child(4) {
+            left: 28%;
+            animation-duration: 25s;
+            animation-delay: 1s;
+            width: 5px;
+            height: 5px;
+        }
+
+        .particle:nth-child(5) {
+            left: 35%;
+            animation-duration: 20s;
+            animation-delay: 8s;
+        }
+
+        .particle:nth-child(6) {
+            left: 42%;
+            animation-duration: 16s;
+            animation-delay: 3s;
+        }
+
+        .particle:nth-child(7) {
+            left: 50%;
+            animation-duration: 24s;
+            animation-delay: 6s;
+            width: 4px;
+            height: 4px;
+        }
+
+        .particle:nth-child(8) {
+            left: 58%;
+            animation-duration: 19s;
+            animation-delay: 0s;
+        }
+
+        .particle:nth-child(9) {
+            left: 65%;
+            animation-duration: 14s;
+            animation-delay: 9s;
+        }
+
+        .particle:nth-child(10) {
+            left: 73%;
+            animation-duration: 26s;
+            animation-delay: 4s;
+            width: 5px;
+            height: 5px;
+        }
+
+        .particle:nth-child(11) {
+            left: 80%;
+            animation-duration: 21s;
+            animation-delay: 7s;
+        }
+
+        .particle:nth-child(12) {
+            left: 88%;
+            animation-duration: 17s;
+            animation-delay: 2s;
+        }
+
+        .particle:nth-child(13) {
+            left: 95%;
+            animation-duration: 23s;
+            animation-delay: 5s;
+            width: 4px;
+            height: 4px;
+        }
+
+        .particle:nth-child(14) {
+            left: 8%;
+            animation-duration: 27s;
+            animation-delay: 10s;
+        }
+
+        .particle:nth-child(15) {
+            left: 45%;
+            animation-duration: 30s;
+            animation-delay: 0s;
+            width: 6px;
+            height: 6px;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) scale(0.5);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 0.9;
+            }
+
+            90% {
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: translateY(-110vh) scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        /* 能量线 */
+        .energy-lines {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+        }
+
+        .energy-lines span {
+            position: absolute;
+            top: -150px;
+            width: 1px;
+            height: 120px;
+            background: linear-gradient(to bottom, transparent, rgba(0, 255, 170, 0.35), transparent);
+            animation: lineFlow linear infinite;
+        }
+
+        .energy-lines span:nth-child(1) {
+            left: 10%;
+            animation-duration: 8s;
+            animation-delay: 0s;
+        }
+
+        .energy-lines span:nth-child(2) {
+            left: 25%;
+            animation-duration: 12s;
+            animation-delay: 3s;
+        }
+
+        .energy-lines span:nth-child(3) {
+            left: 40%;
+            animation-duration: 9s;
+            animation-delay: 6s;
+        }
+
+        .energy-lines span:nth-child(4) {
+            left: 55%;
+            animation-duration: 14s;
+            animation-delay: 1s;
+        }
+
+        .energy-lines span:nth-child(5) {
+            left: 70%;
+            animation-duration: 10s;
+            animation-delay: 8s;
+        }
+
+        .energy-lines span:nth-child(6) {
+            left: 85%;
+            animation-duration: 11s;
+            animation-delay: 4s;
+        }
+
+        .energy-lines span:nth-child(7) {
+            left: 95%;
+            animation-duration: 13s;
+            animation-delay: 7s;
+        }
+
+        @keyframes lineFlow {
+            0% {
+                transform: translateY(0) rotate(15deg);
+                opacity: 0;
+            }
+
+            15% {
+                opacity: 0.6;
+            }
+
+            85% {
+                opacity: 0.3;
+            }
+
+            100% {
+                transform: translateY(110vh) rotate(15deg);
+                opacity: 0;
+            }
+        }
+
+        /* 碳环 */
+        .carbon-rings {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+        }
+
+        .carbon-rings div {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid rgba(0, 255, 170, 0.08);
+            animation: ringRotate linear infinite;
+        }
+
+        .ring1 {
+            width: 500px;
+            height: 500px;
+            top: -150px;
+            right: -150px;
+            border-width: 2px;
+            animation-duration: 60s;
+        }
+
+        .ring2 {
+            width: 700px;
+            height: 700px;
+            bottom: -250px;
+            left: -200px;
+            animation-duration: 90s;
+            animation-direction: reverse;
+        }
+
+        .ring3 {
+            width: 300px;
+            height: 300px;
+            top: 40%;
+            left: 30%;
+            animation-duration: 45s;
+        }
+
+        @keyframes ringRotate {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* 演示文字 */
+        .demo {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            color: #d0ffe8;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            text-align: center;
+        }
+
+        .demo h1 {
+            font-size: 3rem;
+            font-weight: 300;
+            letter-spacing: 0.3em;
+        }
+
+        .demo p {
+            font-size: 1rem;
+            opacity: 0.4;
+            letter-spacing: 0.2em;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="carbon-bg">
+        <div class="carbon-rings">
+            <div class="ring1"></div>
+            <div class="ring2"></div>
+            <div class="ring3"></div>
+        </div>
+        <div class="energy-lines">
+            <span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span>
+        </div>
+        <div class="particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+    </div>
+    <div class="demo">
+        <h1>碳 系 统</h1>
+        <p>CARBON SYSTEM · MES</p>
+    </div>
+</body>
+
+</html>
