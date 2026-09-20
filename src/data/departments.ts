@@ -12,7 +12,7 @@ export interface HmxDept {
   cSw05: string | null;
 }
 
-const STORAGE_KEY = "erp.departments";
+const STORAGE_KEY = "hmx.departments";
 
 function seedDepartments(): HmxDept[] {
   const rows: Array<Partial<HmxDept> & { id: string; cDeptName: string; cDeptPid: string | null }> = [
@@ -25,7 +25,7 @@ function seedDepartments(): HmxDept[] {
     { id: "hr-rec", cDeptName: "招聘部", cDeptPid: "hr", cDeptDesc: null, cCompany: "HMX", cClassify: "职能" },
     { id: "hr-trn", cDeptName: "培训发展部", cDeptPid: "hr", cDeptDesc: null, cCompany: "HMX", cClassify: "职能" },
     { id: "it", cDeptName: "信息技术中心", cDeptPid: "root", cDeptDesc: "数字化建设", cCompany: "HMX", cClassify: "职能", cSw01: "成本中心" },
-    { id: "it-dev", cDeptName: "研发部", cDeptPid: "it", cDeptDesc: "ERP/MES 研发", cCompany: "HMX", cClassify: "技术", cSw02: "敏捷" },
+    { id: "it-dev", cDeptName: "研发部", cDeptPid: "it", cDeptDesc: "HMX/MES 研发", cCompany: "HMX", cClassify: "技术", cSw02: "敏捷" },
     { id: "it-ops", cDeptName: "运维部", cDeptPid: "it", cDeptDesc: "基础设施", cCompany: "HMX", cClassify: "技术" },
     { id: "bu-mfg", cDeptName: "制造事业部", cDeptPid: "root", cDeptDesc: "智能工厂", cCompany: "HMX-MFG", cClassify: "事业部", cSw01: "利润中心" },
     { id: "mfg-pm", cDeptName: "生产管理部", cDeptPid: "bu-mfg", cDeptDesc: "排产与交付", cCompany: "HMX-MFG", cClassify: "制造" },

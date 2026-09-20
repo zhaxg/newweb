@@ -1,0 +1,6210 @@
+{
+  "openapi": "3.0.4",
+  "info": {
+    "title": "系统管理服务",
+    "version": "1.0"
+  },
+  "paths": {
+    "/api/hmx.Service.Admin.Services/admin/getUsers": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "keywords",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxUser"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxUser"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxUser"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/admin/addOrEditUser": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/HmxUser"
+                  }
+                ]
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/HmxUser"
+                  }
+                ]
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/HmxUser"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/admin/deleteUser": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "userid",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/admin/modifyPassword": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "userid",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "oldpasswd",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "newpasswd",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/admin/resetPassword": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "userid",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/admin/getUserRoleList": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxRole"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxRole"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxRole"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/admin/updateUserRoleList": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdateUserRoleListInput"
+                  }
+                ]
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdateUserRoleListInput"
+                  }
+                ]
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdateUserRoleListInput"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/admin/getResourceNamespaceList": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxKv"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxKv"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxKv"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/admin/getResources": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "ns",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxRes"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxRes"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxRes"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/admin/getAllResouces": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "ns",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/RbacRescType"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/RbacRescType"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/RbacRescType"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxRes"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxRes"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxRes"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/admin/getAllUserRoles": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxUserRole"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxUserRole"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxUserRole"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/admin/deleteResource": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/admin/addOrEditResource": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/HmxRes"
+                  }
+                ]
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/HmxRes"
+                  }
+                ]
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/HmxRes"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/HmxRes"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HmxRes"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HmxRes"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/admin/queryButtonsResc": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "parentRescId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxRes"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxRes"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxRes"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/admin/queryUserListForRole": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "roleid",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RoleUserDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RoleUserDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RoleUserDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/admin/saveUserListForRole": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "roleid",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/RoleUserDto"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/RoleUserDto"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/RoleUserDto"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/admin/getRoleList": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "keywords",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxRole"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxRole"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxRole"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/admin/checkBeforeRemoveRole": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "roleId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/admin/getRescByRole": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "roleId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "nsResc",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RoleEditRescTreeItem"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RoleEditRescTreeItem"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RoleEditRescTreeItem"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/admin/updatePermissionByRole": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/RoleEditRescInput"
+                  }
+                ]
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/RoleEditRescInput"
+                  }
+                ]
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/RoleEditRescInput"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/admin/queryRolePermissionOfViewAndWidgets": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/RolePermissionInput"
+                  }
+                ]
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/RolePermissionInput"
+                  }
+                ]
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/RolePermissionInput"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RolePermissionOfViewAndWidgets"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RolePermissionOfViewAndWidgets"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RolePermissionOfViewAndWidgets"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/admin/saveRolePermissionOfViewAndWidgets": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SaveRolePermissionInput"
+                  }
+                ]
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SaveRolePermissionInput"
+                  }
+                ]
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SaveRolePermissionInput"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/admin/addOrEditRole": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/HmxRole"
+                  }
+                ]
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/HmxRole"
+                  }
+                ]
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/HmxRole"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/admin/deleteRole": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/admin/getAllKeyvalueLevelone": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "keywords",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxKv"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxKv"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxKv"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/admin/getAllKeyvalueItems": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "parentId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxKv"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxKv"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxKv"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/admin/addOrEditKeyValue": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/HmxKv"
+                  }
+                ]
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/HmxKv"
+                  }
+                ]
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/HmxKv"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/HmxKv"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HmxKv"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HmxKv"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/admin/deleteKeyValue": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/admin/queryButtons": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "parameters": [
+          {
+            "name": "resourceId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResetButtonRoleDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResetButtonRoleDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResetButtonRoleDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/admin/setButtonRoles": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ResetButtonRoleDto"
+                  }
+                ]
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ResetButtonRoleDto"
+                  }
+                ]
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ResetButtonRoleDto"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/auditLogs/log": {
+      "post": {
+        "tags": [
+          "auditLogs"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/AuditLogInput"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/AuditLogInput"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/AuditLogInput"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/auditLogs/queryLogList": {
+      "post": {
+        "tags": [
+          "auditLogs"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/AuditLogQueryInput"
+                  }
+                ]
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/AuditLogQueryInput"
+                  }
+                ]
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/AuditLogQueryInput"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxLogs"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxLogs"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxLogs"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/auth/token": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/FetchTokenInput"
+                  }
+                ]
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/FetchTokenInput"
+                  }
+                ]
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/FetchTokenInput"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/auth/logout": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/auth/hasPermission": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "resourceKey",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/auth/getUserInfo": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/HmxUserSession"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HmxUserSession"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HmxUserSession"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/auth/getUserRescList": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/GetUserResourceListInput"
+                  }
+                ]
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/GetUserResourceListInput"
+                  }
+                ]
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/GetUserResourceListInput"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxRes"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxRes"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxRes"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/auth/getCaptchaImage": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaptchaInfo"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaptchaInfo"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaptchaInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/auth/getCaptchaChallenge": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaptchaInfo"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaptchaInfo"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CaptchaInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/auth/reportClientInfo": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ClientInfoDto"
+                  }
+                ]
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ClientInfoDto"
+                  }
+                ]
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ClientInfoDto"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/codeGen/generatedCode": {
+      "post": {
+        "tags": [
+          "codeGen"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/GenerateInput"
+                  }
+                ]
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/GenerateInput"
+                  }
+                ]
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/GenerateInput"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GenerateOutput"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GenerateOutput"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GenerateOutput"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/codeGen/generateVueFiles": {
+      "post": {
+        "tags": [
+          "codeGen"
+        ],
+        "parameters": [
+          {
+            "name": "swaggerJsonUri",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GenerateOutput"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GenerateOutput"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GenerateOutput"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/codeGen/generateCSharpFiles": {
+      "post": {
+        "tags": [
+          "codeGen"
+        ],
+        "parameters": [
+          {
+            "name": "swaggerJsonUri",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GenerateOutput"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GenerateOutput"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GenerateOutput"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/crud/saveChanges": {
+      "post": {
+        "tags": [
+          "crud"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SaveChangesInput"
+                  }
+                ]
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SaveChangesInput"
+                  }
+                ]
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SaveChangesInput"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/crud/insertOrUpdate": {
+      "post": {
+        "tags": [
+          "crud"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SaveChangesInput"
+                  }
+                ]
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SaveChangesInput"
+                  }
+                ]
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SaveChangesInput"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/crud/saveChangesV2": {
+      "post": {
+        "tags": [
+          "crud"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SaveChangesInputV2"
+                  }
+                ]
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SaveChangesInputV2"
+                  }
+                ]
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SaveChangesInputV2"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/demo/getDataBaseTime": {
+      "post": {
+        "tags": [
+          "demo"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/department/queryAllDepartments": {
+      "post": {
+        "tags": [
+          "department"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxDept"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxDept"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxDept"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/department/save": {
+      "post": {
+        "tags": [
+          "department"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/HmxDept"
+                  }
+                ]
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/HmxDept"
+                  }
+                ]
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/HmxDept"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/department/delete": {
+      "post": {
+        "tags": [
+          "department"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/HmxDept"
+                  }
+                ]
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/HmxDept"
+                  }
+                ]
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/HmxDept"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/iOTGateway/getList": {
+      "post": {
+        "tags": [
+          "iOTGateway"
+        ],
+        "parameters": [
+          {
+            "name": "keywords",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GatewayInfo"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GatewayInfo"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GatewayInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/iOTGateway/addOrEdit": {
+      "post": {
+        "tags": [
+          "iOTGateway"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/GatewayInfo"
+                  }
+                ]
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/GatewayInfo"
+                  }
+                ]
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/GatewayInfo"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/iOTGateway/delete": {
+      "post": {
+        "tags": [
+          "iOTGateway"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/iOTGateway/getRealData": {
+      "post": {
+        "tags": [
+          "iOTGateway"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/IotRealDataRequestDto"
+                  }
+                ]
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/IotRealDataRequestDto"
+                  }
+                ]
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/IotRealDataRequestDto"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IotRealDataTagItemDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IotRealDataTagItemDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IotRealDataTagItemDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/iOTGateway/getConfigUrl": {
+      "post": {
+        "tags": [
+          "iOTGateway"
+        ],
+        "parameters": [
+          {
+            "name": "gwIp",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/iOTGateway/pushGwDb": {
+      "post": {
+        "tags": [
+          "iOTGateway"
+        ],
+        "parameters": [
+          {
+            "name": "gwIp",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/notification/getNotifyList": {
+      "post": {
+        "tags": [
+          "notification"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/GetNotifyListInput"
+                  }
+                ]
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/GetNotifyListInput"
+                  }
+                ]
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/GetNotifyListInput"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxNotify"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxNotify"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxNotify"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/notification/queryMyRecv": {
+      "post": {
+        "tags": [
+          "notification"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxNotify"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxNotify"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxNotify"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/notification/queryMyLastestRecv": {
+      "post": {
+        "tags": [
+          "notification"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/HmxNotify"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HmxNotify"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HmxNotify"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/notification/getUnreadCount": {
+      "post": {
+        "tags": [
+          "notification"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/notification/queryMySended": {
+      "post": {
+        "tags": [
+          "notification"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxNotify"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxNotify"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxNotify"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/notification/updateNotifyExpiredTime": {
+      "post": {
+        "tags": [
+          "notification"
+        ],
+        "parameters": [
+          {
+            "name": "notifyId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "expiredTime",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/notification/setReadStatus": {
+      "post": {
+        "tags": [
+          "notification"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SetReadStatusInput"
+                  }
+                ]
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SetReadStatusInput"
+                  }
+                ]
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SetReadStatusInput"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/notification/updateAllToReaded": {
+      "post": {
+        "tags": [
+          "notification"
+        ],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/notification/sendNewNotification": {
+      "post": {
+        "tags": [
+          "notification"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SendNewNotificationInput"
+                  }
+                ]
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SendNewNotificationInput"
+                  }
+                ]
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SendNewNotificationInput"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/notification/publishEvent": {
+      "post": {
+        "tags": [
+          "notification"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SaveChangesInput"
+                  }
+                ]
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SaveChangesInput"
+                  }
+                ]
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SaveChangesInput"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/quartzNet/insertOrReplaceBackgroudJob": {
+      "post": {
+        "tags": [
+          "quartzNet"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/HmxBackgroudJobInfo"
+                  }
+                ]
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/HmxBackgroudJobInfo"
+                  }
+                ]
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/HmxBackgroudJobInfo"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/quartzNet/getSchedulerStatus": {
+      "post": {
+        "tags": [
+          "quartzNet"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/HmxSchedulerStatusInfo"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HmxSchedulerStatusInfo"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HmxSchedulerStatusInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/quartzNet/manualExcuteJob": {
+      "post": {
+        "tags": [
+          "quartzNet"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/HmxBackgroudJobInfo"
+                  }
+                ]
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/HmxBackgroudJobInfo"
+                  }
+                ]
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/HmxBackgroudJobInfo"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/quartzNet/queryAllBackgroudJobs": {
+      "post": {
+        "tags": [
+          "quartzNet"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxBackgroudJobInfo"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxBackgroudJobInfo"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxBackgroudJobInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/quartzNet/removeBackgroudJob": {
+      "post": {
+        "tags": [
+          "quartzNet"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/HmxBackgroudJobInfo"
+                  }
+                ]
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/HmxBackgroudJobInfo"
+                  }
+                ]
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/HmxBackgroudJobInfo"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/quartzNet/startScheduler": {
+      "post": {
+        "tags": [
+          "quartzNet"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/quartzNet/stopScheduler": {
+      "post": {
+        "tags": [
+          "quartzNet"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/quartzNet/getAvaliableBackgroudJobs": {
+      "post": {
+        "tags": [
+          "quartzNet"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxBackgroundJobTypeInfo"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxBackgroundJobTypeInfo"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxBackgroundJobTypeInfo"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/quartzNet/getNextCronTimes": {
+      "post": {
+        "tags": [
+          "quartzNet"
+        ],
+        "parameters": [
+          {
+            "name": "cronExp",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "times",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 5
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/restrictData/queryRestrictData": {
+      "post": {
+        "tags": [
+          "restrictData"
+        ],
+        "parameters": [
+          {
+            "name": "roleIds",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/RestrictDataResouce"
+                  }
+                ]
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/RestrictDataResouce"
+                  }
+                ]
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/RestrictDataResouce"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RolePermissionOfRestrictDataItem"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RolePermissionOfRestrictDataItem"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RolePermissionOfRestrictDataItem"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/restrictData/queryDataGroupsNew": {
+      "post": {
+        "tags": [
+          "restrictData"
+        ],
+        "parameters": [
+          {
+            "name": "keywords",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestrictDataResource"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestrictDataResource"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestrictDataResource"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/restrictData/anyAssignedPermissionForResource": {
+      "post": {
+        "tags": [
+          "restrictData"
+        ],
+        "parameters": [
+          {
+            "name": "resourceId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "boolean"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/restrictData/deleeteAllAssignedPermissionForResource": {
+      "post": {
+        "tags": [
+          "restrictData"
+        ],
+        "parameters": [
+          {
+            "name": "resourceCode",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/restrictData/queryRestrictColumn": {
+      "post": {
+        "tags": [
+          "restrictData"
+        ],
+        "parameters": [
+          {
+            "name": "entityTypeFullName",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/restrictData/saveRoleRestrictDataItem": {
+      "post": {
+        "tags": [
+          "restrictData"
+        ],
+        "parameters": [
+          {
+            "name": "roleId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "dataId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "resourceCode",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "checkedState",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/RbacRescType"
+                  }
+                ],
+                "default": 16,
+                "x-enum-descriptions": ["菜单","界面元素","后台服务（动作）","数据项","数据列"],
+                "x-enum-varnames": ["Menu","Widget","Action","DataItem","DataColumn"]
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/RbacRescType"
+                  }
+                ],
+                "default": 16,
+                "x-enum-descriptions": ["菜单","界面元素","后台服务（动作）","数据项","数据列"],
+                "x-enum-varnames": ["Menu","Widget","Action","DataItem","DataColumn"]
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/RbacRescType"
+                  }
+                ],
+                "default": 16,
+                "x-enum-descriptions": ["菜单","界面元素","后台服务（动作）","数据项","数据列"],
+                "x-enum-varnames": ["Menu","Widget","Action","DataItem","DataColumn"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/restrictData/queryRestrictDataResource": {
+      "post": {
+        "tags": [
+          "restrictData"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestrictDataResouce"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestrictDataResouce"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RestrictDataResouce"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/restrictData/insertNewRestrictDataResouce": {
+      "post": {
+        "tags": [
+          "restrictData"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/RestrictDataResouce"
+                  }
+                ]
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/RestrictDataResouce"
+                  }
+                ]
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/RestrictDataResouce"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/restrictData/queryRestrictColumnAssignedCount": {
+      "post": {
+        "tags": [
+          "restrictData"
+        ],
+        "parameters": [
+          {
+            "name": "resourceId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/restrictData/removeRestrictColumn": {
+      "post": {
+        "tags": [
+          "restrictData"
+        ],
+        "parameters": [
+          {
+            "name": "resourceId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/systemKeyValue/getSysKvListByGroup": {
+      "post": {
+        "tags": [
+          "systemKeyValue"
+        ],
+        "parameters": [
+          {
+            "name": "group",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxKv"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxKv"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxKv"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/systemKeyValue/initializeSysKvList": {
+      "post": {
+        "tags": [
+          "systemKeyValue"
+        ],
+        "parameters": [
+          {
+            "name": "pcode",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxKv"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxKv"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxKv"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/systemKeyValue/querySysKvList": {
+      "post": {
+        "tags": [
+          "systemKeyValue"
+        ],
+        "parameters": [
+          {
+            "name": "root",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "code",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxKv"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxKv"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxKv"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/systemKeyValue/querySysKvItemList": {
+      "post": {
+        "tags": [
+          "systemKeyValue"
+        ],
+        "parameters": [
+          {
+            "name": "parentCode",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxKv"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxKv"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxKv"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/systemKeyValue/querySystemSettingInfos": {
+      "post": {
+        "tags": [
+          "systemKeyValue"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxKv"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxKv"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxKv"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/systemKeyValue/querySystemSettingInfosV2": {
+      "post": {
+        "tags": [
+          "systemKeyValue"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemSettingInfo"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemSettingInfo"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SystemSettingInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/systemKeyValue/saveSystemSettingInfosV2": {
+      "post": {
+        "tags": [
+          "systemKeyValue"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SystemSettingInfo"
+                  }
+                ]
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SystemSettingInfo"
+                  }
+                ]
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/SystemSettingInfo"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/systemKeyValue/saveChangesOfSystemSettingInfos": {
+      "post": {
+        "tags": [
+          "systemKeyValue"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/HmxKv"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/HmxKv"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/HmxKv"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/systemKeyValue/prepareNewKvEditInput": {
+      "post": {
+        "tags": [
+          "systemKeyValue"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/KvEditInput"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KvEditInput"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KvEditInput"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/systemKeyValue/insertOrUpdateParentKvItem": {
+      "post": {
+        "tags": [
+          "systemKeyValue"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/KvEditInput"
+                  }
+                ]
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/KvEditInput"
+                  }
+                ]
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/KvEditInput"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/HmxKv"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HmxKv"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HmxKv"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/systemKeyValue/insertOrUpdateKvFileds": {
+      "post": {
+        "tags": [
+          "systemKeyValue"
+        ],
+        "parameters": [
+          {
+            "name": "key",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/KvFiledItem"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/KvFiledItem"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/KvFiledItem"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/systemKeyValue/queryKvFileds": {
+      "post": {
+        "tags": [
+          "systemKeyValue"
+        ],
+        "parameters": [
+          {
+            "name": "key",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/KvFiledItem"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/KvFiledItem"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/KvFiledItem"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/systemKeyValue/removeParentKvItem": {
+      "post": {
+        "tags": [
+          "systemKeyValue"
+        ],
+        "parameters": [
+          {
+            "name": "kvItemId",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/systemKeyValue/saveChangesForChildKvItems": {
+      "post": {
+        "tags": [
+          "systemKeyValue"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/HmxKv"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/HmxKv"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/HmxKv"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/systemKeyValue/saveChanges": {
+      "post": {
+        "tags": [
+          "systemKeyValue"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/HmxKvSaveChangesData"
+                  }
+                ]
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/HmxKvSaveChangesData"
+                  }
+                ]
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/HmxKvSaveChangesData"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/systemKeyValue/deleteById": {
+      "post": {
+        "tags": [
+          "systemKeyValue"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/systemKeyValue/saveKeyValue": {
+      "post": {
+        "tags": [
+          "systemKeyValue"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/HmxKv"
+                  }
+                ]
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/HmxKv"
+                  }
+                ]
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/HmxKv"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/ultraVnc/getClientList": {
+      "post": {
+        "tags": [
+          "ultraVnc"
+        ],
+        "parameters": [
+          {
+            "name": "keywords",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxKv"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxKv"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/HmxKv"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/ultraVnc/addOrEditClient": {
+      "post": {
+        "tags": [
+          "ultraVnc"
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/HmxKv"
+                  }
+                ]
+              }
+            },
+            "text/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/HmxKv"
+                  }
+                ]
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/HmxKv"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/hmx.Service.Admin.Services/ultraVnc/deleteClient": {
+      "post": {
+        "tags": [
+          "ultraVnc"
+        ],
+        "parameters": [
+          {
+            "name": "ip",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AuditLogInput": {
+        "type": "object",
+        "properties": {
+          "nElapsedMs": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "cLogLevel": {
+            "type": "string",
+            "nullable": true
+          },
+          "cLogName": {
+            "type": "string",
+            "nullable": true
+          },
+          "cMachine": {
+            "type": "string",
+            "nullable": true
+          },
+          "cLogText": {
+            "type": "string",
+            "format": "byte",
+            "nullable": true
+          },
+          "cKeyword1": {
+            "type": "string",
+            "nullable": true
+          },
+          "cKeyword2": {
+            "type": "string",
+            "nullable": true
+          },
+          "cKeyword3": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "AuditLogQueryInput": {
+        "type": "object",
+        "properties": {
+          "dateBeg": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "dateEnd": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "logName": {
+            "type": "string",
+            "nullable": true
+          },
+          "logLevel": {
+            "type": "string",
+            "nullable": true
+          },
+          "machine": {
+            "type": "string",
+            "nullable": true
+          },
+          "userId": {
+            "type": "string",
+            "nullable": true
+          },
+          "keyword1": {
+            "type": "string",
+            "nullable": true
+          },
+          "keyword2": {
+            "type": "string",
+            "nullable": true
+          },
+          "keyword3": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "CaptchaInfo": {
+        "type": "object",
+        "properties": {
+          "challengeString": {
+            "type": "string",
+            "nullable": true
+          },
+          "signature": {
+            "type": "string",
+            "nullable": true
+          },
+          "captchaType": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CaptchaType"
+              }
+            ],
+            "x-enum-descriptions": ["Image","MathPow"],
+            "x-enum-varnames": ["Image","MathPow"]
+          }
+        },
+        "additionalProperties": false
+      },
+      "CaptchaType": {
+        "enum": [
+          1,
+          2
+        ],
+        "type": "integer",
+        "format": "int32",
+        "x-enum-descriptions": ["Image","MathPow"],
+        "x-enum-varnames": ["Image","MathPow"]
+      },
+      "ClientInfoDto": {
+        "type": "object",
+        "properties": {
+          "host": {
+            "type": "string",
+            "nullable": true
+          },
+          "osName": {
+            "type": "string",
+            "nullable": true
+          },
+          "ipAddresses": {
+            "type": "string",
+            "nullable": true
+          },
+          "macAddresses": {
+            "type": "string",
+            "nullable": true
+          },
+          "hardware": {
+            "type": "string",
+            "nullable": true
+          },
+          "netFxVersions": {
+            "type": "string",
+            "nullable": true
+          },
+          "netCoreVersions": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "FetchTokenInput": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          },
+          "captchaType": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CaptchaType"
+              }
+            ],
+            "x-enum-descriptions": ["Image","MathPow"],
+            "x-enum-varnames": ["Image","MathPow"]
+          },
+          "captchaCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "captchaSignature": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GatewayInfo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "code": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "ip": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "version": {
+            "type": "string",
+            "nullable": true
+          },
+          "remark": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastOnlineTime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "createTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updateTime": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "GenerateInput": {
+        "type": "object",
+        "properties": {
+          "databaseKey": {
+            "type": "string",
+            "nullable": true
+          },
+          "nameSpace": {
+            "type": "string",
+            "nullable": true
+          },
+          "tableName": {
+            "type": "string",
+            "nullable": true
+          },
+          "tplGruop": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GenerateOutput": {
+        "type": "object",
+        "properties": {
+          "fileName": {
+            "type": "string",
+            "nullable": true
+          },
+          "content": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetNotifyListInput": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "nullable": true
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "GetUserResourceListInput": {
+        "type": "object",
+        "properties": {
+          "groupId": {
+            "type": "string",
+            "nullable": true
+          },
+          "rescType": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RbacRescType"
+              }
+            ],
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "HmxBackgroudJobInfo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "cName": {
+            "type": "string",
+            "nullable": true
+          },
+          "cTrigerName": {
+            "type": "string",
+            "nullable": true
+          },
+          "cSetupTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "cCronExp": {
+            "type": "string",
+            "nullable": true
+          },
+          "nIntervalMinutes": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nRepetCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nDelayMinutes": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "cNextTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "cLastTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "cLastMessage": {
+            "type": "string",
+            "nullable": true
+          },
+          "cScheduler": {
+            "type": "string",
+            "nullable": true
+          },
+          "cAssemblyQualifiedName": {
+            "type": "string",
+            "nullable": true
+          },
+          "enable": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/YesNo"
+              }
+            ],
+            "x-enum-descriptions": ["N","Y"],
+            "x-enum-varnames": ["N","Y"]
+          },
+          "enablePaiallel": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/YesNo"
+              }
+            ],
+            "x-enum-descriptions": ["N","Y"],
+            "x-enum-varnames": ["N","Y"]
+          },
+          "cFlagMisfired": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/HmxJobMisfiredEnums"
+              }
+            ],
+            "x-enum-descriptions": ["ExecuteNow","ExecuteNext"],
+            "x-enum-varnames": ["ExecuteNow","ExecuteNext"]
+          }
+        },
+        "additionalProperties": false
+      },
+      "HmxBackgroundJobTypeInfo": {
+        "type": "object",
+        "properties": {
+          "assemblyQualifiedName": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "HmxDept": {
+        "type": "object",
+        "properties": {
+          "selected": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "cDeptPid": {
+            "type": "string",
+            "nullable": true
+          },
+          "cDeptName": {
+            "type": "string",
+            "nullable": true
+          },
+          "cDeptDesc": {
+            "type": "string",
+            "nullable": true
+          },
+          "cCompany": {
+            "type": "string",
+            "nullable": true
+          },
+          "cClassify": {
+            "type": "string",
+            "nullable": true
+          },
+          "cSw01": {
+            "type": "string",
+            "nullable": true
+          },
+          "cSw02": {
+            "type": "string",
+            "nullable": true
+          },
+          "cSw03": {
+            "type": "string",
+            "nullable": true
+          },
+          "cSw04": {
+            "type": "string",
+            "nullable": true
+          },
+          "cSw05": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "HmxJobMisfiredEnums": {
+        "enum": [
+          0,
+          1
+        ],
+        "type": "integer",
+        "format": "int32",
+        "x-enum-descriptions": ["ExecuteNow","ExecuteNext"],
+        "x-enum-varnames": ["ExecuteNow","ExecuteNext"]
+      },
+      "HmxKv": {
+        "type": "object",
+        "properties": {
+          "selected": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "cCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "cDesc": {
+            "type": "string",
+            "nullable": true
+          },
+          "cEnable": {
+            "type": "string",
+            "nullable": true
+          },
+          "cGroup": {
+            "type": "string",
+            "nullable": true
+          },
+          "cName": {
+            "type": "string",
+            "nullable": true
+          },
+          "cOrder": {
+            "type": "string",
+            "nullable": true
+          },
+          "cPid": {
+            "type": "string",
+            "nullable": true
+          },
+          "cSw01": {
+            "type": "string",
+            "nullable": true
+          },
+          "cSw02": {
+            "type": "string",
+            "nullable": true
+          },
+          "cSw03": {
+            "type": "string",
+            "nullable": true
+          },
+          "cSw04": {
+            "type": "string",
+            "nullable": true
+          },
+          "cSw05": {
+            "type": "string",
+            "nullable": true
+          },
+          "cValue": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "HmxKvSaveChangesData": {
+        "type": "object",
+        "properties": {
+          "addedItems": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HmxKv"
+            },
+            "nullable": true
+          },
+          "changedItems": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HmxKv"
+            },
+            "nullable": true
+          },
+          "deletedItems": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HmxKv"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "HmxLogs": {
+        "type": "object",
+        "properties": {
+          "selected": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "cLogName": {
+            "type": "string",
+            "nullable": true
+          },
+          "dLogTime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "cDtPartion": {
+            "type": "string",
+            "nullable": true
+          },
+          "cLogLevel": {
+            "type": "string",
+            "nullable": true
+          },
+          "cLogText": {
+            "type": "string",
+            "format": "byte",
+            "nullable": true
+          },
+          "cUser": {
+            "type": "string",
+            "nullable": true
+          },
+          "cMachine": {
+            "type": "string",
+            "nullable": true
+          },
+          "nElapsedMs": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "cKeyword1": {
+            "type": "string",
+            "nullable": true
+          },
+          "cKeyword2": {
+            "type": "string",
+            "nullable": true
+          },
+          "cKeyword3": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "HmxNotify": {
+        "type": "object",
+        "properties": {
+          "selected": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "cContent": {
+            "type": "string",
+            "nullable": true
+          },
+          "creator": {
+            "type": "string",
+            "nullable": true
+          },
+          "cExpiredTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastModifier": {
+            "type": "string",
+            "nullable": true
+          },
+          "cTargetList": {
+            "type": "string",
+            "nullable": true
+          },
+          "cTargetType": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "cTargetUserList": {
+            "type": "string",
+            "nullable": true
+          },
+          "cTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "createTime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "lastModifyTime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "HmxRes": {
+        "type": "object",
+        "properties": {
+          "selected": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "cCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "creator": {
+            "type": "string",
+            "nullable": true
+          },
+          "cEnable": {
+            "type": "string",
+            "nullable": true
+          },
+          "cIcon": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastModifier": {
+            "type": "string",
+            "nullable": true
+          },
+          "cName": {
+            "type": "string",
+            "nullable": true
+          },
+          "cTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "cNsCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "cOrder": {
+            "type": "string",
+            "nullable": true
+          },
+          "cPid": {
+            "type": "string",
+            "nullable": true
+          },
+          "cQueryString": {
+            "type": "string",
+            "nullable": true
+          },
+          "cResPath": {
+            "type": "string",
+            "nullable": true
+          },
+          "cResSubPath": {
+            "type": "string",
+            "nullable": true
+          },
+          "cResType": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RbacRescType"
+              }
+            ],
+            "x-enum-descriptions": ["菜单","界面元素","后台服务（动作）","数据项","数据列"],
+            "x-enum-varnames": ["Menu","Widget","Action","DataItem","DataColumn"]
+          },
+          "createTime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "lastModifyTime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "rowVersion": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "HmxRole": {
+        "type": "object",
+        "properties": {
+          "selected": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "creator": {
+            "type": "string",
+            "nullable": true
+          },
+          "cDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastModifier": {
+            "type": "string",
+            "nullable": true
+          },
+          "cRoleName": {
+            "type": "string",
+            "nullable": true
+          },
+          "cState": {
+            "type": "string",
+            "nullable": true
+          },
+          "createTime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "lastModifyTime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "HmxRolePermission": {
+        "type": "object",
+        "properties": {
+          "selected": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "cNsCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "cRescId": {
+            "type": "string",
+            "nullable": true
+          },
+          "cRescType": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RbacRescType"
+              }
+            ],
+            "x-enum-descriptions": ["菜单","界面元素","后台服务（动作）","数据项","数据列"],
+            "x-enum-varnames": ["Menu","Widget","Action","DataItem","DataColumn"]
+          },
+          "cRoleId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "HmxSchedulerStatusInfo": {
+        "type": "object",
+        "properties": {
+          "enable": {
+            "type": "boolean"
+          },
+          "schedulerName": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastUpdateTime": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "HmxUser": {
+        "type": "object",
+        "properties": {
+          "selected": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "creator": {
+            "type": "string",
+            "nullable": true
+          },
+          "cDepartment": {
+            "type": "string",
+            "nullable": true
+          },
+          "cEducation": {
+            "type": "string",
+            "nullable": true
+          },
+          "cEmail": {
+            "type": "string",
+            "nullable": true
+          },
+          "cIdCardNo": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastModifier": {
+            "type": "string",
+            "nullable": true
+          },
+          "cMaster": {
+            "type": "string",
+            "nullable": true
+          },
+          "cNation": {
+            "type": "string",
+            "nullable": true
+          },
+          "cNativePlace": {
+            "type": "string",
+            "nullable": true
+          },
+          "cPassword": {
+            "type": "string",
+            "nullable": true
+          },
+          "cPhone": {
+            "type": "string",
+            "nullable": true
+          },
+          "cPoliticsStatus": {
+            "type": "string",
+            "nullable": true
+          },
+          "cPosition": {
+            "type": "string",
+            "nullable": true
+          },
+          "cPost": {
+            "type": "string",
+            "nullable": true
+          },
+          "cSbcard": {
+            "type": "string",
+            "nullable": true
+          },
+          "cSex": {
+            "type": "string",
+            "nullable": true
+          },
+          "cStatus": {
+            "type": "string",
+            "nullable": true
+          },
+          "cTimestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "cUserName": {
+            "type": "string",
+            "nullable": true
+          },
+          "cUserType": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserType"
+              }
+            ],
+            "x-enum-descriptions": ["普通用户","普通管理员","超级管理员"],
+            "x-enum-varnames": ["Nomral","Admin","Root"]
+          },
+          "createTime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "lastModifyTime": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "HmxUserRole": {
+        "type": "object",
+        "properties": {
+          "selected": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "cRoleid": {
+            "type": "string",
+            "nullable": true
+          },
+          "cUserid": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "HmxUserSession": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "nullable": true
+          },
+          "userName": {
+            "type": "string",
+            "nullable": true
+          },
+          "token": {
+            "type": "string",
+            "nullable": true
+          },
+          "isAuthenticated": {
+            "type": "boolean"
+          },
+          "userType": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserType"
+              }
+            ],
+            "x-enum-descriptions": ["普通用户","普通管理员","超级管理员"],
+            "x-enum-varnames": ["Nomral","Admin","Root"]
+          }
+        },
+        "additionalProperties": false
+      },
+      "IotRealDataRequestDto": {
+        "type": "object",
+        "properties": {
+          "ip": {
+            "type": "string",
+            "nullable": true
+          },
+          "pageSize": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "tagId": {
+            "type": "string",
+            "nullable": true
+          },
+          "deviceDescription": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "IotRealDataTagItemDto": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "nullable": true
+          },
+          "timestamp": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "val": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "KvEditInput": {
+        "type": "object",
+        "properties": {
+          "classA": {
+            "type": "string",
+            "nullable": true
+          },
+          "classB": {
+            "type": "string",
+            "nullable": true
+          },
+          "classC": {
+            "type": "string",
+            "nullable": true
+          },
+          "code": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "useClassfy": {
+            "type": "boolean"
+          },
+          "filedItems": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/KvFiledItem"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "KvFiledItem": {
+        "type": "object",
+        "properties": {
+          "filedName": {
+            "type": "string",
+            "nullable": true
+          },
+          "caption": {
+            "type": "string",
+            "nullable": true
+          },
+          "visible": {
+            "type": "boolean"
+          },
+          "maskType": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "editMask": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "NotificationTargetType": {
+        "enum": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "type": "integer",
+        "format": "int32",
+        "x-enum-descriptions": ["All","Role","Dept","User"],
+        "x-enum-varnames": ["All","Role","Dept","User"]
+      },
+      "RbacRescType": {
+        "enum": [
+          2,
+          4,
+          8,
+          16,
+          32
+        ],
+        "type": "integer",
+        "format": "int32",
+        "x-enum-descriptions": ["菜单","界面元素","后台服务（动作）","数据项","数据列"],
+        "x-enum-varnames": ["Menu","Widget","Action","DataItem","DataColumn"]
+      },
+      "ResetButtonRoleDto": {
+        "type": "object",
+        "properties": {
+          "buttons": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HmxRes"
+            },
+            "nullable": true
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HmxRole"
+            },
+            "nullable": true
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/HmxRolePermission"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "RestrictDataResouce": {
+        "type": "object",
+        "properties": {
+          "resouceId": {
+            "type": "string",
+            "nullable": true
+          },
+          "resouceCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "resouceName": {
+            "type": "string",
+            "nullable": true
+          },
+          "keyColumn": {
+            "type": "string",
+            "nullable": true
+          },
+          "nameColumn": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "RestrictDataResource": {
+        "type": "object",
+        "properties": {
+          "tableName": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "columns": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RestrictDataResourceItem"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "RestrictDataResourceItem": {
+        "type": "object",
+        "properties": {
+          "columnName": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "RoleEditRescInput": {
+        "type": "object",
+        "properties": {
+          "roleId": {
+            "type": "string",
+            "nullable": true
+          },
+          "groupId": {
+            "type": "string",
+            "nullable": true
+          },
+          "rescIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "RoleEditRescTreeItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "isChecked": {
+            "type": "boolean"
+          },
+          "hasChildren": {
+            "type": "boolean"
+          },
+          "expanded": {
+            "type": "boolean"
+          },
+          "text": {
+            "type": "string",
+            "nullable": true
+          },
+          "icon": {
+            "type": "string",
+            "nullable": true
+          },
+          "parentID": {
+            "type": "string",
+            "nullable": true
+          },
+          "isMenu": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "RolePermissionInput": {
+        "type": "object",
+        "properties": {
+          "roleId": {
+            "type": "string",
+            "nullable": true
+          },
+          "groupId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "RolePermissionOfRestrictDataItem": {
+        "type": "object",
+        "properties": {
+          "selected": {
+            "type": "boolean"
+          },
+          "code": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "RolePermissionOfViewAndWidgets": {
+        "type": "object",
+        "properties": {
+          "selected": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "cpId": {
+            "type": "string",
+            "nullable": true
+          },
+          "cCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "cName": {
+            "type": "string",
+            "nullable": true
+          },
+          "cType": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RbacRescType"
+              }
+            ],
+            "x-enum-descriptions": ["菜单","界面元素","后台服务（动作）","数据项","数据列"],
+            "x-enum-varnames": ["Menu","Widget","Action","DataItem","DataColumn"]
+          },
+          "cIcon": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "RoleUserDto": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "nullable": true
+          },
+          "userName": {
+            "type": "string",
+            "nullable": true
+          },
+          "marked": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SaveChangesInput": {
+        "type": "object",
+        "properties": {
+          "dataTypeFullName": {
+            "type": "string",
+            "nullable": true
+          },
+          "dataBytesBase64String": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SaveChangesInputV2": {
+        "type": "object",
+        "properties": {
+          "dataTypeName": {
+            "type": "string",
+            "nullable": true
+          },
+          "batchDataBytesBase64String": {
+            "type": "string",
+            "nullable": true
+          },
+          "singleDataBytesBase64String": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SaveRolePermissionInput": {
+        "type": "object",
+        "properties": {
+          "roleId": {
+            "type": "string",
+            "nullable": true
+          },
+          "groupId": {
+            "type": "string",
+            "nullable": true
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RolePermissionOfViewAndWidgets"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SendNewNotificationInput": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "targetType": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NotificationTargetType"
+              }
+            ],
+            "x-enum-descriptions": ["All","Role","Dept","User"],
+            "x-enum-varnames": ["All","Role","Dept","User"]
+          },
+          "targetList": {
+            "type": "string",
+            "nullable": true
+          },
+          "content": {
+            "type": "string",
+            "nullable": true
+          },
+          "expiredTime": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SetReadStatusInput": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "nullable": true
+          },
+          "notifyIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          },
+          "isRead": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SystemSettingInfo": {
+        "type": "object",
+        "properties": {
+          "reportBaseAddress": {
+            "type": "string",
+            "description": "报表地址",
+            "nullable": true
+          },
+          "productVersion": {
+            "type": "string",
+            "description": "产品版本",
+            "nullable": true
+          },
+          "dataBaseSignkey": {
+            "type": "string",
+            "description": "数据库（正式机/开发机）",
+            "nullable": true
+          },
+          "serverSignKey": {
+            "type": "string",
+            "description": "服务器（远程/本地）",
+            "nullable": true
+          },
+          "productName": {
+            "type": "string",
+            "description": "产品名称",
+            "nullable": true
+          },
+          "copyRight": {
+            "type": "string",
+            "description": "版权所有",
+            "nullable": true
+          },
+          "customer": {
+            "type": "string",
+            "description": "建设单位（客户）",
+            "nullable": true
+          },
+          "telephone": {
+            "type": "string",
+            "description": "服务电话",
+            "nullable": true
+          },
+          "syncClientTime": {
+            "type": "boolean",
+            "description": "是否强制同步客户端时间"
+          },
+          "imageFolder": {
+            "type": "string",
+            "description": "图片资源文件夹",
+            "nullable": true
+          },
+          "isDemoModel": {
+            "type": "boolean",
+            "description": "是否为演示模式"
+          },
+          "allowAdminUseNormalModule": {
+            "type": "boolean",
+            "description": "允许普通管理员使用业务模块"
+          },
+          "allowNormalUseSystemModule": {
+            "type": "boolean",
+            "description": "允许普通用户使用系统模块"
+          },
+          "defaultCreateUserPassword": {
+            "type": "string",
+            "description": "创建用户的默认密码",
+            "nullable": true
+          },
+          "defaultLogFolder": {
+            "type": "string",
+            "description": "*默认日志文件夹",
+            "nullable": true
+          },
+          "retainLogDays": {
+            "type": "integer",
+            "description": "*日志保留天数，默认10天",
+            "format": "int32"
+          },
+          "checkAutoUpdateInterval": {
+            "type": "integer",
+            "description": "自动更新检测时间（分钟，小于5则禁止）",
+            "format": "int32"
+          },
+          "forceToUseDateBaseServerTime": {
+            "type": "boolean",
+            "description": "强制数据库时间"
+          },
+          "timeoutOfLogin": {
+            "type": "integer",
+            "description": "登录超时分钟",
+            "format": "int32"
+          },
+          "allowShowTopBanner": {
+            "type": "boolean",
+            "description": "允许显示框架头部"
+          },
+          "enableCustomSkins": {
+            "type": "boolean",
+            "description": "启用自定义皮肤"
+          },
+          "enableNotifications": {
+            "type": "boolean",
+            "description": "启用消息通知功能"
+          },
+          "allowAddUserWithSystemManager": {
+            "type": "boolean",
+            "description": "允许系统管理添加用户"
+          }
+        },
+        "additionalProperties": false
+      },
+      "UpdateUserRoleListInput": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "nullable": true
+          },
+          "roleIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "UserType": {
+        "enum": [
+          0,
+          7,
+          9
+        ],
+        "type": "integer",
+        "format": "int32",
+        "x-enum-descriptions": ["普通用户","普通管理员","超级管理员"],
+        "x-enum-varnames": ["Nomral","Admin","Root"]
+      },
+      "YesNo": {
+        "enum": [
+          0,
+          1
+        ],
+        "type": "integer",
+        "format": "int32",
+        "x-enum-descriptions": ["N","Y"],
+        "x-enum-varnames": ["N","Y"]
+      }
+    },
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "description": "请输入Token(自动添加Bearer头)",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  },
+  "security": [
+    {
+      "Bearer": [ ]
+    }
+  ],
+  "tags": [
+    {
+      "name": "admin"
+    },
+    {
+      "name": "auditLogs"
+    },
+    {
+      "name": "auth"
+    },
+    {
+      "name": "codeGen"
+    },
+    {
+      "name": "crud"
+    },
+    {
+      "name": "demo"
+    },
+    {
+      "name": "department"
+    },
+    {
+      "name": "iOTGateway"
+    },
+    {
+      "name": "notification"
+    },
+    {
+      "name": "quartzNet"
+    },
+    {
+      "name": "restrictData"
+    },
+    {
+      "name": "systemKeyValue"
+    },
+    {
+      "name": "ultraVnc"
+    }
+  ]
+}

@@ -1,21 +1,18 @@
-import { ref, watchEffect } from "vue";
+import { computed, ref, watchEffect } from "vue";
 
-type ThemeMode = "light" | "dark" | "system";
+type ThemeMode = "light" | "dark";
 
-const STORAGE_KEY = "erp.theme-mode";
-const mode = ref<ThemeMode>((localStorage.getItem(STORAGE_KEY) as ThemeMode) || "system");
-const systemDark = ref(window.matchMedia("(prefers-color-scheme: dark)").matches);
+const STORAGE_KEY = "hmx.theme-mode";
+// 仅 light/dark 二态；旧持久值（如 "system"）归一为 light
+const mode = ref<ThemeMode>(localStorage.getItem(STORAGE_KEY) === "dark" ? "dark" : "light");
 
-window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (event) => {
-  systemDark.value = event.matches;
-});
+export const isDark = computed(() => mode.value === "dark");
 
 watchEffect(() => {
-  const dark = mode.value === "dark" || (mode.value === "system" && systemDark.value);
-  document.documentElement.classList.toggle("dark", dark);
+  document.documentElement.classList.toggle("dark", isDark.value);
   localStorage.setItem(STORAGE_KEY, mode.value);
 });
 
 export function useAppTheme() {
-  return { mode, setMode: (next: ThemeMode) => (mode.value = next) };
+  return { mode, isDark, setMode: (next: ThemeMode) => (mode.value = next) };
 }

@@ -1,4 +1,4 @@
-import { erpMenu, type ErpMenuNode } from "./erpMenu";
+import { hmxMenu, type HmxMenuNode } from "./hmxMenu";
 
 /** 角色主档（对应原 WinForms HmxRole 表） */
 export interface HmxRole {
@@ -19,17 +19,17 @@ export interface UserRowLite {
   cUserName: string;
 }
 
-const ROLES_KEY = "erp.roles";
-const ROLE_PERMS_KEY = "erp.role_perms";
-const USER_ROLES_KEY = "erp.user_roles";
-const USERS_KEY = "erp.users";
+const ROLES_KEY = "hmx.roles";
+const ROLE_PERMS_KEY = "hmx.role_perms";
+const USER_ROLES_KEY = "hmx.user_roles.v2";
+const USERS_KEY = "hmx.users";
 
-function collectMenuIds(nodes: ErpMenuNode[]): string[] {
+function collectMenuIds(nodes: HmxMenuNode[]): string[] {
   return nodes.flatMap((n) => [n.id, ...(n.children ? collectMenuIds(n.children) : [])]);
 }
 
 function subtreeIds(rootId: string): string[] {
-  const find = (nodes: ErpMenuNode[]): ErpMenuNode | null => {
+  const find = (nodes: HmxMenuNode[]): HmxMenuNode | null => {
     for (const n of nodes) {
       if (n.id === rootId) return n;
       const found = n.children ? find(n.children) : null;
@@ -37,7 +37,7 @@ function subtreeIds(rootId: string): string[] {
     }
     return null;
   };
-  const node = find(erpMenu);
+  const node = find(hmxMenu);
   return node ? collectMenuIds([node]) : [];
 }
 
@@ -54,7 +54,7 @@ function seedRoles(): HmxRole[] {
 
 function seedRolePerms(): Record<string, string[]> {
   return {
-    "r-admin": collectMenuIds(erpMenu),
+    "r-admin": collectMenuIds(hmxMenu),
     "r-purchase": subtreeIds("purchase"),
     "r-sales": subtreeIds("sales"),
     "r-wh": subtreeIds("inventory"),
@@ -64,28 +64,29 @@ function seedRolePerms(): Record<string, string[]> {
 }
 
 function seedUserRoles(): Record<string, string[]> {
+  /* 键 = users.ts 的真实用户 id 空间（曾用 u-* 前缀种子，与登录 id 错位导致角色永远查不到） */
   return {
-    "u-admin": ["r-admin"],
-    "u-zw": ["r-purchase"],
-    "u-ln": ["r-purchase"],
-    "u-wq": ["r-sales"],
-    "u-ly": ["r-sales"],
-    "u-cj": ["r-wh"],
-    "u-zl": ["r-fin"],
-    "u-sl": ["r-user"],
+    admin: ["r-admin"],
+    zhangwei: ["r-purchase"],
+    lina: ["r-purchase"],
+    wangqiang: ["r-sales"],
+    liuyang: ["r-sales"],
+    chenjing: ["r-wh"],
+    zhaolei: ["r-fin"],
+    sunli: ["r-user"],
   };
 }
 
 function seedUsersLite(): UserRowLite[] {
   return [
-    { id: "u-admin", cUserName: "管理员" },
-    { id: "u-zw", cUserName: "张伟" },
-    { id: "u-ln", cUserName: "李娜" },
-    { id: "u-wq", cUserName: "王强" },
-    { id: "u-ly", cUserName: "刘洋" },
-    { id: "u-cj", cUserName: "陈静" },
-    { id: "u-zl", cUserName: "赵磊" },
-    { id: "u-sl", cUserName: "孙丽" },
+    { id: "admin", cUserName: "系统管理员" },
+    { id: "zhangwei", cUserName: "张伟" },
+    { id: "lina", cUserName: "李娜" },
+    { id: "wangqiang", cUserName: "王强" },
+    { id: "liuyang", cUserName: "刘洋" },
+    { id: "chenjing", cUserName: "陈静" },
+    { id: "zhaolei", cUserName: "赵磊" },
+    { id: "sunli", cUserName: "孙丽" },
   ];
 }
 
@@ -109,7 +110,7 @@ export function newRoleId(): string {
   return crypto.randomUUID().replace(/-/g, "");
 }
 
-/** roleId -> erpMenu 节点 id 集合 */
+/** roleId -> hmxMenu 节点 id 集合 */
 export function loadRolePerms(): Record<string, string[]> {
   try {
     const raw = localStorage.getItem(ROLE_PERMS_KEY);
@@ -143,7 +144,7 @@ export function saveUserRoles(userRoles: Record<string, string[]>): void {
   localStorage.setItem(USER_ROLES_KEY, JSON.stringify(userRoles));
 }
 
-/** 读取用户列表（只读引用 erp.users，无数据时回退内置种子） */
+/** 读取用户列表（只读引用 hmx.users，无数据时回退内置种子） */
 export function loadAllUsersLite(): UserRowLite[] {
   try {
     const raw = localStorage.getItem(USERS_KEY);

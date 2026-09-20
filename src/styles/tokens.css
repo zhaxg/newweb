@@ -11,15 +11,11 @@
  * Order matters: `.dark` must stay declared after `:root`.
  *
  * Scope: this file carries only the base light (`:root`) and dark (`.dark`)
- * token sets, in rgb. It deliberately does NOT carry the alternate
- * installable app themes (`html.theme-soft`, `.theme-graphite`, etc., still
- * in globals.css), the `@supports (color: oklch(...))` progressive
+ * token sets, in rgb. The `@supports (color: oklch(...))` progressive
  * enhancement that re-declares these same tokens in oklch for wide-gamut
- * displays (also still in globals.css, after the tokens.css import), or the
- * `:root[data-corner-style]` radius variants. None of those apply to a
- * static file:// export with no theme picker and no live preference to
- * express — pulling them in here would just be duplication with nothing to
- * show for it.
+ * displays lives in globals.css, after the tokens.css import. None of that
+ * applies to a static file:// export — pulling it in here would just be
+ * duplication with nothing to show for it.
  *
  * The `@theme inline` block below is part of the same plumbing and has to
  * travel with the raw properties. Tailwind generates `bg-background`,

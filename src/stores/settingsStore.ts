@@ -23,7 +23,7 @@ type EditorSettings = {
   [key: string]: unknown;
 };
 
-const STORAGE_KEY = "erp.editor-settings";
+const STORAGE_KEY = "hmx.editor-settings";
 
 const defaults: EditorSettings = {
   fontSize: 13,

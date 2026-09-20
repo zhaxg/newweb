@@ -6,14 +6,14 @@ import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, GridApi, GridReadyEvent, StatusBar } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { generateSalesOrders, type GridDataset } from "@/data/mock";
-import { ensureAgGrid, erpDefaultColDef, erpNullFormatter, makeErpGridTheme } from "@/lib/agGrid";
+import { ensureAgGrid, hmxDefaultColDef, hmxNullFormatter, makeHmxGridTheme } from "@/lib/agGrid";
 
 ensureAgGrid();
 
 const dataset = ref<GridDataset>(generateSalesOrders());
 const gridApi = ref<GridApi | null>(null);
 
-const theme = makeErpGridTheme();
+const theme = makeHmxGridTheme();
 
 const NUMERIC_TYPES = new Set(["integer", "numeric", "bigint"]);
 
@@ -25,7 +25,7 @@ const columnDefs = computed<ColDef[]>(() =>
     width: c.name === "remark" ? 200 : 120,
     sortable: true,
     resizable: true,
-    valueFormatter: erpNullFormatter,
+    valueFormatter: hmxNullFormatter,
     ...(NUMERIC_TYPES.has(c.type) ? { type: "numericColumn" } : {}),
     ...(c.type === "boolean"
       ? { valueFormatter: undefined, cellRenderer: (p: { value: unknown }) => (p.value == null ? "" : p.value ? "是" : "否") }
@@ -81,8 +81,8 @@ function reload() {
     </div>
 
     <div class="min-h-0 flex-1">
-      <AgGridVue class="erp-ag-grid h-full w-full" :theme="theme" :column-defs="columnDefs"
-        :default-col-def="erpDefaultColDef" :row-data="rows" :pagination="false"
+      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="columnDefs"
+        :default-col-def="hmxDefaultColDef" :row-data="rows" :pagination="false"
         :locale-text="AG_GRID_LOCALE_CN" :status-bar="statusBar"
         :animate-rows="false"
         :ensure-column-visible-after-sort="false" @grid-ready="onGridReady" />

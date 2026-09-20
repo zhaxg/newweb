@@ -6,14 +6,14 @@ import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, GridApi, GridReadyEvent, StatusBar } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { generatePurchaseOrders, type PurchaseDataset } from "@/data/mock";
-import { ensureAgGrid, erpDefaultColDef, erpNullFormatter, makeErpGridTheme } from "@/lib/agGrid";
+import { ensureAgGrid, hmxDefaultColDef, hmxNullFormatter, makeHmxGridTheme } from "@/lib/agGrid";
 
 ensureAgGrid();
 
 const dataset = ref<PurchaseDataset>(generatePurchaseOrders(10000));
 const gridApi = ref<GridApi | null>(null);
 
-const theme = makeErpGridTheme();
+const theme = makeHmxGridTheme();
 
 const columnDefs = computed<ColDef[]>(() => [
   ...dataset.value.fields.map<ColDef>((f) => ({
@@ -23,7 +23,7 @@ const columnDefs = computed<ColDef[]>(() => [
     width: f.width ?? 120,
     sortable: true,
     resizable: true,
-    valueFormatter: erpNullFormatter,
+    valueFormatter: hmxNullFormatter,
     ...(f.numeric ? { type: "numericColumn" } : {}),
   })),
 ]);
@@ -71,8 +71,8 @@ function reload() {
     </div>
 
     <div class="min-h-0 flex-1">
-      <AgGridVue class="erp-ag-grid h-full w-full" :theme="theme" :column-defs="columnDefs"
-        :default-col-def="erpDefaultColDef" :row-data="dataset.rows" :pagination="false"
+      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="columnDefs"
+        :default-col-def="hmxDefaultColDef" :row-data="dataset.rows" :pagination="false"
         :locale-text="AG_GRID_LOCALE_CN" :status-bar="statusBar"
         :animate-rows="false"
         :ensure-column-visible-after-sort="false" @grid-ready="onGridReady" />

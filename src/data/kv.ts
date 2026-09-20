@@ -14,7 +14,7 @@ export interface HmxKv {
   cPid: string;
 }
 
-const STORAGE_KEY = "erp.kv";
+const STORAGE_KEY = "hmx.kv";
 
 function seedKvs(): HmxKv[] {
   const rows: HmxKv[] = [];

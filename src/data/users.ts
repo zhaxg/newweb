@@ -23,9 +23,9 @@ export interface HmxUser {
   cSocialSec: string;
 }
 
-const STORAGE_KEY = "erp.users";
-const USER_ROLE_KEY = "erp.user_roles";
-const ROLES_KEY = "erp.roles";
+const STORAGE_KEY = "hmx.users";
+const USER_ROLE_KEY = "hmx.user_roles.v2";
+const ROLES_KEY = "hmx.roles";
 
 export const USER_TYPES = ["内部用户", "外部用户", "系统账号"];
 export const SEXES = ["男", "女"];
@@ -128,7 +128,7 @@ function seedRoleOptions(): RoleOption[] {
   ];
 }
 
-/** 读取角色管理页面维护的 erp.roles；无数据或解析失败时返回内置种子 */
+/** 读取角色管理页面维护的 hmx.roles；无数据或解析失败时返回内置种子 */
 export function loadRoleOptions(): RoleOption[] {
   try {
     const raw = localStorage.getItem(ROLES_KEY);

@@ -1,16 +1,13 @@
 /* PrimeVue Aura 颜色 token → 项目 CSS 变量映射。
-   目的：PrimeVue 组件跟随现有 .dark + 12 个 html.theme-* 变体自动换肤。
+   目的：PrimeVue 组件跟随现有 .dark 明暗切换自动换肤。
    选择器用 html:root / html.dark（特异度 0,1,1）压过 PrimeVue 运行时注入的 :root/.dark 调色板（0,1,0），
    不依赖注入顺序。所有值引用项目变量，明暗切换由 tokens.css 自身翻转。
-   密度/字号/圆角等紧凑参数不在这里做——统一在 src/lib/primeTheme.ts 的 ErpCompact 主题预设中定义。 */
+   密度/字号/圆角等紧凑参数不在这里做——统一在 src/lib/primeTheme.ts 的 HmxCompact 主题预设中定义。 */
 
 html:root,
 html.dark {
-  /* 主色 */
-  --p-primary-color: var(--primary);
-  --p-primary-contrast-color: var(--primary-foreground);
-  --p-primary-hover-color: var(--primary);
-  --p-primary-active-color: var(--primary);
+  /* 主色不再映射 var(--primary)：由 primeTheme.ts 预设 primaryColor #0052D9 推导
+     Aura 全色阶（含 hover/active/contrast 与明暗两套），此处不覆盖 */
 
   /* 内容面（Dialog/Listbox/Panel 等） */
   --p-content-background: var(--popover);

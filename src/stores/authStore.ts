@@ -1,8 +1,9 @@
 /**
  * 登录会话 + 登录历史（移植 HmxLoginForm.cs 的 UserLoginHistory / HmxUserSession）。
- * settingsStore 同款 reactive 单例 + localStorage 持久化。
+ * Pinia setup store + localStorage 持久化。
  */
-import { reactive, watch } from "vue";
+import { ref, watch } from "vue";
+import { defineStore } from "pinia";
 import { loadUsers } from "@/data/users";
 import { appendAuditAuth } from "@/data/auditLogs";
 
@@ -23,9 +24,8 @@ interface LoginHistory {
   users: LoginUserEntry[];
 }
 
-const SESSION_KEY = "erp.auth-session";
-const HISTORY_KEY = "erp.login-history";
-
+const SESSION_KEY = "hmx.auth-session";
+const HISTORY_KEY = "hmx.login-history";
 
 function loadSession(): AuthSession | null {
   try {
@@ -50,73 +50,61 @@ function loadHistory(): LoginHistory {
   return { lastUserId: "", users: [] };
 }
 
-const state = reactive<{ session: AuthSession | null; history: LoginHistory }>({
-  session: loadSession(),
-  history: loadHistory(),
+export const useAuthStore = defineStore("auth", () => {
+  const session = ref<AuthSession | null>(loadSession());
+  const history = ref<LoginHistory>(loadHistory());
+
+  watch(
+    session,
+    (value) => {
+      if (value) localStorage.setItem(SESSION_KEY, JSON.stringify(value));
+      else localStorage.removeItem(SESSION_KEY);
+    },
+  );
+
+  watch(
+    history,
+    (value) => localStorage.setItem(HISTORY_KEY, JSON.stringify(value)),
+    { deep: true },
+  );
+
+  function findHistoryEntry(userId: string): LoginUserEntry | undefined {
+    return history.value.users.find((u) => u.userId === userId);
+  }
+
+  /** 记住我回填：返回该用户已保存的密码（对应 UserIDValueChanged） */
+  function rememberedPassword(userId: string): string {
+    return findHistoryEntry(userId)?.password ?? "";
+  }
+
+  function removeLoginUser(userId: string) {
+    const i = history.value.users.findIndex((u) => u.userId === userId);
+    if (i >= 0) history.value.users.splice(i, 1);
+    if (history.value.lastUserId === userId) history.value.lastUserId = "";
+  }
+
+  /** 建立会话（演示模式：不做密码/用户校验，点登录即进） */
+  function login(userId: string, password: string, remember: boolean) {
+    const user = loadUsers().find((u) => u.id === userId);
+    const name = user?.cUserName ?? userId;
+    session.value = { userId, userName: name, token: crypto.randomUUID() };
+
+    const existing = findHistoryEntry(userId);
+    if (existing) {
+      if (remember) existing.password = password;
+      else delete existing.password;
+    } else {
+      history.value.users.unshift({ userId, password: remember ? password : undefined });
+    }
+    history.value.lastUserId = userId;
+    appendAuditAuth("登录", userId, name);
+  }
+
+  function logout() {
+    const s = session.value;
+    if (s) appendAuditAuth("登出", s.userId, s.userName);
+    session.value = null;
+  }
+
+  return { session, history, rememberedPassword, removeLoginUser, login, logout };
 });
-
-watch(
-  () => state.session,
-  (value) => {
-    if (value) localStorage.setItem(SESSION_KEY, JSON.stringify(value));
-    else localStorage.removeItem(SESSION_KEY);
-  },
-);
-
-watch(
-  () => state.history,
-  (value) => localStorage.setItem(HISTORY_KEY, JSON.stringify(value)),
-  { deep: true },
-);
-
-function findHistoryEntry(userId: string): LoginUserEntry | undefined {
-  return state.history.users.find((u) => u.userId === userId);
-}
-
-let instance: ReturnType<typeof build> | null = null;
-
-function build() {
-  return {
-    get session() {
-      return state.session;
-    },
-    get history() {
-      return state.history;
-    },
-    /** 记住我回填：返回该用户已保存的密码（对应 UserIDValueChanged） */
-    rememberedPassword(userId: string): string {
-      return findHistoryEntry(userId)?.password ?? "";
-    },
-    removeLoginUser(userId: string) {
-      const i = state.history.users.findIndex((u) => u.userId === userId);
-      if (i >= 0) state.history.users.splice(i, 1);
-      if (state.history.lastUserId === userId) state.history.lastUserId = "";
-    },
-    /** 建立会话（演示模式：不做密码/用户校验，点登录即进） */
-    login(userId: string, password: string, remember: boolean) {
-      const user = loadUsers().find((u) => u.id === userId);
-      const name = user?.cUserName ?? userId;
-      state.session = { userId, userName: name, token: crypto.randomUUID() };
-
-      const existing = findHistoryEntry(userId);
-      if (existing) {
-        if (remember) existing.password = password;
-        else delete existing.password;
-      } else {
-        state.history.users.unshift({ userId, password: remember ? password : undefined });
-      }
-      state.history.lastUserId = userId;
-      appendAuditAuth("登录", userId, name);
-    },
-    logout() {
-      const s = state.session;
-      if (s) appendAuditAuth("登出", s.userId, s.userName);
-      state.session = null;
-    },
-  };
-}
-
-export function useAuthStore() {
-  if (!instance) instance = build();
-  return instance;
-}

@@ -16,7 +16,7 @@ export interface AuditLog {
 export const ACTIONS = ["登录", "登出", "查询", "新增", "修改", "删除", "导出", "授权"] as const;
 export const MODULES = ["系统管理", "基础档案", "采购管理", "销售管理", "库存管理", "财务管理", "报表中心"] as const;
 
-const STORAGE_KEY = "erp.audit_logs";
+const STORAGE_KEY = "hmx.audit_logs";
 
 const USERS = [
   { userId: "admin", userName: "admin" },

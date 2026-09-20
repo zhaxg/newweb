@@ -77,18 +77,33 @@ const zhCN = {
   noFileChosenMessage: "未选择文件",
 };
 
-/* ERP 紧凑预设（主题层定义，非 CSS 覆盖）：
+/* HMX 紧凑预设（主题层定义，非 CSS 覆盖）：
    - semantic.typography.fontSize → formField/list/navigation/日期面板 全链路 12px
    - semantic.iconSize → 全局 .p-icon/.pi（下拉箭头、关闭、日历导航等）12px
    - formField 内边距 → 控件高约 28px（12px×1.5 行高 + 上下 4px + 边框 2px）
    - 圆角统一 4px，与项目 token 体系一致
    注意：overlay.modal.padding 会被 dialog.content 以四值插值引用，保持单值。 */
-const ErpCompact = definePreset(Aura, {
+const HmxCompact = definePreset(Aura, {
   semantic: {
     typography: { fontSize: "12px" },
     iconSize: "12px",
     anchorGutter: "0px",
     disabledOpacity: "0.55",
+    /* 品牌主色 #0052D9：仅替换 Aura 默认 emerald 色阶（500 = 主色），
+       color/hover/active/contrast 等派生键由深合并保留，明暗两套自动切换 */
+    primary: {
+      50: "#eaf0fd",
+      100: "#cdddf8",
+      200: "#9fbdf1",
+      300: "#6b97e7",
+      400: "#3a73da",
+      500: "#0052d9",
+      600: "#0047bc",
+      700: "#003c9e",
+      800: "#003181",
+      900: "#002663",
+      950: "#001a45",
+    },
     formField: {
       paddingX: "8px",
       paddingY: "4px",
@@ -134,7 +149,7 @@ export function installPrimeVue(app: App) {
     locale: zhCN,
     ripple: false,
     theme: {
-      preset: ErpCompact,
+      preset: HmxCompact,
       options: {
         prefix: "p",
         darkModeSelector: ".dark",

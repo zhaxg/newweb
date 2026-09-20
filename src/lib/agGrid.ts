@@ -1,5 +1,5 @@
 /**
- * ERP 通用 ag-grid 基建：模块注册（幂等）、统一主题、默认列定义、空值格式化。
+ * HMX 通用 ag-grid 基建：模块注册（幂等）、统一主题、默认列定义、空值格式化。
  * 企业版 License 只在 App.vue 设置，此处不重复。
  */
 import { computed, type ComputedRef } from "vue";
@@ -9,6 +9,9 @@ import {
   provideGlobalGridOptions,
   themeQuartz,
   type ColDef,
+  type DefaultMenuItem,
+  type GetContextMenuItemsParams,
+  type MenuItemDef,
   type Theme,
   type ValueFormatterParams,
 } from "ag-grid-community";
@@ -17,16 +20,37 @@ import { useSettingsStore } from "@/stores/settingsStore";
 
 let registered = false;
 
+/* 全局右键菜单：树形（treeData/分组）网格在默认项前追加"展开所有/折叠所有"，平铺网格保持默认。
+   经 provideGlobalGridOptions 注入，页面未显式传 getContextMenuItems 即生效。 */
+function hmxGetContextMenuItems(params: GetContextMenuItemsParams): (DefaultMenuItem | MenuItemDef)[] {
+  const defaults = params.defaultItems ?? [];
+  let isTree = false;
+  params.api.forEachNode((n) => {
+    if (n.group) isTree = true;
+  });
+  if (!isTree) return defaults;
+  return [
+    { name: "展开所有", action: () => params.api.expandAll() },
+    { name: "折叠所有", action: () => params.api.collapseAll() },
+    "separator",
+    ...defaults,
+  ];
+}
+
 export function ensureAgGrid() {
   if (registered) return;
   ModuleRegistry.registerModules([AllCommunityModule, AllEnterpriseModule]);
-  /* 全站默认：单元格划选 + 行号列；页面级 gridOptions 优先级更高（如 :row-numbers="false" 隐藏） */
-  provideGlobalGridOptions({ cellSelection: true, rowNumbers: { width: 32, minWidth: 32, maxWidth: 64 } });
+  /* 全站默认：单元格划选 + 行号列 + 树形展开/折叠右键菜单；页面级 gridOptions 优先级更高（如 :row-numbers="false" 隐藏） */
+  provideGlobalGridOptions({
+    cellSelection: true,
+    rowNumbers: { width: 32, minWidth: 32, maxWidth: 64 },
+    getContextMenuItems: hmxGetContextMenuItems,
+  });
   registered = true;
 }
 
 /** NULL / 千分位 / 是否，与采购订单页一致 */
-export function erpNullFormatter(p: ValueFormatterParams): string {
+export function hmxNullFormatter(p: ValueFormatterParams): string {
   const v = p.value as unknown;
   if (v === null || v === undefined || v === "") return "NULL";
   if (typeof v === "number")
@@ -35,10 +59,10 @@ export function erpNullFormatter(p: ValueFormatterParams): string {
   return String(v);
 }
 
-export const erpDefaultColDef: ColDef = { sortable: true, resizable: true, filter: false };
+export const hmxDefaultColDef: ColDef = { sortable: true, resizable: true, filter: false };
 
-/** ERP 网格主题：行高 28、表头 29、边框/前景/背景走 CSS 变量（随明暗自动切换）。须在组件 setup 内调用。 */
-export function makeErpGridTheme(): ComputedRef<Theme> {
+/** HMX 网格主题：行高 28、表头 29、边框/前景/背景走 CSS 变量（随明暗自动切换）。须在组件 setup 内调用。 */
+export function makeHmxGridTheme(): ComputedRef<Theme> {
   const settingsStore = useSettingsStore();
   return computed(() =>
     themeQuartz.withParams({

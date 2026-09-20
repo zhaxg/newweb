@@ -1,8 +1,8 @@
-/* ERP ag-grid 共享样式：需要给 <AgGridVue> 挂 class="erp-ag-grid"。
+/* HMX ag-grid 共享样式：需要给 <AgGridVue> 挂 class="hmx-ag-grid"。
    颜色走 tokens.css 变量，随明暗 / 主题变体自动切换。 */
 
 /* 内置 Row Numbers 区域：弱化底色 + 数字，与销售订单 # 列一致 */
-.erp-ag-grid .ag-row-number-cell {
+.hmx-ag-grid .ag-row-number-cell {
   background-color: var(--muted);
   color: var(--muted-foreground);
   font-size: 8px;
@@ -10,42 +10,42 @@
   justify-content: center;
 }
 
-.erp-ag-grid .ag-row-number-header {
+.hmx-ag-grid .ag-row-number-header {
   background-color: rgb(229 230 235);
   color: var(--muted-foreground);
   justify-content: center;
 }
 
-.dark .erp-ag-grid.ag-theme,
-.dark .erp-ag-grid .ag-theme,
-.dark .erp-ag-grid.ag-root-wrapper,
-.dark .erp-ag-grid .ag-root-wrapper {
+.dark .hmx-ag-grid.ag-theme,
+.dark .hmx-ag-grid .ag-theme,
+.dark .hmx-ag-grid.ag-root-wrapper,
+.dark .hmx-ag-grid .ag-root-wrapper {
   --ag-header-background-color: rgb(31 41 55);
 }
 
-.dark .erp-ag-grid .ag-row-number-header {
+.dark .hmx-ag-grid .ag-row-number-header {
   background-color: rgb(31 41 55);
 }
 
 /* 数字等宽字形，右对齐由 numericColumn 处理 */
-.erp-ag-grid .ag-cell {
+.hmx-ag-grid .ag-cell {
   font-variant-numeric: tabular-nums;
 }
 
 /* 外边框直角（themeQuartz 默认 4px 圆角只作用于根容器） */
-.erp-ag-grid .ag-root-wrapper {
+.hmx-ag-grid .ag-root-wrapper {
   border-radius: 0;
 }
 
 /* 内置状态栏：弱化文字 + 等宽数字，贴近销售订单页脚观感 */
-.erp-ag-grid .ag-status-bar {
+.hmx-ag-grid .ag-status-bar {
   border-top: 1px solid var(--border);
   color: var(--muted-foreground);
   font-size: 12px;
   background-color: var(--background);
 }
 
-.erp-ag-grid .ag-status-name-value-value {
+.hmx-ag-grid .ag-status-name-value-value {
   font-variant-numeric: tabular-nums;
   color: var(--foreground);
 }

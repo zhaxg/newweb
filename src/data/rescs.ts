@@ -20,7 +20,7 @@ export interface HmxRes {
   lastModifyTime: string;
 }
 
-const STORAGE_KEY = "erp.rescs";
+const STORAGE_KEY = "hmx.rescs";
 
 export const RESC_TYPES = ["Menu", "Widget", "DataItem", "DataColumn"] as const;
 
