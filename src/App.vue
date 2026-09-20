@@ -36,6 +36,7 @@ import {
 
 LicenseManager.setLicenseKey("[v3][RELEASE][0102]_NDg2Njc4MzY3MDgzNw==16d78ca762fb5d2ff740aed081e2af7b");
 
+
 const { tabs, activeId, openTab } = useTabs();
 const { action: toastAction, toast, dismissToast } = useToast();
 const { editorSettings, updateEditorSettings } = useSettingsStore();
@@ -103,8 +104,8 @@ function runToastAction() {
   <div class="flex h-screen w-screen flex-col overflow-hidden bg-background text-foreground antialiased">
     <LoginPage v-if="!auth.session" />
     <template v-else>
-      <ErpHeader @open-settings="settingsOpen = true" @logout="logout" @toggle-sidebar="sidebarVisible = !sidebarVisible"
-        @open-page="openPage" />
+      <ErpHeader @open-settings="settingsOpen = true" @logout="logout"
+        @toggle-sidebar="sidebarVisible = !sidebarVisible" @open-page="openPage" />
       <div class="flex min-h-0 flex-1">
         <ErpSidebar v-if="sidebarVisible" :active-page-id="activeId ? activeId.replace('page-', '') : null"
           @open-page="openPage" />
@@ -113,7 +114,8 @@ function runToastAction() {
           <div class="min-h-0 flex-1 overflow-hidden bg-white p-[5px] dark:bg-[#282828]">
             <div class="flex h-full min-h-0 flex-col overflow-hidden rounded-sm"
               :class="activeId === 'page-home' ? '' : 'bg-background'">
-              <component v-if="activePageComponent" :is="activePageComponent" :key="activeId" :title="activePageTitle" />
+              <component v-if="activePageComponent" :is="activePageComponent" :key="activeId"
+                :title="activePageTitle" />
               <div v-else class="flex h-full flex-col items-center justify-center gap-2 text-muted-foreground">
                 <div class="text-lg font-semibold text-foreground/80">欢迎使用 智能制造 ERP</div>
                 <div class="text-sm">从左侧菜单选择功能模块开始工作</div>

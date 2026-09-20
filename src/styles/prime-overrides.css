@@ -55,14 +55,20 @@ html .p-toast-message:not([data-visible]) {
   pointer-events: auto;
   user-select: text;
 }
+
 .p-toast-message-enter-active,
 .p-toast-message-leave-active {
   transition:
     opacity 0.25s ease,
     transform 0.25s ease;
 }
+
 html .p-toast-message.p-toast-message-enter-from,
 html .p-toast-message.p-toast-message-leave-to {
   opacity: 0;
   transform: translateY(8px);
+}
+
+#p-license-host {
+  display: none !important;
 }
