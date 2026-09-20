@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { reactive, ref } from "vue";
+import { IconKey, IconLock, IconShieldCheck } from "@tabler/icons-vue";
 import Dialog from "primevue/dialog";
 import Button from "primevue/button";
 import InputPassword from "primevue/inputpassword";
 import IconField from "primevue/iconfield";
 import InputIcon from "primevue/inputicon";
-import { KeyRound, Lock, ShieldCheck } from "@lucide/vue";
+
 import { adminApi } from "@/api/admin/request";
 import { useAuthStore } from "@/stores/authStore";
 import { useToast } from "@/composables/useToast";
@@ -25,9 +26,9 @@ const errors = reactive({ oldPassword: "", newPassword: "", confirmPassword: "" 
 
 /* 三字段结构一致 → 配置化 v-for，图标按语义区分（原密码/新密码/确认） */
 const fields = [
-  { name: "oldPassword", label: "原密码", placeholder: "请输入原密码", icon: Lock },
-  { name: "newPassword", label: "新密码", placeholder: "6–20 位字符", icon: KeyRound },
-  { name: "confirmPassword", label: "确认新密码", placeholder: "请再次输入新密码", icon: ShieldCheck },
+  { name: "oldPassword", label: "原密码", placeholder: "请输入原密码", icon: IconLock },
+  { name: "newPassword", label: "新密码", placeholder: "6–20 位字符", icon: IconKey },
+  { name: "confirmPassword", label: "确认新密码", placeholder: "请再次输入新密码", icon: IconShieldCheck },
 ] as const;
 
 type FieldName = keyof typeof form & keyof typeof errors;
@@ -80,7 +81,7 @@ async function handleSubmit() {
   submitting.value = true;
   try {
     await adminApi.modifyPassword(auth.session?.userId, form.oldPassword, form.newPassword);
-    toast("密码修改成功", 2000);
+    toast("密码修改成功", 2000, "success");
     reset();
     visible.value = false;
   } catch {

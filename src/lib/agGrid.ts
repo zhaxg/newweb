@@ -10,6 +10,7 @@ import {
   themeQuartz,
   type ColDef,
   type DefaultMenuItem,
+  type FirstDataRenderedEvent,
   type GetContextMenuItemsParams,
   type MenuItemDef,
   type Theme,
@@ -60,6 +61,11 @@ export function hmxNullFormatter(p: ValueFormatterParams): string {
 }
 
 export const hmxDefaultColDef: ColDef = { sortable: true, resizable: true, filter: false };
+
+/** 默认数据首次渲染完成后按内容自适应列宽（Community autoSizeAllColumns）。绑到 AgGridVue 的 @first-data-rendered。 */
+export function autoSizeOnFirstData(e: FirstDataRenderedEvent) {
+  e.api.autoSizeAllColumns();
+}
 
 /** HMX 网格主题：行高 28、表头 29、边框/前景/背景走 CSS 变量（随明暗自动切换）。须在组件 setup 内调用。 */
 export function makeHmxGridTheme(): ComputedRef<Theme> {

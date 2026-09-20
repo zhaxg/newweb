@@ -21,6 +21,7 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         "@primeui/license-manager": path.resolve(__dirname, "./src/lib/primeLcmgr.ts"),
+        "tabler-icons": path.resolve(__dirname, "./node_modules/@tabler/icons-vue/dist/esm/icons"),
         "@": fileURLToPath(new URL("./src", import.meta.url)),
       },
     },

@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { computed, defineComponent, h, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
-import { Building2, ChevronDown, ChevronRight, Folder, FolderOpen, Network, Pencil, Plus, Search, Trash2 } from "@lucide/vue";
+import { IconBuilding, IconChevronDown, IconChevronRight, IconFolder, IconFolderOpen, IconNetwork, IconPencil, IconPlus, IconSearch, IconTrash } from "@tabler/icons-vue";
+
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import { AgGridVue } from "ag-grid-vue3";
 import type { AutoGroupColumnDef, ColDef, GetRowIdParams, GridApi, GridReadyEvent, RowClickedEvent, RowNode, ValueFormatterParams } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
-import { ensureAgGrid, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
+import { autoSizeOnFirstData, ensureAgGrid, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
 import { useToast } from "@/composables/useToast";
 import DeptEditDialog from "./DeptEditDialog.vue";
 import { buildDeptTree, loadDepartments, newDeptId, saveDepartments, type DeptTreeNode, type HmxDept } from "@/data/departments";
@@ -96,13 +97,13 @@ const DeptGroupCell = defineComponent({
                 node.setExpanded(!isOpen);
               },
             },
-            [h(isOpen ? ChevronDown : ChevronRight, { class: "h-3.5 w-3.5 text-muted-foreground" })],
+            [h(isOpen ? IconChevronDown : IconChevronRight, { class: "h-3.5 w-3.5 text-muted-foreground" })],
           ),
         );
       } else {
         kids.push(h("span", { class: "w-5 shrink-0" }));
       }
-      const icon = hasKids && isOpen ? FolderOpen : hasKids ? Folder : Building2;
+      const icon = hasKids && isOpen ? IconFolderOpen : hasKids ? IconFolder : IconBuilding;
       kids.push(h(icon, { class: ["h-3.5 w-3.5 shrink-0", hasKids ? "text-amber-500" : "text-muted-foreground"] }));
       kids.push(h("span", { class: "ml-1.5 min-w-0 truncate" }, data.cDeptName));
       return h("div", { class: "flex min-w-0 items-center gap-0.5" }, kids);
@@ -198,7 +199,7 @@ function openEdit(target: HmxDept | null, presetPid: string | null) {
 
 function requireSelection(): boolean {
   if (!currentRow()) {
-    toast("请先选择一个部门");
+    toast("请先选择一个部门", 2000, "warn");
     return false;
   }
   return true;
@@ -225,7 +226,7 @@ function onDelete() {
     return;
   }
   if (rows.value.some((r) => r.cDeptPid === row.id)) {
-    toast("该部门下面存在子级部门，请先删除子级部门！");
+    toast("该部门下面存在子级部门，请先删除子级部门！", 2000, "warn");
     return;
   }
   confirmTarget.value = row;
@@ -240,7 +241,7 @@ function confirmDelete() {
   if (selectedId.value === target.id) selectedId.value = null;
   confirmOpen.value = false;
   confirmTarget.value = null;
-  toast("删除成功");
+  toast("删除成功", 2000, "success");
 }
 
 function onSaveDept(dept: HmxDept) {
@@ -257,11 +258,11 @@ function onSaveDept(dept: HmxDept) {
   }
   saveDepartments(rows.value);
   editOpen.value = false;
-  toast("保存成功");
+  toast("保存成功", 2000, "success");
 }
 
 function onInvalid(message: string) {
-  toast(message);
+  toast(message, 2000, "warn");
 }
 </script>
 
@@ -270,20 +271,20 @@ function onInvalid(message: string) {
     <!-- 工具栏（对应原 stackPanel1：查询/添加/添加子部门/编辑/删除） -->
     <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
       <Button size="small" variant="outlined" class="shrink-0 whitespace-nowrap" @click="query">
-        <Search class="h-3.5 w-3.5" />查询
+        <IconSearch class="h-3.5 w-3.5" />查询
       </Button>
       <Button severity="secondary" variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onAdd">
-        <Plus class="h-3.5 w-3.5" />添加
+        <IconPlus class="h-3.5 w-3.5" />添加
       </Button>
       <Button severity="secondary" variant="outlined" size="small" class="shrink-0 whitespace-nowrap"
         @click="onAddChild">
-        <Network class="h-3.5 w-3.5" />添加子部门
+        <IconNetwork class="h-3.5 w-3.5" />添加子部门
       </Button>
       <Button severity="secondary" variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onEdit">
-        <Pencil class="h-3.5 w-3.5" />编辑
+        <IconPencil class="h-3.5 w-3.5" />编辑
       </Button>
       <Button size="small" severity="danger" variant="outlined" class="shrink-0 whitespace-nowrap" @click="onDelete">
-        <Trash2 class="h-3.5 w-3.5" />删除
+        <IconTrash class="h-3.5 w-3.5" />删除
       </Button>
       <span class="ml-auto text-xs text-muted-foreground">部门维护（{{ rows.length }}）</span>
     </div>
@@ -295,7 +296,7 @@ function onInvalid(message: string) {
         :get-row-id="getRowId" :tree-data="true" :get-data-path="getDataPath" :row-selection="'single'"
         :pagination="false" :animate-rows="false" :locale-text="AG_GRID_LOCALE_CN" @grid-ready="onGridReady"
         @selection-changed="onSelectionChanged" @row-clicked="onRowClicked" @row-double-clicked="onRowDoubleClicked"
-        @expander-changed="onExpanderChanged" />
+        @expander-changed="onExpanderChanged" @first-data-rendered="autoSizeOnFirstData" />
     </div>
 
     <DeptEditDialog v-model:open="editOpen" :all-rows="rows" :editing="editTarget" :preset-pid="editPresetPid"

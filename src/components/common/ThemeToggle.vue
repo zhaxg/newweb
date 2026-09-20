@@ -2,17 +2,17 @@
   <button ref="btnRef" type="button"
     class="relative inline-flex items-center justify-center overflow-hidden rounded-full text-current transition-colors hover:bg-black/5 active:bg-black/10 dark:hover:bg-white/20 dark:active:bg-white/30"
     :class="sizeClass" @click="toggleTheme">
-    <Moon v-if="isDark" class="size-[1em]" />
-    <Sun v-else class="size-[1em]" />
+    <IconMoon v-if="isDark" class="size-[1em]" />
+    <IconSun v-else class="size-[1em]" />
   </button>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { Moon, Sun } from "@lucide/vue";
+import { IconMoon, IconSun } from "@tabler/icons-vue";
 
 /* 主题切换钮（移植自 hmx_web ThemeToggle.vue）：
-   原版 icon-[line-md--...] 动效图标换为 Lucide Sun/Moon 静态图标；
+   原版 icon-[line-md--...] 动效图标换为 Tabler Sun/Moon 静态图标；
    View Transition 圆形展开/收缩动画与对外 API（isDark + @toggle 由父级翻转）保持不变。 */
 
 const props = withDefaults(

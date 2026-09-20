@@ -6,11 +6,16 @@ import { ref, watch } from "vue";
 import { defineStore } from "pinia";
 import { loadUsers } from "@/data/users";
 import { appendAuditAuth } from "@/data/auditLogs";
+import { authApi } from "@/api/admin/request";
+import { USE_MOCK } from "@/api/request";
+import { CaptchaType } from "@/api/admin/enums";
 
 export interface AuthSession {
   userId: string;
   userName: string;
   token: string;
+  /** 真实后端 HmxUserSession.userType（mock 模式无） */
+  userType?: number;
 }
 
 interface LoginUserEntry {
@@ -83,11 +88,9 @@ export const useAuthStore = defineStore("auth", () => {
     if (history.value.lastUserId === userId) history.value.lastUserId = "";
   }
 
-  /** 建立会话（演示模式：不做密码/用户校验，点登录即进） */
-  function login(userId: string, password: string, remember: boolean) {
-    const user = loadUsers().find((u) => u.id === userId);
-    const name = user?.cUserName ?? userId;
-    session.value = { userId, userName: name, token: crypto.randomUUID() };
+  /** 记录历史/审计并落会话（真实与演示共用） */
+  function applySession(next: AuthSession, userId: string, password: string, remember: boolean) {
+    session.value = next;
 
     const existing = findHistoryEntry(userId);
     if (existing) {
@@ -97,14 +100,54 @@ export const useAuthStore = defineStore("auth", () => {
       history.value.users.unshift({ userId, password: remember ? password : undefined });
     }
     history.value.lastUserId = userId;
-    appendAuditAuth("登录", userId, name);
+    appendAuditAuth("登录", userId, next.userName);
+  }
+
+  /** 演示模式登录：不做密码/用户校验，点登录即进 */
+  function login(userId: string, password: string, remember: boolean) {
+    const user = loadUsers().find((u) => u.id === userId);
+    const name = user?.cUserName ?? userId;
+    applySession({ userId, userName: name, token: crypto.randomUUID() }, userId, password, remember);
+  }
+
+  /** 真实后端登录：auth/token 换 token → auth/getUserInfo 构造会话（验证码由登录页求解后传入） */
+  async function loginWithServer(
+    userId: string,
+    password: string,
+    remember: boolean,
+    captcha: { code: string; signature: string; type: CaptchaType },
+  ) {
+    const token = await authApi.token({
+      userId,
+      password,
+      captchaType: captcha.type,
+      captchaCode: captcha.code || undefined,
+      captchaSignature: captcha.signature || undefined,
+    });
+    if (!token) throw new Error("登录失败：未取回 token");
+    const info = await authApi.getUserInfo(token);
+    if (!info?.userId || !info.isAuthenticated) throw new Error("无法正常获取用户信息");
+    applySession(
+      {
+        userId: info.userId,
+        userName: info.userName ?? info.userId,
+        token: info.token ?? token,
+        userType: info.userType,
+      },
+      userId,
+      password,
+      remember,
+    );
   }
 
   function logout() {
     const s = session.value;
     if (s) appendAuditAuth("登出", s.userId, s.userName);
+    /* 真实后端：显式带 token 注销（服务端将 HmxUserToken.CStatus 置 0 并清缓存）；
+       不 await——本地先行登出，后端失败静默（token 过期本就该登出） */
+    if (!USE_MOCK && s?.token) void authApi.logout(s.token).catch(() => undefined);
     session.value = null;
   }
 
-  return { session, history, rememberedPassword, removeLoginUser, login, logout };
+  return { session, history, rememberedPassword, removeLoginUser, login, loginWithServer, logout };
 });

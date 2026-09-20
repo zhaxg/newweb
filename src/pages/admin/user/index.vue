@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref } from "vue";
-import { KeyRound, Pencil, Plus, Search, ShieldCheck, Trash2 } from "@lucide/vue";
+import { IconKey, IconPencil, IconPlus, IconSearch, IconShieldCheck, IconTrash } from "@tabler/icons-vue";
+
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import InputText from "primevue/inputtext";
 import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, GetRowIdParams, GridApi, GridReadyEvent } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
-import { ensureAgGrid, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
+import { autoSizeOnFirstData, ensureAgGrid, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
 import { useToast } from "@/composables/useToast";
 import UserEditDialog from "./UserEditDialog.vue";
 import UserRoleEditDialog from "./UserRoleEditDialog.vue";
@@ -108,7 +109,7 @@ function openEdit(target: HmxUser | null, presetDeptId: string | null) {
 
 function requireSelection(): boolean {
   if (!selectedRow.value) {
-    toast("请先选择一个用户");
+    toast("请先选择一个用户", 2000, "warn");
     return false;
   }
   return true;
@@ -143,7 +144,7 @@ async function confirmDelete() {
   deleteOpen.value = false;
   deleteTarget.value = null;
   syncGridSelection();
-  toast("删除成功");
+  toast("删除成功", 2000, "success");
 }
 
 function onResetPwd() {
@@ -161,7 +162,7 @@ async function confirmResetPwd() {
     return; // 拦截层已 toast
   }
   resetOpen.value = false;
-  toast(`密码已经重置为 ${newPwd || "Abc@123456"} , 请通知用户尽快修改密码！`);
+  toast(`密码已经重置为 ${newPwd || "Abc@123456"} , 请通知用户尽快修改密码！`, 2000, "success");
 }
 
 function onRoleEdit() {
@@ -191,11 +192,11 @@ async function onSaveUser(user: HmxUser) {
   rows.value = allRows.value;
   syncGridSelection();
   editOpen.value = false;
-  toast("保存成功");
+  toast("保存成功", 2000, "success");
 }
 
 function onInvalid(message: string) {
-  toast(message);
+  toast(message, 2000, "warn");
 }
 </script>
 
@@ -205,23 +206,23 @@ function onInvalid(message: string) {
     <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
       <InputText v-model="keyword" maxlength="100" placeholder="关键字" autocapitalize="off" spellcheck="false"
         class="w-48 shrink-0" @keydown.enter="query" />
-      <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="query">
-        <Search class="h-3.5 w-3.5" />查询
+      <Button text size="small" class="shrink-0 whitespace-nowrap" @click="query">
+        <IconSearch class="h-3.5 w-3.5" />查询
       </Button>
-      <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onAdd">
-        <Plus class="h-3.5 w-3.5" />添加
+      <Button text size="small" class="shrink-0 whitespace-nowrap" @click="onAdd">
+        <IconPlus class="h-3.5 w-3.5" />添加
       </Button>
-      <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onEdit">
-        <Pencil class="h-3.5 w-3.5" />编辑
+      <Button text size="small" class="shrink-0 whitespace-nowrap" @click="onEdit">
+        <IconPencil class="h-3.5 w-3.5" />编辑
       </Button>
-      <Button variant="outlined" size="small" severity="danger" class="shrink-0 whitespace-nowrap" @click="onDelete">
-        <Trash2 class="h-3.5 w-3.5" />删除
+      <Button text size="small" severity="danger" class="shrink-0 whitespace-nowrap" @click="onDelete">
+        <IconTrash class="h-3.5 w-3.5" />删除
       </Button>
-      <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onRoleEdit">
-        <ShieldCheck class="h-3.5 w-3.5" />角色维护
+      <Button text size="small" class="shrink-0 whitespace-nowrap" @click="onRoleEdit">
+        <IconShieldCheck class="h-3.5 w-3.5" />角色维护
       </Button>
-      <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onResetPwd">
-        <KeyRound class="h-3.5 w-3.5" />重置密码
+      <Button text size="small" class="shrink-0 whitespace-nowrap" @click="onResetPwd">
+        <IconKey class="h-3.5 w-3.5" />重置密码
       </Button>
       <span class="ml-auto text-xs text-muted-foreground">用户维护（{{ rows.length }}）</span>
     </div>
@@ -231,7 +232,8 @@ function onInvalid(message: string) {
       <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="columnDefs"
         :default-col-def="hmxDefaultColDef" :row-data="rows" :get-row-id="getRowId" :row-selection="'single'"
         :loading="querying" :pagination="false" :animate-rows="false" :locale-text="AG_GRID_LOCALE_CN"
-        @grid-ready="onGridReady" @selection-changed="onSelectionChanged" @row-double-clicked="onRowDoubleClicked" />
+        @grid-ready="onGridReady" @selection-changed="onSelectionChanged" @row-double-clicked="onRowDoubleClicked"
+        @first-data-rendered="autoSizeOnFirstData" />
     </div>
 
     <UserEditDialog v-model:open="editOpen" :editing="editTarget" :preset-dept-id="editPresetDeptId" @save="onSaveUser"

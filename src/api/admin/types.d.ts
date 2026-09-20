@@ -31,7 +31,8 @@ export interface GenerateOutput {
 }
 export interface GetUserResourceListInput {
   groupId?: string;
-  rescType: RbacRescType;
+  /** 不传 = 全部资源类型（菜单+按钮…），由前端自行拆分 */
+  rescType?: RbacRescType | null;
 }
 export interface HmxBackgroudJobInfo {
   id?: string;

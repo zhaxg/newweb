@@ -271,9 +271,11 @@ export const authApi = {
       data,
     });
   },
-  logout() {
+  logout(token?: string) {
+    // 服务端 SmartFindToken 支持 query token；显式传入避免清会话后拦截器取不到 Authorization
     return requestClient.request<any>(`${API_BASE}/auth/logout`, {
       method: "post",
+      params: { token },
     });
   },
   hasPermission(token?: string, resourceKey?: string) {

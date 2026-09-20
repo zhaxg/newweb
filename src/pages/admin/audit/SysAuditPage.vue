@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
-import { RotateCcw, Search } from "@lucide/vue";
+import { IconRotate, IconSearch } from "@tabler/icons-vue";
+
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
 import Select from "primevue/select";
@@ -8,7 +9,7 @@ import DatePicker from "primevue/datepicker";
 import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, GetRowIdParams } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
-import { ensureAgGrid, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
+import { autoSizeOnFirstData, ensureAgGrid, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
 import { loadAuditLogs, ACTIONS, MODULES, type AuditLog } from "@/data/auditLogs";
 
 ensureAgGrid();
@@ -117,10 +118,10 @@ onMounted(() => {
       <span class="text-xs text-muted-foreground">至</span>
       <DatePicker v-model="fEnd" date-format="yy-mm-dd" :show-icon="false" placeholder="结束日期" class="w-30 shrink-0" />
       <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onQuery">
-        <Search class="h-3.5 w-3.5" />查询
+        <IconSearch class="h-3.5 w-3.5" />查询
       </Button>
       <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onReset">
-        <RotateCcw class="h-3.5 w-3.5" />重置
+        <IconRotate class="h-3.5 w-3.5" />重置
       </Button>
       <span class="ml-auto text-xs text-muted-foreground">共 {{ filtered.length }} 条</span>
     </div>
@@ -129,7 +130,8 @@ onMounted(() => {
     <div class="min-h-0 flex-1 overflow-hidden">
       <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="columnDefs"
         :default-col-def="hmxDefaultColDef" :row-data="filtered" :get-row-id="getRowId" :row-selection="'single'"
-        :pagination="false" :animate-rows="false" :locale-text="AG_GRID_LOCALE_CN" />
+        :pagination="false" :animate-rows="false" :locale-text="AG_GRID_LOCALE_CN"
+        @first-data-rendered="autoSizeOnFirstData" />
     </div>
   </div>
 </template>

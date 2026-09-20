@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import * as lucide from "@lucide/vue";
-import { Search, X, File } from "@lucide/vue";
+import { IconSearch, IconX } from "@tabler/icons-vue";
 import InputText from "primevue/inputtext";
 import Tree from "primevue/tree";
 import type { TreeNode } from "primevue/treenode";
 import type { HmxMenuNode } from "@/data/hmxMenu";
+import { TABLER_FALLBACK_ICON, tablerIcon } from "@/lib/tablerIcons";
 import { usePermissionStore } from "@/stores/permissionStore";
 
 const props = defineProps<{
@@ -135,7 +135,7 @@ watch(
 
 function nodeIcon(node: TreeNode) {
   const name = (node.data as HmxMenuNode | undefined)?.icon;
-  return (name && (lucide as Record<string, unknown>)[name]) || File;
+  return tablerIcon(name) ?? TABLER_FALLBACK_ICON;
 }
 
 function toggleExpand(node: TreeNode) {
@@ -147,7 +147,7 @@ function toggleExpand(node: TreeNode) {
 
 function onNodeSelect(node: TreeNode) {
   const data = node.data as HmxMenuNode | undefined;
-  if (data?.page) {
+  if (data?.page || data?.url) {
     emit("openPage", data);
     return;
   }
@@ -160,9 +160,9 @@ function onNodeSelect(node: TreeNode) {
 function onNodeUnselect(node: TreeNode) {
   selectedKeys.value = { [node.key as string]: true };
   const data = node.data as HmxMenuNode | undefined;
-  if (!data?.page) {
+  if (!data?.page && !data?.url) {
     toggleExpand(node);
-  } else {
+  } else if (data) {
     emit("openPage", data);
   }
 }
@@ -173,11 +173,11 @@ function onNodeUnselect(node: TreeNode) {
   <aside class="relative z-[11] flex h-full shrink-0 select-none flex-col border-r border-border bg-[#e5e7eb] dark:bg-sidebar" :style="{ width: sidebarWidth + 'px' }">
     <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2 py-1.5">
       <div class="relative min-w-0 flex-1">
-        <Search class="pointer-events-none absolute left-2 top-1/2 z-10 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
+        <IconSearch class="pointer-events-none absolute left-2 top-1/2 z-10 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
         <InputText v-model="search" type="text" placeholder="搜索菜单" autocapitalize="off" autocorrect="off" spellcheck="false"
           class="!h-6 w-full !rounded border border-[#cdd2d9] !bg-[#dde0e5] !pl-7 !pr-6 !text-xs shadow-none dark:!bg-input/30" />
         <button v-if="search" type="button" class="absolute right-1.5 top-1/2 z-10 flex h-4 w-4 -translate-y-1/2 items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-foreground" aria-label="清除" @click="search = ''">
-          <X class="h-3 w-3" />
+          <IconX class="h-3 w-3" />
         </button>
       </div>
     </div>

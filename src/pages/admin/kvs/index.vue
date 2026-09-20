@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, defineComponent, h, nextTick, onMounted, reactive, ref, watch } from "vue";
-import { Pencil, Plus, RotateCw, Save, Search, Trash2 } from "@lucide/vue";
+import { IconDeviceFloppy, IconPencil, IconPlus, IconRotateClockwise, IconSearch, IconTrash } from "@tabler/icons-vue";
+
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import InputText from "primevue/inputtext";
@@ -8,45 +9,58 @@ import ToggleSwitch from "primevue/toggleswitch";
 import { AgGridVue } from "ag-grid-vue3";
 import type { CellValueChangedEvent, ColDef, GetRowIdParams, GridApi, GridReadyEvent } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
-import { ensureAgGrid, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
+import { autoSizeOnFirstData, ensureAgGrid, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
 import Splitter from "primevue/splitter";
 import SplitterPanel from "primevue/splitterpanel";
 import { useToast } from "@/composables/useToast";
-import { loadKvs, newKvId, saveKvs, type HmxKv } from "@/data/kv";
+import { systemKeyValueApi } from "@/api/admin/request";
+import { NextStrId } from "@/api/common/nextStrId";
+import type { HmxKv } from "@/api/admin/types";
 
 ensureAgGrid();
 
 const { toast } = useToast();
-
 const theme = makeHmxGridTheme();
 
-const allRows = ref<HmxKv[]>([]);
+const masters = ref<HmxKv[]>([]);
+const children = ref<HmxKv[]>([]);
+const mastersLoading = ref(false);
+const childrenLoading = ref(false);
 
 // ---------- 顶部条件 + 父项 ----------
 const queryCode = ref("");
 const queryName = ref("");
-const appliedCode = ref("");
-const appliedName = ref("");
-const selectedMasterCode = ref<string | null>(null);
+const selectedMasterId = ref<string | null>(null);
 
-const masters = computed(() => allRows.value.filter((r) => r.cPid === ""));
-const filteredMasters = computed(() => {
-  const code = appliedCode.value.trim().toLowerCase();
-  const name = appliedName.value.trim().toLowerCase();
-  return masters.value.filter(
-    (r) => (!code || r.cCode.toLowerCase().includes(code)) && (!name || r.cName.toLowerCase().includes(name)),
-  );
-});
-const selectedMaster = computed(() => masters.value.find((r) => r.cCode === selectedMasterCode.value) ?? null);
+const selectedMaster = computed(() => masters.value.find((r) => r.id === selectedMasterId.value) ?? null);
 
-function onQuery() {
-  appliedCode.value = queryCode.value;
-  appliedName.value = queryName.value;
-  selectFirstMaster();
+async function onQuery() {
+  mastersLoading.value = true;
+  try {
+    masters.value = (await systemKeyValueApi.querySysKvList("", queryCode.value.trim(), queryName.value.trim())) ?? [];
+    await selectMaster(masters.value[0]?.id ?? null);
+  } catch {
+    /* 拦截层已 toast */
+  } finally {
+    mastersLoading.value = false;
+  }
 }
 
-function selectFirstMaster() {
-  selectedMasterCode.value = filteredMasters.value[0]?.cCode ?? null;
+async function selectMaster(id: string | null) {
+  selectedMasterId.value = id;
+  if (!id) {
+    children.value = [];
+    return;
+  }
+  childrenLoading.value = true;
+  selectedChildId.value = null;
+  try {
+    children.value = (await systemKeyValueApi.querySysKvItemList(id)) ?? [];
+  } catch {
+    children.value = [];
+  } finally {
+    childrenLoading.value = false;
+  }
 }
 
 const masterApi = ref<GridApi | null>(null);
@@ -57,7 +71,7 @@ const masterColumns: ColDef[] = [
 ];
 
 function masterRowId(p: GetRowIdParams) {
-  return (p.data as HmxKv).cCode;
+  return String((p.data as HmxKv).id);
 }
 
 function onMasterGridReady(e: GridReadyEvent) {
@@ -66,27 +80,19 @@ function onMasterGridReady(e: GridReadyEvent) {
 
 function onMasterSelectionChanged() {
   const row = masterApi.value?.getSelectedRows()[0] as HmxKv | undefined;
-  if (row && row.cCode !== selectedMasterCode.value) {
-    selectedMasterCode.value = row.cCode;
-    selectedChildId.value = null;
-  }
+  if (row && row.id !== selectedMasterId.value) selectMaster(row.id ?? null);
 }
 
-/** 行数据由 prop 异步套用，节点未就绪时短轮询重试 */
-function syncMasterSelection(code: string | null, attempt = 0) {
-  if (!code) return;
-  const node = masterApi.value?.getRowNode(code);
+function syncMasterSelection(id: string | null, attempt = 0) {
+  if (!id) return;
+  const node = masterApi.value?.getRowNode(String(id));
   if (node) node.setSelected(true);
-  else if (attempt < 10) setTimeout(() => syncMasterSelection(code, attempt + 1), 30);
+  else if (attempt < 10) setTimeout(() => syncMasterSelection(id, attempt + 1), 30);
 }
 
-watch(selectedMasterCode, (code) => nextTick(() => syncMasterSelection(code)));
+watch(selectedMasterId, (id) => nextTick(() => syncMasterSelection(id)));
 
 // ---------- 子项 ----------
-const children = computed(() => {
-  const pid = selectedMasterCode.value;
-  return pid ? allRows.value.filter((r) => r.cPid === pid) : [];
-});
 const selectedChildId = ref<string | null>(null);
 const childApi = ref<GridApi | null>(null);
 
@@ -99,19 +105,19 @@ function onChildSelectionChanged() {
   selectedChildId.value = row?.id ?? null;
 }
 
-function onChildRefresh() {
-  allRows.value = loadKvs();
-  selectedChildId.value = null;
+async function onChildRefresh() {
+  await selectMaster(selectedMasterId.value);
 }
 
 function onChildAdd() {
   const master = selectedMaster.value;
   if (!master) {
-    toast("请先选择一个键值对");
+    toast("请先选择一个键值对", 2000, "warn");
     return;
   }
   const row: HmxKv = {
-    id: newKvId(),
+    selected: false,
+    id: NextStrId(),
     cCode: "",
     cName: "",
     cDesc: "",
@@ -122,26 +128,34 @@ function onChildAdd() {
     cSw01: "",
     cSw02: "",
     cSw03: "",
-    cPid: master.cCode,
+    cPid: master.id ?? "",
   };
-  allRows.value = [...allRows.value, row];
-  selectedChildId.value = row.id;
-  nextTick(() => childApi.value?.getRowNode(row.id)?.setSelected(true));
+  children.value = [...children.value, row];
+  selectedChildId.value = row.id ?? null;
+  nextTick(() => childApi.value?.getRowNode(String(row.id))?.setSelected(true));
 }
 
 function onChildDelete() {
   if (!selectedChildId.value) {
-    toast("请先选择一个子键值对");
+    toast("请先选择一个子键值对", 2000, "warn");
     return;
   }
-  allRows.value = allRows.value.filter((r) => r.id !== selectedChildId.value);
+  children.value = children.value.filter((r) => r.id !== selectedChildId.value);
   selectedChildId.value = null;
 }
 
 function onChildSave() {
   childApi.value?.stopEditing();
-  saveKvs(allRows.value);
-  toast(`操作成功：共[ ${allRows.value.length} ]条数据！`);
+  const payload = children.value.map((r) => ({ ...r }));
+  systemKeyValueApi
+    .saveChangesForChildKvItems(payload)
+    .then(() => {
+      toast(`操作成功：共[ ${payload.length} ]条数据！`, 2000, "success");
+      return selectMaster(selectedMasterId.value);
+    })
+    .catch(() => {
+      /* 拦截层已 toast */
+    });
 }
 
 const ORANGE_CELL = "bg-orange-100/70 dark:bg-orange-950/60";
@@ -179,7 +193,7 @@ const childColumns: ColDef[] = [
 ];
 
 function childRowId(p: GetRowIdParams) {
-  return (p.data as HmxKv).id;
+  return String((p.data as HmxKv).id);
 }
 
 /** ag-grid 已把新值写回源对象；cOrder 数字编辑器产出 number，统一转回 string */
@@ -192,6 +206,7 @@ function onChildCellValueChanged(e: CellValueChangedEvent) {
 // ---------- 父项编辑弹窗 ----------
 const editOpen = ref(false);
 const editTarget = ref<HmxKv | null>(null);
+const editSaving = ref(false);
 const editForm = reactive({
   useClass: true,
   clsA: "",
@@ -201,23 +216,33 @@ const editForm = reactive({
   name: "",
 });
 
-function openMasterEdit(target: HmxKv | null) {
+async function openMasterEdit(target: HmxKv | null) {
   editTarget.value = target;
   if (target) {
-    const m = /^([A-Z])(\d{2})(\d{2}):(.*)$/.exec(target.cCode);
+    const m = /^([A-Za-z])(\d{2})(\d{2}):(.*)$/.exec(target.cCode ?? "");
     editForm.useClass = !!m;
     editForm.clsA = m?.[1] ?? "";
     editForm.clsB = m?.[2] ?? "";
     editForm.clsC = m?.[3] ?? "";
-    editForm.code = m ? m[4] : target.cCode;
+    editForm.code = m ? m[4] : target.cCode ?? "";
+    editForm.name = target.cName ?? "";
   } else {
-    editForm.useClass = true;
-    editForm.clsA = "";
-    editForm.clsB = "";
-    editForm.clsC = "";
+    // 新增：向「服务端」取默认分类（对应 hmx_web prepareNewKvEditInput）
+    editForm.name = "";
     editForm.code = "";
+    try {
+      const preset = await systemKeyValueApi.prepareNewKvEditInput();
+      editForm.useClass = preset.useClassfy ?? true;
+      editForm.clsA = preset.classA ?? "";
+      editForm.clsB = preset.classB ?? "";
+      editForm.clsC = preset.classC ?? "";
+    } catch {
+      editForm.useClass = true;
+      editForm.clsA = "A";
+      editForm.clsB = "0";
+      editForm.clsC = "0";
+    }
   }
-  editForm.name = target?.cName ?? "";
   editOpen.value = true;
 }
 
@@ -227,7 +252,7 @@ function onMasterAdd() {
 
 function onMasterEdit() {
   if (!selectedMaster.value) {
-    toast("请先选择一个键值对");
+    toast("请先选择一个键值对", 2000, "warn");
     return;
   }
   openMasterEdit(selectedMaster.value);
@@ -237,73 +262,83 @@ function onMasterSave() {
   const code = editForm.code.trim();
   const name = editForm.name.trim();
   if (!code) {
-    toast("请输入键值对[编码]");
+    toast("请输入键值对[编码]", 2000, "warn");
     return;
   }
   if (!name) {
-    toast("请输入键值对[名称]");
+    toast("请输入键值对[名称]", 2000, "warn");
     return;
   }
   if (!editForm.useClass && code.includes(":")) {
-    toast("不允许包含特殊字符冒号");
+    toast("不允许包含特殊字符冒号", 2000, "warn");
     return;
   }
   if (editForm.useClass) {
     if (!/^[A-Za-z]$/.test(editForm.clsA) || !/^\d{2}$/.test(editForm.clsB) || !/^\d{2}$/.test(editForm.clsC)) {
-      toast("分类不完整：分类A为单个字母，分类B/C为两位数字");
+      toast("分类不完整：分类A为单个字母，分类B/C为两位数字", 2000, "warn");
       return;
     }
   }
-  const cCode = editForm.useClass ? `${editForm.clsA.toUpperCase()}${editForm.clsB}${editForm.clsC}:${code}` : code;
-  if (!editTarget.value) {
-    if (masters.value.some((r) => r.cCode === cCode)) {
-      toast("该编码已存在");
-      return;
-    }
-    allRows.value = [
-      ...allRows.value,
-      { id: newKvId(), cCode, cName: name, cDesc: "", cValue: "", cGroup: "", cOrder: "", cEnable: "1", cSw01: "", cSw02: "", cSw03: "", cPid: "" },
-    ];
-    selectedMasterCode.value = cCode;
-  } else {
-    editTarget.value.cName = name;
-    saveKvs(allRows.value);
-  }
-  saveKvs(allRows.value);
-  editOpen.value = false;
-  toast("保存成功");
+  editSaving.value = true;
+  systemKeyValueApi
+    .insertOrUpdateParentKvItem({
+      classA: editForm.clsA.toUpperCase(),
+      classB: editForm.clsB,
+      classC: editForm.clsC,
+      code,
+      name,
+      useClassfy: editForm.useClass,
+      filedItems: [],
+    })
+    .then(async () => {
+      const keepId = editTarget.value?.id;
+      editOpen.value = false;
+      masters.value = (await systemKeyValueApi.querySysKvList("", "", "")) ?? [];
+      await selectMaster(keepId ?? masters.value[0]?.id ?? null);
+      toast("保存成功", 2000, "success");
+    })
+    .catch(() => {
+      /* 拦截层已 toast */
+    })
+    .finally(() => {
+      editSaving.value = false;
+    });
 }
 
 // ---------- 父项删除 ----------
 const confirmOpen = ref(false);
 const confirmTarget = ref<HmxKv | null>(null);
-const confirmHasChildren = computed(() => !!confirmTarget.value && allRows.value.some((r) => r.cPid === confirmTarget.value!.cCode));
+const confirmHasChildren = ref(false);
 
 function onMasterDelete() {
-  if (!selectedMaster.value) {
-    toast("请先选择一个键值对");
+  const master = selectedMaster.value;
+  if (!master) {
+    toast("请先选择一个键值对", 2000, "warn");
     return;
   }
-  confirmTarget.value = selectedMaster.value;
+  confirmTarget.value = master;
+  confirmHasChildren.value = children.value.length > 0;
   confirmOpen.value = true;
 }
 
 function confirmDelete() {
   const target = confirmTarget.value;
   if (!target) return;
-  allRows.value = allRows.value.filter((r) => r.cPid !== target.cCode && r.id !== target.id);
-  saveKvs(allRows.value);
-  confirmOpen.value = false;
-  confirmTarget.value = null;
-  if (selectedMasterCode.value === target.cCode) selectFirstMaster();
-  selectedChildId.value = null;
-  toast("删除成功");
+  systemKeyValueApi
+    .removeParentKvItem(target.id)
+    .then(async () => {
+      confirmOpen.value = false;
+      confirmTarget.value = null;
+      masters.value = (await systemKeyValueApi.querySysKvList("", "", "")) ?? [];
+      await selectMaster(masters.value[0]?.id ?? null);
+      toast("删除成功", 2000, "success");
+    })
+    .catch(() => {
+      /* 拦截层已 toast */
+    });
 }
 
-onMounted(() => {
-  allRows.value = loadKvs();
-  selectFirstMaster();
-});
+onMounted(onQuery);
 </script>
 
 <template>
@@ -315,16 +350,16 @@ onMounted(() => {
       <InputText v-model="queryName" maxlength="100" placeholder="描述" autocapitalize="off" spellcheck="false"
         class="w-40 shrink-0" @keydown.enter="onQuery" />
       <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onQuery">
-        <Search class="h-3.5 w-3.5" />查询
+        <IconSearch class="h-3.5 w-3.5" />查询
       </Button>
       <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onMasterAdd">
-        <Plus class="h-3.5 w-3.5" />添加
+        <IconPlus class="h-3.5 w-3.5" />添加
       </Button>
       <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onMasterEdit">
-        <Pencil class="h-3.5 w-3.5" />编辑
+        <IconPencil class="h-3.5 w-3.5" />编辑
       </Button>
       <Button variant="outlined" size="small" severity="danger" class="shrink-0 whitespace-nowrap" @click="onMasterDelete">
-        <Trash2 class="h-3.5 w-3.5" />删除
+        <IconTrash class="h-3.5 w-3.5" />删除
       </Button>
       <span class="ml-auto text-xs text-muted-foreground">数据字典（父项 {{ masters.length }}）</span>
     </div>
@@ -334,38 +369,39 @@ onMounted(() => {
       <SplitterPanel :size="35" :min-size="15">
         <div class="flex h-full min-h-0 flex-col overflow-hidden">
           <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="masterColumns"
-            :default-col-def="hmxDefaultColDef" :row-data="filteredMasters" :get-row-id="masterRowId"
-            :row-selection="'single'" :pagination="false" :animate-rows="false" :locale-text="AG_GRID_LOCALE_CN"
-            @grid-ready="onMasterGridReady" @selection-changed="onMasterSelectionChanged" />
+            :default-col-def="hmxDefaultColDef" :row-data="masters" :get-row-id="masterRowId"
+            :row-selection="'single'" :loading="mastersLoading" :pagination="false" :animate-rows="false"
+            :locale-text="AG_GRID_LOCALE_CN" @grid-ready="onMasterGridReady" @selection-changed="onMasterSelectionChanged"
+            @first-data-rendered="autoSizeOnFirstData" />
         </div>
       </SplitterPanel>
 
       <SplitterPanel :size="65" :min-size="30">
         <div class="flex h-full min-h-0 flex-col">
-        <!-- 子项工具栏（对应原 repositoryItemGridLookUpEdit 面板：刷新/添加/删除/保存） -->
-        <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
-          <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onChildRefresh">
-            <RotateCw class="h-3.5 w-3.5" />刷新
-          </Button>
-          <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onChildAdd">
-            <Plus class="h-3.5 w-3.5" />添加
-          </Button>
-          <Button variant="outlined" size="small" severity="danger" class="shrink-0 whitespace-nowrap" @click="onChildDelete">
-            <Trash2 class="h-3.5 w-3.5" />删除
-          </Button>
-          <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onChildSave">
-            <Save class="h-3.5 w-3.5" />保存
-          </Button>
-          <span class="ml-auto text-xs text-muted-foreground">{{ selectedMaster ? `子键值对（${selectedMaster.cName} ${children.length}）` : "子键值对" }}</span>
-        </div>
+          <!-- 子项工具栏（对应原 repositoryItemGridLookUpEdit 面板：刷新/添加/删除/保存） -->
+          <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
+            <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onChildRefresh">
+              <IconRotateClockwise class="h-3.5 w-3.5" />刷新
+            </Button>
+            <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onChildAdd">
+              <IconPlus class="h-3.5 w-3.5" />添加
+            </Button>
+            <Button variant="outlined" size="small" severity="danger" class="shrink-0 whitespace-nowrap" @click="onChildDelete">
+              <IconTrash class="h-3.5 w-3.5" />删除
+            </Button>
+            <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onChildSave">
+              <IconDeviceFloppy class="h-3.5 w-3.5" />保存
+            </Button>
+            <span class="ml-auto text-xs text-muted-foreground">{{ selectedMaster ? `子键值对（${selectedMaster.cName} ${children.length}）` : "子键值对" }}</span>
+          </div>
 
-        <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="childColumns"
-            :default-col-def="hmxDefaultColDef" :row-data="children" :get-row-id="childRowId"
-            :row-selection="'single'" :pagination="false" :animate-rows="false" :locale-text="AG_GRID_LOCALE_CN"
-            @grid-ready="onChildGridReady" @selection-changed="onChildSelectionChanged"
-            @cell-value-changed="onChildCellValueChanged" />
-        </div>
+          <div class="min-h-0 flex-1 overflow-hidden">
+            <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="childColumns"
+              :default-col-def="hmxDefaultColDef" :row-data="children" :get-row-id="childRowId"
+              :row-selection="'single'" :loading="childrenLoading" :pagination="false" :animate-rows="false"
+              :locale-text="AG_GRID_LOCALE_CN" @grid-ready="onChildGridReady" @selection-changed="onChildSelectionChanged"
+              @cell-value-changed="onChildCellValueChanged" @first-data-rendered="autoSizeOnFirstData" />
+          </div>
         </div>
       </SplitterPanel>
     </Splitter>
@@ -403,14 +439,14 @@ onMounted(() => {
       </div>
       <template #footer>
         <Button label="取消" variant="outlined" @click="editOpen = false" />
-        <Button label="保存" variant="outlined" @click="onMasterSave" />
+        <Button label="保存" variant="outlined" :loading="editSaving" @click="onMasterSave" />
       </template>
     </Dialog>
 
     <!-- 父项删除确认（有子项时连带删除） -->
     <Dialog :visible="confirmOpen" modal header="删除确认" :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
       @update:visible="confirmOpen = $event">
-      <p class="text-sm">{{ confirmHasChildren ? "该键值对存在多个子项，是否确定直接删除？" : `是否确定删除当前项「${confirmTarget?.cName}」？` }}</p>
+      <p class="text-sm">{{ confirmHasChildren ? `该键值对[${confirmTarget?.cName}]存在多个子项，是否确定直接删除？` : `是否确定删除当前项「${confirmTarget?.cName}」？` }}</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />
         <Button label="删除" severity="danger" variant="outlined" @click="confirmDelete" />

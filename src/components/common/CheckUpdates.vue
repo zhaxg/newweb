@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from "vue";
+import { IconRefresh } from "@tabler/icons-vue";
 import Dialog from "primevue/dialog";
 import Button from "primevue/button";
-import { RefreshCw } from "@lucide/vue";
 
 /* 版本更新检测（移植自 hmx_web check-updates.vue）：
    对 BASE_URL 做 HEAD 请求，比较 etag/last-modified 变化则弹窗提示刷新。
@@ -119,7 +119,7 @@ onUnmounted(() => {
   <Dialog v-model:visible="showModal" modal header="新版本可用" :style="{ width: 'min(28rem, 92vw)' }"
     :dismissable-mask="false">
     <div class="flex items-center gap-2">
-      <RefreshCw class="h-4 w-4 shrink-0" />
+      <IconRefresh class="h-4 w-4 shrink-0" />
       <span>版本号</span>
       <span class="font-mono">[{{ currentVersionTag }}] </span>
       <span>点击刷新以获取新版本</span>

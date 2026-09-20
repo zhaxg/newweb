@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref } from "vue";
-import { Plus, Save, Search, ShieldCheck, Trash2, Users } from "@lucide/vue";
+import { nextTick, onMounted, ref, shallowRef } from "vue";
+import { IconDeviceFloppy, IconPlus, IconSearch, IconShieldCheck, IconTrash, IconUsers } from "@tabler/icons-vue";
+
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import InputText from "primevue/inputtext";
@@ -8,21 +9,24 @@ import { AgGridVue } from "ag-grid-vue3";
 import type { CellValueChangedEvent, ColDef, GetRowIdParams, GridApi, GridReadyEvent } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 
-import { ensureAgGrid, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
+import { autoSizeOnFirstData, ensureAgGrid, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
 import { useToast } from "@/composables/useToast";
 import RolePermissionDialog from "./RolePermissionDialog.vue";
 import RoleUserDialog from "./RoleUserDialog.vue";
-import { formatNow, loadRoles, newRoleId, saveRoles, type HmxRole } from "@/data/roles";
+import { adminApi } from "@/api/admin/request";
+import { crudAppService } from "@/api/common/crud-app-service";
+import { TrackableList } from "@/api/common/trackable-list";
+import { NextStrId } from "@/api/common/nextStrId";
+import type { HmxRole } from "@/api/admin/types";
 
 ensureAgGrid();
 
 const { toast } = useToast();
-
 const theme = makeHmxGridTheme();
 
-const rows = ref<HmxRole[]>([]);
+// 行内编辑数据源：TrackableList 记录快照，SaveList 据此算出增/改/删（与 hmx_web 一致）
+const trackList = shallowRef<TrackableList<HmxRole>>(new TrackableList<HmxRole>());
 const keyword = ref("");
-const appliedKeyword = ref("");
 const selectedId = ref<string | null>(null);
 const gridApi = ref<GridApi | null>(null);
 
@@ -43,26 +47,24 @@ const columnDefs: ColDef[] = [
   { colId: "cState", field: "cState", headerName: "状态", width: 70, valueFormatter: (p) => stateText(p.data as HmxRole) },
 ];
 
-const displayed = computed(() => {
-  const kw = appliedKeyword.value.trim().toLowerCase();
-  if (!kw) return rows.value;
-  return rows.value.filter((r) => (r.cRoleName ?? "").toLowerCase().includes(kw) || (r.cDescription ?? "").toLowerCase().includes(kw));
-});
-
-function query() {
-  rows.value = loadRoles();
-  appliedKeyword.value = keyword.value;
-  selectedId.value = null;
+async function query() {
+  try {
+    const rows = (await adminApi.getRoleList(keyword.value.trim() || undefined)) ?? [];
+    trackList.value = new TrackableList<HmxRole>(rows);
+    selectedId.value = null;
+  } catch {
+    /* 拦截层已 toast */
+  }
 }
 
 onMounted(query);
 
 function currentRow(): HmxRole | null {
-  return rows.value.find((r) => r.id === selectedId.value) ?? null;
+  return trackList.value.find((r) => r.id === selectedId.value) ?? null;
 }
 
 function getRowId(p: GetRowIdParams) {
-  return (p.data as HmxRole).id;
+  return String((p.data as HmxRole).id);
 }
 
 function onGridReady(e: GridReadyEvent) {
@@ -78,78 +80,80 @@ function syncGridSelection() {
   const id = selectedId.value;
   nextTick(() => {
     if (!gridApi.value || !id) return;
-    gridApi.value.getRowNode(id)?.setSelected(true);
+    gridApi.value.getRowNode(String(id))?.setSelected(true);
   });
 }
 
-/** 编辑提交：可编辑列禁用内部排序，行对象引用即源数据，直接回写 */
+/** 编辑提交：行对象引用即 TrackableList 内的源数据，改动被快照差异捕获，无需手工回写 */
 function onCellValueChanged(e: CellValueChangedEvent) {
-  const row = e.data as HmxRole | undefined;
-  if (!row) return;
-  row.lastModifier = "admin";
-  row.lastModifyTime = formatNow();
   gridApi.value?.refreshCells({ rowNodes: e.node ? [e.node] : undefined, force: true });
 }
 
-/** 添加：直接在表尾追加可编辑新行（对应原 gridView.AppendNewRow） */
+/** 添加：表尾追加可编辑新行（默认角色{随机}，与 hmx_web 一致） */
 function onAdd() {
-  const row: HmxRole = {
-    id: newRoleId(),
-    cRoleName: "",
+  const draft: HmxRole = {
+    id: NextStrId(),
+    cRoleName: `角色${Math.floor(Math.random() * 10000)}`,
     cDescription: "",
-    creator: "admin",
-    createTime: formatNow(),
+    cState: "1",
+    selected: false,
+    creator: "",
+    createTime: "",
     lastModifier: "",
     lastModifyTime: "",
-    cState: "1",
   };
-  rows.value = [...rows.value, row];
-  selectedId.value = row.id;
+  trackList.value.push(draft);
+  const stored = trackList.value[trackList.value.length - 1] as HmxRole;
+  gridApi.value?.applyTransaction({ add: [stored] });
+  selectedId.value = stored.id ?? null;
   syncGridSelection();
 }
 
 function onDelete() {
   const row = currentRow();
   if (!row) {
-    toast("当前没有可删除的角色！");
+    toast("当前没有可删除的角色！", 2000, "warn");
     return;
   }
-  confirmTarget.value = row;
-  confirmOpen.value = true;
+  adminApi
+    .checkBeforeRemoveRole(row.id)
+    .then(() => {
+      confirmTarget.value = row;
+      confirmOpen.value = true;
+    })
+    .catch(() => {
+      /* 拦截层已 toast（如角色尚有成员） */
+    });
 }
 
 function confirmDelete() {
   const target = confirmTarget.value;
   if (!target) return;
-  rows.value = rows.value.filter((r) => r.id !== target.id);
-  saveRoles(rows.value);
+  trackList.value.remove((r) => r.id === target.id);
+  gridApi.value?.applyTransaction({ remove: [target] });
   if (selectedId.value === target.id) selectedId.value = null;
   confirmOpen.value = false;
   confirmTarget.value = null;
-  toast("删除成功");
+  toast("已从列表移除，点击「保存」后生效", 2000, "info");
 }
 
-/** 保存：校验角色名称重复后整表落库（对应原 simpleButtonSave_Click） */
+/** 保存：整表差异提交（对应 hmx_web crudAppService.SaveList("HmxRole")） */
 function onSave() {
-  const count = new Map<string, number>();
-  for (const r of rows.value) {
-    const name = (r.cRoleName ?? "").trim();
-    if (!name) continue;
-    count.set(name, (count.get(name) ?? 0) + 1);
-  }
-  const dup = [...count.entries()].find(([, n]) => n > 1);
-  if (dup) {
-    toast(`角色名称：[${dup[0]}]重复，请检查！`);
-    return;
-  }
-  saveRoles(rows.value);
-  toast("保存成功！");
+  crudAppService
+    .SaveList(trackList.value, "HmxRole")
+    .then(() => {
+      gridApi.value?.refreshCells({ force: true });
+      toast("保存成功！", 2000, "success");
+    })
+    .catch(() => {
+      /* 拦截层已 toast */
+    });
 }
 
 function requireSelection(): HmxRole | null {
   const row = currentRow();
   if (!row) {
-    toast("请先选择一个角色");
+    toast("请先选择一个角色", 2000, "warn");
     return null;
   }
   return row;
@@ -184,32 +188,33 @@ function stateText(row: HmxRole | undefined): string {
       <InputText v-model="keyword" maxlength="100" placeholder="关键字" autocapitalize="off" spellcheck="false"
         class="w-48 shrink-0" @keydown.enter="query" />
       <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="query">
-        <Search class="h-3.5 w-3.5" />查询
+        <IconSearch class="h-3.5 w-3.5" />查询
       </Button>
       <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onAdd">
-        <Plus class="h-3.5 w-3.5" />添加
+        <IconPlus class="h-3.5 w-3.5" />添加
       </Button>
       <Button variant="outlined" size="small" severity="danger" class="shrink-0 whitespace-nowrap" @click="onDelete">
-        <Trash2 class="h-3.5 w-3.5" />删除
+        <IconTrash class="h-3.5 w-3.5" />删除
       </Button>
       <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onSave">
-        <Save class="h-3.5 w-3.5" />保存
+        <IconDeviceFloppy class="h-3.5 w-3.5" />保存
       </Button>
       <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onEditUsers">
-        <Users class="h-3.5 w-3.5" />编辑用户
+        <IconUsers class="h-3.5 w-3.5" />编辑用户
       </Button>
       <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onEditPerms">
-        <ShieldCheck class="h-3.5 w-3.5" />菜单与功能权限
+        <IconShieldCheck class="h-3.5 w-3.5" />菜单与功能权限
       </Button>
-      <span class="ml-auto text-xs text-muted-foreground">角色维护（{{ rows.length }}）</span>
+      <span class="ml-auto text-xs text-muted-foreground">角色维护（{{ trackList.length }}）</span>
     </div>
 
     <!-- 角色信息：ag-grid 行内编辑（双击或 F2 进入编辑，回车/失焦提交） -->
     <div class="min-h-0 flex-1 overflow-hidden">
       <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="columnDefs"
-        :default-col-def="hmxDefaultColDef" :row-data="displayed" :get-row-id="getRowId" :row-selection="'single'"
+        :default-col-def="hmxDefaultColDef" :row-data="trackList" :get-row-id="getRowId" :row-selection="'single'"
         :pagination="false" :animate-rows="false" :locale-text="AG_GRID_LOCALE_CN" @grid-ready="onGridReady"
-        @selection-changed="onSelectionChanged" @cell-value-changed="onCellValueChanged" />
+        @selection-changed="onSelectionChanged" @cell-value-changed="onCellValueChanged"
+        @first-data-rendered="autoSizeOnFirstData" />
     </div>
 
     <!-- 删除确认（对应原 MsgBox.ShowYesNo("是否确定删除角色「xxx」？")） -->

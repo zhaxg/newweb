@@ -8,11 +8,11 @@ import type { Result } from "./types";
 import { ApiError } from "./types";
 
 /** 默认进程内 mock；VITE_USE_MOCK=false 时走真实后端（vite proxy /api） */
-const USE_MOCK = import.meta.env.VITE_USE_MOCK !== "false";
+export const USE_MOCK = import.meta.env.VITE_USE_MOCK !== "false";
 
 /** 拦截层用的轻 toast：直发 PrimeVue ToastEventBus，无需组件注入上下文 */
-export function toastMessage(msg: string) {
-  ToastEventBus.emit("add", { severity: "info", summary: msg, life: 2200 });
+export function toastMessage(msg: string, severity: "success" | "info" | "warn" | "error" = "error") {
+  ToastEventBus.emit("add", { severity, summary: msg, life: 2200 });
 }
 
 const instance = axios.create({ timeout: 15000 });
@@ -45,9 +45,9 @@ instance.interceptors.response.use(
       if (current.name !== "login") {
         router.replace({ name: "login", query: { redirect: current.fullPath } });
       }
-      toastMessage("登录已过期，请重新登录");
+      toastMessage("登录已过期，请重新登录", "warn");
     } else {
-      toastMessage("网络异常，请稍后重试");
+      toastMessage("网络异常，请稍后重试", "error");
     }
     return Promise.reject(error);
   },

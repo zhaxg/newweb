@@ -24,39 +24,23 @@ const STORAGE_KEY = "hmx.rescs";
 
 export const RESC_TYPES = ["Menu", "Widget", "DataItem", "DataColumn"] as const;
 
-export const ICON_NAMES = [
-  "LayoutDashboard",
-  "ShoppingCart",
-  "Package",
-  "Users",
-  "Building2",
-  "ShieldCheck",
-  "ListTree",
-  "Braces",
-  "ScrollText",
-  "FileText",
-  "Settings",
-  "Wallet",
-  "TrendingUp",
-  "BarChart3",
-  "Boxes",
-  "Truck",
-] as const;
-
 type Seed = Partial<HmxRes> & { id: string; cPid: string; cCode: string; cTitle: string };
 
 function seedRescs(): HmxRes[] {
   const rows: Seed[] = [
     // ---- 系统管理 ----
     { id: "r-sy1000", cPid: "0", cCode: "SY1000", cTitle: "系统管理", cOrder: "10", cResPath: "", icon: "Settings" },
-    { id: "r-sy1010", cPid: "r-sy1000", cCode: "SY1010", cTitle: "部门", cOrder: "10", cResPath: "/sys-departments", icon: "Building2" },
+    { id: "r-sy1010", cPid: "r-sy1000", cCode: "SY1010", cTitle: "部门", cOrder: "10", cResPath: "/sys-departments", icon: "Building" },
     { id: "r-sy1020", cPid: "r-sy1000", cCode: "SY1020", cTitle: "用户", cOrder: "20", cResPath: "/sys-users", icon: "Users" },
     { id: "r-sy1030", cPid: "r-sy1000", cCode: "SY1030", cTitle: "角色", cOrder: "30", cResPath: "/sys-roles", icon: "ShieldCheck" },
     { id: "r-sy1040", cPid: "r-sy1000", cCode: "SY1040", cTitle: "菜单", cOrder: "40", cResPath: "/sys-menus", icon: "ListTree" },
     { id: "r-sy1050", cPid: "r-sy1000", cCode: "SY1050", cTitle: "键值对", cOrder: "50", cResPath: "/sys-kv", icon: "Braces" },
-    { id: "r-sy1060", cPid: "r-sy1000", cCode: "SY1060", cTitle: "审计日志", cOrder: "60", cResPath: "/sys-audit", icon: "ScrollText" },
+    { id: "r-sy1060", cPid: "r-sy1000", cCode: "SY1060", cTitle: "计划任务", cOrder: "60", cResPath: "/sys-jobs", icon: "Clock" },
+    { id: "r-sy1070", cPid: "r-sy1000", cCode: "SY1070", cTitle: "代码生成", cOrder: "70", cResPath: "/sys-gen", icon: "Sparkles" },
+    { id: "r-sy1080", cPid: "r-sy1000", cCode: "SY1080", cTitle: "系统设置", cOrder: "80", cResPath: "/sys-settings", icon: "AdjustmentsHorizontal" },
+    { id: "r-sy1090", cPid: "r-sy1000", cCode: "SY1090", cTitle: "审计日志", cOrder: "90", cResPath: "/sys-audit", icon: "Note" },
     // ---- 基础档案 ----
-    { id: "r-ba2000", cPid: "0", cCode: "BA2000", cTitle: "基础档案", cOrder: "20", cResPath: "", icon: "Boxes" },
+    { id: "r-ba2000", cPid: "0", cCode: "BA2000", cTitle: "基础档案", cOrder: "20", cResPath: "", icon: "Packages" },
     { id: "r-ba2010", cPid: "r-ba2000", cCode: "BA2010", cTitle: "客户档案", cOrder: "10", cResPath: "/customers", icon: "Users" },
     { id: "r-ba2020", cPid: "r-ba2000", cCode: "BA2020", cTitle: "供应商档案", cOrder: "20", cResPath: "/suppliers", icon: "Truck" },
     { id: "r-ba2030", cPid: "r-ba2000", cCode: "BA2030", cTitle: "物料清单", cOrder: "30", cResPath: "/materials", icon: "Package" },
@@ -82,7 +66,7 @@ function seedRescs(): HmxRes[] {
     { id: "r-fi6100", cPid: "r-fi6000", cCode: "FI6100", cTitle: "应收账款", cOrder: "10", cResPath: "/receivables", icon: "FileText" },
     { id: "r-fi6200", cPid: "r-fi6000", cCode: "FI6200", cTitle: "应付账款", cOrder: "20", cResPath: "/payables", icon: "FileText" },
     // ---- 报表中心 ----
-    { id: "r-re7000", cPid: "0", cCode: "RE7000", cTitle: "报表中心", cOrder: "70", cResPath: "", icon: "BarChart3" },
+    { id: "r-re7000", cPid: "0", cCode: "RE7000", cTitle: "报表中心", cOrder: "70", cResPath: "", icon: "ChartBar" },
     { id: "r-re7100", cPid: "r-re7000", cCode: "RE7100", cTitle: "销售统计", cOrder: "10", cResPath: "/report-sales", icon: "TrendingUp" },
   ];
   return rows.map((r, i) => ({

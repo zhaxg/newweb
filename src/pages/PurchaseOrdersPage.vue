@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { Plus, Trash2, Download, RefreshCw } from "@lucide/vue";
+import { IconDownload, IconPlus, IconRefresh, IconTrash } from "@tabler/icons-vue";
 import Button from "primevue/button";
 import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, GridApi, GridReadyEvent, StatusBar } from "ag-grid-community";
@@ -52,19 +52,11 @@ function reload() {
 <template>
   <div class="flex h-full min-h-0 flex-col bg-background text-foreground">
     <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
-      <Button text size="small" label="新增">
-        <template #icon><Plus class="h-3.5 w-3.5" /></template>
-      </Button>
-      <Button text size="small" label="删除">
-        <template #icon><Trash2 class="h-3.5 w-3.5" /></template>
-      </Button>
-      <Button text size="small" label="导出" @click="exportCsv">
-        <template #icon><Download class="h-3.5 w-3.5" /></template>
-      </Button>
+      <Button text size="small"><IconPlus class="h-3.5 w-3.5" />新增</Button>
+      <Button text size="small"><IconTrash class="h-3.5 w-3.5" />删除</Button>
+      <Button text size="small" @click="exportCsv"><IconDownload class="h-3.5 w-3.5" />导出</Button>
       <div class="mx-1 h-4 w-px bg-border" />
-      <Button text size="small" label="刷新" @click="reload">
-        <template #icon><RefreshCw class="h-3.5 w-3.5" /></template>
-      </Button>
+      <Button text size="small" @click="reload"><IconRefresh class="h-3.5 w-3.5" />刷新</Button>
       <div class="min-w-0 flex-1" />
       <span class="truncate text-xs text-muted-foreground">采购订单（{{ dataset.rows.length }} 行 · {{ dataset.fields.length
         }} 字段）</span>

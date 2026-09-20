@@ -3,7 +3,8 @@ import { ref, watch } from "vue";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import { useToast } from "@/composables/useToast";
-import { loadRoleOptions, loadUserRoles, saveUserRoles, type RoleOption } from "@/data/users";
+import { adminApi } from "@/api/admin/request";
+import type { HmxRole } from "@/api/admin/types";
 
 const props = defineProps<{
   open: boolean;
@@ -16,37 +17,54 @@ const emit = defineEmits<{
 
 const { toast } = useToast();
 
-const unassigned = ref<RoleOption[]>([]);
-const assigned = ref<RoleOption[]>([]);
+const unassigned = ref<HmxRole[]>([]);
+const assigned = ref<HmxRole[]>([]);
+const saving = ref(false);
 
-// 打开时从存储初始化，关闭丢弃未保存改动
+// 打开时拉取全量角色 + 该用户已有角色，关闭丢弃未保存改动
 watch(
   () => props.open,
-  (open) => {
+  async (open) => {
     if (!open) return;
-    const roles = loadRoleOptions();
-    const ids = new Set(loadUserRoles()[props.userId] ?? []);
-    unassigned.value = roles.filter((r) => !ids.has(r.id));
-    assigned.value = roles.filter((r) => ids.has(r.id));
+    try {
+      const [roles, mine] = await Promise.all([
+        adminApi.getRoleList(),
+        adminApi.getUserRoleList(props.userId),
+      ]);
+      const ids = new Set((mine ?? []).map((r) => r.id));
+      unassigned.value = (roles ?? []).filter((r) => !ids.has(r.id));
+      assigned.value = (roles ?? []).filter((r) => ids.has(r.id));
+    } catch {
+      unassigned.value = [];
+      assigned.value = [];
+    }
   },
 );
 
-function moveToAssigned(role: RoleOption) {
+function moveToAssigned(role: HmxRole) {
   unassigned.value = unassigned.value.filter((r) => r.id !== role.id);
   if (!assigned.value.some((r) => r.id === role.id)) assigned.value = [...assigned.value, role];
 }
 
-function moveToUnassigned(role: RoleOption) {
+function moveToUnassigned(role: HmxRole) {
   assigned.value = assigned.value.filter((r) => r.id !== role.id);
   if (!unassigned.value.some((r) => r.id === role.id)) unassigned.value = [...unassigned.value, role];
 }
 
 function onConfirm() {
-  const map = loadUserRoles();
-  map[props.userId] = assigned.value.map((r) => r.id);
-  saveUserRoles(map);
-  emit("update:open", false);
-  toast("保存成功");
+  saving.value = true;
+  adminApi
+    .updateUserRoleList({ userId: props.userId, roleIds: assigned.value.map((r) => r.id ?? "") })
+    .then(() => {
+      emit("update:open", false);
+      toast("操作成功", 2000, "success");
+    })
+    .catch(() => {
+      /* 拦截层已 toast */
+    })
+    .finally(() => {
+      saving.value = false;
+    });
 }
 </script>
 
@@ -109,7 +127,7 @@ function onConfirm() {
 
       <template #footer>
         <Button label="取消" variant="outlined" @click="emit('update:open', false)" />
-        <Button label="确定" variant="outlined" autofocus @click="onConfirm" />
+        <Button label="确定" variant="outlined" autofocus :loading="saving" @click="onConfirm" />
       </template>
   </Dialog>
 </template>

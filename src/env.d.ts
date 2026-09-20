@@ -5,6 +5,8 @@ interface ImportMetaEnv {
   readonly VITE_USE_MOCK?: string;
   /** 真实后端地址，供 vite proxy target 参考 */
   readonly VITE_API_TARGET?: string;
+  /** 路由命名空间（权限资源 groupId），如 TDWEB */
+  readonly VITE_ROUTER_NAMESPACE?: string;
 }
 
 declare module "*.vue" {

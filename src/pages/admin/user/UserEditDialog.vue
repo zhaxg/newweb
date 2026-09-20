@@ -79,7 +79,7 @@ watch(
     deptRows.value = loadDepartments();
     const e = props.editing;
     form.id = e?.id ?? "";
-    form.cUserName = e?.cUserName ?? "";
+    form.cUserName = e?.cUserName ?? `用户${Math.floor(Math.random() * 10000)}`;
     form.cPhone = e?.cPhone ?? "";
     form.cEmail = e?.cEmail ?? "";
     form.cUserType = e?.cUserType || USER_TYPES[0];

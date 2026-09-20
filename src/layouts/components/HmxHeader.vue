@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import * as lucide from "@lucide/vue";
-import { LogOut, Settings, ChevronDown, BookOpen, KeyRound, PanelLeft, Ellipsis, File } from "@lucide/vue";
+import { IconBook, IconChevronDown, IconDots, IconKey, IconLayoutSidebar, IconLogout, IconSettings } from "@tabler/icons-vue";
 import Button from "primevue/button";
 import Menu from "primevue/menu";
 import TieredMenu from "primevue/tieredmenu";
 import type { MenuItem } from "primevue/menuitem";
 import User from "@primeicons/vue/user";
+import { TABLER_FALLBACK_ICON, tablerIcon } from "@/lib/tablerIcons";
 import ThemeToggle from "@/components/common/ThemeToggle.vue";
 import ModifyPasswd from "@/pages/_core/profile/ModifyPasswd.vue";
 import { useAppTheme } from "@/composables/useAppTheme";
@@ -43,7 +43,7 @@ const userItems: MenuItem[] = [
   { separator: true },
   { label: "退出", command: () => emit("logout") },
 ];
-const userIcons: Record<string, unknown> = { 帮助文档: BookOpen, 修改密码: KeyRound, 退出: LogOut };
+const userIcons: Record<string, unknown> = { 帮助文档: IconBook, 修改密码: IconKey, 退出: IconLogout };
 
 /* 侧栏树同款数据 → TieredMenu 模型（叶子点击 = 开页） */
 function toMenuItems(nodes: HmxMenuNode[]): MenuItem[] {
@@ -51,7 +51,7 @@ function toMenuItems(nodes: HmxMenuNode[]): MenuItem[] {
     label: n.label,
     data: n,
     items: n.children?.length ? toMenuItems(n.children) : undefined,
-    command: n.page ? () => emit("openPage", n) : undefined,
+    command: n.page || n.url ? () => emit("openPage", n) : undefined,
   }));
 }
 const navMenuRef = ref<InstanceType<typeof TieredMenu> | null>(null);
@@ -64,7 +64,7 @@ function onNavShow() {
 }
 function navIcon(item: MenuItem) {
   const name = (item.data as HmxMenuNode | undefined)?.icon;
-  return (name && (lucide as Record<string, unknown>)[name]) || File;
+  return tablerIcon(name) ?? TABLER_FALLBACK_ICON;
 }
 </script>
 
@@ -78,15 +78,11 @@ function navIcon(item: MenuItem) {
         <div class="truncate text-sm font-semibold leading-tight text-foreground">HiMind工业互联网平台</div>
       </div>
       <div class="ml-[40px] flex shrink-0 items-center">
-        <Button text size="small" title="收起/展开侧栏" @click="emit('toggleSidebar')">
-          <template #icon>
-            <PanelLeft class="h-4 w-4" />
-          </template>
+        <Button text size="small" icon-only title="收起/展开侧栏" @click="emit('toggleSidebar')">
+          <IconLayoutSidebar class="h-4 w-4" />
         </Button>
-        <Button text size="small" title="功能菜单" @click="navMenuRef?.toggle($event)">
-          <template #icon>
-            <Ellipsis class="h-4 w-4" />
-          </template>
+        <Button text size="small" icon-only title="功能菜单" @click="navMenuRef?.toggle($event)">
+          <IconDots class="h-4 w-4" />
         </Button>
         <TieredMenu ref="navMenuRef" :model="navMenuItems" popup class="w-48" @show="onNavShow">
           <template #itemicon="{ item }">
@@ -100,7 +96,7 @@ function navIcon(item: MenuItem) {
       <button type="button" title="系统设置"
         class="inline-flex size-8 items-center justify-center rounded-full text-base text-current transition-colors hover:bg-black/5 active:bg-black/10 dark:hover:bg-white/20 dark:active:bg-white/30"
         @click="emit('openSettings')">
-        <Settings class="size-[1em]" />
+        <IconSettings class="size-[1em]" />
       </button>
       <ThemeToggle :is-dark="isDark" size="sm" :duration="600" title="主题切换" @toggle="toggleTheme" />
       <Button severity="secondary" variant="text" rounded class="gap-1.5" @click="userMenu?.toggle($event)">
@@ -109,7 +105,7 @@ function navIcon(item: MenuItem) {
             class="flex h-6 w-6 items-center justify-center rounded-full bg-primary/15 text-primary"><User
               class="h-3.5 w-3.5" /></span>
           <span class="hidden text-xs text-foreground sm:inline">{{ auth.session?.userName ?? "" }}</span>
-          <ChevronDown class="h-3.5 w-3.5 text-muted-foreground" />
+          <IconChevronDown class="h-3.5 w-3.5 text-muted-foreground" />
         </span>
       </Button>
       <Menu ref="userMenu" :model="userItems" popup class="w-40">

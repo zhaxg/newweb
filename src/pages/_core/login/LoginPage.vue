@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref, watch } from "vue";
-import { Check, Circle, Eye, EyeOff, LoaderCircle, Lock, LogIn, User } from "@lucide/vue";
+import {
+  IconEye, IconEyeOff,
+  IconLoader, IconLock, IconLogin2, IconSquareRounded,
+  IconSquareRoundedCheck, IconUser
+} from '@tabler/icons-vue';
 import InputText from "primevue/inputtext";
 import IconField from "primevue/iconfield";
 import InputIcon from "primevue/inputicon";
@@ -10,6 +14,9 @@ import Button from "primevue/button";
 import Captcha from "@/components/common/Captcha.vue";
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/authStore";
+import { useToast } from "@/composables/useToast";
+import { CaptchaType } from "@/api/admin/enums";
+import { USE_MOCK } from "@/api/request";
 import hgA from "@/assets/login/HG-A.jpg";
 import hgB from "@/assets/login/HG-B.jpg";
 import hgC from "@/assets/login/HG-C.jpg";
@@ -20,6 +27,7 @@ import hgF from "@/assets/login/HG-F.jpg";
 /* 淡色流光底 + 大卡片轮播图 + 右侧悬浮亚克力登录小卡 */
 
 const auth = useAuthStore();
+const { toast } = useToast();
 const route = useRoute();
 const router = useRouter();
 
@@ -53,6 +61,8 @@ const masked = ref(true);
 const rememberMe = ref(!!saved0);
 const captchaSignature = ref("");
 const captchaChallenge = ref("");
+const captchaType = ref<CaptchaType>(CaptchaType.MathPow);
+const captchaPassed = ref(false);
 const loading = ref(false);
 
 // 输入命中已记住的账号 → 回填密码（对应 UserIDValueChanged）
@@ -66,16 +76,43 @@ watch(userId, (id) => {
 
 async function onLogin() {
   if (loading.value) return;
+  /* 前置校验：用户名/密码必填、验证码须先通过挑战 */
+  if (!userId.value.trim()) {
+    toast("请输入用户名", 2000, "warn");
+    return;
+  }
+  if (!password.value) {
+    toast("请输入密码", 2000, "warn");
+    return;
+  }
+  if (!captchaPassed.value) {
+    toast("请先点击完成人机验证", 2000, "warn");
+    return;
+  }
   loading.value = true;
-  // 演示模式：不做任何校验，点登录即进（模拟 DataPortal TokenAsync 往返）
-  await new Promise((resolve) => setTimeout(resolve, 600));
-  auth.login(userId.value.trim() || "admin", password.value, rememberMe.value);
-  // 登录成功 → 回跳 redirect（仅接受站内绝对路径，防开放重定向）
-  const redirect = route.query.redirect;
-  const target =
-    typeof redirect === "string" && redirect.startsWith("/") && !redirect.startsWith("//") ? redirect : "/";
-  await router.replace(target);
-  loading.value = false;
+  try {
+    if (USE_MOCK) {
+      // 演示模式：不做任何校验，点登录即进（模拟 DataPortal TokenAsync 往返）
+      await new Promise((resolve) => setTimeout(resolve, 600));
+      auth.login(userId.value.trim() || "admin", password.value, rememberMe.value);
+    } else {
+      await auth.loginWithServer(userId.value.trim(), password.value, rememberMe.value, {
+        code: captchaChallenge.value,
+        signature: captchaSignature.value,
+        type: captchaType.value,
+      });
+    }
+    toast("登录成功", 1500, "success");
+    // 登录成功 → 回跳 redirect（仅接受站内绝对路径，防开放重定向）
+    const redirect = route.query.redirect;
+    const target =
+      typeof redirect === "string" && redirect.startsWith("/") && !redirect.startsWith("//") ? redirect : "/";
+    await router.replace(target);
+  } catch {
+    /* 失败提示由请求层统一 toast（error），这里只需恢复按钮；token 无效等错误已回登录页 */
+  } finally {
+    loading.value = false;
+  }
 }
 </script>
 
@@ -104,7 +141,8 @@ async function onLogin() {
 
         <!-- 悬浮亚克力登录小卡：右缘 50px、上下 81px≈50×1.618，弹性空白吸收富余高度；
              移动端大卡退为透明铺满层，小卡居中占满宽度 -->
-        <div class="absolute inset-0 flex items-stretch justify-end px-[50px] py-[81px] max-md:items-center max-md:justify-center max-md:p-4">
+        <div
+          class="absolute inset-0 flex items-stretch justify-end px-[50px] py-[81px] max-md:items-center max-md:justify-center max-md:p-4">
           <div
             class="flex max-h-full w-[36%] min-w-[19rem] max-w-[26rem] flex-col overflow-y-auto rounded-2xl border border-white/50 bg-white/55 p-5 shadow-[0_16px_48px_rgba(15,40,80,0.28)] backdrop-blur-2xl dark:border-white/10 dark:bg-slate-900/45 max-md:w-full max-md:min-w-0 max-md:max-w-[24rem]">
             <div class="text-2xl leading-none">👏</div>
@@ -117,7 +155,7 @@ async function onLogin() {
             <div class="login-form flex flex-1 flex-col space-y-2.5">
               <IconField>
                 <InputIcon>
-                  <User />
+                  <IconUser />
                 </InputIcon>
                 <InputText v-model="userId" placeholder="请输入用户名" autocomplete="off" autofocus spellcheck="false"
                   class="w-full" @keydown.enter="onLogin" />
@@ -125,23 +163,24 @@ async function onLogin() {
 
               <IconField>
                 <InputIcon>
-                  <Lock />
+                  <IconLock />
                 </InputIcon>
                 <InputPassword v-model="password" v-model:mask="masked" variant="filled" fluid placeholder="请输入密码"
                   autocomplete="off" autocapitalize="off" spellcheck="false" @keydown.enter="onLogin" />
                 <InputIcon @click="masked = !masked">
-                  <EyeOff v-if="masked" />
-                  <Eye v-else />
+                  <IconEyeOff v-if="masked" />
+                  <IconEye v-else />
                 </InputIcon>
               </IconField>
 
               <Captcha v-model:signature="captchaSignature" v-model:challengeString="captchaChallenge"
+                v-model:captchaType="captchaType" v-model:success="captchaPassed"
                 v-slot="{ caption, loading: capLoading, success: capSuccess, verify: capVerify }">
                 <button type="button" class="captcha-btn" :class="{ 'is-success': capSuccess }" :disabled="capLoading"
                   @click="capVerify">
-                  <LoaderCircle v-if="capLoading" class="captcha-icon animate-spin" />
-                  <Check v-else-if="capSuccess" class="captcha-icon" />
-                  <Circle v-else class="captcha-icon captcha-icon-muted" />
+                  <IconLoader v-if="capLoading" class="captcha-icon animate-spin" />
+                  <IconSquareRoundedCheck v-else-if="capSuccess" class="captcha-icon" />
+                  <IconSquareRounded v-else class="captcha-icon captcha-icon-muted" />
                   <span>{{ caption }}</span>
                 </button>
               </Captcha>
@@ -153,10 +192,9 @@ async function onLogin() {
 
               <div class="min-h-[24px] flex-1"></div>
 
-              <Button label="登 录" raised rounded class="h-10 w-full shrink-0 text-base" :loading="loading" @click="onLogin">
-                <template #icon>
-                  <LogIn v-if="!loading" class="h-4 w-4" />
-                </template>
+              <Button raised rounded class="h-10 w-full shrink-0 text-base" :loading="loading" @click="onLogin">
+                <component :is="loading ? IconLoader : IconLogin2" :class="['h-4 w-4', loading && 'animate-spin']" />
+                登 录
               </Button>
 
               <div class="h-6 shrink-0"></div>

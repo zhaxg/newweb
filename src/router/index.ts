@@ -1,19 +1,12 @@
-import type { Component } from "vue";
+import { defineAsyncComponent, type Component } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
 import type { RouteRecordRaw } from "vue-router";
 import LoginPage from "@/pages/_core/login/LoginPage.vue";
 import MainLayout from "@/layouts/MainLayout.vue";
 import HomePage from "@/pages/_core/home/HomePage.vue";
-import SalesOrdersPage from "@/pages/SalesOrdersPage.vue";
-import PurchaseOrdersPage from "@/pages/PurchaseOrdersPage.vue";
-import SysDepartmentsPage from "@/pages/admin/departments/SysDepartmentsPage.vue";
-import SysUsersPage from "@/pages/admin/user/SysUsersPage.vue";
-import SysRolesPage from "@/pages/admin/role/SysRolesPage.vue";
-import SysMenusPage from "@/pages/admin/menus/SysMenusPage.vue";
-import SysKvPage from "@/pages/admin/kv/SysKvPage.vue";
-import SysAuditPage from "@/pages/admin/audit/SysAuditPage.vue";
 import PlaceholderPage from "@/pages/_core/PlaceholderPage.vue";
 import ForbiddenPage from "@/pages/_core/ForbiddenPage.vue";
+import IframePage from "@/pages/_core/IframePage.vue";
 import type { HmxMenuNode } from "@/data/hmxMenu";
 import { useAuthStore } from "@/stores/authStore";
 import { usePermissionStore } from "@/stores/permissionStore";
@@ -25,21 +18,24 @@ declare module "vue-router" {
     requiresAuth?: boolean;
     pageId?: string;
     title?: string;
+    /** iframe 叶子路由：承载的外链地址 */
+    url?: string;
   }
 }
 
-/** pageId → 页面组件；未实现的叶子落到 PlaceholderPage */
-export const pageComponents: Record<string, Component> = {
-  home: HomePage,
-  "sales-orders": SalesOrdersPage,
-  "purchase-orders": PurchaseOrdersPage,
-  "sys-departments": SysDepartmentsPage,
-  "sys-users": SysUsersPage,
-  "sys-roles": SysRolesPage,
-  "sys-menus": SysMenusPage,
-  "sys-kv": SysKvPage,
-  "sys-audit": SysAuditPage,
-};
+/**
+ * 页面组件动态解析：不写死映射表，按「用户配置的组件地址」（后端 cResSubPath / mock 节点 src）
+ * 在 import.meta.glob 预扫描的页面模块里查表命中，命中即 defineAsyncComponent 懒加载分包。
+ * 配置路径相对 src/pages，如 "/admin/user/index.vue"；未命中（未实现/占位资源）回落 PlaceholderPage。
+ */
+const pageModules = import.meta.glob("/src/pages/**/*.vue") as Record<string, () => Promise<{ default: Component }>>;
+
+function resolvePageComponent(src?: string): Component | undefined {
+  if (!src) return undefined;
+  const norm = src.startsWith("/") ? src : `/${src}`;
+  const loader = pageModules[`/src/pages${norm}`];
+  return loader ? defineAsyncComponent(loader) : undefined;
+}
 
 const routes: RouteRecordRaw[] = [
   { path: "/login", name: "login", component: LoginPage, meta: { public: true } },
@@ -76,10 +72,11 @@ export function registerUserRoutes(tree: HmxMenuNode[]) {
     const name = `page:${leaf.page}`;
     if (router.hasRoute(name)) return;
     router.addRoute("shell", {
-      path: `page/${leaf.page}`,
+      path: leaf.page!,
       name,
-      component: pageComponents[leaf.page!] ?? PlaceholderPage,
-      meta: { pageId: leaf.page, title: leaf.label },
+      // iframe 叶子（内置菜单）→ 承载组件；其余按配置的组件地址动态解析，未命中落占位页
+      component: leaf.iframe ? IframePage : (resolvePageComponent(leaf.src) ?? PlaceholderPage),
+      meta: { pageId: leaf.page, title: leaf.label, url: leaf.iframe },
     });
     addedNames.push(name);
   });
