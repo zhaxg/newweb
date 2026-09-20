@@ -13,9 +13,11 @@ import SysMenusPage from "./pages/SysMenusPage.vue";
 import SysKvPage from "./pages/SysKvPage.vue";
 import SysAuditPage from "./pages/SysAuditPage.vue";
 import PlaceholderPage from "./pages/PlaceholderPage.vue";
+import LoginPage from "./pages/LoginPage.vue";
 import { useTabs } from "./composables/useTabs";
 import { useToast } from "./composables/useToast";
 import { useSettingsStore } from "./stores/settingsStore";
+import { useAuthStore } from "./stores/authStore";
 import type { ErpMenuNode } from "./data/erpMenu";
 import { LicenseManager } from "ag-grid-enterprise";
 import Dialog from "primevue/dialog";
@@ -37,6 +39,7 @@ LicenseManager.setLicenseKey("[v3][RELEASE][0102]_NDg2Njc4MzY3MDgzNw==16d78ca762
 const { tabs, activeId, openTab } = useTabs();
 const { action: toastAction, toast, dismissToast } = useToast();
 const { editorSettings, updateEditorSettings } = useSettingsStore();
+const auth = useAuthStore();
 
 const pageComponents: Record<string, unknown> = {
   home: HomePage,
@@ -85,7 +88,8 @@ function openPage(node: ErpMenuNode) {
 }
 
 function logout() {
-  toast("已退出（演示）", 1800);
+  auth.logout();
+  toast("已退出登录", 1800);
 }
 
 function runToastAction() {
@@ -97,25 +101,28 @@ function runToastAction() {
 
 <template>
   <div class="flex h-screen w-screen flex-col overflow-hidden bg-background text-foreground antialiased">
-    <ErpHeader @open-settings="settingsOpen = true" @logout="logout" @toggle-sidebar="sidebarVisible = !sidebarVisible"
-      @open-page="openPage" />
-    <div class="flex min-h-0 flex-1">
-      <ErpSidebar v-if="sidebarVisible" :active-page-id="activeId ? activeId.replace('page-', '') : null"
+    <LoginPage v-if="!auth.session" />
+    <template v-else>
+      <ErpHeader @open-settings="settingsOpen = true" @logout="logout" @toggle-sidebar="sidebarVisible = !sidebarVisible"
         @open-page="openPage" />
-      <main class="flex min-h-0 min-w-0 flex-1 flex-col">
-        <ErpTabBar />
-        <div class="min-h-0 flex-1 overflow-hidden bg-white p-[5px] dark:bg-[#282828]">
-          <div class="flex h-full min-h-0 flex-col overflow-hidden rounded-sm"
-            :class="activeId === 'page-home' ? '' : 'bg-background'">
-            <component v-if="activePageComponent" :is="activePageComponent" :key="activeId" :title="activePageTitle" />
-            <div v-else class="flex h-full flex-col items-center justify-center gap-2 text-muted-foreground">
-              <div class="text-lg font-semibold text-foreground/80">欢迎使用 智能制造 ERP</div>
-              <div class="text-sm">从左侧菜单选择功能模块开始工作</div>
+      <div class="flex min-h-0 flex-1">
+        <ErpSidebar v-if="sidebarVisible" :active-page-id="activeId ? activeId.replace('page-', '') : null"
+          @open-page="openPage" />
+        <main class="flex min-h-0 min-w-0 flex-1 flex-col">
+          <ErpTabBar />
+          <div class="min-h-0 flex-1 overflow-hidden bg-white p-[5px] dark:bg-[#282828]">
+            <div class="flex h-full min-h-0 flex-col overflow-hidden rounded-sm"
+              :class="activeId === 'page-home' ? '' : 'bg-background'">
+              <component v-if="activePageComponent" :is="activePageComponent" :key="activeId" :title="activePageTitle" />
+              <div v-else class="flex h-full flex-col items-center justify-center gap-2 text-muted-foreground">
+                <div class="text-lg font-semibold text-foreground/80">欢迎使用 智能制造 ERP</div>
+                <div class="text-sm">从左侧菜单选择功能模块开始工作</div>
+              </div>
             </div>
           </div>
-        </div>
-      </main>
-    </div>
+        </main>
+      </div>
+    </template>
 
     <Dialog :visible="settingsOpen" modal header="系统设置" :style="{ width: 'min(32rem, calc(100vw - 2rem))' }"
       @update:visible="settingsOpen = $event">

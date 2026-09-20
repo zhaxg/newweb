@@ -8,8 +8,10 @@ import TieredMenu from "primevue/tieredmenu";
 import type { MenuItem } from "primevue/menuitem";
 import { useAppTheme } from "@/composables/useAppTheme";
 import { erpMenu, type ErpMenuNode } from "@/data/erpMenu";
+import { useAuthStore } from "@/stores/authStore";
 
 const { mode, setMode } = useAppTheme();
+const auth = useAuthStore();
 
 const emit = defineEmits<{
   openSettings: [];
@@ -127,8 +129,8 @@ function navIcon(item: MenuItem) {
       <button type="button" class="flex items-center gap-1.5 rounded-md px-1.5 py-1 text-sm hover:bg-accent"
         @click="userMenu?.toggle($event)">
         <span
-          class="flex h-6 w-6 items-center justify-center rounded-full bg-primary/15 text-xs font-medium text-primary">管</span>
-        <span class="hidden text-foreground sm:inline">admin</span>
+          class="flex h-6 w-6 items-center justify-center rounded-full bg-primary/15 text-xs font-medium text-primary">{{ auth.session?.userName?.charAt(0) ?? "?" }}</span>
+        <span class="hidden text-foreground sm:inline">{{ auth.session?.userName ?? "" }}</span>
         <ChevronDown class="h-3.5 w-3.5 text-muted-foreground" />
       </button>
       <Menu ref="userMenu" :model="userItems" popup class="w-44">

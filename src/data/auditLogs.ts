@@ -98,6 +98,24 @@ export function loadAuditLogs(): AuditLog[] {
   return seeded;
 }
 
+/** 登录/登出实时落审计（移植自 HmxLoginForm 认证流） */
+export function appendAuditAuth(action: "登录" | "登出", userId: string, userName: string): void {
+  const rows = loadAuditLogs();
+  rows.unshift({
+    id: crypto.randomUUID().replace(/-/g, ""),
+    time: formatTime(new Date()),
+    userId,
+    userName,
+    action,
+    module: "系统管理",
+    target: "统一身份认证",
+    ip: "127.0.0.1",
+    result: "成功",
+    detail: DETAILS[action]!,
+  });
+  saveAuditLogs(rows);
+}
+
 function saveAuditLogs(rows: AuditLog[]): void {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(rows));
 }
