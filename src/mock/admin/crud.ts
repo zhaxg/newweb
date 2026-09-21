@@ -1,11 +1,11 @@
 import { Formatter } from "@hprose/io";
 
-import { loadRoles, saveRoles, formatNow, type HmxRole as LocalRole } from "@/data/roles";
-import { loadRescs, saveRescs } from "@/data/rescs";
+import { formatNow, loadRescs, loadRoles, saveRescs, saveRoles } from "./store";
+import type { HmxRole as LocalRole } from "@/data/roles";
 import type { SaveChangesInputV2 } from "@/api/admin/types";
 import type { SaveChangesData as Scd } from "@/api/common/trackable-list";
 import { API_BASE, getBody, ok, type RouteMap } from "./core";
-import { fromApi as rescFromApi, toApi as rescToApi } from "./resc";
+import { fromApi as rescFromApi } from "./resc";
 
 const P = `${API_BASE}/crud`;
 
@@ -53,17 +53,15 @@ function applyRescs(data: Scd<Record<string, any>>): Scd<Record<string, any>> {
   const respAdded: Record<string, any>[] = [];
   const respChanged: Record<string, any>[] = [];
   for (const item of data.addedItems) {
-    const local = rescFromApi(item);
-    rows.push(local);
-    respAdded.push(rescToApi(local));
+    const created = rescFromApi(item);
+    rows.push(created);
+    respAdded.push(created);
   }
   for (const item of data.changedItems) {
     const i = rows.findIndex((r) => r.id === item.id);
     if (i >= 0) {
-      const merged = rescFromApi(item, rows[i]);
-      merged.id = rows[i].id;
-      rows[i] = merged;
-      respChanged.push(rescToApi(merged));
+      rows[i] = rescFromApi(item, rows[i]);
+      respChanged.push(rows[i]);
     }
   }
   for (const item of data.deletedItems) {

@@ -17,7 +17,6 @@ import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/authStore";
 import { useToast } from "@/composables/useToast";
 import { CaptchaType } from "@/api/admin/enums";
-import { USE_MOCK } from "@/api/request";
 
 const auth = useAuthStore();
 const { toast } = useToast();
@@ -62,17 +61,11 @@ async function onLogin() {
   }
   loading.value = true;
   try {
-    if (USE_MOCK) {
-      // 演示模式：不做任何校验，点登录即进（模拟 DataPortal TokenAsync 往返）
-      await new Promise((resolve) => setTimeout(resolve, 600));
-      auth.login(userId.value.trim() || "admin", password.value, rememberMe.value);
-    } else {
-      await auth.loginWithServer(userId.value.trim(), password.value, rememberMe.value, {
-        code: captchaChallenge.value,
-        signature: captchaSignature.value,
-        type: captchaType.value,
-      });
-    }
+    await auth.loginWithServer(userId.value.trim(), password.value, rememberMe.value, {
+      code: captchaChallenge.value,
+      signature: captchaSignature.value,
+      type: captchaType.value,
+    });
     toast("登录成功", 1500, "success");
     // 登录成功 → 回跳 redirect（仅接受站内绝对路径，防开放重定向）
     const redirect = route.query.redirect;

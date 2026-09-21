@@ -14,7 +14,7 @@ import { useToast } from "@/composables/useToast";
 import { adminApi } from "@/api/admin/request";
 import type { HmxRes } from "@/api/admin/types";
 import { RbacRescType } from "@/api/admin/enums";
-import { NextStrId } from "@/api/common/nextStrId";
+import { NextStrId } from "@/lib/yitIdHelper";
 import { TABLER_FALLBACK_ICON, tablerIcon } from "@/lib/tablerIcons";
 import RescBtnListDialog from "./RescBtnListDialog.vue";
 import RescEditDialog from "./RescEditDialog.vue";

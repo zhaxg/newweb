@@ -1,13 +1,13 @@
 import {
   formatNow,
   loadAllUsersLite,
+  loadRescs,
   loadRoles,
   loadUserRoles,
   saveRoles,
   saveUserRoles,
-  type HmxRole as LocalRole,
-} from "@/data/roles";
-import { loadRescs } from "@/data/rescs";
+} from "./store";
+import type { HmxRole as LocalRole } from "@/data/roles";
 import type { HmxKv, HmxRole, RolePermissionOfViewAndWidgets, RoleUserDto } from "@/api/admin/types";
 import { RbacRescType } from "@/api/admin/enums";
 import { API_BASE, fail, getBody, getParams, matchKeyword, ok, type RouteMap } from "./core";
@@ -100,24 +100,23 @@ export const roleRoutes: RouteMap = {
     return ok(config, null);
   },
   [`post ${P}/getResourceNamespaceList`]: (config) => {
-    const ns = new Set<string>(loadRescs().map(() => "TDWEB"));
-    ns.add("DEFAULT");
-    const list: HmxKv[] = [...ns].map((code, i) => ({ selected: false, id: `ns-${i}`, cCode: code, cName: code }));
+    const ns = new Set<string>(loadRescs().map((r) => r.cNsCode ?? "").filter(Boolean));
+    const list: HmxKv[] = [...ns].sort().map((code, i) => ({ selected: false, id: `ns-${i}`, cCode: code, cName: code }));
     return ok(config, list);
   },
   [`post ${P}/queryRolePermissionOfViewAndWidgets`]: (config) => {
-    const { roleId } = getBody<{ roleId?: string; groupId?: string }>(config);
+    const { roleId, groupId } = getBody<{ roleId?: string; groupId?: string }>(config);
     const perms = new Set(roleId ? (loadRoleRescPerms()[roleId] ?? []) : []);
     const nodes: RolePermissionOfViewAndWidgets[] = loadRescs()
-      .filter((r) => r.cRescType === "Menu" || r.cRescType === "Widget")
+      .filter((r) => (!groupId || r.cNsCode === groupId) && (r.cResType === RbacRescType.Menu || r.cResType === RbacRescType.Widget))
       .map((r) => ({
         selected: perms.has(r.id),
         id: r.id,
-        cpId: r.cPid === "0" ? "" : r.cPid,
+        cpId: r.cPid ?? "",
         cCode: r.cCode,
         cName: r.cTitle,
-        cType: (r.cRescType === "Widget" ? RbacRescType.Widget : RbacRescType.Menu) as RbacRescType,
-        cIcon: r.icon,
+        cType: r.cResType === RbacRescType.Widget ? RbacRescType.Widget : RbacRescType.Menu,
+        cIcon: r.cIcon,
       }));
     return ok(config, nodes);
   },

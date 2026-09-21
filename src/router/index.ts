@@ -116,7 +116,7 @@ router.beforeEach(async (to) => {
   if (!perm.loaded) {
     // 登录后首次进入 / 刷新：拉取菜单 → 注册路由 → 重放本次导航（统一覆盖三种场景）
     try {
-      const tree = await perm.loadForUser(auth.session.userId);
+      const tree = await perm.loadForUser();
       registerUserRoutes(tree);
     } catch {
       auth.logout();

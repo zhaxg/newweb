@@ -10,7 +10,9 @@ import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
 import { useToast } from "@/composables/useToast";
 import DeptEditDialog from "./DeptEditDialog.vue";
-import { buildDeptTree, loadDepartments, newDeptId, saveDepartments, type DeptTreeNode, type HmxDept } from "@/data/departments";
+import { departmentApi } from "@/api/admin/request";
+import type { HmxDept as ApiDept } from "@/api/admin/types";
+import { buildDeptTree, type DeptTreeNode, type HmxDept } from "@/data/departments";
 
 
 const { toast } = useToast();
@@ -135,8 +137,8 @@ function applyExpansion() {
   });
 }
 
-function query() {
-  rows.value = loadDepartments();
+async function query() {
+  rows.value = (await departmentApi.queryAllDepartments()) as unknown as HmxDept[];
   defaultExpanded(buildDeptTree(rows.value));
   selectedId.value = null;
   nextTick(applyExpansion);
@@ -232,30 +234,39 @@ function onDelete() {
   confirmOpen.value = true;
 }
 
-function confirmDelete() {
+async function confirmDelete() {
   const target = confirmTarget.value;
   if (!target) return;
+  try {
+    await departmentApi.delete(target as unknown as ApiDept);
+  } catch {
+    return; // 失败提示由请求层统一 toast
+  }
   rows.value = rows.value.filter((r) => r.id !== target.id);
-  saveDepartments(rows.value);
   if (selectedId.value === target.id) selectedId.value = null;
   confirmOpen.value = false;
   confirmTarget.value = null;
   toast("删除成功", 2000, "success");
 }
 
-function onSaveDept(dept: HmxDept) {
-  if (editTarget.value) {
-    rows.value = rows.value.map((r) => (r.id === editTarget.value!.id ? dept : r));
-  } else {
-    rows.value = [...rows.value, { ...dept, id: newDeptId() }];
-    // 新增子部门时展开父级，保证可见
-    if (dept.cDeptPid) {
-      const next = new Set(expandedIds.value);
-      next.add(dept.cDeptPid);
-      expandedIds.value = next;
+async function onSaveDept(dept: HmxDept) {
+  try {
+    if (editTarget.value) {
+      await departmentApi.save(dept as unknown as ApiDept);
+      rows.value = rows.value.map((r) => (r.id === dept.id ? dept : r));
+    } else {
+      await departmentApi.save({ ...dept, id: "" } as unknown as ApiDept);
+      // 新增子部门时展开父级，保证可见
+      if (dept.cDeptPid) {
+        const next = new Set(expandedIds.value);
+        next.add(dept.cDeptPid);
+        expandedIds.value = next;
+      }
+      rows.value = (await departmentApi.queryAllDepartments()) as unknown as HmxDept[];
     }
+  } catch {
+    return; // 失败提示由请求层统一 toast
   }
-  saveDepartments(rows.value);
   editOpen.value = false;
   toast("保存成功", 2000, "success");
 }

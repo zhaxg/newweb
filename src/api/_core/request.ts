@@ -3,7 +3,7 @@ import ToastEventBus from "primevue/toasteventbus";
 import { useAuthStore } from "@/stores/authStore";
 import { usePermissionStore } from "@/stores/permissionStore";
 import { router, resetUserRoutes } from "@/router";
-import { mockAdapter } from "./mockAdapter";
+import { mockAdapter } from "@/mock/mockAdapter";
 import type { Result } from "./types";
 import { ApiError } from "./types";
 

@@ -1,4 +1,4 @@
-import { requestClient } from "@/api/request";
+import { requestClient } from "@/api/_core/request";
 
 import type { RbacRescType } from "./enums";
 import type {

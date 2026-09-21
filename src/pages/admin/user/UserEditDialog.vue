@@ -6,8 +6,10 @@ import InputText from "primevue/inputtext";
 import Select from "primevue/select";
 import ToggleSwitch from "primevue/toggleswitch";
 import TreeSelect from "primevue/treeselect";
-import { buildDeptTree, loadDepartments, type DeptTreeNode, type HmxDept } from "@/data/departments";
-import { EDUS, NATIONS, POLITICS, PROVINCES, SEXES, USER_TYPES, type HmxUser } from "@/data/users";
+import { departmentApi } from "@/api/admin/request";
+import { buildDeptTree, type DeptTreeNode, type HmxDept } from "@/data/departments";
+import { EDUS, NATIONS, POLITICS, PROVINCES, SEXES, USER_TYPES } from "@/data/userOptions";
+import type { HmxUser } from "@/data/users";
 
 const props = defineProps<{
   open: boolean;
@@ -74,9 +76,9 @@ const statusOptions = [
 
 watch(
   () => props.open,
-  (open) => {
+  async (open) => {
     if (!open) return;
-    deptRows.value = loadDepartments();
+    deptRows.value = (await departmentApi.queryAllDepartments()) as unknown as HmxDept[];
     const e = props.editing;
     form.id = e?.id ?? "";
     form.cUserName = e?.cUserName ?? `用户${Math.floor(Math.random() * 10000)}`;

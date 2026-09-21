@@ -1,5 +1,6 @@
-import { loadUsers, newUserId, saveUsers, type HmxUser } from "@/data/users";
-import { loadRoles, loadUserRoles as loadUserRolesMap, saveUserRoles as saveUserRolesMapFrom } from "@/data/roles";
+import { loadRoles, loadUserRoles as loadUserRolesMap, loadUsers, saveUserRoles as saveUserRolesMapFrom, saveUsers } from "./store";
+import { NextStrId } from "@/lib/yitIdHelper";
+import type { HmxUser } from "@/data/users";
 import { API_BASE, fail, getBody, getParams, matchKeyword, ok, type RouteMap } from "./core";
 
 function filterUsers(rows: HmxUser[], keywords?: string): HmxUser[] {
@@ -21,7 +22,7 @@ export const userRoutes: RouteMap = {
     const user = { ...body, id: body.id.trim() } as HmxUser;
     const index = rows.findIndex((r) => r.id === user.id);
     if (index >= 0) rows[index] = user;
-    else rows.push({ ...user, id: user.id || newUserId() });
+    else rows.push({ ...user, id: user.id || NextStrId() });
     saveUsers(rows);
     return ok(config, user.id);
   },

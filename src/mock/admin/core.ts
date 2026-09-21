@@ -1,10 +1,10 @@
 import type { AxiosResponse, InternalAxiosRequestConfig } from "axios";
 
-import type { Result } from "@/api/types";
+import type { Result } from "@/api/_core/types";
 
 /**
  * mock「服务端」核心：信封/响应包装、路由表类型与请求解析助手。
- * 各业务域在 src/api/mock/*.ts 里导出 RouteMap，由 mockAdapter.ts 合并为一张路由表。
+ * 各业务域在 src/mock/<业务域>/*.ts 里导出 RouteMap，由 mockAdapter.ts 合并为一张路由表。
  */
 
 export const API_BASE = "/hmx.Service.Admin.Services";

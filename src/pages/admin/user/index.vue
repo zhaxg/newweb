@@ -14,7 +14,8 @@ import UserEditDialog from "./UserEditDialog.vue";
 import UserRoleEditDialog from "./UserRoleEditDialog.vue";
 import { adminApi } from "@/api/admin/request";
 import type { HmxUser as ApiUser } from "@/api/admin/types";
-import { newUserId, type HmxUser } from "@/data/users";
+import { NextStrId } from "@/lib/yitIdHelper";
+import type { HmxUser } from "@/data/users";
 
 
 const { toast } = useToast();
@@ -186,7 +187,7 @@ async function onSaveUser(user: HmxUser) {
   const editing = editTarget.value;
   const record: HmxUser = editing
     ? { ...user, id: editing.id, creator: editing.creator, createTime: editing.createTime, lastModifier: "admin", lastModifyTime: now }
-    : { ...user, id: user.id || newUserId(), creator: "admin", createTime: now, lastModifier: "", lastModifyTime: "" };
+    : { ...user, id: user.id || NextStrId(), creator: "admin", createTime: now, lastModifier: "", lastModifyTime: "" };
   try {
     await adminApi.addOrEditUser(record as unknown as ApiUser);
   } catch {

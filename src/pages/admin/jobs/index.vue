@@ -12,7 +12,7 @@ import { useToast } from "@/composables/useToast";
 import { quartzNetApi } from "@/api/admin/request";
 import type { HmxBackgroudJobInfo, HmxSchedulerStatusInfo } from "@/api/admin/types";
 import { HmxJobMisfiredEnums, YesNo } from "@/api/admin/enums";
-import { NextStrId } from "@/api/common/nextStrId";
+import { NextStrId } from "@/lib/yitIdHelper";
 import JobEditDialog from "./JobEditDialog.vue";
 
 const { toast } = useToast();

@@ -14,7 +14,7 @@ import Splitter from "primevue/splitter";
 import SplitterPanel from "primevue/splitterpanel";
 import { useToast } from "@/composables/useToast";
 import { systemKeyValueApi } from "@/api/admin/request";
-import { NextStrId } from "@/api/common/nextStrId";
+import { NextStrId } from "@/lib/yitIdHelper";
 import type { HmxKv } from "@/api/admin/types";
 
 

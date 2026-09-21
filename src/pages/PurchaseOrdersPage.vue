@@ -5,7 +5,7 @@ import Button from "primevue/button";
 import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, GridApi, GridReadyEvent, StatusBar } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
-import { generatePurchaseOrders, type PurchaseDataset } from "@/data/mock";
+import { generatePurchaseOrders, type PurchaseDataset } from "@/mock/data/mock";
 import { hmxDefaultColDef, hmxNullFormatter, makeHmxGridTheme } from "@/lib/agGrid";
 
 const dataset = ref<PurchaseDataset>(generatePurchaseOrders(10000));

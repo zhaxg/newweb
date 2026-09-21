@@ -16,7 +16,7 @@ import RoleUserDialog from "./RoleUserDialog.vue";
 import { adminApi } from "@/api/admin/request";
 import { crudAppService } from "@/api/common/crud-app-service";
 import { TrackableList } from "@/api/common/trackable-list";
-import { NextStrId } from "@/api/common/nextStrId";
+import { NextStrId } from "@/lib/yitIdHelper";
 import type { HmxRole } from "@/api/admin/types";
 
 

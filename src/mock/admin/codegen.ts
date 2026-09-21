@@ -16,7 +16,7 @@ function genFiles(table: string, ns: string): GenerateOutput[] {
     },
     {
       fileName: `${name}Api.ts`,
-      content: `import { requestClient } from "@/api/request";\nimport type { ${name} } from "./${name}.types";\n\nconst BASE = "/${ns.toLowerCase()}/${table}";\n\nexport const ${name[0].toLowerCase()}${name.slice(1)}Api = {\n  list(keywords?: string) {\n    return requestClient.request<${name}[]>(\`\${BASE}/list\`, { method: "post", params: { keywords } });\n  },\n  save(data: ${name}) {\n    return requestClient.request<any>(\`\${BASE}/save\`, { method: "post", data });\n  },\n  remove(id?: string) {\n    return requestClient.request<any>(\`\${BASE}/remove\`, { method: "post", params: { id } });\n  },\n};\n`,
+      content: `import { requestClient } from "@/api/_core/request";\nimport type { ${name} } from "./${name}.types";\n\nconst BASE = "/${ns.toLowerCase()}/${table}";\n\nexport const ${name[0].toLowerCase()}${name.slice(1)}Api = {\n  list(keywords?: string) {\n    return requestClient.request<${name}[]>(\`\${BASE}/list\`, { method: "post", params: { keywords } });\n  },\n  save(data: ${name}) {\n    return requestClient.request<any>(\`\${BASE}/save\`, { method: "post", data });\n  },\n  remove(id?: string) {\n    return requestClient.request<any>(\`\${BASE}/remove\`, { method: "post", params: { id } });\n  },\n};\n`,
     },
     {
       fileName: `${name}List.vue`,

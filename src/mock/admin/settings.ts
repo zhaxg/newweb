@@ -1,4 +1,4 @@
-import { loadSettings, saveSettings } from "@/data/settings";
+import { loadSettings, saveSettings } from "./store";
 import type { SystemSettingInfo } from "@/api/admin/types";
 import { API_BASE, getBody, ok, type RouteMap } from "./core";
 

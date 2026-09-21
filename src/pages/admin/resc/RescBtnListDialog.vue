@@ -13,7 +13,7 @@ import { adminApi } from "@/api/admin/request";
 import type { HmxRes } from "@/api/admin/types";
 import { RbacRescType } from "@/api/admin/enums";
 import { crudAppService } from "@/api/common/crud-app-service";
-import { NextStrId } from "@/api/common/nextStrId";
+import { NextStrId } from "@/lib/yitIdHelper";
 import { TrackableList } from "@/api/common/trackable-list";
 
 

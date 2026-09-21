@@ -3,7 +3,6 @@ import { authApi } from "@/api/admin/request";
 import { CaptchaType } from "@/api/admin/enums";
 import type { CaptchaInfo } from "@/api/admin/types";
 import { calculate } from "@/api/common/mathPowCaptcha";
-import { USE_MOCK } from "@/api/request";
 
 /**
  * 人机验证 composable（移植 hmx_web/hmx_tdweb 验证流）：
@@ -37,8 +36,8 @@ export function useCaptcha(
         btnCaption.value = "验证失败：挑战未加载，请刷新重试";
         return;
       }
-      if (USE_MOCK || info.captchaType !== CaptchaType.MathPow) {
-        // 演示模式 / 非 PoW 类型：直接消费挑战串本身
+      if (info.captchaType !== CaptchaType.MathPow) {
+        // 非 PoW 类型（如图形码）：直接消费挑战串本身
         captcha.value = info.challengeString;
       } else {
         captcha.value = await calculate(info.challengeString);
@@ -57,18 +56,8 @@ export function useCaptcha(
 
   onMounted(async () => {
     try {
-      if (USE_MOCK) {
-        await new Promise((resolve) => setTimeout(resolve, 200));
-        const challenge = String(Math.floor(1000 + Math.random() * 9000));
-        captchaInfo.value = {
-          captchaType: CaptchaType.MathPow,
-          challengeString: challenge,
-          signature: btoa(`demo:${challenge}`),
-        };
-      } else {
-        // 真实后端：主动拉取 MathPow 挑战（难度/前缀/时间戳 + XOR 签名）
-        captchaInfo.value = await authApi.getCaptchaChallenge();
-      }
+      // MathPow 挑战（难度/前缀/时间戳 + 签名）：mock 与真实后端同走 auth/getCaptchaChallenge
+      captchaInfo.value = await authApi.getCaptchaChallenge();
     } catch (err: any) {
       console.error("[Captcha] 获取验证码失败:", err);
       btnCaption.value = `验证码加载失败: ${err?.message || err || "未知错误"}`;

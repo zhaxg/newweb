@@ -1,4 +1,4 @@
-import { loadJobs, loadScheduler, saveJobs, saveScheduler } from "@/data/jobs";
+import { loadJobs, loadScheduler, saveJobs, saveScheduler } from "./store";
 import type { HmxBackgroudJobInfo, HmxBackgroundJobTypeInfo } from "@/api/admin/types";
 import { YesNo } from "@/api/admin/enums";
 import { API_BASE, getBody, ok, type RouteMap } from "./core";

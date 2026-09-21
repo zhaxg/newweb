@@ -1,4 +1,6 @@
-import { loadKvs, newKvId, saveKvs, type HmxKv as LocalKv } from "@/data/kv";
+import { loadKvs, saveKvs } from "./store";
+import { NextStrId } from "@/lib/yitIdHelper";
+import type { HmxKv as LocalKv } from "@/data/kv";
 import type { HmxKv, KvEditInput } from "@/api/admin/types";
 import { API_BASE, fail, getBody, getParams, ok, type RouteMap } from "./core";
 
@@ -24,8 +26,11 @@ export const kvRoutes: RouteMap = {
   },
   [`post ${P}/querySysKvItemList`]: (config) => {
     const { parentCode } = getParams(config);
-    const children = loadKvs()
-      .filter((k) => k.cPid === parentCode)
+    const all = loadKvs();
+    // 页面传父项 id；真实导出数据子项 cPid 存父项 cCode，两种链路都兼容
+    const masterCode = all.find((k) => k.id === parentCode && k.cPid === "")?.cCode;
+    const children = all
+      .filter((k) => k.cPid === parentCode || (!!masterCode && k.cPid === masterCode))
       .sort((a, b) => parseInt(a.cOrder || "0", 10) - parseInt(b.cOrder || "0", 10));
     return ok(config, children.map(toApi));
   },
@@ -41,7 +46,7 @@ export const kvRoutes: RouteMap = {
     const rows = loadKvs();
     let master = rows.find((k) => k.cPid === "" && k.cCode === cCode);
     if (!master) {
-      master = { id: newKvId(), cCode, cName: input.name, cDesc: "", cValue: "", cGroup: "", cOrder: "", cEnable: "1", cSw01: "", cSw02: "", cSw03: "", cPid: "" };
+      master = { id: NextStrId(), cCode, cName: input.name, cDesc: "", cValue: "", cGroup: "", cOrder: "", cEnable: "1", cSw01: "", cSw02: "", cSw03: "", cPid: "" };
       rows.push(master);
     } else {
       master.cName = input.name;
