@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { IconBook, IconChevronDown, IconDots, IconKey, IconLayoutSidebar, IconLogout, IconSettings } from "@tabler/icons-vue";
+import { IconBook, IconChevronDown, IconDots, IconKey, IconLogout, IconSettings } from "@tabler/icons-vue";
 import Button from "primevue/button";
+import Dialog from "primevue/dialog";
 import Menu from "primevue/menu";
 import TieredMenu from "primevue/tieredmenu";
 import type { MenuItem } from "primevue/menuitem";
@@ -28,6 +29,9 @@ const emit = defineEmits<{
   openPage: [node: HmxMenuNode];
 }>();
 
+/** 标题点击回首页：走父级 openPage 统一导航通道（page=home → "/"） */
+const HOME_NODE: HmxMenuNode = { id: "home", label: "首页", page: "home" };
+
 const userMenu = ref<InstanceType<typeof Menu> | null>(null);
 
 /** ThemeToggle 二态切换：暗 ⇄ 亮 */
@@ -37,11 +41,12 @@ function toggleTheme() {
 
 /* 用户下拉：帮助文档 | 修改密码 | 退出（图标走 #itemicon 插槽） */
 const modifyPasswdRef = ref<InstanceType<typeof ModifyPasswd> | null>(null);
+const logoutConfirmOpen = ref(false);
 const userItems: MenuItem[] = [
   { label: "帮助文档", command: () => toast("帮助文档建设中", 1800) },
   { label: "修改密码", command: () => modifyPasswdRef.value?.openModal() },
   { separator: true },
-  { label: "退出", command: () => emit("logout") },
+  { label: "退出", command: () => (logoutConfirmOpen.value = true) },
 ];
 const userIcons: Record<string, unknown> = { 帮助文档: IconBook, 修改密码: IconKey, 退出: IconLogout };
 
@@ -71,16 +76,14 @@ function navIcon(item: MenuItem) {
 <template>
   <header class="flex h-12 shrink-0 items-center justify-between border-b border-border bg-[#F4F4F4] px-3 dark:bg-card">
     <div class="flex min-w-0 items-center gap-2.5">
-      <div
-        class="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary text-sm font-bold text-primary-foreground shadow-sm">
-        H</div>
-      <div class="min-w-0">
+      <!-- logo：点击切换侧栏收起/展开（与侧栏钮同行为） -->
+      <div class="flex h-7 w-7 shrink-0 cursor-pointer select-none items-center justify-center rounded-md bg-primary text-sm font-bold text-primary-foreground shadow-sm"
+        title="收起/展开侧栏" @click="emit('toggleSidebar')">H</div>
+      <!-- 标题：点击回首页（走父级 openPage 统一导航通道） -->
+      <div class="min-w-0 cursor-pointer select-none" title="返回首页" @click="emit('openPage', HOME_NODE)">
         <div class="truncate text-sm font-semibold leading-tight text-foreground">HiMind工业互联网平台</div>
       </div>
-      <div class="ml-[40px] flex shrink-0 items-center">
-        <Button text size="small" icon-only title="收起/展开侧栏" @click="emit('toggleSidebar')">
-          <IconLayoutSidebar class="h-4 w-4" />
-        </Button>
+      <div class="ml-5 flex shrink-0 items-center">
         <Button text size="small" icon-only title="功能菜单" @click="navMenuRef?.toggle($event)">
           <IconDots class="h-4 w-4" />
         </Button>
@@ -115,5 +118,16 @@ function navIcon(item: MenuItem) {
       </Menu>
       <ModifyPasswd ref="modifyPasswdRef" />
     </div>
+
+    <!-- 退出确认（拦截误点）；autofocus 标记 → Dialog 动画结束后焦点落在"退出"按钮 -->
+    <Dialog :visible="logoutConfirmOpen" modal header="退出确认" autofocus
+      :style="{ width: 'min(26rem, calc(100vw - 2rem))' }" @update:visible="logoutConfirmOpen = $event">
+      <p class="text-sm">是否确定退出系统？</p>
+      <template #footer>
+        <Button label="取消" variant="outlined" @click="logoutConfirmOpen = false" />
+        <Button label="退出" severity="danger" variant="outlined" autofocus
+          @click="logoutConfirmOpen = false; emit('logout')" />
+      </template>
+    </Dialog>
   </header>
 </template>

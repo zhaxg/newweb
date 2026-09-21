@@ -25,4 +25,5 @@ export const englishFontOptions: FontOption[] = [
   { label: "Public Sans", family: "Public Sans", cssUrl: "https://cdn.jsdelivr.net/npm/@fontsource/public-sans@5.3.0/index.min.css" },
   { label: "JetBrains Mono", family: "JetBrains Mono", cssUrl: "https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.3.0/400.min.css" },
   { label: "Geist Mono", family: "Geist Mono", cssUrl: "https://cdn.jsdelivr.net/npm/@fontsource/geist-mono@5.3.0/index.min.css" },
+  { label: "Geist Sans", family: "Geist Sans", cssUrl: "https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5.3.0/index.min.css" }
 ];

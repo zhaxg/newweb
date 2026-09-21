@@ -9,10 +9,9 @@ import DatePicker from "primevue/datepicker";
 import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, GetRowIdParams } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
-import { autoSizeOnFirstData, ensureAgGrid, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
+import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
 import { loadAuditLogs, ACTIONS, MODULES, type AuditLog } from "@/data/auditLogs";
 
-ensureAgGrid();
 
 const theme = makeHmxGridTheme();
 

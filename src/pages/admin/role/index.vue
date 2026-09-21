@@ -9,7 +9,7 @@ import { AgGridVue } from "ag-grid-vue3";
 import type { CellValueChangedEvent, ColDef, GetRowIdParams, GridApi, GridReadyEvent } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 
-import { autoSizeOnFirstData, ensureAgGrid, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
+import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
 import { useToast } from "@/composables/useToast";
 import RolePermissionDialog from "./RolePermissionDialog.vue";
 import RoleUserDialog from "./RoleUserDialog.vue";
@@ -19,7 +19,6 @@ import { TrackableList } from "@/api/common/trackable-list";
 import { NextStrId } from "@/api/common/nextStrId";
 import type { HmxRole } from "@/api/admin/types";
 
-ensureAgGrid();
 
 const { toast } = useToast();
 const theme = makeHmxGridTheme();

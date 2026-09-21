@@ -7,15 +7,13 @@ import Tag from "primevue/tag";
 import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, GetRowIdParams, GridApi, GridReadyEvent } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
-import { autoSizeOnFirstData, ensureAgGrid, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
+import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
 import { useToast } from "@/composables/useToast";
 import { quartzNetApi } from "@/api/admin/request";
 import type { HmxBackgroudJobInfo, HmxSchedulerStatusInfo } from "@/api/admin/types";
 import { HmxJobMisfiredEnums, YesNo } from "@/api/admin/enums";
 import { NextStrId } from "@/api/common/nextStrId";
 import JobEditDialog from "./JobEditDialog.vue";
-
-ensureAgGrid();
 
 const { toast } = useToast();
 

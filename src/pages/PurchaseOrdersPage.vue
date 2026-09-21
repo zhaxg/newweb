@@ -6,9 +6,7 @@ import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, GridApi, GridReadyEvent, StatusBar } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { generatePurchaseOrders, type PurchaseDataset } from "@/data/mock";
-import { ensureAgGrid, hmxDefaultColDef, hmxNullFormatter, makeHmxGridTheme } from "@/lib/agGrid";
-
-ensureAgGrid();
+import { hmxDefaultColDef, hmxNullFormatter, makeHmxGridTheme } from "@/lib/agGrid";
 
 const dataset = ref<PurchaseDataset>(generatePurchaseOrders(10000));
 const gridApi = ref<GridApi | null>(null);

@@ -13,7 +13,7 @@ export interface BuiltinMenuSeed {
 export const builtinMenuSeeds: BuiltinMenuSeed[] = [
   {
     anchor: "documents", // 开发文档（真实后端资源 cResPath；mock 树无此节点时回落为根）
-    node: { id: "builtin-news", label: "腾讯新闻", icon: "Globe", page: "builtin-news", iframe: "https://news.qq.com" },
+    node: { id: "builtin-news", label: "腾讯新闻", icon: "Globe", page: "builtin-news", iframe: "https://news.qq.com", loading: false },
   },
 ];
 

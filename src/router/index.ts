@@ -11,6 +11,7 @@ import type { HmxMenuNode } from "@/data/hmxMenu";
 import { useAuthStore } from "@/stores/authStore";
 import { usePermissionStore } from "@/stores/permissionStore";
 import { useTabsStore } from "@/stores/tabsStore";
+import { loadingScreen } from "@/components/loading/loading";
 
 declare module "vue-router" {
   interface RouteMeta {
@@ -20,6 +21,8 @@ declare module "vue-router" {
     title?: string;
     /** iframe 叶子路由：承载的外链地址 */
     url?: string;
+    /** 刷新白屏过渡遮罩开关：默认启用，置 false 的路由不显示（见 components/loading） */
+    loading?: boolean;
   }
 }
 
@@ -76,7 +79,7 @@ export function registerUserRoutes(tree: HmxMenuNode[]) {
       name,
       // iframe 叶子（内置菜单）→ 承载组件；其余按配置的组件地址动态解析，未命中落占位页
       component: leaf.iframe ? IframePage : (resolvePageComponent(leaf.src) ?? PlaceholderPage),
-      meta: { pageId: leaf.page, title: leaf.label, url: leaf.iframe },
+      meta: { pageId: leaf.page, title: leaf.label, url: leaf.iframe, loading: leaf.loading },
     });
     addedNames.push(name);
   });
@@ -89,7 +92,13 @@ export function resetUserRoutes() {
 
 /* ---------- 路由守卫：登录 → 动态注册 → 越权 403 ---------- */
 
+/* 刷新白屏过渡只属于首次导航（含 loadForUser 等异步）；站内 tab 切换瞬时，不插遮罩。
+   首个 beforeEach 同步显示（此时动态路由未注册、拿不到目标 meta.loading，白底遮罩先挂无成本，
+   导航落地后按最终 meta 决定淡出或直除） */
+let firstNavigation = true;
+
 router.beforeEach(async (to) => {
+  if (firstNavigation) loadingScreen.show();
   const auth = useAuthStore();
   const perm = usePermissionStore();
 
@@ -126,6 +135,11 @@ router.beforeEach(async (to) => {
 /* ---------- router → tabs 单向同步（唯一入口，防双导航循环） ---------- */
 
 router.afterEach((to) => {
+  if (firstNavigation) {
+    /* meta.loading === false 的路由不启用：无动画直除（遮罩为白底，与从未显示观感一致） */
+    loadingScreen.hide({ immediate: to.meta.loading === false });
+    firstNavigation = false;
+  }
   if (!to.meta.pageId) return;
   const tabs = useTabsStore();
   tabs.openTab({ id: `page-${to.meta.pageId}`, title: to.meta.title ?? to.meta.pageId, page: to.meta.pageId });

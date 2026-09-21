@@ -1,25 +1,9 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
-import { IconAlertTriangle, IconCircleCheck, IconCircleX, IconInfoCircle } from "@tabler/icons-vue";
 import { RouterView } from "vue-router";
 import Toast from "primevue/toast";
-import Button from "primevue/button";
 import CheckUpdates from "./components/common/CheckUpdates.vue";
-import { useToast } from "./composables/useToast";
 import { setupFontSettings } from "./lib/fontSettings";
-import { LicenseManager } from "ag-grid-enterprise";
-
-LicenseManager.setLicenseKey("[v3][RELEASE][0102]_NDg2Njc4MzY3MDgzNw==16d78ca762fb5d2ff740aed081e2af7b");
-
-const { action: toastAction, dismissToast } = useToast();
-
-const toastIcons: Record<string, unknown> = { success: IconCircleCheck, info: IconInfoCircle, warn: IconAlertTriangle, error: IconCircleX };
-const toastIconColors: Record<string, string> = {
-  success: "text-green-600 dark:text-green-400",
-  info: "text-primary",
-  warn: "text-amber-500 dark:text-amber-400",
-  error: "text-red-600 dark:text-red-400",
-};
 
 onMounted(setupFontSettings);
 
@@ -33,12 +17,6 @@ function onEscapeCapture(event: KeyboardEvent) {
   mask?.querySelector<HTMLElement>(".p-dialog-close-button")?.click();
 }
 onMounted(() => document.addEventListener("keydown", onEscapeCapture, true));
-
-function runToastAction() {
-  const action = toastAction.value;
-  dismissToast();
-  action?.onClick();
-}
 </script>
 
 <template>
@@ -51,18 +29,7 @@ function runToastAction() {
       </Transition>
     </RouterView>
 
-    <Toast position="top-center">
-      <template #message="{ message }">
-        <div class="flex items-center gap-3">
-          <component
-            :is="toastIcons[message.severity as string] ?? toastIcons.info"
-            class="size-[1.15rem] shrink-0"
-            :class="toastIconColors[message.severity as string]" />
-          <span class="min-w-0 break-words whitespace-pre-wrap text-sm">{{ message.summary }}</span>
-          <Button v-if="toastAction" size="small" :label="toastAction.label" @click="runToastAction" />
-        </div>
-      </template>
-    </Toast>
+    <Toast position="top-center" />
 
     <CheckUpdates :check-updates-interval-minutes="1" />
   </div>

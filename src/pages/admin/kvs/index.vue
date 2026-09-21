@@ -9,7 +9,7 @@ import ToggleSwitch from "primevue/toggleswitch";
 import { AgGridVue } from "ag-grid-vue3";
 import type { CellValueChangedEvent, ColDef, GetRowIdParams, GridApi, GridReadyEvent } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
-import { autoSizeOnFirstData, ensureAgGrid, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
+import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
 import Splitter from "primevue/splitter";
 import SplitterPanel from "primevue/splitterpanel";
 import { useToast } from "@/composables/useToast";
@@ -17,7 +17,6 @@ import { systemKeyValueApi } from "@/api/admin/request";
 import { NextStrId } from "@/api/common/nextStrId";
 import type { HmxKv } from "@/api/admin/types";
 
-ensureAgGrid();
 
 const { toast } = useToast();
 const theme = makeHmxGridTheme();

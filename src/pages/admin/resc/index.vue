@@ -9,7 +9,7 @@ import Select from "primevue/select";
 import { AgGridVue } from "ag-grid-vue3";
 import type { AutoGroupColumnDef, ColDef, GetRowIdParams, GridApi, GridReadyEvent, RowClickedEvent, RowNode, ValueFormatterParams } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
-import { autoSizeOnFirstData, ensureAgGrid, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
+import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
 import { useToast } from "@/composables/useToast";
 import { adminApi } from "@/api/admin/request";
 import type { HmxRes } from "@/api/admin/types";
@@ -20,7 +20,6 @@ import RescBtnListDialog from "./RescBtnListDialog.vue";
 import RescEditDialog from "./RescEditDialog.vue";
 import { convertToTree, createTreeNode, findParentNodeById, type HmxResTree } from "./tree-node";
 
-ensureAgGrid();
 
 const { toast } = useToast();
 

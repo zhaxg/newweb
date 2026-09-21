@@ -7,12 +7,11 @@ import Dialog from "primevue/dialog";
 import { AgGridVue } from "ag-grid-vue3";
 import type { AutoGroupColumnDef, ColDef, GetRowIdParams, GridApi, GridReadyEvent, RowClickedEvent, RowNode, ValueFormatterParams } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
-import { autoSizeOnFirstData, ensureAgGrid, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
+import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
 import { useToast } from "@/composables/useToast";
 import DeptEditDialog from "./DeptEditDialog.vue";
 import { buildDeptTree, loadDepartments, newDeptId, saveDepartments, type DeptTreeNode, type HmxDept } from "@/data/departments";
 
-ensureAgGrid();
 
 const { toast } = useToast();
 

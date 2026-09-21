@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { useRoute, useRouter, RouterView } from "vue-router";
 import HmxHeader from "@/layouts/components/HmxHeader.vue";
 import HmxSidebar from "@/layouts/components/HmxSidebar.vue";
@@ -61,6 +61,22 @@ function logout() {
   router.replace("/login");
   toast("已退出登录", 1800);
 }
+
+/* 页签状态缓存（KeepAlive）：切页签不丢页面态；关闭页签 → 该页代号世代 +1 →
+   缓存键失效，重开 = 全新挂载。:max 兜底淘汰极端累积（LRU）。 */
+const pageGen = ref<Record<string, number>>({});
+
+const openPages = computed(() => new Set(tabs.tabs.map((t) => t.page)));
+
+watch(openPages, (now, prev) => {
+  if (!prev) return;
+  for (const page of prev) if (!now.has(page)) pageGen.value[page] = (pageGen.value[page] ?? 0) + 1;
+});
+
+function pageKey(pageId: string | undefined, routeName: unknown): string {
+  const pid = pageId ?? String(routeName);
+  return `${pid}#${pageGen.value[pid] ?? 0}`;
+}
 </script>
 
 <template>
@@ -76,7 +92,9 @@ function logout() {
             :class="route.name === 'home' ? '' : 'bg-background'">
             <RouterView v-slot="{ Component, route: r }">
               <Transition name="page" mode="out-in">
-                <component :is="Component" v-if="Component" :key="r.name" :title="r.meta.title" />
+                <KeepAlive :max="25">
+                  <component :is="Component" v-if="Component" :key="pageKey(r.meta.pageId, r.name)" :title="r.meta.title" />
+                </KeepAlive>
               </Transition>
             </RouterView>
           </div>

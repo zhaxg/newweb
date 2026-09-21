@@ -12,6 +12,8 @@ export interface HmxMenuNode {
   path?: string;
   /** 内置菜单：内嵌网页地址，路由注册时映射 IframePage（meta.url） */
   iframe?: string;
+  /** 刷新白屏过渡遮罩开关：false = 该页面路由不启用（透传 RouteMeta.loading，默认启用） */
+  loading?: boolean;
 }
 
 export const hmxMenu: HmxMenuNode[] = [

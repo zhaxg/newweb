@@ -8,7 +8,7 @@ import { AgGridVue } from "ag-grid-vue3";
 import type { CellValueChangedEvent, ColDef, GetRowIdParams, GridApi, GridReadyEvent } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { useToast } from "@/composables/useToast";
-import { autoSizeOnFirstData, ensureAgGrid, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
+import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
 import { adminApi } from "@/api/admin/request";
 import type { HmxRes } from "@/api/admin/types";
 import { RbacRescType } from "@/api/admin/enums";
@@ -16,7 +16,6 @@ import { crudAppService } from "@/api/common/crud-app-service";
 import { NextStrId } from "@/api/common/nextStrId";
 import { TrackableList } from "@/api/common/trackable-list";
 
-ensureAgGrid();
 
 const props = defineProps<{
   open: boolean;
