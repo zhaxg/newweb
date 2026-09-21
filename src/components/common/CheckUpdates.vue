@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from "vue";
-import { IconRefresh } from "@tabler/icons-vue";
 import Dialog from "primevue/dialog";
 import Button from "primevue/button";
 
@@ -118,11 +117,12 @@ onUnmounted(() => {
 <template>
   <Dialog v-model:visible="showModal" modal header="新版本可用" :style="{ width: 'min(28rem, 92vw)' }"
     :dismissable-mask="false">
-    <div class="flex items-center gap-2">
-      <IconRefresh class="h-4 w-4 shrink-0" />
-      <span>版本号</span>
-      <span class="font-mono">[{{ currentVersionTag }}] </span>
-      <span>点击刷新以获取新版本</span>
+    <div class="text-[13px] leading-relaxed text-foreground">
+      <div>检测到新版本，点击「刷新」重新加载页面</div>
+      <!-- 版本标识（etag）可能很长且无空格，单独成块 break-all 换行，不撑乱行内布局 -->
+      <div class="mt-2 break-all rounded bg-success-bg px-2 py-1 font-mono text-xs text-success">
+        {{ currentVersionTag }}
+      </div>
     </div>
     <template #footer>
       <Button label="稍后" text severity="secondary" @click="handleCancel" />

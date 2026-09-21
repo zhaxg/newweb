@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted } from "vue";
-import { RouterView } from "vue-router";
+import { RouterView, useRouter } from "vue-router";
 import Toast from "primevue/toast";
 import CheckUpdates from "./components/common/CheckUpdates.vue";
 import { setupFontSettings } from "./lib/fontSettings";
@@ -17,6 +17,19 @@ function onEscapeCapture(event: KeyboardEvent) {
   mask?.querySelector<HTMLElement>(".p-dialog-close-button")?.click();
 }
 onMounted(() => document.addEventListener("keydown", onEscapeCapture, true));
+
+// 屏蔽浏览器原生右键菜单（应用内自绘菜单如 ag-grid 右键筛选自行 preventDefault，不受影响）
+function onContextMenu(event: MouseEvent) {
+  event.preventDefault();
+}
+onMounted(() => document.addEventListener("contextmenu", onContextMenu));
+
+/** 强制清理过渡类：transitionend 在部分环境（headless/reduced-motion）不触发，
+ *  导致 screen-enter-from 残留使页面 opacity=0 不可见。 */
+function forceCleanTransition(el: Element) {
+  el.classList.remove("screen-enter-from", "screen-enter-active", "screen-enter-to",
+    "screen-leave-from", "screen-leave-active", "screen-leave-to");
+}
 </script>
 
 <template>
@@ -24,7 +37,7 @@ onMounted(() => document.addEventListener("keydown", onEscapeCapture, true));
     <RouterView v-slot="{ Component }">
       <!-- 不用 out-in：Vue 的 out-in 在 RouterView 插槽上会卡死（leave 完成后 enter 不渲染）；
            登录页是 fixed 覆盖层，交叉淡入淡出重叠期观感正确 -->
-      <Transition name="screen">
+      <Transition name="screen" @after-enter="forceCleanTransition" @after-leave="forceCleanTransition">
         <component :is="Component" />
       </Transition>
     </RouterView>
@@ -61,11 +74,5 @@ body {
 .screen-leave-to {
   opacity: 0;
   transform: scale(0.985);
-}
-@media (prefers-reduced-motion: reduce) {
-  .screen-enter-active,
-  .screen-leave-active {
-    transition: none;
-  }
 }
 </style>

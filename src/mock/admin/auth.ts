@@ -34,6 +34,22 @@ function makeChallenge(): CaptchaInfo {
   };
 }
 
+/** 兼容非安全上下文（http://IP）下 crypto.randomUUID 不可用 */
+function fallbackUuid(): string {
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
+  });
+}
+
+function safeRandomUUID(): string {
+  try {
+    return crypto.randomUUID();
+  } catch {
+    return fallbackUuid();
+  }
+}
+
 /** 从 token 还原 userId；非本 mock 发的 token（旧会话/真机串）统一回落 admin */
 function userIdFromToken(token?: string): string {
   if (token?.startsWith(TOKEN_PREFIX)) {
@@ -57,7 +73,7 @@ export const authRoutes: RouteMap = {
   [`post ${API_BASE}/auth/token`]: (config: InternalAxiosRequestConfig) => {
     const input = getBody<FetchTokenInput>(config);
     const userId = (input.userId ?? "").trim() || "admin";
-    const token = `${TOKEN_PREFIX}${encodeURIComponent(userId)}.${crypto.randomUUID()}`;
+    const token = `${TOKEN_PREFIX}${encodeURIComponent(userId)}.${safeRandomUUID()}`;
     return ok(config, token);
   },
   [`post ${API_BASE}/auth/getUserInfo`]: (config) => {

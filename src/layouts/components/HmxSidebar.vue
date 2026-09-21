@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import { IconSearch, IconX } from "@tabler/icons-vue";
+import { IconChevronsUp, IconSearch, IconX } from "@tabler/icons-vue";
 import InputText from "primevue/inputtext";
 import Tree from "primevue/tree";
 import type { TreeNode } from "primevue/treenode";
@@ -89,21 +89,12 @@ function toTreeNodes(nodes: HmxMenuNode[]): TreeNode[] {
 
 const treeNodes = computed(() => toTreeNodes(filterNodes(perm.menuTree, search.value)));
 
-/* 默认展开前两层（与原自研树行为一致） */
-function collectExpandable(nodes: HmxMenuNode[], depth: number, acc: Record<string, boolean>): Record<string, boolean> {
-  for (const n of nodes) {
-    if (n.children?.length) {
-      if (depth <= 1) acc[n.id] = true;
-      collectExpandable(n.children, depth + 1, acc);
-    }
-  }
-  return acc;
-}
+/* 加载菜单后默认全部折叠（不预展开任何层级） */
 const expandedKeys = ref<Record<string, boolean>>({});
 watch(
   () => perm.menuTree,
-  (tree) => {
-    expandedKeys.value = collectExpandable(tree, 0, {});
+  () => {
+    expandedKeys.value = {};
   },
   { immediate: true },
 );
@@ -132,6 +123,11 @@ watch(
   },
   { immediate: true },
 );
+
+/* 一键折叠：清空展开态，全部收起 */
+function collapseAll() {
+  expandedKeys.value = {};
+}
 
 function nodeIcon(node: TreeNode) {
   const name = (node.data as HmxMenuNode | undefined)?.icon;
@@ -172,7 +168,7 @@ function onNodeUnselect(node: TreeNode) {
   <!-- z-[11]：高于标签栏（HmxTabBar z-10），保证骑在边框上的分割条热区不被遮挡 -->
   <aside class="relative z-[11] flex h-full shrink-0 select-none flex-col border-r border-border bg-[#e5e7eb] dark:bg-sidebar" :style="{ width: sidebarWidth + 'px' }">
     <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2 py-1.5">
-      <div class="relative min-w-0 flex-1">
+      <div class="relative flex min-w-0 flex-1 items-center">
         <IconSearch class="pointer-events-none absolute left-2 top-1/2 z-10 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
         <InputText v-model="search" type="text" placeholder="搜索菜单" autocapitalize="off" autocorrect="off" spellcheck="false"
           class="!h-6 w-full !rounded border border-[#cdd2d9] !bg-[#dde0e5] !pl-7 !pr-6 !text-xs shadow-none dark:!bg-input/30" />
@@ -180,6 +176,9 @@ function onNodeUnselect(node: TreeNode) {
           <IconX class="h-3 w-3" />
         </button>
       </div>
+      <button type="button" class="flex h-6 w-6 shrink-0 items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-foreground" title="一键折叠" aria-label="一键折叠" @click="collapseAll">
+        <IconChevronsUp class="h-3.5 w-3.5" />
+      </button>
     </div>
     <div class="hmx-sidebar-scroll min-h-0 flex-1 overflow-y-auto py-1">
       <Tree v-if="treeNodes.length > 0" :value="treeNodes" selection-mode="single" :expanded-keys="expandedKeys" :selection-keys="selectedKeys"

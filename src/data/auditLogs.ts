@@ -18,6 +18,18 @@ export const MODULES = ["系统管理", "基础档案", "采购管理", "销售�
 
 const STORAGE_KEY = "hmx.audit_logs";
 
+/** 兼容非安全上下文（http://IP）下 crypto.randomUUID 不可用 */
+function safeId(): string {
+  try {
+    return crypto.randomUUID();
+  } catch {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+      const r = (Math.random() * 16) | 0;
+      return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
+    });
+  }
+}
+
 const USERS = [
   { userId: "admin", userName: "admin" },
   { userId: "u001", userName: "张伟" },
@@ -70,7 +82,7 @@ function seedAuditLogs(): AuditLog[] {
     const failed = (action === "删除" || action === "授权") && Math.random() < 0.25;
     const time = new Date(now - Math.floor(Math.random() * 14 * 24 * 60 * 60 * 1000));
     rows.push({
-      id: crypto.randomUUID().replace(/-/g, ""),
+      id: safeId().replace(/-/g, ""),
       time: formatTime(time),
       userId: user.userId,
       userName: user.userName,
@@ -102,7 +114,7 @@ export function loadAuditLogs(): AuditLog[] {
 export function appendAuditAuth(action: "登录" | "登出", userId: string, userName: string): void {
   const rows = loadAuditLogs();
   rows.unshift({
-    id: crypto.randomUUID().replace(/-/g, ""),
+    id: safeId().replace(/-/g, ""),
     time: formatTime(new Date()),
     userId,
     userName,

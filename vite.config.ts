@@ -9,6 +9,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [vue({ template: { compilerOptions: { isCustomElement: (tag) => tag === "hmx-chrome-tabs" } } }), tailwindcss()],
     server: {
+      host: "0.0.0.0",
       // 仅 VITE_USE_MOCK=false 的真实后端模式生效；全站接口约定 /api/[area]/[controller]/[action]
       // target 取 .env 的 VITE_API_TARGET
       proxy: {
