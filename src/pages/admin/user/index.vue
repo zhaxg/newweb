@@ -40,6 +40,8 @@ const deleteOpen = ref(false);
 const deleteTarget = ref<HmxUser | null>(null);
 
 const resetOpen = ref(false);
+const resetResultOpen = ref(false);
+const resetNewPwd = ref("");
 
 const columnDefs: ColDef[] = [
   { colId: "id", field: "id", headerName: "登录名", width: 110 },
@@ -163,7 +165,8 @@ async function confirmResetPwd() {
     return; // 拦截层已 toast
   }
   resetOpen.value = false;
-  toast(`密码已经重置为 ${newPwd || "Abc@123456"} , 请通知用户尽快修改密码！`, 2000, "success");
+  resetNewPwd.value = newPwd || "Abc@123456";
+  resetResultOpen.value = true;
 }
 
 function onRoleEdit() {
@@ -259,6 +262,19 @@ function onInvalid(message: string) {
       <template #footer>
         <Button label="取消" variant="outlined" @click="resetOpen = false" />
         <Button label="确定" variant="outlined" @click="confirmResetPwd" />
+      </template>
+    </Dialog>
+
+    <!-- 重置密码结果（需用户确认知悉新密码，不自动消失） -->
+    <Dialog :visible="resetResultOpen" modal header="重置密码成功" :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
+      @update:visible="resetResultOpen = $event">
+      <p class="text-sm">
+        密码已经重置为
+        <span class="mx-1 select-all font-mono font-medium text-primary">{{ resetNewPwd }}</span>
+        ，请通知用户尽快修改密码！
+      </p>
+      <template #footer>
+        <Button label="知道了" variant="outlined" autofocus @click="resetResultOpen = false" />
       </template>
     </Dialog>
   </div>

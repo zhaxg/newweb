@@ -10,11 +10,13 @@ export interface FontOption {
 
 export const chineseFontOptions: FontOption[] = [
   { label: "系统默认", family: "" },
-  { label: "小米黑体", family: "MiSans", cssUrl: "https://cdn.jsdelivr.net/npm/misans@4.1.0/lib/Normal/MiSans-Medium.min.css" },
+  { label: "思源黑体", family: "Noto Sans CJK", cssUrl: "https://fontsapi.zeoseven.com/69/main/result.css" },
   { label: "汇文明朝体", family: "Huiwen-mincho", cssUrl: "https://fontsapi.zeoseven.com/256/main/result.css" },
   { label: "京华老宋体", family: "KingHwaOldSong", cssUrl: "https://fontsapi.zeoseven.com/309/main/result.css" },
   { label: "霞鹜文楷", family: "LXGW WenKai", cssUrl: "https://fontsapi.zeoseven.com/292/main/result.css" },
-  { label: "朱雀仿宋", family: "Zhuque Fangsong (technical preview)", cssUrl: "https://fontsapi.zeoseven.com/7/main/result.css" },
+  { label: "寒蝉活楷", family: "ChillHuoKai", cssUrl: "https://fontsapi.zeoseven.com/874/main/result.css" },
+  { label: "寒蝉活仿楷", family: "ChillHuoFangKai_F", cssUrl: "https://fontsapi.zeoseven.com/872/main/result.css" },
+
 ];
 
 export const englishFontOptions: FontOption[] = [
@@ -22,8 +24,6 @@ export const englishFontOptions: FontOption[] = [
   { label: "Inter", family: "Inter", cssUrl: "https://cdn.jsdelivr.net/npm/@fontsource/inter@5.3.0/index.min.css" },
   { label: "Space Grotesk", family: "Space Grotesk", cssUrl: "https://cdn.jsdelivr.net/npm/@fontsource/space-grotesk@5.3.0/index.min.css" },
   { label: "IBM Plex Sans", family: "IBM Plex Sans", cssUrl: "https://cdn.jsdelivr.net/npm/@fontsource/ibm-plex-sans@5.3.0/index.min.css" },
-  { label: "Public Sans", family: "Public Sans", cssUrl: "https://cdn.jsdelivr.net/npm/@fontsource/public-sans@5.3.0/index.min.css" },
-  { label: "JetBrains Mono", family: "JetBrains Mono", cssUrl: "https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.3.0/400.min.css" },
   { label: "Geist Mono", family: "Geist Mono", cssUrl: "https://cdn.jsdelivr.net/npm/@fontsource/geist-mono@5.3.0/index.min.css" },
   { label: "Geist Sans", family: "Geist Sans", cssUrl: "https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5.3.0/index.min.css" }
 ];
