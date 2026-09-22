@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /** 悬浮亚克力登录小卡：表单状态、验证码、登录与回跳全部自包含，LoginPage 只负责背景与轮播。 */
-import { ref, watch } from "vue";
+import { computed, nextTick, ref, watch, type ComponentPublicInstance } from "vue";
 import {
   IconEye, IconEyeOff,
   IconLoader, IconLock, IconLogin2, IconSquareRounded,
@@ -9,7 +9,6 @@ import {
 import InputText from "primevue/inputtext";
 import IconField from "primevue/iconfield";
 import InputIcon from "primevue/inputicon";
-import InputPassword from "primevue/inputpassword";
 import Checkbox from "primevue/checkbox";
 import Button from "primevue/button";
 import Captcha from "@/components/common/Captcha.vue";
@@ -43,6 +42,79 @@ watch(userId, (id) => {
     rememberMe.value = true;
   }
 });
+
+/* ── 掩码输入层（方案三）──
+   masked 时输入框是 type=text，显示串 = 每个真实字符一个 #（1:1 长度映射，
+   光标/选区下标可直接换算回明文）。所有编辑在 beforeinput 里拦截并改写明文，
+   IME 组合文本由 compositionend 收编；代价是不再拥有 type=password 语义
+   （本站 autocomplete=off + 自有记住密码，不依赖浏览器密码管理器），
+   原生 Ctrl+Z（historyUndo）走兜底分支一并拦截，避免明文与显示串脱同步。 */
+const pwRef = ref<ComponentPublicInstance | null>(null);
+const pwDisplay = computed(() =>
+  masked.value ? "#".repeat(Array.from(password.value).length) : password.value,
+);
+
+function pwInputEl(): HTMLInputElement | null {
+  const el = pwRef.value?.$el as HTMLElement | HTMLInputElement | undefined;
+  if (!el) return null;
+  return el instanceof HTMLInputElement ? el : el.querySelector("input");
+}
+
+/** 明文 [start,end) 区间替换为 text，并把光标落到插入末尾 */
+function pwEdit(start: number, end: number, text: string) {
+  const chars = Array.from(password.value);
+  const ins = Array.from(text);
+  password.value = [...chars.slice(0, start), ...ins, ...chars.slice(end)].join("");
+  const caret = start + ins.length;
+  const el = pwInputEl();
+  if (el) nextTick(() => el.setSelectionRange(caret, caret));
+}
+
+function onPwBeforeInput(e: Event) {
+  if (!masked.value) return;
+  const ev = e as InputEvent;
+  const input = ev.target as HTMLInputElement;
+  const len = Array.from(password.value).length;
+  const start = input.selectionStart ?? len;
+  const end = input.selectionEnd ?? len;
+  const type = ev.inputType;
+  if (type === "insertText") {
+    ev.preventDefault();
+    pwEdit(start, end, ev.data ?? "");
+  } else if (type === "insertFromPaste" || type === "insertFromDrop") {
+    ev.preventDefault();
+    const dt = (ev as unknown as { dataTransfer?: DataTransfer | null }).dataTransfer;
+    pwEdit(start, end, dt?.getData("text/plain") || ev.data || "");
+  } else if (type === "deleteContentBackward") {
+    ev.preventDefault();
+    pwEdit(start === end ? Math.max(0, start - 1) : start, end, "");
+  } else if (type === "deleteContentForward") {
+    ev.preventDefault();
+    pwEdit(start, start === end ? Math.min(len, end + 1) : end, "");
+  } else if (type.startsWith("delete")) {
+    // deleteByCut / deleteByDrag：区间清空（无选区时等价空操作）
+    ev.preventDefault();
+    pwEdit(start, end, "");
+  } else {
+    // 其余（组合输入由 compositionend 收编、撤销/重做、整词替换等）：阻止，不碰明文
+    ev.preventDefault();
+  }
+}
+
+function onPwCompositionEnd(e: Event) {
+  if (!masked.value) return;
+  const ev = e as CompositionEvent;
+  const input = ev.target as HTMLInputElement;
+  const len = Array.from(password.value).length;
+  const start = Math.min(input.selectionStart ?? len, len);
+  const end = Math.min(Math.max(input.selectionEnd ?? start, start), len);
+  pwEdit(start, end, ev.data ?? "");
+}
+
+function onPwModelUpdate(v: unknown) {
+  // 正常路径下掩码态的 DOM 值不会原生变化；此处兜住浏览器自动填充等直改 value 的场景
+  password.value = v == null ? "" : String(v);
+}
 
 async function onLogin() {
   if (loading.value) return;
@@ -106,8 +178,10 @@ async function onLogin() {
           <InputIcon>
             <IconLock />
           </InputIcon>
-          <InputPassword v-model="password" v-model:mask="masked" variant="filled" fluid placeholder="请输入密码"
-            autocomplete="off" autocapitalize="off" spellcheck="false" @keydown.enter="onLogin" />
+          <InputText ref="pwRef" :model-value="pwDisplay" variant="filled" fluid placeholder="请输入密码"
+            autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"
+            @update:model-value="onPwModelUpdate" @beforeinput="onPwBeforeInput"
+            @compositionend="onPwCompositionEnd" @keydown.enter="onLogin" />
           <InputIcon @click="masked = !masked">
             <IconEyeOff v-if="masked" />
             <IconEye v-else />
@@ -151,7 +225,7 @@ async function onLogin() {
 <style scoped>
 /* 登录卡内输入控件恢复 Aura 常规尺寸（全局 HmxCompact 预设为表格压到 ~28px 高）。
    在 .login-form 容器上重设 form-field 令牌，CSS 自定义属性向后代继承，
-   InputText / InputPassword / Captcha 全部读同一组变量、尺寸同源。 */
+   InputText / 密码框 / Captcha 全部读同一组变量、尺寸同源。 */
 .login-form {
   --p-form-field-padding-x: 0.75rem;
   --p-form-field-padding-y: 0.625rem;
