@@ -17,8 +17,8 @@ import { useToast } from "@/composables/useToast";
 import RolePermissionDialog from "./RolePermissionDialog.vue";
 import RoleUserDialog from "./RoleUserDialog.vue";
 import { adminApi } from "@/api/admin/request";
-import { crudAppService } from "@/api/common/crud-app-service";
-import { TrackableList } from "@/api/common/trackable-list";
+import { crudAppService } from "@/api/common/crudAppService";
+import { TrackableList } from "@/api/common/trackableList";
 import { NextStrId } from "@/lib/yitIdHelper";
 import type { HmxRole } from "@/api/admin/types";
 
@@ -209,7 +209,7 @@ function stateText(row: HmxRole | undefined): string {
     <!-- 角色信息：ag-grid 行内编辑（双击或 F2 进入编辑，回车/失焦提交） -->
     <div class="min-h-0 flex-1 overflow-hidden">
       <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="columnDefs"
-        :default-col-def="hmxDefaultColDef" :row-data="trackList" :get-row-id="getRowId" :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
+        :default-col-def="hmxDefaultColDef" :row-data="trackList" :get-row-id="getRowId" :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
         :pagination="false" :animate-rows="false" :locale-text="AG_GRID_LOCALE_CN" @grid-ready="onGridReady"
         @selection-changed="onSelectionChanged" @cell-value-changed="onCellValueChanged"
         @first-data-rendered="autoSizeOnFirstData" />

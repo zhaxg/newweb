@@ -18,7 +18,7 @@ import UserRoleEditDialog from "./UserRoleEditDialog.vue";
 import { adminApi } from "@/api/admin/request";
 import type { HmxUser } from "@/api/admin/types";
 import type { UserType } from "@/api/admin/enums";
-import { USER_TYPE_LABELS } from "@/data/userOptions";
+import { USER_TYPE_LABELS } from "./userOptions";
 import { NextStrId } from "@/lib/yitIdHelper";
 
 const { toast } = useToast();
@@ -236,10 +236,10 @@ function onInvalid(message: string) {
     <!-- 表格：ag-grid（单选行、双击编辑；右键菜单走全站默认 hmxGetContextMenuItems） -->
     <div class="min-h-0 flex-1 overflow-hidden">
       <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="columnDefs"
-        :default-col-def="hmxDefaultColDef" :row-data="rows"
-        :get-row-id="getRowId" :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
-        :loading="querying" :pagination="false" :animate-rows="false" :locale-text="AG_GRID_LOCALE_CN"
-        @grid-ready="onGridReady" @selection-changed="onSelectionChanged" @row-double-clicked="onRowDoubleClicked"
+        :default-col-def="hmxDefaultColDef" :row-data="rows" :get-row-id="getRowId"
+        :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }" :loading="querying"
+        :pagination="false" :animate-rows="false" :locale-text="AG_GRID_LOCALE_CN" @grid-ready="onGridReady"
+        @selection-changed="onSelectionChanged" @row-double-clicked="onRowDoubleClicked"
         @first-data-rendered="autoSizeOnFirstData" />
     </div>
 

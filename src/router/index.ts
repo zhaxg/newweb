@@ -1,4 +1,4 @@
-import { defineAsyncComponent, type Component } from "vue";
+import { defineAsyncComponent, h, type Component } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
 import type { RouteRecordRaw } from "vue-router";
 import LoginPage from "@/pages/_core/login/LoginPage.vue";
@@ -7,10 +7,11 @@ import HomePage from "@/pages/_core/home/HomePage.vue";
 import PlaceholderPage from "@/pages/_core/PlaceholderPage.vue";
 import ForbiddenPage from "@/pages/_core/ForbiddenPage.vue";
 import IframePage from "@/pages/_core/IframePage.vue";
-import type { HmxMenuNode } from "@/data/hmxMenu";
+import type { HmxMenuNode } from "@/api/common/menuApi";
 import { useAuthStore } from "@/stores/authStore";
 import { usePermissionStore } from "@/stores/permissionStore";
 import { useTabsStore } from "@/stores/tabsStore";
+import { staticRouteSeeds } from "@/router/staticRoutes";
 import { loadingScreen } from "@/components/loading/loading";
 
 declare module "vue-router" {
@@ -28,15 +29,21 @@ declare module "vue-router" {
 
 /**
  * 页面组件动态解析：不写死映射表，按「用户配置的组件地址」（后端 cResSubPath / mock 节点 src）
- * 在 import.meta.glob 预扫描的页面模块里查表命中，命中即 defineAsyncComponent 懒加载分包。
+ * 在 import.meta.glob 预扫描的页面模块里查表命中，命中即懒加载分包。
  * 配置路径相对 src/pages，如 "/admin/user/index.vue"；未命中（未实现/占位资源）回落 PlaceholderPage。
+ * 模块加载失败（页面依赖缺失等）同样回落 PlaceholderPage，只提示建设中、不整站报错。
  */
 const pageModules = import.meta.glob("/src/pages/**/*.vue") as Record<string, () => Promise<{ default: Component }>>;
 
-function resolvePageComponent(src?: string): (() => Promise<{ default: Component }>) | undefined {
-  if (!src) return undefined;
-  const norm = src.startsWith("/") ? src : `/${src}`;
-  return pageModules[`/src/pages${norm}`];
+function placeholderFor(title: string) {
+  return () => h(PlaceholderPage, { title });
+}
+
+function resolvePageComponent(src: string | undefined, title: string) {
+  const norm = src?.startsWith("/") ? src : `/${src ?? ""}`;
+  const loader = pageModules[`/src/pages${norm}`];
+  if (!loader) return placeholderFor(title);
+  return async () => (await loader().catch(() => null))?.default ?? placeholderFor(title);
 }
 
 const routes: RouteRecordRaw[] = [
@@ -56,6 +63,18 @@ const routes: RouteRecordRaw[] = [
 ];
 
 export const router = createRouter({ history: createWebHistory(), routes });
+
+/* ---------- 静态路由（src/router/staticRoutes.ts 声明，建 router 即注册） ---------- */
+
+/* 不受权限管控、不随登出移除；hidden 种子只注册路由不进菜单，菜单拼接见 permissionStore */
+for (const seed of staticRouteSeeds) {
+  router.addRoute("shell", {
+    path: seed.path,
+    name: `page:${seed.path}`,
+    component: seed.iframe ? IframePage : resolvePageComponent(seed.src, seed.title),
+    meta: { pageId: seed.path, title: seed.title, url: seed.iframe, loading: seed.loading },
+  });
+}
 
 /* ---------- 动态路由注册（mock 后端菜单树 → addRoute） ---------- */
 
@@ -77,7 +96,7 @@ export function registerUserRoutes(tree: HmxMenuNode[]) {
       path: leaf.page!,
       name,
       // iframe 叶子（内置菜单）→ 承载组件；其余按配置的组件地址动态解析，未命中落占位页
-      component: leaf.iframe ? IframePage : (resolvePageComponent(leaf.src) ?? PlaceholderPage),
+      component: leaf.iframe ? IframePage : resolvePageComponent(leaf.src, leaf.label),
       meta: { pageId: leaf.page, title: leaf.label, url: leaf.iframe, loading: leaf.loading },
     });
     addedNames.push(name);

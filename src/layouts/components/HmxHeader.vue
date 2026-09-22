@@ -11,7 +11,7 @@ import { TABLER_FALLBACK_ICON, tablerIcon } from "@/lib/tablerIcons";
 import ThemeToggle from "@/components/common/ThemeToggle.vue";
 import ModifyPasswd from "@/pages/_core/profile/ModifyPasswd.vue";
 import { useAppTheme } from "@/composables/useAppTheme";
-import type { HmxMenuNode } from "@/data/hmxMenu";
+import type { HmxMenuNode } from "@/api/common/menuApi";
 import { useAuthStore } from "@/stores/authStore";
 import { usePermissionStore } from "@/stores/permissionStore";
 import { useToast } from "@/composables/useToast";

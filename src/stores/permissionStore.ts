@@ -5,10 +5,10 @@
  */
 import { ref } from "vue";
 import { defineStore } from "pinia";
-import type { HmxMenuNode } from "@/data/hmxMenu";
+import type { HmxMenuNode } from "@/api/common/menuApi";
 import type { HmxRes } from "@/api/admin/types";
 import { fetchUserMenuTreeFromServer } from "@/api/common/menuApi";
-import { mergeBuiltinMenu } from "@/data/builtinMenu";
+import { mergeStaticMenu } from "@/router/staticRoutes";
 
 export const usePermissionStore = defineStore("permission", () => {
   const loaded = ref(false);
@@ -16,10 +16,10 @@ export const usePermissionStore = defineStore("permission", () => {
   /** getUserRescList 全量资源（菜单+按钮 Widget…），供按钮级权限消费 */
   const resources = ref<HmxRes[]>([]);
 
-  /** 拉取菜单树并拼接内置路由（不受权限管控）→ 最终菜单；失败保持 loaded=false 由守卫兜底登出 */
+  /** 拉取菜单树并拼接静态路由（前端内置、不受权限管控）→ 最终菜单；失败保持 loaded=false 由守卫兜底登出 */
   async function loadForUser(): Promise<HmxMenuNode[]> {
     const res = await fetchUserMenuTreeFromServer();
-    let tree = mergeBuiltinMenu(res.tree);
+    const tree = mergeStaticMenu(res.tree);
     resources.value = res.resources;
     menuTree.value = tree;
     loaded.value = true;

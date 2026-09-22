@@ -2,7 +2,7 @@ import { Formatter } from "@hprose/io";
 
 import { formatNow, loadRescs, loadRoles, saveRescs, saveRoles } from "./store";
 import type { HmxRole, SaveChangesInputV2 } from "@/api/admin/types";
-import type { SaveChangesData as Scd } from "@/api/common/trackable-list";
+import type { SaveChangesData as Scd } from "@/api/common/trackableList";
 import { API_BASE, getBody, ok, type RouteMap } from "./core";
 import { fromApi as rescFromApi } from "./resc";
 

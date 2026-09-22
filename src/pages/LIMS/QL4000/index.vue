@@ -9,8 +9,11 @@ import InputText from "primevue/inputtext";
 import DatePicker from "primevue/datepicker";
 import Splitter from "primevue/splitter";
 import SplitterPanel from "primevue/splitterpanel";
-import TabView from "primevue/tabview";
+import Tab from "primevue/tab";
+import TabList from "primevue/tablist";
 import TabPanel from "primevue/tabpanel";
+import TabPanels from "primevue/tabpanels";
+import Tabs from "primevue/tabs";
 import { IconCheck, IconFlask, IconRefresh, IconSearch } from "@tabler/icons-vue";
 import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
@@ -23,6 +26,7 @@ const theme = makeHmxGridTheme();
 const testJobRows = ref<any[]>([]);
 const resultRows = ref<any[]>([]);
 const querying = ref(false);
+const activeTab = ref("batch");
 const testJobGridApi = ref<GridApi | null>(null);
 const resultGridApi = ref<GridApi | null>(null);
 
@@ -176,9 +180,16 @@ function onUpdateItem() { toast("画面迁移：更新检验项目逻辑待接�
 
       <!-- 右栏：Tab结果录入（对应原 xtraTabControl1） -->
       <SplitterPanel :minSize="40" class="flex flex-col">
-        <TabView class="h-full">
+        <Tabs v-model:value="activeTab" class="min-h-0 flex-1 flex-col">
+          <div class="flex shrink-0 items-center border-b border-border/60">
+            <TabList class="min-w-0 flex-1">
+              <Tab value="batch">批量录入</Tab>
+              <Tab value="single">单条录入</Tab>
+            </TabList>
+          </div>
+          <TabPanels class="min-h-0 flex-1 overflow-hidden !p-0">
           <!-- Tab1: 批量录入（对应原 ucTestItemResultMuti1） -->
-          <TabPanel header="批量录入">
+          <TabPanel value="batch" class="h-full overflow-hidden">
             <div class="flex flex-col gap-2">
               <div class="flex items-center gap-2">
                 <span class="text-xs text-muted-foreground">批量录入检验项目结果</span>
@@ -195,12 +206,13 @@ function onUpdateItem() { toast("画面迁移：更新检验项目逻辑待接�
           </TabPanel>
 
           <!-- Tab2: 单条录入（对应原 ucTestItemResult1） -->
-          <TabPanel header="单条录入">
+          <TabPanel value="single" class="h-full overflow-auto">
             <div class="flex flex-col gap-2 p-2">
               <p class="text-xs text-muted-foreground">选择左侧委托后，在此录入单条检验结果</p>
             </div>
           </TabPanel>
-        </TabView>
+          </TabPanels>
+        </Tabs>
       </SplitterPanel>
     </Splitter>
   </div>

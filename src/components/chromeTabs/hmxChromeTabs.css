@@ -11,13 +11,16 @@
  */
 
 :host {
-  --chrome-tabs-height: 2.375rem; /* 38px@16 */
+  --chrome-tabs-height: 2.375rem;
+  /* 38px@16 */
   --chrome-tabs-background: #dee1e6;
   /* 兜底字号 = 辅助档；HmxTabBar 会经内联 --chrome-tabs-font 覆盖 */
   --chrome-tabs-font: 0.75rem var(--font-sans, Arial, sans-serif);
   --chrome-tab-height: max(var(--chrome-tabs-height), 1.75rem);
-  --chrome-tab-min-width: 3.25rem; /* 52px@16 */
-  --chrome-tab-max-width: 9rem; /* 144px@16 = 8汉字96 + 内边距20 + 关闭钮16+5 + 富余 */
+  --chrome-tab-min-width: 3.25rem;
+  /* 52px@16 */
+  --chrome-tab-max-width: 9rem;
+  /* 144px@16 = 8汉字96 + 内边距20 + 关闭钮16+5 + 富余 */
   --chrome-tab-radius: 0.5rem;
   --chrome-tab-text-color: #5f6368;
   --chrome-tab-active-text-color: #202124;

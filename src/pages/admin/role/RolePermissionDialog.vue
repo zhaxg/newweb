@@ -9,7 +9,7 @@ import Select from "primevue/select";
 import Tree from "primevue/tree";
 import { useToast } from "@/composables/useToast";
 import { adminApi } from "@/api/admin/request";
-import { transformPermissionTree, collectParentKeys, type PermissionNode } from "@/api/common/permission-tree";
+import { transformPermissionTree, collectParentKeys, type PermissionNode } from "@/api/common/permissionTree";
 import type { HmxKv, HmxRole, RolePermissionOfViewAndWidgets } from "@/api/admin/types";
 
 const props = defineProps<{

@@ -1,7 +1,25 @@
-import type { HmxMenuNode } from "@/data/hmxMenu";
 import { authApi } from "@/api/admin/request";
 import { RbacRescType } from "@/api/admin/enums";
 import type { HmxRes } from "@/api/admin/types";
+
+/** 壳层菜单节点（原 src/data/hmxMenu.ts，演示菜单树清退后接口迁入本文件） */
+export interface HmxMenuNode {
+  id: string;
+  label: string;
+  icon?: string;
+  page?: string;
+  children?: HmxMenuNode[];
+  /** 真实后端资源：组件路径（如 /admin/user/index.vue），路由注册时映射组件 */
+  src?: string;
+  /** 真实后端资源：外链地址（cResPath==="_blank" 的菜单），点击新窗口打开、不注册路由 */
+  url?: string;
+  /** 真实后端资源：cResPath（资源路由段，跨环境稳定；静态路由按它锚定挂点） */
+  path?: string;
+  /** 静态路由：内嵌网页地址，路由注册时映射 IframePage（meta.url） */
+  iframe?: string;
+  /** 刷新白屏过渡遮罩开关：false = 该页面路由不启用（透传 RouteMeta.loading，默认启用） */
+  loading?: boolean;
+}
 
 const HOME_NODE: HmxMenuNode = { id: "home", label: "首页", icon: "Home", page: "home" };
 
@@ -34,7 +52,8 @@ function toNode(res: HmxRes, all: HmxRes[], prefix: string): HmxMenuNode {
   const full = prefix ? `${prefix}/${seg}` : seg;
   const node: HmxMenuNode = {
     id: res.id ?? "",
-    label: res.cTitle ?? res.cCode ?? "",
+    // 菜单名格式「编码-名称」（如 YD2001-成品库存管理），无编码时仅名称
+    label: res.cCode ? `${res.cCode}-${res.cTitle ?? res.cName ?? ""}` : (res.cTitle ?? res.cName ?? ""),
     icon: res.cIcon ?? undefined,
     path: res.cResPath || undefined,
   };

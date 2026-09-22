@@ -15,9 +15,9 @@ import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/a
 import { adminApi } from "@/api/admin/request";
 import type { HmxRes } from "@/api/admin/types";
 import { RbacRescType } from "@/api/admin/enums";
-import { crudAppService } from "@/api/common/crud-app-service";
+import { crudAppService } from "@/api/common/crudAppService";
 import { NextStrId } from "@/lib/yitIdHelper";
-import { TrackableList } from "@/api/common/trackable-list";
+import { TrackableList } from "@/api/common/trackableList";
 
 const props = defineProps<{
   open: boolean;

@@ -5,6 +5,7 @@
  * Persisted to localStorage under one key.
  */
 import { reactive, watch } from "vue";
+import { applyPrimaryColor } from "@/lib/themeSettings";
 
 /** 字体缩放档位（系统设置 → 字体大小）。standard = 现有视觉（年轻紧凑档）。 */
 export type FontScale = "standard" | "large" | "xlarge";
@@ -27,6 +28,8 @@ type EditorSettings = {
   dataGridTypeColorSchemes: unknown[];
   fontChineseFamily: string;
   fontEnglishFamily: string;
+  /** 主题色：预设 id（themeSettings.primaryOptions）或自定义 hex */
+  primaryColor: string;
   [key: string]: unknown;
 };
 
@@ -46,6 +49,7 @@ const defaults: EditorSettings = {
   dataGridTypeColorSchemes: [],
   fontChineseFamily: "",
   fontEnglishFamily: "",
+  primaryColor: "brand",
 };
 
 function load(): EditorSettings {
@@ -78,6 +82,13 @@ watch(
   (v) => {
     document.documentElement.style.setProperty("--hmx-scale", String(FONT_SCALE[v] ?? 1));
   },
+  { immediate: true },
+);
+
+// 主题色 → 运行时覆盖 --p-primary-* 色阶（immediate：刷新后启动即恢复）
+watch(
+  () => editorSettings.primaryColor,
+  (v) => applyPrimaryColor(v),
   { immediate: true },
 );
 

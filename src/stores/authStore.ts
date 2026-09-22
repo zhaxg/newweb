@@ -4,7 +4,6 @@
  */
 import { ref, watch } from "vue";
 import { defineStore } from "pinia";
-import { appendAuditAuth } from "@/data/auditLogs";
 import { authApi } from "@/api/admin/request";
 import { CaptchaType } from "@/api/admin/enums";
 
@@ -98,7 +97,6 @@ export const useAuthStore = defineStore("auth", () => {
       history.value.users.unshift({ userId, password: remember ? password : undefined });
     }
     history.value.lastUserId = userId;
-    appendAuditAuth("登录", userId, next.userName);
   }
 
   /** 后端登录：auth/token 换 token → auth/getUserInfo 构造会话（验证码由登录页求解后传入） */
@@ -133,7 +131,6 @@ export const useAuthStore = defineStore("auth", () => {
 
   function logout() {
     const s = session.value;
-    if (s) appendAuditAuth("登出", s.userId, s.userName);
     /* 后端：显式带 token 注销（服务端将 HmxUserToken.CStatus 置 0 并清缓存）；
        不 await——本地先行登出，后端失败静默（token 过期本就该登出） */
     if (s?.token) void authApi.logout(s.token).catch(() => undefined);

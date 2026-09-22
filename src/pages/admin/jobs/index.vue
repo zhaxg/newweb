@@ -47,8 +47,16 @@ const EnableColorCell = defineComponent({
   },
 });
 
+/** 1rem 对应的实际像素（html font-size = --hmx-scale × 16px，随字体档位缩放） */
+const REM = 2 * parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+
 const columnDefs: ColDef[] = [
-  { colId: "enable", field: "enable", headerName: "启用", width: 40, sortable: false, cellRenderer: EnableColorCell },
+  {
+    colId: "enable", field: "enable", headerName: "", width: REM, minWidth: REM, maxWidth: REM,
+    pinned: "left", sortable: false, resizable: true, filter: false,
+    suppressHeaderMenuButton: true,
+    cellRenderer: EnableColorCell,
+  },
   { colId: "cName", field: "cName", headerName: "任务名称", width: 140 },
   { colId: "cTrigerName", field: "cTrigerName", headerName: "触发器", width: 100 },
   { colId: "cSetupTime", field: "cSetupTime", headerName: "设置时间", width: 150 },
@@ -231,9 +239,10 @@ async function onExcute() {
 
     <div class="min-h-0 flex-1 overflow-hidden">
       <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="columnDefs"
-        :default-col-def="hmxDefaultColDef" :row-data="rows" :get-row-id="getRowId" :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
-        :loading="querying" :pagination="false" :animate-rows="false" :locale-text="AG_GRID_LOCALE_CN"
-        @grid-ready="onGridReady" @selection-changed="onSelectionChanged" @row-double-clicked="onRowDoubleClicked"
+        :default-col-def="hmxDefaultColDef" :row-data="rows" :get-row-id="getRowId"
+        :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }" :loading="querying"
+        :pagination="false" :animate-rows="false" :locale-text="AG_GRID_LOCALE_CN" @grid-ready="onGridReady"
+        @selection-changed="onSelectionChanged" @row-double-clicked="onRowDoubleClicked"
         @first-data-rendered="autoSizeOnFirstData" />
     </div>
 

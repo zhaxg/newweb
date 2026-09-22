@@ -13,6 +13,7 @@ import {
   type FirstDataRenderedEvent,
   type GetColumnMenuItemsParams,
   type GetContextMenuItemsParams,
+  type GridApi,
   type MenuItemDef,
   type Theme,
   type ValueFormatterParams,
@@ -178,7 +179,7 @@ export function makeHmxGridTheme(): ComputedRef<Theme> {
       headerBackgroundColor: "rgb(229 230 235)",
       headerTextColor: "var(--muted-foreground)",
       selectedRowBackgroundColor: "var(--accent)",
-      rangeSelectionBorderColor: "var(--primary)",
+      rangeSelectionBorderColor: "var(--p-primary-color)",
       rangeSelectionBackgroundColor: "rgba(59,130,246,0.12)",
       menuShadow: {
         radius: 8, // 模糊半径，shadcn 通常用 4-8px

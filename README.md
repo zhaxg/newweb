@@ -232,7 +232,7 @@ temp/HMX_RES.json
 | XtraForm / UserControl 壳 | Vue 页面（页签、面包屑由壳层负责，页面只管内容区） |
 | GridView（含列 Caption/宽度/样式） | AG Grid Enterprise colDefs（沿用 hmxAgGridPlugin 全站约定） |
 | BarManager / 工具栏按钮 | 页面顶部 Button 组（名称、顺序、位置照原样） |
-| XtraTabControl | TabView |
+| XtraTabControl | PrimeVue Tabs 组合：`Tabs` + `TabList`/`Tab` + `TabPanels`/`TabPanel`（`primevue/tabs` 等；**无 `TabView`**，PrimeVue 5 已移除）。用法见 `src/pages/Widgets/InterfaceCallLog/index.vue` |
 | TextEdit / SpinEdit / DateEdit / CheckEdit / LookUpEdit | PrimeVue InputText / InputNumber / DatePicker / Checkbox / Select |
 | Panel / GroupControl / SplitContainer | Tailwind flex/grid + Card |
 | 窗体内嵌弹窗（GridFilter、选择器） | 对应 Dialog 组件 |
@@ -257,7 +257,7 @@ SHR 110 窗体 · SMP 41 · SMS 37 · SQM 29 · SYD 19 · LIMS 18 · Widgets 14 
 
 单迁 3 个菜单实测耗时约 40 分钟，瓶颈依次是：读 Designer.cs（信息密度低，单画面 500~900 行）、参考既有页面确认约定、产出量大、返工修正。批量迁移按以下方式执行：
 
-1. **先脚本化提取画面骨架**：用 Node 脚本从 Designer.cs 批量解析 `SimpleButton.Text`（按钮及顺序）、`LayoutControlItem.Text`（字段标题与位置）、`GridColumn.Visible/VisibleIndex/FieldName/Caption`（列序）、`SplitContainer/TabControl` 层级，输出每个窗体一页结构化摘要；只按需回读原文件核对个别细节，避免整文件通读。
+1. **先脚本化提取画面骨架**：用 `.qoder/skills/winforms-screen-migration/scripts/extract-screen.mjs` 从 Designer.cs 解析 `SimpleButton` 的容器内 `Controls.Add` 顺序（按钮及顺序）、`LayoutControlItem.Text`（字段标题与位置）、`GridColumn.Visible/VisibleIndex/FieldName/Caption`（列序）、`SplitContainer/TabControl` 层级、以及 `gridControl → bindingSource → typeof(Entity)` 得到的**绑定实体**与该实体 `[LDisplay]` 中文列头，输出每个窗体一页结构化摘要（`--uc` 递归展开内嵌 UserControl）；只按需回读原文件核对个别细节，避免整文件通读。迁移全流程与实测见 skill `winforms-screen-migration`。
 2. **约定只确认一次**：首迁产出即为模板样例（`src/pages/Widgets/Tpa1000`、`Tax1100`），同批后续页面直接套模板，不再重复读 jobs/SysDepartmentsPage 等参考页。
 3. **批量接线**：一批页面全部写完后，种子行 `cResPath/cResSubPath` 集中改、`RESCS_KEY` 只 +1 一次、`typecheck` 只跑一次收尾。
 4. **二级弹窗先问后迁**：主窗体 `ShowDialog()` 调用的内部弹窗（如 FrmTax1001/1002）默认只在父页面留占位，经确认后再连带迁移，避免多读多写。
@@ -270,7 +270,7 @@ SHR 110 窗体 · SMP 41 · SMS 37 · SQM 29 · SYD 19 · LIMS 18 · Widgets 14 
      ```
    - **查询条件区 grid 布局**（允许最多 3 行）：
      - **1-2 个条件**：查询条件与操作按钮合并为一行 `flex items-center gap-1`，**不使用 label**，直接用 `InputText` 的 `placeholder` 属性提示字段含义（如 `placeholder="关键字"`）；条件在左、按钮紧随其后；
-     - **≥3 个条件**：用 `grid grid-cols-6 items-center gap-x-3 gap-y-1.5`，最多 3 行；超过 3 行时用 TabView 分组切换（如"基本信息"/"高级条件"）。日期/时间范围控件允许在 grid 内使用，占用 `col-span-2`。每个条件配 `<label class="w-16 shrink-0 text-xs text-muted-foreground">`；
+     - **≥3 个条件**：用 `grid grid-cols-6 items-center gap-x-3 gap-y-1.5`，最多 3 行；超过 3 行时用 Tabs 分组切换（如"基本信息"/"高级条件"）。日期/时间范围控件允许在 grid 内使用，占用 `col-span-2`。每个条件配 `<label class="w-16 shrink-0 text-xs text-muted-foreground">`；
    - **数字范围控件**：厚度/宽度/长度等数值区间查询条件使用 `RangeInput` 组件（`src/components/common/RangeInput.vue`），不手写两个 `InputNumber + ~`：
      ```vue
      <RangeInput v-model:min="input.NThickMin" v-model:max="input.NThickMax"
@@ -339,7 +339,7 @@ SHR 110 窗体 · SMP 41 · SMS 37 · SQM 29 · SYD 19 · LIMS 18 · Widgets 14 
 
 #### 9.2 列定义提取脚本
 
-用 Node 脚本从 Designer.cs 提取：
+`.qoder/skills/winforms-screen-migration/scripts/extract-screen.mjs` 已实现下列提取（`--uc` 递归 UserControl、`--entity-root` 按绑定实体解析 `[LDisplay]` 中文列头）；要点：
 ```javascript
 // FieldName: colXXX.FieldName = "YYY"
 // Caption:  colXXX.Caption = "YYY"（有则用，无则跳过）

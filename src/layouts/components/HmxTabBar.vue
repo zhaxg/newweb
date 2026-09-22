@@ -131,9 +131,12 @@ hmx-chrome-tabs {
   display: block;
   width: 100%;
   /* 几何全部 rem：随 --hmx-scale 档位与字阶联动缩放（图标几何仍 px，属视觉常量） */
-  --chrome-tabs-height: 2.25rem; /* 36px@16 */
-  --chrome-tab-min-width: 2rem; /* 32px@16 */
-  --chrome-tab-max-width: 9rem; /* 144px@16 = 8汉字96 + 内边距20 + 关闭钮16+5 + 富余 */
+  --chrome-tabs-height: 2.25rem;
+  /* 36px@16 */
+  --chrome-tab-min-width: 2rem;
+  /* 32px@16 */
+  --chrome-tab-max-width: 15rem;
+  /* 144px@16 = 8汉字96 + 内边距20 + 关闭钮16+5 + 富余 */
   --chrome-tab-radius: 0.3125rem;
   --chrome-tabs-background: #e5e7eb;
   --chrome-tab-text-color: #4b5563;

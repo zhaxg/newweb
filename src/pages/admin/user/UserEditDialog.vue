@@ -10,10 +10,10 @@ import Select from "primevue/select";
 import ToggleSwitch from "primevue/toggleswitch";
 import TreeSelect from "primevue/treeselect";
 import { departmentApi } from "@/api/admin/request";
-import type { HmxUser } from "@/api/admin/types";
+import type { HmxDept, HmxUser } from "@/api/admin/types";
 import { UserType } from "@/api/admin/enums";
-import { buildDeptTree, type DeptTreeNode, type HmxDept } from "@/data/departments";
-import { EDUS, NATIONS, POLITICS, PROVINCES, SEXES, USER_TYPES } from "@/data/userOptions";
+import { buildDeptTree, type DeptTreeNode } from "@/pages/admin/dept/departments";
+import { EDUS, NATIONS, POLITICS, PROVINCES, SEXES, USER_TYPES } from "./userOptions";
 
 const props = defineProps<{
   open: boolean;

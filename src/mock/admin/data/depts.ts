@@ -1,4 +1,4 @@
-import type { HmxDept } from "@/data/departments";
+import type { HmxDept } from "@/api/admin/types";
 
 /* 部门种子表：由 temp/HMX_DEPT.json（后端 HM_X_DEPT 导出）转换，含真实 Id 与上级链路 */
 export const seedDeptsData: Omit<HmxDept, "selected">[] = [
