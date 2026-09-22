@@ -58,12 +58,12 @@ async function onQuery() {
 }
 
 function onAdd() {
-  // TODO: 原窗体二级编辑弹窗，按 README §8.4 暂留占位
+  // TODO: 原窗体二级编辑弹窗，按 skill winforms-screen-migration 的批量约定暂留占位
   toast("画面迁移：添加逻辑待接入", 2000, "warn");
 }
 
 function onEdit() {
-  // TODO: 原窗体二级编辑弹窗，按 README §8.4 暂留占位
+  // TODO: 原窗体二级编辑弹窗，按 skill winforms-screen-migration 的批量约定暂留占位
   toast("画面迁移：编辑逻辑待接入", 2000, "warn");
 }
 

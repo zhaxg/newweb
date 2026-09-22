@@ -87,7 +87,7 @@ function navIcon(item: MenuItem) {
         <Button text icon-only title="功能菜单" @click="navMenuRef?.toggle($event)">
           <IconDots class="h-4 w-4" />
         </Button>
-        <TieredMenu ref="navMenuRef" :model="navMenuItems" popup class="w-48" @show="onNavShow">
+        <TieredMenu ref="navMenuRef" :model="navMenuItems" popup class="hmx-nav-menu" @show="onNavShow">
           <template #itemicon="{ item }">
             <component :is="navIcon(item)" class="h-3.5 w-3.5 text-muted-foreground" />
           </template>

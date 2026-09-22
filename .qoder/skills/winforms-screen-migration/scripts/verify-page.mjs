@@ -17,7 +17,7 @@
 
 import { createRequire } from "node:module";
 import { execSync } from "node:child_process";
-import { existsSync, mkdirSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -90,14 +90,33 @@ function dropOverlay(p) {
 }
 async function pickBase(given) {
   const list = given ? [given] : ["http://localhost:5173/", "http://localhost:5174/"];
+  const mark = appTitle();
+  const wrong = [];
   for (const u of list) {
+    let html;
     try {
       const r = await fetch(u, { method: "GET" });
-      if (r.ok) return u;
-    } catch { /* next */ }
+      if (!r.ok) continue;
+      html = await r.text();
+    } catch {
+      continue;
+    }
+    if (!mark || html.includes(mark)) return u;
+    wrong.push(`  ${u} 端口上跑的不是本项目（<title> 里没有「${mark}」）`);
   }
-  console.log("FAIL: 开发服务器未启动，先跑 npm run dev");
+  console.log(wrong.length
+    ? `FAIL: 自动探测的端口都不是本项目：\n${wrong.join("\n")}\n用 --base http://localhost:<本项目端口> 显式指定`
+    : "FAIL: 开发服务器未启动，先跑 npm run dev");
   process.exit(1);
+}
+/** 身份指纹取自仓库 index.html 的 <title>；读不到就退回「任意 200 即认为可用」 */
+function appTitle() {
+  try {
+    const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "..");
+    return /<title>([^<]+)<\/title>/.exec(readFileSync(join(root, "index.html"), "utf8"))?.[1] ?? "";
+  } catch {
+    return "";
+  }
 }
 function loadPlaywright() {
   const roots = [fileURLToPath(import.meta.url)];

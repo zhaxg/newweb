@@ -1,6 +1,7 @@
 <script setup lang="ts">
 /** 对应 FrmRoleList（角色管理）：HmxWinForms.Forms.Admin.FrmRoleList
- *  画面迁移，逻辑不迁移到 */
+ *  已接入：adminApi.getRoleList / adminApi.checkBeforeRemoveRole / crudAppService.SaveList("HmxRole")
+ *  本页面同时是「查询 + 行内编辑 + 增删 + TrackableList 保存」的迁移模板 */
 
 import { nextTick, onMounted, ref, shallowRef } from "vue";
 import { IconDeviceFloppy, IconPlus, IconSearch, IconShieldCheck, IconTrash, IconUsers } from "@tabler/icons-vue";
