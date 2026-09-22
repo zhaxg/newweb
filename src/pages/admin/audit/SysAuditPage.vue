@@ -116,11 +116,11 @@ onMounted(() => {
       <DatePicker v-model="fStart" date-format="yy-mm-dd" :show-icon="false" placeholder="开始日期" class="w-30 shrink-0" />
       <span class="text-xs text-muted-foreground">至</span>
       <DatePicker v-model="fEnd" date-format="yy-mm-dd" :show-icon="false" placeholder="结束日期" class="w-30 shrink-0" />
-      <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onQuery">
-        <IconSearch class="h-3.5 w-3.5" />查询
+      <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onQuery">
+        <IconSearch class="h-3 w-3" />查询
       </Button>
-      <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onReset">
-        <IconRotate class="h-3.5 w-3.5" />重置
+      <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onReset">
+        <IconRotate class="h-3 w-3" />重置
       </Button>
       <span class="ml-auto text-xs text-muted-foreground">共 {{ filtered.length }} 条</span>
     </div>

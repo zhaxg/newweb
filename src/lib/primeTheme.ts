@@ -79,15 +79,16 @@ const zhCN = {
 };
 
 /* HMX 紧凑预设（主题层定义，非 CSS 覆盖）：
-   - semantic.typography.fontSize → formField/list/navigation/日期面板 全链路 12px
-   - semantic.iconSize → 全局 .p-icon/.pi（下拉箭头、关闭、日历导航等）12px
+   - semantic.typography.fontSize → formField/list/navigation/日期面板 全链路 0.75rem（=12px@16 基准，
+     rem 写法跟随根字号缩放档位；px 会脱离 --hmx-scale 成为不缩放的孤儿）
+   - semantic.iconSize → 全局 .p-icon/.pi（下拉箭头、关闭、日历导航等）0.75rem
    - formField 内边距 → 控件高约 28px（12px×1.5 行高 + 上下 4px + 边框 2px）
    - 圆角统一 4px，与项目 token 体系一致
    注意：overlay.modal.padding 会被 dialog.content 以四值插值引用，保持单值。 */
 const HmxCompact = definePreset(Aura, {
   semantic: {
-    typography: { fontSize: "12px" },
-    iconSize: "12px",
+    typography: { fontSize: "0.75rem" },
+    iconSize: "0.75rem",
     anchorGutter: "0px",
     disabledOpacity: "0.55",
     /* 品牌主色 #0052D9：仅替换 Aura 默认 emerald 色阶（500 = 主色），
@@ -125,7 +126,7 @@ const HmxCompact = definePreset(Aura, {
     button: { root: { gap: "0.375rem", iconOnlyWidth: "28px" } },
     dialog: {
       header: { padding: "0.625rem 1rem" },
-      title: { fontSize: "13px" },
+      title: { fontSize: "0.8125rem" },
       content: { padding: "0.75rem 1rem 1rem" },
       footer: { padding: "0.625rem 1rem" },
     },

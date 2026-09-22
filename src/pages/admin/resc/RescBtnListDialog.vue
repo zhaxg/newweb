@@ -148,20 +148,20 @@ const columns: ColDef[] = [
     :style="{ width: 'min(56rem, calc(100vw - 2rem))', height: '50vh' }" @update:visible="emit('update:open', $event)">
     <!-- 对话框内工具栏（对应 hmx_web sub-resc-edit：加载/新增/删除/保存 + 用法提示） -->
     <div class="mb-2 flex shrink-0 items-center gap-1">
-      <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" autofocus @click="reload">
-        <IconRefresh class="h-3.5 w-3.5" />加载
+      <Button variant="outlined" class="shrink-0 whitespace-nowrap" autofocus @click="reload">
+        <IconRefresh class="h-3 w-3" />加载
       </Button>
-      <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onAdd">
-        <IconPlus class="h-3.5 w-3.5" />新增
+      <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onAdd">
+        <IconPlus class="h-3 w-3" />新增
       </Button>
-      <Button variant="outlined" size="small" severity="danger" class="shrink-0 whitespace-nowrap" @click="onDelete">
-        <IconTrash class="h-3.5 w-3.5" />删除
+      <Button variant="outlined" severity="danger" class="shrink-0 whitespace-nowrap" @click="onDelete">
+        <IconTrash class="h-3 w-3" />删除
       </Button>
-      <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" :loading="saving" @click="onSave()">
-        <IconDeviceFloppy class="h-3.5 w-3.5" />保存
+      <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="saving" @click="onSave()">
+        <IconDeviceFloppy class="h-3 w-3" />保存
       </Button>
       <span class="ml-auto flex items-center gap-1 text-xs text-muted-foreground" title="参考用法：&lt;t-button v-hp='btnAdd'&gt;新增&lt;/t-button&gt;">
-        <IconClick class="h-3.5 w-3.5" />v-hp=&quot;btnAdd&quot;
+        <IconClick class="h-3 w-3" />v-hp=&quot;btnAdd&quot;
       </span>
     </div>
 

@@ -211,20 +211,20 @@ async function onExcute() {
       <span class="shrink-0 text-xs text-muted-foreground">状态：</span>
       <Tag severity="success" :value="statusInfo?.schedulerName ?? 'Default'" class="shrink-0" />
       <Tag severity="success" :value="statusInfo?.lastUpdateTime || '-'" class="shrink-0" />
-      <Button variant="outlined" size="small" class="ml-2 shrink-0 whitespace-nowrap" @click="query">
-        <IconRefresh class="h-3.5 w-3.5" />刷新
+      <Button variant="outlined" class="ml-2 shrink-0 whitespace-nowrap" @click="query">
+        <IconRefresh class="h-3 w-3" />刷新
       </Button>
-      <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onAdd">
-        <IconPlus class="h-3.5 w-3.5" />新增
+      <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onAdd">
+        <IconPlus class="h-3 w-3" />新增
       </Button>
-      <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onEdit">
-        <IconPencil class="h-3.5 w-3.5" />编辑
+      <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onEdit">
+        <IconPencil class="h-3 w-3" />编辑
       </Button>
-      <Button variant="outlined" size="small" severity="danger" class="shrink-0 whitespace-nowrap" @click="onDelete">
-        <IconTrash class="h-3.5 w-3.5" />删除
+      <Button variant="outlined" severity="danger" class="shrink-0 whitespace-nowrap" @click="onDelete">
+        <IconTrash class="h-3 w-3" />删除
       </Button>
-      <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onExcute">
-        <IconPlayerPlay class="h-3.5 w-3.5" />手动执行
+      <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onExcute">
+        <IconPlayerPlay class="h-3 w-3" />手动执行
       </Button>
       <span class="ml-auto text-xs text-muted-foreground">计划任务（{{ rows.length }}）</span>
     </div>
@@ -242,7 +242,7 @@ async function onExcute() {
     <!-- 删除确认（对应原 DialogPlugin.confirm 警告框） -->
     <Dialog :visible="confirmOpen" modal header="警告" :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
       @update:visible="confirmOpen = $event">
-      <p class="text-sm">你确定删除当前选择的计划任务么: {{ confirmTarget?.cName }}</p>
+      <p class="text-xs">你确定删除当前选择的计划任务么: {{ confirmTarget?.cName }}</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />
         <Button label="确定" severity="danger" variant="outlined" @click="confirmDelete" />

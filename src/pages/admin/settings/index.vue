@@ -96,11 +96,11 @@ function isNumber(key: keyof SystemSettingInfo): boolean {
 <template>
   <div class="flex min-h-0 flex-1 flex-col">
     <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
-      <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" :loading="loading" @click="btnQuery">
-        <IconRefresh class="h-3.5 w-3.5" />加载
+      <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="loading" @click="btnQuery">
+        <IconRefresh class="h-3 w-3" />加载
       </Button>
-      <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" :loading="saving" @click="btnSave">
-        <IconDeviceFloppy class="h-3.5 w-3.5" />保存
+      <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="saving" @click="btnSave">
+        <IconDeviceFloppy class="h-3 w-3" />保存
       </Button>
       <span class="ml-auto text-xs text-muted-foreground">系统设置</span>
     </div>

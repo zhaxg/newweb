@@ -50,6 +50,28 @@
  */
 @import "./tokens.css";
 
+/* ── HMX 字阶（密度单一来源 · 排版层）───────────────────────────────
+   全站字号只有四档，页面代码只允许声明角色，不允许发明数字：
+     辅助文字 / 控件   text-xs     12px   —— 与 PrimeVue 预设 semantic.typography 同源
+     正文              text-body   13px   —— 语义档（表单/弹窗主体文字，中文正文下限之上）
+     标题 / 强调       text-sm     14px   —— 侧栏标题、分组标题等
+     页面主标题        text-base   16px
+   红线：页面禁止 arbitrary 字号（text-[14px] 之类）与越档类（text-lg/xl/...），
+   由 `npm run audit:ui` 拦截；PrimeVue 组件默认已按 HmxCompact 紧凑档（12px/28px），
+   不再挂 size="small" 双重压缩。
+   落位：控件/导航 chrome（侧栏 Tree、页签栏、表单控件、ag-grid 表头）= 辅助档 12px；
+   数据/阅读正文（ag-grid 单元格）= 正文档 13px。钉死在各消费方（agGrid.ts /
+   HmxTabBar.vue / primeTheme.ts），不存在孤儿字号 knob。
+   字段 label 唯一写法 text-xs text-muted-foreground（辅助档 + 弱化色）：裸 label 会掉进
+   body 兜底（正文档 + 前景色）与控件族同屏显大显黑；不加 font-medium、不用 /80 变体，
+   段落层次由分组标题（text-sm）承担。audit R4 拦漏声明。
+   密度调节是两层机制：本字阶定基准（全部 rem）× --hmx-scale 缩放系数
+   （系统设置 → 字体大小，settingsStore.fontScale）。 */
+@theme {
+  --text-body: 0.8125rem; /* 13px @16 基准 */
+  --text-body--line-height: 1.25rem;
+}
+
 /* 与 tokens.css 同一套基础色板的 oklch 渐进增强（宽色域下更精确）：
  * 声明在 tokens.css 导入之后，支持的浏览器以此覆盖 rgb 回退值。 */
 @supports (color: oklch(1 0 0)) {
@@ -153,8 +175,17 @@
     overflow: hidden;
     overscroll-behavior: none;
   }
+  /* 字体缩放档位（系统设置 → 字体大小）：--hmx-scale 由 settingsStore 写入。
+     基准取 100%（用户浏览器字号设置）而非 16px，缩放是"在用户基准上乘系数" */
+  html {
+    font-size: calc(var(--hmx-scale, 1) * 100%);
+  }
   body {
     @apply font-sans bg-background text-foreground antialiased;
+    /* 裸文本兜底收进字阶：不写字号 = 正文档 13px（而非浏览器默认 16px 的梯子外落点）。
+       辅助档（字段标签/状态栏）仍需显式 text-xs —— 那是角色声明，不是补丁 */
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
     text-rendering: geometricPrecision;
     font-synthesis: none;
   }

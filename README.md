@@ -36,7 +36,7 @@
 - 后端权限菜单驱动的动态路由注册
 - 多标签页（Chrome Tabs 风格）导航 + KeepAlive 缓存
 - 浅色/深色主题切换
-- 中英文字体自定义
+- 中英文字体自定义、字体大小三档缩放（标准/大字体/更大字体）
 - 刷新白屏过渡动画
 - Mock 模式与真实后端模式无缝切换
 - 自动更新检测
@@ -120,6 +120,48 @@ src/
 ├── stores/                 # Pinia 状态（auth、permission、settings、tabs）
 └── styles/                 # 全局样式与组件覆盖
 ```
+
+## 字号与密度纪律
+
+全站采用**两层密度**架构：字阶（开发者写死的语义档）× 缩放档位（用户可调的整体密度）。
+
+### 1. 四档字阶（唯一合法字号）
+
+钉死在 `src/styles/globals.css` 的 `@theme` 中，全部 rem，随根字号缩放：
+
+| 档位 | 类名 | 16px 基准下 | 用途 |
+|---|---|---|---|
+| 辅助/控件 | `text-xs` | 12px | 工具栏按钮、表单标签、表格数字、弹窗正文、状态栏 |
+| 正文 | `text-body` | 13px | 正文性段落（如更新提示） |
+| 标题 | `text-sm` | 14px | 页头标题、面板标题 |
+| 主标题 | `text-base` | 16px | 登录页等大标题 |
+
+裸文本兜底默认值已收进字阶：`body` 基准 = 正文档 13px（`globals.css` @layer base），"不写字号"落正文而非浏览器默认 16px；辅助档（字段标签、状态栏等）仍需显式 `text-xs`——那是角色声明，不是补丁。
+
+档位落位原则：**控件/导航 chrome 一律辅助档**（侧栏 Tree、页签栏、按钮、输入框、ag-grid 表头 = 12px，由 `primeTheme.ts` 语义档与 `agGrid.ts`/`HmxTabBar.vue` 钉死的 rem 保证）；**数据/阅读正文用正文档**（ag-grid 单元格 = 13px）。两档之差是合法分工，不是漂移；字号真源只有字阶 rem，不允许孤儿数字 knob。
+
+### 2. 红线
+
+- **禁 arbitrary 字号**：不写 `text-[13px]` 这类方括号任意值，就近归入上表四档
+- **禁越档字号**：`text-lg` / `text-xl` / `text-2xl`… 不用于排版（若仅作图标尺寸驱动——`size-[1em]` 类写法——在同一行加 `audit-allow` 注释豁免）
+- **禁 PrimeVue `size="small"`**：主题 HmxCompact 预设的默认档即紧凑（12px/28px），实例再指定 small 属双重压缩；确需例外同样 `audit-allow`
+- **禁孤立 px**：组件内字号一律用字阶类，不写 `font-size: NNpx`；主题/ag-grid 层尺寸走 rem（`primeTheme.ts`、`agGrid.ts`、`styles/agGrid.css`）
+- **字段 label 唯一写法**：`text-xs text-muted-foreground`。裸 `<label>` 不声明字号/颜色是违规——它会掉进 body 兜底（13px + 近黑前景色），和控件族 12px 灰字同屏必然"显大显黑"。弹窗表单标签也不加 `font-medium`、不加 `/80` 透明度变体（段落区分靠分组标题 `text-sm`，不靠标签加粗）；由 `audit:ui` R4 拦截漏声明
+- 工具栏按钮图标统一 `h-3 w-3`（12px，与控件字号同级）；树节点/菜单图标不强制
+
+### 3. 用户缩放档位
+
+系统设置弹窗「字体大小」三档：**标准 ×1 / 大字体 ×1.15 / 更大字体 ×1.3**，面向年长用户。机制：`settingsStore` 的 `fontScale` → CSS 变量 `--hmx-scale` → `html { font-size: calc(var(--hmx-scale, 1) * 100%) }`，全站 rem 等比缩放（PrimeVue 主题、ag-grid、页签栏字号均已 rem 化以吃到这个缩放）。100% 基准尊重浏览器自身字体设置。
+
+### 4. 审计兜底
+
+```bash
+npm run audit:ui     # node scripts/audit-ui.mjs，零依赖
+```
+
+扫描 `src/pages` / `src/layouts` / `src/components`，规则 R1（arbitrary 字号）/ R2（size="small"）/ R3（越档字号）/ R4（裸 `<label>` 未声明 `text-xs`），违规非零退出并打印 `文件:行 [规则] 片段`；可挂 CI / pre-commit。豁免：违规行同加 `audit-allow` 注释。
+
+规则真源注释见 `src/styles/globals.css` 顶部「HMX 字阶」块。
 
 ## WinForms 画面迁移规则
 
@@ -221,8 +263,46 @@ SHR 110 窗体 · SMP 41 · SMS 37 · SQM 29 · SYD 19 · LIMS 18 · Widgets 14 
 4. **二级弹窗先问后迁**：主窗体 `ShowDialog()` 调用的内部弹窗（如 FrmTax1001/1002）默认只在父页面留占位，经确认后再连带迁移，避免多读多写。
 5. **固定写法防返工**：
    - 分栏小工具栏直接用 Tailwind div，不抽临时组件；
-   - 日期区间一律用两个独立 `DatePicker`（开始 至 结束）绑定 `Date | null`，PrimeVue 区间模式属性名是 `selection-mode="range"`，勿写 `selection-range`；
-   - 列头中文字典优先取 Designer 里的 Caption/Text，无中文时才用字段名意译，保持与 Tpa1000 样例同风格。
+   - **日期区间**：使用 PrimeVue `DatePicker` 的 range 模式，属性名 `selectionMode="range"`（勿写 `selection-range`），配合 `showTime hourFormat="24"` 支持日期+时间范围。绑定 `Date[] | null`，通过拆分函数转为后端独立的 `dBegTime` / `dEndTime` 参数：
+     ```vue
+     <DatePicker v-model="dates" selectionMode="range" :manualInput="false"
+       date-format="yy-mm-dd" show-time hour-format="24" show-icon />
+     ```
+   - **查询条件区 grid 布局**（允许最多 3 行）：
+     - **1-2 个条件**：查询条件与操作按钮合并为一行 `flex items-center gap-1`，**不使用 label**，直接用 `InputText` 的 `placeholder` 属性提示字段含义（如 `placeholder="关键字"`）；条件在左、按钮紧随其后；
+     - **≥3 个条件**：用 `grid grid-cols-6 items-center gap-x-3 gap-y-1.5`，最多 3 行；超过 3 行时用 TabView 分组切换（如"基本信息"/"高级条件"）。日期/时间范围控件允许在 grid 内使用，占用 `col-span-2`。每个条件配 `<label class="w-16 shrink-0 text-xs text-muted-foreground">`；
+   - **数字范围控件**：厚度/宽度/长度等数值区间查询条件使用 `RangeInput` 组件（`src/components/common/RangeInput.vue`），不手写两个 `InputNumber + ~`：
+     ```vue
+     <RangeInput v-model:min="input.NThickMin" v-model:max="input.NThickMax"
+       :min-fraction-digits="1" :max-fraction-digits="2" show-buttons />
+     ```
+     交互与 DatePicker range 模式一致：单个只读输入框显示 `2 ~ 最大` / `最小 ~ 5` / `2 ~ 10`，点击弹出 Popover 双 InputNumber 编辑。支持透传 InputNumber 常用参数：`showButtons`、`mode`、`minFractionDigits`、`maxFractionDigits`、`min`、`max`、`step`、`locale`、`currency`、`prefix`、`suffix`、`useGrouping`、`readonly`、`invalid` 等。
+   - **按钮布局**：≥3 个条件时，所有操作按钮（查询/添加/删除/保存等）集中在一行工具栏，不混入查询条件区；1-2 个条件时与条件同行；
+   - **主子表布局**（主从表、Master-Detail）：
+     - **左右主子表**：用 `Splitter` 水平分栏，左=主表、右=子表。**子表工具栏（添加/删除/保存）必须与主表列头同高**（均用 `h-8`），子表数据从主表列头高度之下开始，两侧列头水平对齐：
+       ```
+       [顶部工具栏 h-9：查询条件 + 主表操作按钮]
+       ┌─主表标题 h-8──────┐ ┌─子表标题 h-8──[添加][删除][保存]─┐
+       │ 主表列头           │ │ 子表列头                        │
+       │ 主表数据           │ │ 子表数据                        │
+       └───────────────────┘ └─────────────────────────────────┘
+       ```
+     - **上下主子表**：用 `Splitter` 垂直分栏（`layout="vertical"`），上=主表、下=子表。**子表工具栏与主表列头同高**（均 `h-8`），子表数据从主表列头之下开始：
+       ```
+       [顶部工具栏 h-9]
+       ┌─主表标题 h-8──────────────────────────────┐
+       │ 主表列头                                  │
+       │ 主表数据                                  │
+       ├───────────────────────────────────────────┤
+       │ 子表标题 h-8──[添加][删除][保存]           │
+       │ 子表列头                                  │
+       │ 子表数据                                  │
+       └───────────────────────────────────────────┘
+       ```
+     - 标题文字：`<span class="text-xs font-medium text-muted-foreground">`，位于各栏顶部 `h-8` 行内；
+     - 子表操作按钮用 `text` 样式 + `h-3 w-3` 图标，与工具栏按钮一致；
+   - **AG Grid 直角**：全局 `borderRadius: "0px"` + `hmx-ag-grid` 类已设 `border-radius: 0`，新页面务必挂 `class="hmx-ag-grid"`；
+   - **分栏用 PrimeVue Splitter**：左右/多栏布局用 `Splitter` + `SplitterPanel`（`layout="horizontal"` 或 `layout="vertical"`），支持原生拖动，勿手写 mousemove 分割条。
 
 ### 9. AG Grid 列定义（colDefs）提取规则
 
@@ -239,11 +319,13 @@ SHR 110 窗体 · SMP 41 · SMS 37 · SQM 29 · SYD 19 · LIMS 18 · Widgets 14 
 // FieldName: colXXX.FieldName = "YYY"
 // Caption:  colXXX.Caption = "YYY"（有则用，无则跳过）
 // 可见性:  colXXX.VisibleIndex = N（有则按序排列）
+// 隐藏列:  colXXX.Visible = false → colDefs 加 hide: true（列照样迁入）
 // 宽度:    colXXX.Width = N
 ```
 
 过滤规则：
-- 跳过 `Id`、`Creator`、`CreateTime`、`LastModifier`、`LastModifyTime`、`NStatus` 等系统字段
+
+- **列集与原窗体一模一样**：Designer.cs 的列全部带入（含 `Id`、`Creator`、`CreateTime`、`LastModifier`、`LastModifyTime`、`NStatus` 等系统字段，不做任何"字段类型层面"的增删）；`Visible = true` 按序显示，`Visible = false` 加 `hide: true` 同样迁入但初始隐藏（右键列面板仍可唤出）
 - 按 `VisibleIndex` 排序，去重（同一 FieldName 只保留第一个）
 
 #### 9.3 空 colDefs 处理
@@ -291,6 +373,7 @@ npm run dev          # 启动开发服务器（默认 Mock 模式）
 npm run build        # 生产构建
 npm run preview      # 预览构建产物
 npm run typecheck    # TypeScript 类型检查
+npm run audit:ui     # 字阶/密度纪律审计（见「字号与密度纪律」）
 ```
 
 ## License

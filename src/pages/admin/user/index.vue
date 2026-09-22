@@ -212,23 +212,23 @@ function onInvalid(message: string) {
     <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
       <InputText v-model="keyword" maxlength="100" placeholder="关键字" autocapitalize="off" spellcheck="false"
         class="w-48 shrink-0" @keydown.enter="query" />
-      <Button text size="small" class="shrink-0 whitespace-nowrap" @click="query">
-        <IconSearch class="h-3.5 w-3.5" />查询
+      <Button text class="shrink-0 whitespace-nowrap" @click="query">
+        <IconSearch class="h-3 w-3" />查询
       </Button>
-      <Button text size="small" class="shrink-0 whitespace-nowrap" @click="onAdd">
-        <IconPlus class="h-3.5 w-3.5" />添加
+      <Button text class="shrink-0 whitespace-nowrap" @click="onAdd">
+        <IconPlus class="h-3 w-3" />添加
       </Button>
-      <Button text size="small" class="shrink-0 whitespace-nowrap" @click="onEdit">
-        <IconPencil class="h-3.5 w-3.5" />编辑
+      <Button text class="shrink-0 whitespace-nowrap" @click="onEdit">
+        <IconPencil class="h-3 w-3" />编辑
       </Button>
-      <Button text size="small" severity="danger" class="shrink-0 whitespace-nowrap" @click="onDelete">
-        <IconTrash class="h-3.5 w-3.5" />删除
+      <Button text severity="danger" class="shrink-0 whitespace-nowrap" @click="onDelete">
+        <IconTrash class="h-3 w-3" />删除
       </Button>
-      <Button text size="small" class="shrink-0 whitespace-nowrap" @click="onRoleEdit">
-        <IconShieldCheck class="h-3.5 w-3.5" />角色维护
+      <Button text class="shrink-0 whitespace-nowrap" @click="onRoleEdit">
+        <IconShieldCheck class="h-3 w-3" />角色维护
       </Button>
-      <Button text size="small" class="shrink-0 whitespace-nowrap" @click="onResetPwd">
-        <IconKey class="h-3.5 w-3.5" />重置密码
+      <Button text class="shrink-0 whitespace-nowrap" @click="onResetPwd">
+        <IconKey class="h-3 w-3" />重置密码
       </Button>
       <span class="ml-auto text-xs text-muted-foreground">用户维护（{{ rows.length }}）</span>
     </div>
@@ -250,7 +250,7 @@ function onInvalid(message: string) {
     <!-- 删除确认（对应原 MsgBox.ShowYesNo） -->
     <Dialog :visible="deleteOpen" modal header="删除确认" :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
       @update:visible="deleteOpen = $event">
-      <p class="text-sm">是否确定删除该用户[{{ deleteTarget?.id }}]（如果存在子级用户会级联删除），是否继续！</p>
+      <p class="text-xs">是否确定删除该用户[{{ deleteTarget?.id }}]（如果存在子级用户会级联删除），是否继续！</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="deleteOpen = false" />
         <Button label="删除" severity="danger" variant="outlined" @click="confirmDelete" />
@@ -260,7 +260,7 @@ function onInvalid(message: string) {
     <!-- 重置密码确认 -->
     <Dialog :visible="resetOpen" modal header="重置密码" :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
       @update:visible="resetOpen = $event">
-      <p class="text-sm">是否确定重置密码？</p>
+      <p class="text-xs">是否确定重置密码？</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="resetOpen = false" />
         <Button label="确定" variant="outlined" @click="confirmResetPwd" />
@@ -270,7 +270,7 @@ function onInvalid(message: string) {
     <!-- 重置密码结果（需用户确认知悉新密码，不自动消失） -->
     <Dialog :visible="resetResultOpen" modal header="重置密码成功" :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
       @update:visible="resetResultOpen = $event">
-      <p class="text-sm">
+      <p class="text-xs">
         密码已经重置为
         <span class="mx-1 select-all font-mono font-medium text-primary">{{ resetNewPwd }}</span>
         ，请通知用户尽快修改密码！

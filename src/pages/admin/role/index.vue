@@ -185,23 +185,23 @@ function stateText(row: HmxRole | undefined): string {
     <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
       <InputText v-model="keyword" maxlength="100" placeholder="关键字" autocapitalize="off" spellcheck="false"
         class="w-48 shrink-0" @keydown.enter="query" />
-      <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="query">
-        <IconSearch class="h-3.5 w-3.5" />查询
+      <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="query">
+        <IconSearch class="h-3 w-3" />查询
       </Button>
-      <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onAdd">
-        <IconPlus class="h-3.5 w-3.5" />添加
+      <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onAdd">
+        <IconPlus class="h-3 w-3" />添加
       </Button>
-      <Button variant="outlined" size="small" severity="danger" class="shrink-0 whitespace-nowrap" @click="onDelete">
-        <IconTrash class="h-3.5 w-3.5" />删除
+      <Button variant="outlined" severity="danger" class="shrink-0 whitespace-nowrap" @click="onDelete">
+        <IconTrash class="h-3 w-3" />删除
       </Button>
-      <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onSave">
-        <IconDeviceFloppy class="h-3.5 w-3.5" />保存
+      <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onSave">
+        <IconDeviceFloppy class="h-3 w-3" />保存
       </Button>
-      <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onEditUsers">
-        <IconUsers class="h-3.5 w-3.5" />编辑用户
+      <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onEditUsers">
+        <IconUsers class="h-3 w-3" />编辑用户
       </Button>
-      <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onEditPerms">
-        <IconShieldCheck class="h-3.5 w-3.5" />菜单与功能权限
+      <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onEditPerms">
+        <IconShieldCheck class="h-3 w-3" />菜单与功能权限
       </Button>
       <span class="ml-auto text-xs text-muted-foreground">角色维护（{{ trackList.length }}）</span>
     </div>
@@ -218,7 +218,7 @@ function stateText(row: HmxRole | undefined): string {
     <!-- 删除确认（对应原 MsgBox.ShowYesNo("是否确定删除角色「xxx」？")） -->
     <Dialog :visible="confirmOpen" modal header="删除确认" :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
       @update:visible="confirmOpen = $event">
-      <p class="text-sm">是否确定删除角色「{{ confirmTarget?.cRoleName }}」？</p>
+      <p class="text-xs">是否确定删除角色「{{ confirmTarget?.cRoleName }}」？</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />
         <Button label="删除" severity="danger" variant="outlined" @click="confirmDelete" />

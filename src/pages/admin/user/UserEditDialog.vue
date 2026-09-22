@@ -200,49 +200,49 @@ function onSave() {
         <div class="mb-2 text-xs font-medium text-muted-foreground">其他信息</div>
         <div class="grid grid-cols-1 gap-x-3 gap-y-2 sm:grid-cols-2">
           <div class="min-w-0 space-y-1">
-            <label class="text-[11px] text-muted-foreground/80">部门</label>
+            <label class="text-xs text-muted-foreground/80">部门</label>
             <TreeSelect :model-value="deptSelection" @update:model-value="onDeptSelection" :options="deptTreeNodes"
               placeholder="-请选择-" filter show-clear class="w-full min-w-0" />
           </div>
 
           <div class="min-w-0 space-y-1">
-            <label class="text-[11px] text-muted-foreground/80">岗位</label>
+            <label class="text-xs text-muted-foreground/80">岗位</label>
             <InputText v-model="form.cPost" class="w-full min-w-0" />
           </div>
 
           <div class="min-w-0 space-y-1">
-            <label class="text-[11px] text-muted-foreground/80">职务</label>
+            <label class="text-xs text-muted-foreground/80">职务</label>
             <InputText v-model="form.cPosition" class="w-full min-w-0" />
           </div>
 
           <div class="min-w-0 space-y-1">
-            <label class="text-[11px] text-muted-foreground/80">教育程度</label>
+            <label class="text-xs text-muted-foreground/80">教育程度</label>
             <Select v-model="form.cEducation" :options="EDUS" placeholder="-请选择-" show-clear class="w-full min-w-0" />
           </div>
 
           <div class="min-w-0 space-y-1">
-            <label class="text-[11px] text-muted-foreground/80">民族</label>
+            <label class="text-xs text-muted-foreground/80">民族</label>
             <Select v-model="form.cNation" :options="NATIONS" placeholder="-请选择-" show-clear class="w-full min-w-0" />
           </div>
 
           <div class="min-w-0 space-y-1">
-            <label class="text-[11px] text-muted-foreground/80">籍贯</label>
+            <label class="text-xs text-muted-foreground/80">籍贯</label>
             <Select v-model="form.cNativePlace" :options="PROVINCES" placeholder="-请选择-" show-clear filter
               class="w-full min-w-0" />
           </div>
 
           <div class="min-w-0 space-y-1">
-            <label class="text-[11px] text-muted-foreground/80">政治面貌</label>
+            <label class="text-xs text-muted-foreground/80">政治面貌</label>
             <Select v-model="form.cPoliticsStatus" :options="POLITICS" placeholder="-请选择-" show-clear class="w-full min-w-0" />
           </div>
 
           <div class="min-w-0 space-y-1">
-            <label class="text-[11px] text-muted-foreground/80">身份证</label>
+            <label class="text-xs text-muted-foreground/80">身份证</label>
             <InputText v-model="form.cIdCardNo" class="w-full min-w-0" />
           </div>
 
           <div class="min-w-0 space-y-1">
-            <label class="text-[11px] text-muted-foreground/80">社保号</label>
+            <label class="text-xs text-muted-foreground/80">社保号</label>
             <InputText v-model="form.cSbcard" class="w-full min-w-0" />
           </div>
         </div>

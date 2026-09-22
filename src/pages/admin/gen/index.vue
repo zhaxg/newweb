@@ -141,10 +141,10 @@ async function btnCopy() {
     <!-- 参数区：数据源模式切换 + 对应参数 -->
     <div class="shrink-0 space-y-2 border-b border-border/60 px-3 py-2.5">
       <div class="flex items-center gap-3">
-        <SelectButton v-model="mode" :options="modes" size="small" class="shrink-0" />
+        <SelectButton v-model="mode" :options="modes" class="shrink-0" />
         <div class="min-h-[24px] flex-1"></div>
-        <Button size="small" raised class="shrink-0 whitespace-nowrap" :loading="loading" @click="btnCodeGen">
-          <component :is="loading ? IconLoader : IconSparkles" :class="['h-3.5 w-3.5', loading && 'animate-spin']" />
+        <Button raised class="shrink-0 whitespace-nowrap" :loading="loading" @click="btnCodeGen">
+          <component :is="loading ? IconLoader : IconSparkles" :class="['h-3 w-3', loading && 'animate-spin']" />
           生成代码
         </Button>
       </div>
@@ -179,20 +179,20 @@ async function btnCopy() {
         <TabList class="min-w-0 flex-1">
           <Tab v-for="tab in views" :key="tab.name" :value="tab.name">
             <span class="flex items-center gap-1.5">
-              <component :is="IconFileCode" class="h-3.5 w-3.5 opacity-60" />
+              <component :is="IconFileCode" class="h-3 w-3 opacity-60" />
               {{ tab.title }}
             </span>
           </Tab>
         </TabList>
         <div class="mr-2 flex shrink-0 items-center gap-2">
           <span v-if="activeView?.lang"
-            class="rounded bg-muted px-1.5 py-0.5 font-mono text-[10px] uppercase text-muted-foreground">
+            class="rounded bg-muted px-1.5 py-0.5 font-mono text-xs uppercase text-muted-foreground">
             {{ activeView.lang }}
           </span>
-          <span v-if="activeView" class="text-[11px] tabular-nums text-muted-foreground">{{ activeView.lines }} 行</span>
-          <Button variant="outlined" size="small" class="whitespace-nowrap" @click="btnCopy">
-            <component :is="IconCheck" v-if="copied" class="h-3.5 w-3.5 text-green-600 dark:text-green-400" />
-            <component :is="IconCopy" v-else class="h-3.5 w-3.5" />
+          <span v-if="activeView" class="text-xs tabular-nums text-muted-foreground">{{ activeView.lines }} 行</span>
+          <Button variant="outlined" class="whitespace-nowrap" @click="btnCopy">
+            <component :is="IconCheck" v-if="copied" class="h-3 w-3 text-green-600 dark:text-green-400" />
+            <component :is="IconCopy" v-else class="h-3 w-3" />
             {{ copied ? "已复制" : "复制当前页代码" }}
           </Button>
         </div>
@@ -205,7 +205,7 @@ async function btnCopy() {
         <TabPanel v-for="view in views" :key="view.name" :value="view.name" class="h-full overflow-auto p-0">
           <div class="code-view flex min-h-full font-mono text-xs leading-5">
             <div aria-hidden="true"
-              class="sticky left-0 z-10 shrink-0 select-none border-r border-border/40 bg-muted/40 px-2 py-2 text-right text-[11px] tabular-nums text-muted-foreground/70 backdrop-blur">
+              class="sticky left-0 z-10 shrink-0 select-none border-r border-border/40 bg-muted/40 px-2 py-2 text-right text-xs tabular-nums text-muted-foreground/70 backdrop-blur">
               <div v-for="n in view.lines" :key="n">{{ n }}</div>
             </div>
             <pre class="m-0 min-w-0 flex-1 py-2 pl-3"><code v-html="view.html"></code></pre>

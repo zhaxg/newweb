@@ -4,6 +4,7 @@ import { useRoute, useRouter, RouterView } from "vue-router";
 import HmxHeader from "@/layouts/components/HmxHeader.vue";
 import HmxSidebar from "@/layouts/components/HmxSidebar.vue";
 import HmxTabBar from "@/layouts/components/HmxTabBar.vue";
+import ErrorBoundary from "@/components/common/ErrorBoundary.vue";
 import Dialog from "primevue/dialog";
 import Button from "primevue/button";
 import Select from "primevue/select";
@@ -14,7 +15,7 @@ import { useTabsStore } from "@/stores/tabsStore";
 import { resetUserRoutes } from "@/router";
 import { tabPath } from "@/router/paths";
 import { useToast } from "@/composables/useToast";
-import { useSettingsStore } from "@/stores/settingsStore";
+import { useSettingsStore, type FontScale } from "@/stores/settingsStore";
 import {
   chineseFontOptions,
   englishFontOptions,
@@ -37,6 +38,13 @@ const { editorSettings, updateEditorSettings } = useSettingsStore();
 
 const settingsOpen = ref(false);
 const sidebarVisible = ref(true);
+
+/* 字体大小档位：写 editorSettings.fontScale → settingsStore watch 更新 --hmx-scale，即时生效并持久化 */
+const fontScaleOptions: { label: string; value: FontScale }[] = [
+  { label: "标准", value: "standard" },
+  { label: "大字体", value: "large" },
+  { label: "更大字体", value: "xlarge" },
+];
 
 function onFontChange(kind: "zh" | "en", option: FontOption) {
   ensureFontLoaded(option);
@@ -93,7 +101,9 @@ function pageKey(pageId: string | undefined, routeName: unknown): string {
             <RouterView v-slot="{ Component, route: r }">
               <Transition name="page" mode="out-in">
                 <KeepAlive :max="25">
-                  <component :is="Component" v-if="Component" :key="pageKey(r.meta.pageId, r.name)" :title="r.meta.title" />
+                  <ErrorBoundary v-if="Component" :key="pageKey(r.meta.pageId, r.name)">
+                    <component :is="Component" :key="pageKey(r.meta.pageId, r.name)" :title="r.meta.title" />
+                  </ErrorBoundary>
                 </KeepAlive>
               </Transition>
             </RouterView>
@@ -104,24 +114,30 @@ function pageKey(pageId: string | undefined, routeName: unknown): string {
 
     <Dialog :visible="settingsOpen" modal header="系统设置" :style="{ width: 'min(32rem, calc(100vw - 2rem))' }"
       @update:visible="settingsOpen = $event">
-      <div class="space-y-3 text-sm text-muted-foreground">
+      <div class="space-y-3 text-xs text-muted-foreground">
         <p>· 主题：请通过右上角主题按钮切换浅色 / 深色</p>
+        <div class="flex items-center justify-between gap-4">
+          <span>· 字体大小</span>
+          <Select :model-value="editorSettings.fontScale" :options="fontScaleOptions" option-label="label"
+            option-value="value" class="w-40"
+            @update:model-value="updateEditorSettings({ fontScale: $event as FontScale })" />
+        </div>
         <div class="flex items-center justify-between gap-4">
           <span>· 中文字体</span>
           <!-- Select 丢弃 $attrs,autofocus 须走 pt 挂到 focusInput(span),供 Dialog 的 [autofocus] 查询命中 -->
           <Select :model-value="findFontOption(chineseFontOptions, editorSettings.fontChineseFamily)"
-            :options="chineseFontOptions" option-label="label" data-key="family" size="small" class="w-40"
+            :options="chineseFontOptions" option-label="label" data-key="family" class="w-40"
             :pt="{ label: { autofocus: true } }" @update:model-value="onFontChange('zh', $event)" />
         </div>
         <div class="flex items-center justify-between gap-4">
           <span>· 英文字体</span>
           <Select :model-value="findFontOption(englishFontOptions, editorSettings.fontEnglishFamily)"
-            :options="englishFontOptions" option-label="label" data-key="family" size="small" class="w-40"
+            :options="englishFontOptions" option-label="label" data-key="family" class="w-40"
             @update:model-value="onFontChange('en', $event)" />
         </div>
       </div>
       <template #footer>
-        <Button label="关闭" size="small" raised @click="settingsOpen = false" />
+        <Button label="关闭" raised @click="settingsOpen = false" />
       </template>
     </Dialog>
   </div>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import {
   HmxChromeTabsElement,
   hmxChromeTabsEvents,
@@ -8,14 +8,12 @@ import {
 } from "@/components/chromeTabs/hmxChromeTabs";
 import { useTabs } from "@/composables/useTabs";
 import { storeToRefs } from "pinia";
-import { useSettingsStore } from "@/stores/settingsStore";
 import { useRouter } from "vue-router";
 import { tabPath } from "@/router/paths";
 
 const tabsStore = useTabs();
 const { tabs, activeId } = storeToRefs(tabsStore);
 const { close, closeOthers } = tabsStore;
-const { editorSettings } = useSettingsStore();
 const router = useRouter();
 
 /* tabs → router 单向：所有激活/切换都归结为 push 对应路由，实际 activeId 由 router.afterEach 的 openTab 落定。
@@ -109,8 +107,9 @@ onMounted(() => {
 
 watch([tabs, activeId], sync, { deep: true });
 
-/* 标签字号走全局 fontSize；字体族跟随全站 --font-sans（含用户中/英文字体设置，可穿透 shadow DOM） */
-const tabsFont = computed(() => `${editorSettings.fontSize}px var(--font-sans)`);
+/* 页签属导航 chrome，字号钉在辅助档 0.75rem（12px，同侧栏/控件），rem 随 --hmx-scale 缩放；
+   字体族跟随全站 --font-sans（含用户中/英文字体设置，可穿透 shadow DOM） */
+const tabsFont = "0.75rem var(--font-sans)";
 </script>
 
 <template>
@@ -131,10 +130,11 @@ const tabsFont = computed(() => `${editorSettings.fontSize}px var(--font-sans)`)
 hmx-chrome-tabs {
   display: block;
   width: 100%;
-  --chrome-tabs-height: 36px;
-  --chrome-tab-min-width: 32px;
-  --chrome-tab-max-width: 120px;
-  --chrome-tab-radius: 5px;
+  /* 几何全部 rem：随 --hmx-scale 档位与字阶联动缩放（图标几何仍 px，属视觉常量） */
+  --chrome-tabs-height: 2.25rem; /* 36px@16 */
+  --chrome-tab-min-width: 2rem; /* 32px@16 */
+  --chrome-tab-max-width: 9rem; /* 144px@16 = 8汉字96 + 内边距20 + 关闭钮16+5 + 富余 */
+  --chrome-tab-radius: 0.3125rem;
   --chrome-tabs-background: #e5e7eb;
   --chrome-tab-text-color: #4b5563;
   --chrome-tab-active-text-color: #111827;

@@ -6,8 +6,15 @@
  */
 import { reactive, watch } from "vue";
 
+/** 字体缩放档位（系统设置 → 字体大小）。standard = 现有视觉（年轻紧凑档）。 */
+export type FontScale = "standard" | "large" | "xlarge";
+
+/** 档位 → --hmx-scale 系数：html font-size = calc(--hmx-scale × 100%)。
+ *  基准是 100% 而非 16px，尊重用户浏览器自己的字号设置，缩放是"再乘系数"。 */
+export const FONT_SCALE: Record<FontScale, number> = { standard: 1, large: 1.15, xlarge: 1.3 };
+
 type EditorSettings = {
-  fontSize: number;
+  fontScale: FontScale;
   tableFontFamily: string;
   theme: string;
   numericColumnRightAlign: boolean;
@@ -26,7 +33,7 @@ type EditorSettings = {
 const STORAGE_KEY = "hmx.editor-settings";
 
 const defaults: EditorSettings = {
-  fontSize: 13,
+  fontScale: "standard",
   tableFontFamily: "Geist Variable Tabular",
   theme: "system",
   numericColumnRightAlign: true,
@@ -63,6 +70,15 @@ watch(
     }
   },
   { deep: true },
+);
+
+// 字体缩放档位 → 根字号 CSS 变量（immediate：刷新后启动即恢复档位）
+watch(
+  () => editorSettings.fontScale,
+  (v) => {
+    document.documentElement.style.setProperty("--hmx-scale", String(FONT_SCALE[v] ?? 1));
+  },
+  { immediate: true },
 );
 
 let instance: ReturnType<typeof build> | null = null;

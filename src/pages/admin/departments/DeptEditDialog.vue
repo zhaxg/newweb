@@ -150,7 +150,7 @@ function onSave() {
         <div class="grid grid-cols-2 gap-x-3 gap-y-2 sm:grid-cols-3">
           <!-- 仅展示前 3 个；form 仍携带 cSw04/05，编辑保存时原值回写不丢失 -->
           <div v-for="n in 3" :key="n" class="min-w-0 space-y-1">
-            <label class="text-[11px] text-muted-foreground/80">扩展{{ n }}</label>
+            <label class="text-xs text-muted-foreground/80">扩展{{ n }}</label>
             <InputText :model-value="(form as Record<string, string>)[`cSw0${n}`]"
               @update:model-value="(v: string | undefined) => ((form as Record<string, string>)[`cSw0${n}`] = v ?? '')"
               class="w-full min-w-0 bg-background" />

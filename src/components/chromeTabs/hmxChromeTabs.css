@@ -7,16 +7,18 @@
  * - 移除分组/新建按钮样式（HMX 壳层不使用）
  * - 修复：关闭标签不再固化宽度（原库 pointerleave 才重算的 bug）
  * - 新增 data-width-mode="content"：标签宽度随标题内容伸缩，超出容器走标签栏滚动
+ * - 尺寸 token 全部 rem 化（宽/高/字号/圆角），随根字号 --hmx-scale 档位等比缩放
  */
 
 :host {
-  --chrome-tabs-height: 38px;
+  --chrome-tabs-height: 2.375rem; /* 38px@16 */
   --chrome-tabs-background: #dee1e6;
-  --chrome-tabs-font: 12px var(--font-sans, Arial, sans-serif);
-  --chrome-tab-height: max(var(--chrome-tabs-height), 28px);
-  --chrome-tab-min-width: 52px;
-  --chrome-tab-max-width: 120px;
-  --chrome-tab-radius: 8px;
+  /* 兜底字号 = 辅助档；HmxTabBar 会经内联 --chrome-tabs-font 覆盖 */
+  --chrome-tabs-font: 0.75rem var(--font-sans, Arial, sans-serif);
+  --chrome-tab-height: max(var(--chrome-tabs-height), 1.75rem);
+  --chrome-tab-min-width: 3.25rem; /* 52px@16 */
+  --chrome-tab-max-width: 9rem; /* 144px@16 = 8汉字96 + 内边距20 + 关闭钮16+5 + 富余 */
+  --chrome-tab-radius: 0.5rem;
   --chrome-tab-text-color: #5f6368;
   --chrome-tab-active-text-color: #202124;
   --chrome-tab-hover-background: #f4f5f6;

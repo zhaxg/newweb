@@ -356,26 +356,26 @@ function onBtnList() {
     <!-- 工具栏（对应 hmx_web resc/index：分组下拉+刷新 | 新增/新增子级/编辑/删除/子级功能点） -->
     <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
       <span class="shrink-0 text-xs text-muted-foreground">分组</span>
-      <Select v-model="namespace" :options="nsOptions" option-label="label" option-value="value" size="small"
+      <Select v-model="namespace" :options="nsOptions" option-label="label" option-value="value"
         class="w-28 shrink-0" @change="query" />
-      <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="query">
-        <IconRefresh class="h-3.5 w-3.5" />刷新
+      <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="query">
+        <IconRefresh class="h-3 w-3" />刷新
       </Button>
       <span class="mx-1 h-4 w-px shrink-0 bg-border/60" />
-      <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onAdd">
-        <IconPlus class="h-3.5 w-3.5" />新增
+      <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onAdd">
+        <IconPlus class="h-3 w-3" />新增
       </Button>
-      <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onAddChild">
-        <IconNetwork class="h-3.5 w-3.5" />新增子级
+      <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onAddChild">
+        <IconNetwork class="h-3 w-3" />新增子级
       </Button>
-      <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="openEdit(selectedId)">
-        <IconPencil class="h-3.5 w-3.5" />编辑
+      <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="openEdit(selectedId)">
+        <IconPencil class="h-3 w-3" />编辑
       </Button>
-      <Button variant="outlined" size="small" severity="danger" class="shrink-0 whitespace-nowrap" @click="onDelete">
-        <IconTrash class="h-3.5 w-3.5" />删除
+      <Button variant="outlined" severity="danger" class="shrink-0 whitespace-nowrap" @click="onDelete">
+        <IconTrash class="h-3 w-3" />删除
       </Button>
-      <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onBtnList">
-        <IconClick class="h-3.5 w-3.5" />子级功能点
+      <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onBtnList">
+        <IconClick class="h-3 w-3" />子级功能点
       </Button>
       <span class="ml-auto text-xs text-muted-foreground">资源维护（{{ gridRows.length }}）</span>
     </div>

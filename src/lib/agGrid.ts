@@ -133,7 +133,8 @@ export function makeHmxGridTheme(): ComputedRef<Theme> {
     themeQuartz.withParams({
       rowHeight: 28,
       headerHeight: 29,
-      fontSize: `${settingsStore.editorSettings.fontSize}px`,
+      /* 数据区 = 内容正文，字号钉在字阶正文档 0.8125rem（13px@16），rem 随 --hmx-scale 缩放 */
+      fontSize: "0.8125rem",
       /* 表格字体栈 = 用户英文字体（若有）→ 表字体（拉丁 tabular）→ 全站 --font-sans（含中/英文设置） */
       fontFamily: [
         settingsStore.editorSettings.fontEnglishFamily
@@ -145,9 +146,10 @@ export function makeHmxGridTheme(): ComputedRef<Theme> {
         .filter(Boolean)
         .join(", "),
       spacing: 5, // 默认通常是 8px，调小到 4-6 即可明显紧凑
-      headerFontSize: "12px",
+      headerFontSize: "0.75rem", // 表头 = 控件/辅助档 12px（rem 同上）
       headerFontWeight: 500,
       borderColor: "var(--border)",
+      borderRadius: "0px",
       foregroundColor: "var(--foreground)",
       backgroundColor: "var(--background)",
       oddRowBackgroundColor: "transparent",

@@ -5,7 +5,7 @@
 .hmx-ag-grid .ag-row-number-cell {
   background-color: var(--muted);
   color: var(--muted-foreground);
-  font-size: 8px;
+  font-size: 0.5rem; /* 8px@16 基准，rem 随缩放档位 */
   font-variant-numeric: tabular-nums;
   justify-content: center;
 }
@@ -41,7 +41,7 @@
 .hmx-ag-grid .ag-status-bar {
   border-top: 1px solid var(--border);
   color: var(--muted-foreground);
-  font-size: 12px;
+  font-size: 0.75rem; /* 12px@16 基准，rem 随缩放档位 */
   background-color: var(--background);
 }
 

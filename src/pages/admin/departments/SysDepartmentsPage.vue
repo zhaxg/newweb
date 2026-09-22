@@ -280,21 +280,21 @@ function onInvalid(message: string) {
   <div class="flex min-h-0 flex-1 flex-col">
     <!-- 工具栏（对应原 stackPanel1：查询/添加/添加子部门/编辑/删除） -->
     <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
-      <Button size="small" variant="outlined" class="shrink-0 whitespace-nowrap" @click="query">
-        <IconSearch class="h-3.5 w-3.5" />查询
+      <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="query">
+        <IconSearch class="h-3 w-3" />查询
       </Button>
-      <Button severity="secondary" variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onAdd">
-        <IconPlus class="h-3.5 w-3.5" />添加
+      <Button severity="secondary" variant="outlined" class="shrink-0 whitespace-nowrap" @click="onAdd">
+        <IconPlus class="h-3 w-3" />添加
       </Button>
-      <Button severity="secondary" variant="outlined" size="small" class="shrink-0 whitespace-nowrap"
+      <Button severity="secondary" variant="outlined" class="shrink-0 whitespace-nowrap"
         @click="onAddChild">
-        <IconNetwork class="h-3.5 w-3.5" />添加子部门
+        <IconNetwork class="h-3 w-3" />添加子部门
       </Button>
-      <Button severity="secondary" variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onEdit">
-        <IconPencil class="h-3.5 w-3.5" />编辑
+      <Button severity="secondary" variant="outlined" class="shrink-0 whitespace-nowrap" @click="onEdit">
+        <IconPencil class="h-3 w-3" />编辑
       </Button>
-      <Button size="small" severity="danger" variant="outlined" class="shrink-0 whitespace-nowrap" @click="onDelete">
-        <IconTrash class="h-3.5 w-3.5" />删除
+      <Button severity="danger" variant="outlined" class="shrink-0 whitespace-nowrap" @click="onDelete">
+        <IconTrash class="h-3 w-3" />删除
       </Button>
       <span class="ml-auto text-xs text-muted-foreground">部门维护（{{ rows.length }}）</span>
     </div>
@@ -315,7 +315,7 @@ function onInvalid(message: string) {
     <!-- 删除确认（对应原 MsgBox.ShowYesNo("是否确定删除当前项？")） -->
     <Dialog :visible="confirmOpen" modal header="删除确认" :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
       @update:visible="confirmOpen = $event">
-      <p class="text-sm">是否确定删除当前项「{{ confirmTarget?.cDeptName }}」？</p>
+      <p class="text-xs">是否确定删除当前项「{{ confirmTarget?.cDeptName }}」？</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />
         <Button label="删除" severity="danger" variant="outlined" @click="confirmDelete" />

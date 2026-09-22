@@ -84,7 +84,7 @@ function navIcon(item: MenuItem) {
         <div class="truncate text-sm font-semibold leading-tight text-foreground">HiMind工业互联网平台</div>
       </div>
       <div class="ml-5 flex shrink-0 items-center">
-        <Button text size="small" icon-only title="功能菜单" @click="navMenuRef?.toggle($event)">
+        <Button text icon-only title="功能菜单" @click="navMenuRef?.toggle($event)">
           <IconDots class="h-4 w-4" />
         </Button>
         <TieredMenu ref="navMenuRef" :model="navMenuItems" popup class="w-48" @show="onNavShow">
@@ -122,7 +122,7 @@ function navIcon(item: MenuItem) {
     <!-- 退出确认（拦截误点）；autofocus 标记 → Dialog 动画结束后焦点落在"退出"按钮 -->
     <Dialog :visible="logoutConfirmOpen" modal header="退出确认" autofocus
       :style="{ width: 'min(26rem, calc(100vw - 2rem))' }" @update:visible="logoutConfirmOpen = $event">
-      <p class="text-sm">是否确定退出系统？</p>
+      <p class="text-xs">是否确定退出系统？</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="logoutConfirmOpen = false" />
         <Button label="退出" severity="danger" variant="outlined" autofocus

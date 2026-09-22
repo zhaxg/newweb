@@ -38,8 +38,8 @@ const sizeClass = computed(
   () =>
     ({
       sm: "size-8 text-base",
-      md: "size-10 text-xl",
-      lg: "size-12 text-2xl",
+      md: "size-10 text-xl", // audit-allow 非排版：字号仅作图标尺寸驱动（icon size-[1em]）
+      lg: "size-12 text-2xl", // audit-allow 同上
     })[props.size],
 );
 

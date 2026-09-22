@@ -348,17 +348,17 @@ onMounted(onQuery);
         class="w-40 shrink-0" @keydown.enter="onQuery" />
       <InputText v-model="queryName" maxlength="100" placeholder="描述" autocapitalize="off" spellcheck="false"
         class="w-40 shrink-0" @keydown.enter="onQuery" />
-      <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onQuery">
-        <IconSearch class="h-3.5 w-3.5" />查询
+      <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onQuery">
+        <IconSearch class="h-3 w-3" />查询
       </Button>
-      <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onMasterAdd">
-        <IconPlus class="h-3.5 w-3.5" />添加
+      <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onMasterAdd">
+        <IconPlus class="h-3 w-3" />添加
       </Button>
-      <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onMasterEdit">
-        <IconPencil class="h-3.5 w-3.5" />编辑
+      <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onMasterEdit">
+        <IconPencil class="h-3 w-3" />编辑
       </Button>
-      <Button variant="outlined" size="small" severity="danger" class="shrink-0 whitespace-nowrap" @click="onMasterDelete">
-        <IconTrash class="h-3.5 w-3.5" />删除
+      <Button variant="outlined" severity="danger" class="shrink-0 whitespace-nowrap" @click="onMasterDelete">
+        <IconTrash class="h-3 w-3" />删除
       </Button>
       <span class="ml-auto text-xs text-muted-foreground">数据字典（父项 {{ masters.length }}）</span>
     </div>
@@ -379,17 +379,17 @@ onMounted(onQuery);
         <div class="flex h-full min-h-0 flex-col">
           <!-- 子项工具栏（对应原 repositoryItemGridLookUpEdit 面板：刷新/添加/删除/保存） -->
           <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
-            <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onChildRefresh">
-              <IconRotateClockwise class="h-3.5 w-3.5" />刷新
+            <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onChildRefresh">
+              <IconRotateClockwise class="h-3 w-3" />刷新
             </Button>
-            <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onChildAdd">
-              <IconPlus class="h-3.5 w-3.5" />添加
+            <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onChildAdd">
+              <IconPlus class="h-3 w-3" />添加
             </Button>
-            <Button variant="outlined" size="small" severity="danger" class="shrink-0 whitespace-nowrap" @click="onChildDelete">
-              <IconTrash class="h-3.5 w-3.5" />删除
+            <Button variant="outlined" severity="danger" class="shrink-0 whitespace-nowrap" @click="onChildDelete">
+              <IconTrash class="h-3 w-3" />删除
             </Button>
-            <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onChildSave">
-              <IconDeviceFloppy class="h-3.5 w-3.5" />保存
+            <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onChildSave">
+              <IconDeviceFloppy class="h-3 w-3" />保存
             </Button>
             <span class="ml-auto text-xs text-muted-foreground">{{ selectedMaster ? `子键值对（${selectedMaster.cName} ${children.length}）` : "子键值对" }}</span>
           </div>
@@ -445,7 +445,7 @@ onMounted(onQuery);
     <!-- 父项删除确认（有子项时连带删除） -->
     <Dialog :visible="confirmOpen" modal header="删除确认" :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
       @update:visible="confirmOpen = $event">
-      <p class="text-sm">{{ confirmHasChildren ? `该键值对[${confirmTarget?.cName}]存在多个子项，是否确定直接删除？` : `是否确定删除当前项「${confirmTarget?.cName}」？` }}</p>
+      <p class="text-xs">{{ confirmHasChildren ? `该键值对[${confirmTarget?.cName}]存在多个子项，是否确定直接删除？` : `是否确定删除当前项「${confirmTarget?.cName}」？` }}</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />
         <Button label="删除" severity="danger" variant="outlined" @click="confirmDelete" />

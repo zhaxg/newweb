@@ -74,7 +74,7 @@ function clear() {
       @click="toggle">
       <component :is="currentIcon" class="h-4 w-4 shrink-0 text-muted-foreground" />
       <span class="min-w-0 flex-1 truncate" :class="!modelValue && 'italic text-muted-foreground/60'">{{ modelValue || "（默认）" }}</span>
-      <span class="shrink-0 text-[10px] text-muted-foreground/60">{{ TABLER_ICON_NAMES.length }}+</span>
+      <span class="shrink-0 text-xs text-muted-foreground/60">{{ TABLER_ICON_NAMES.length }}+</span>
     </button>
     <button v-if="modelValue" type="button" title="清除，回退默认图标" @click="clear"
       class="flex h-5 w-5 shrink-0 self-center items-center justify-center rounded text-muted-foreground hover:bg-destructive/10 hover:text-destructive">
@@ -88,10 +88,10 @@ function clear() {
             autocapitalize="off" spellcheck="false" class="w-full pr-8" />
           <button v-if="query" type="button" title="清空搜索" @click="query = ''"
             class="absolute inset-y-0 right-0 flex w-8 items-center justify-center text-muted-foreground hover:text-foreground">
-            <IconX class="h-3.5 w-3.5" />
+            <IconX class="h-3 w-3" />
           </button>
         </div>
-        <div v-if="query.trim()" class="text-[11px] text-muted-foreground">匹配 {{ allMatches.length }} 个</div>
+        <div v-if="query.trim()" class="text-xs text-muted-foreground">匹配 {{ allMatches.length }} 个</div>
         <div class="grid max-h-[260px] grid-cols-9 gap-1 overflow-y-auto" @scroll.passive="onScroll">
           <button v-for="name in visible" :key="name" type="button"
             class="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-primary"
@@ -102,14 +102,14 @@ function clear() {
           </button>
         </div>
         <div v-if="visible.length === 0" class="py-4 text-center text-xs text-muted-foreground">无匹配图标</div>
-        <div v-else-if="allMatches.length > visible.length" class="text-center text-[11px] text-muted-foreground/70">
+        <div v-else-if="allMatches.length > visible.length" class="text-center text-xs text-muted-foreground/70">
           已显示 {{ visible.length }} / {{ allMatches.length }} · 向下滚动加载更多
         </div>
       </div>
     </Popover>
 
     <Teleport to="body">
-      <div v-if="tip" class="pointer-events-none fixed z-[2147483647] -translate-x-1/2 -translate-y-full rounded bg-foreground px-1.5 py-0.5 text-[11px] text-background shadow-md"
+      <div v-if="tip" class="pointer-events-none fixed z-[2147483647] -translate-x-1/2 -translate-y-full rounded bg-foreground px-1.5 py-0.5 text-xs text-background shadow-md"
         :style="{ left: `${tip.x}px`, top: `${tip.y}px` }">{{ tip.text }}</div>
     </Teleport>
   </div>

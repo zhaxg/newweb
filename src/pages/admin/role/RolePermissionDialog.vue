@@ -174,7 +174,7 @@ function onSave() {
   <Dialog :visible="open" modal :header="`分配权限 [ ${role?.cRoleName} ]`"
     :style="{ width: 'min(34rem, calc(100vw - 2rem))' }" @update:visible="emit('update:open', $event)">
     <div class="mb-2 flex items-center gap-2">
-      <span class="text-sm text-muted-foreground">命名空间</span>
+      <span class="text-xs text-muted-foreground">命名空间</span>
       <Select v-model="currentNs" :options="namespaces" option-label="label" class="w-48" @change="reload" />
     </div>
     <div class="min-h-0 max-h-[55vh] overflow-y-auto rounded-md border border-border/60 py-1">

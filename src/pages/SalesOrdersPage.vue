@@ -60,11 +60,11 @@ function reload() {
 <template>
   <div class="flex h-full min-h-0 flex-col bg-background text-foreground">
     <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
-      <Button text size="small"><IconPlus class="h-3.5 w-3.5" />新增</Button>
-      <Button text size="small"><IconTrash class="h-3.5 w-3.5" />删除</Button>
-      <Button text size="small" @click="exportCsv"><IconDownload class="h-3.5 w-3.5" />导出</Button>
+      <Button text><IconPlus class="h-3 w-3" />新增</Button>
+      <Button text><IconTrash class="h-3 w-3" />删除</Button>
+      <Button text @click="exportCsv"><IconDownload class="h-3 w-3" />导出</Button>
       <div class="mx-1 h-4 w-px bg-border" />
-      <Button text size="small" @click="reload"><IconRefresh class="h-3.5 w-3.5" />刷新</Button>
+      <Button text @click="reload"><IconRefresh class="h-3 w-3" />刷新</Button>
       <div class="min-w-0 flex-1" />
       <span class="truncate text-xs text-muted-foreground">销售订单（{{ dataset.rows.length }} 行 ·
         {{ dataset.columns.length }} 字段）</span>
