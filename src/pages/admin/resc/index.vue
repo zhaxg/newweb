@@ -2,7 +2,6 @@
 /** 对应 FrmRescList（资源管理）：HmxWinForms.Forms.Admin.FrmRescList
  *  画面迁移，逻辑不迁移到 */
 
-
 import { computed, defineComponent, h, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { IconChevronDown, IconChevronRight, IconClick, IconNetwork, IconPencil, IconPlus, IconRefresh, IconTrash } from "@tabler/icons-vue";
 import type { Component } from "vue";
@@ -23,7 +22,6 @@ import { TABLER_FALLBACK_ICON, tablerIcon } from "@/lib/tablerIcons";
 import RescBtnListDialog from "./RescBtnListDialog.vue";
 import RescEditDialog from "./RescEditDialog.vue";
 import { convertToTree, createTreeNode, findParentNodeById, type HmxResTree } from "./tree-node";
-
 
 const { toast } = useToast();
 
@@ -53,7 +51,6 @@ const gridRows = computed<RescGridRow[]>(() => {
   return out;
 });
 
-/** id → 树节点（当前数据全量索引，编辑/删除定位用） */
 const nodeById = computed(() => {
   const map = new Map<string, HmxResTree>();
   const walk = (nodes: HmxResTree[]) => {
@@ -91,7 +88,6 @@ function rowIcon(data: RescGridRow): [Component, string] {
   return [tablerIcon(data.cIcon) ?? TABLER_FALLBACK_ICON, "text-muted-foreground"];
 }
 
-/** 组列单元格：缩进 + 展开箭头 + 资源图标 + 编码-名称 */
 const RescGroupCell = defineComponent({
   name: "RescGroupCell",
   props: { params: { type: Object, required: true } },
@@ -147,7 +143,6 @@ const expandedIds = ref<Set<string>>(new Set());
 const selectedId = ref<string | null>(null);
 const gridApi = ref<GridApi | null>(null);
 
-/** 刷新数据后默认整树折叠 */
 function collapseAll() {
   expandedIds.value = new Set();
 }
@@ -260,14 +255,12 @@ function openEdit(id: string | null) {
   editOpen.value = true;
 }
 
-/** 新增：挂到选中节点的父级下（未选中 = 根）；对应 hmx_web btnNew */
 function onAdd() {
   const item = createTreeNode(currentRow.value?.cPid ?? "", namespace.value, NextStrId());
   editNode.value = item;
   editOpen.value = true;
 }
 
-/** 新增子级：必须选中父节点；对应 hmx_web btnNewChild */
 function onAddChild() {
   const row = currentRow.value;
   if (!row?.id) {

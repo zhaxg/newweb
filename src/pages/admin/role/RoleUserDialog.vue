@@ -2,7 +2,6 @@
 /** 对应 FrmRoleList（角色用户编辑）：HmxWinForms.Forms.Admin.FrmRoleList
  *  画面迁移，逻辑不迁移到 */
 
-
 import { computed, ref, watch } from "vue";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
@@ -60,7 +59,6 @@ function remove(user: RoleUserDto) {
   user.marked = false;
 }
 
-/** 确定：回传全量用户及 marked 状态（对应 saveUserListForRole） */
 function onConfirm() {
   const roleId = props.role?.id;
   if (!roleId) return;

@@ -2,7 +2,6 @@
 /** 对应 FrmTsTask（计划任务管理）：HmxWinForms.Forms.Admin.FrmTsTask
  *  画面迁移，逻辑不迁移到 */
 
-
 import { computed, defineComponent, h, onBeforeUnmount, onMounted, ref } from "vue";
 import { IconPencil, IconPlayerPlay, IconPlus, IconRefresh, IconTrash } from "@tabler/icons-vue";
 import Button from "primevue/button";
@@ -34,7 +33,6 @@ const editJob = ref<HmxBackgroudJobInfo | null>(null);
 const confirmOpen = ref(false);
 const confirmTarget = ref<HmxBackgroudJobInfo | null>(null);
 
-/** enable 列：纯色块（对应 hmx_web bgColor 1→绿 其他→红） */
 const EnableColorCell = defineComponent({
   name: "EnableColorCell",
   props: { params: { type: Object, required: true } },
@@ -121,7 +119,6 @@ function now(): string {
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
 }
 
-/** 对应 hmx_web btnNew 默认「样例任务」 */
 function onAdd() {
   editJob.value = {
     id: NextStrId(),

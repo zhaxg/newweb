@@ -2,7 +2,6 @@
 /** 对应 FrmPFReport（指标报表管理）：Hmx.WinForms.Widgets.CalculateItemForm.FrmPFReport
  *  画面迁移，逻辑不迁移到 */
 
-
 import { ref } from "vue";
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
@@ -10,8 +9,6 @@ import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
-
-/** 指标报表管理：画面迁移，逻辑不迁移到 */
 
 const theme = makeHmxGridTheme();
 const rows = ref<any[]>([]);
@@ -31,11 +28,11 @@ const colDefs = ref<ColDef[]>([
 
 function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
 
-function on查询() { /* TODO */ }
-function on添加报表() { /* TODO */ }
-function on编辑报表() { /* TODO */ }
-function on配置报表项目() { /* TODO */ }
-function on删除报表() { /* TODO */ }
+function onquery() { /* TODO */ }
+function onaddReport() { /* TODO */ }
+function oneditReport() { /* TODO */ }
+function onconfigReportItems() { /* TODO */ }
+function ondeleteReport() { /* TODO */ }
 
 async function onQuery() {
   querying.value = true;
@@ -53,11 +50,11 @@ async function onQuery() {
       <Button label="查询" icon="pi pi-search" :loading="querying" @click="onQuery" />
     </div>
     <div class="flex items-center gap-2 rounded bg-white p-2 shadow-sm dark:bg-gray-900">
-      <Button label="查询" severity="secondary" @click="on查询" />
-      <Button label="添加报表" severity="success" @click="on添加报表" />
-      <Button label="编辑报表" severity="secondary" @click="on编辑报表" />
-      <Button label="配置报表项目" severity="success" @click="on配置报表项目" />
-      <Button label="删除报表" severity="danger" @click="on删除报表" />
+      <Button label="查询" severity="secondary" @click="onquery" />
+      <Button label="添加报表" severity="success" @click="onaddReport" />
+      <Button label="编辑报表" severity="secondary" @click="oneditReport" />
+      <Button label="配置报表项目" severity="success" @click="onconfigReportItems" />
+      <Button label="删除报表" severity="danger" @click="ondeleteReport" />
     </div>
     <div class="flex-1 overflow-hidden rounded bg-white shadow-sm dark:bg-gray-900">
       <AgGridVue class="h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"

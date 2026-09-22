@@ -2,7 +2,6 @@
 /** 对应 FrmPF1010（作业指标管理）：Hmx.WinForms.Widgets.CalculateItemForm.FrmPF1010
  *  画面迁移，逻辑不迁移到 */
 
-
 import { ref } from "vue";
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
@@ -10,8 +9,6 @@ import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
-
-/** 作业指标管理：画面迁移，逻辑不迁移到 */
 
 const theme = makeHmxGridTheme();
 const rows = ref<any[]>([]);
@@ -33,11 +30,11 @@ const colDefs = ref<ColDef[]>([
 
 function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
 
-function on查询() { /* TODO */ }
-function on添加() { /* TODO */ }
-function on编辑() { /* TODO */ }
-function on删除() { /* TODO */ }
-function on计算当月() { /* TODO */ }
+function onquery() { /* TODO */ }
+function onadd() { /* TODO */ }
+function onedit() { /* TODO */ }
+function ondelete() { /* TODO */ }
+function oncalcCurrentMonth() { /* TODO */ }
 
 async function onQuery() {
   querying.value = true;
@@ -55,11 +52,11 @@ async function onQuery() {
       <Button label="查询" icon="pi pi-search" :loading="querying" @click="onQuery" />
     </div>
     <div class="flex items-center gap-2 rounded bg-white p-2 shadow-sm dark:bg-gray-900">
-      <Button label="查询" severity="secondary" @click="on查询" />
-      <Button label="添加" severity="success" @click="on添加" />
-      <Button label="编辑" severity="secondary" @click="on编辑" />
-      <Button label="删除" severity="danger" @click="on删除" />
-      <Button label="计算当月" severity="success" @click="on计算当月" />
+      <Button label="查询" severity="secondary" @click="onquery" />
+      <Button label="添加" severity="success" @click="onadd" />
+      <Button label="编辑" severity="secondary" @click="onedit" />
+      <Button label="删除" severity="danger" @click="ondelete" />
+      <Button label="计算当月" severity="success" @click="oncalcCurrentMonth" />
     </div>
     <div class="flex-1 overflow-hidden rounded bg-white shadow-sm dark:bg-gray-900">
       <AgGridVue class="h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"

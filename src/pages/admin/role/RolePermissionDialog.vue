@@ -2,7 +2,6 @@
 /** 对应 FrmRoleList（角色权限编辑）：HmxWinForms.Forms.Admin.FrmRoleList
  *  画面迁移，逻辑不迁移到 */
 
-
 import { computed, ref, watch } from "vue";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
@@ -32,12 +31,11 @@ const checked = ref<Set<string>>(new Set());
 const expandedKeys = ref<Record<string, boolean>>({});
 const loading = ref(false);
 
-/** 全选（叶子自身勾选 / 父节点须全部子节点全选） */
 function isChecked(node: PermissionNode): boolean {
   if (!node.children?.length) return checked.value.has(node.key);
   return node.children.every(isChecked);
 }
-/** 半选（非全选，但至少一个子节点全选或半选） */
+
 function isMixed(node: PermissionNode): boolean {
   if (!node.children?.length) return false;
   return !isChecked(node) && node.children.some((c) => isChecked(c) || isMixed(c));

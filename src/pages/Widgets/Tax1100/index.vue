@@ -37,7 +37,6 @@ interface Tax1100 {
 const rows = ref<Tax1100[]>([]);
 const querying = ref(false);
 
-/** 对应原 QueryShiftResultInput 查询条件区 */
 const input = reactive({
   cPlantId: "",
   cWorkshop: "",

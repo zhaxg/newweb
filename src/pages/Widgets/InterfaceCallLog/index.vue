@@ -2,7 +2,6 @@
 /** 对应 FrmInterfaceCallLog（接口日志）：Hmx.WinForms.Widgets.Interfaceplatform.FrmInterfaceCallLog
  *  画面迁移，逻辑不迁移到 */
 
-
 import { ref } from "vue";
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
@@ -10,8 +9,6 @@ import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
-
-/** 接口日志：画面迁移，逻辑不迁移到 */
 
 const theme = makeHmxGridTheme();
 const rows = ref<any[]>([]);
@@ -32,9 +29,9 @@ const colDefs = ref<ColDef[]>([
 
 function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
 
-function on查询() { /* TODO */ }
-function on重试接口() { /* TODO */ }
-function on配置() { /* TODO */ }
+function onquery() { /* TODO */ }
+function onretryInterface() { /* TODO */ }
+function onhandler11() { /* TODO */ }
 
 async function onQuery() {
   querying.value = true;
@@ -52,9 +49,9 @@ async function onQuery() {
       <Button label="查询" icon="pi pi-search" :loading="querying" @click="onQuery" />
     </div>
     <div class="flex items-center gap-2 rounded bg-white p-2 shadow-sm dark:bg-gray-900">
-      <Button label="查询" severity="secondary" @click="on查询" />
-      <Button label="重试接口" severity="success" @click="on重试接口" />
-      <Button label="配置" severity="secondary" @click="on配置" />
+      <Button label="查询" severity="secondary" @click="onquery" />
+      <Button label="重试接口" severity="success" @click="onretryInterface" />
+      <Button label="配置" severity="secondary" @click="onhandler12" />
     </div>
     <div class="flex-1 overflow-hidden rounded bg-white shadow-sm dark:bg-gray-900">
       <AgGridVue class="h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"

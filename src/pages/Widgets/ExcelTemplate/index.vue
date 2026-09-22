@@ -2,7 +2,6 @@
 /** 对应 FrmExcelTemplate（EXCEL模板管理）：Hmx.WinForms.Widgets.Bindspreadsheet.FrmExcelTemplate
  *  画面迁移，逻辑不迁移到 */
 
-
 import { ref } from "vue";
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
@@ -10,8 +9,6 @@ import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
-
-/** EXCEL模板管理：画面迁移，逻辑不迁移到 */
 
 const theme = makeHmxGridTheme();
 const rows = ref<any[]>([]);
@@ -31,11 +28,11 @@ const colDefs = ref<ColDef[]>([
 
 function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
 
-function on查询() { /* TODO */ }
-function on新增模板() { /* TODO */ }
-function on保存() { /* TODO */ }
-function on删除模板() { /* TODO */ }
-function on模板设计() { /* TODO */ }
+function onquery() { /* TODO */ }
+function onaddTemplate() { /* TODO */ }
+function onsave() { /* TODO */ }
+function ondeleteTemplate() { /* TODO */ }
+function ontemplateDesign() { /* TODO */ }
 
 async function onQuery() {
   querying.value = true;
@@ -53,11 +50,11 @@ async function onQuery() {
       <Button label="查询" icon="pi pi-search" :loading="querying" @click="onQuery" />
     </div>
     <div class="flex items-center gap-2 rounded bg-white p-2 shadow-sm dark:bg-gray-900">
-      <Button label="查询" severity="secondary" @click="on查询" />
-      <Button label="新增模板" severity="success" @click="on新增模板" />
-      <Button label="保存" severity="success" @click="on保存" />
-      <Button label="删除模板" severity="danger" @click="on删除模板" />
-      <Button label="模板设计" severity="secondary" @click="on模板设计" />
+      <Button label="查询" severity="secondary" @click="onquery" />
+      <Button label="新增模板" severity="success" @click="onaddTemplate" />
+      <Button label="保存" severity="success" @click="onsave" />
+      <Button label="删除模板" severity="danger" @click="ondeleteTemplate" />
+      <Button label="模板设计" severity="secondary" @click="ontemplateDesign" />
     </div>
     <div class="flex-1 overflow-hidden rounded bg-white shadow-sm dark:bg-gray-900">
       <AgGridVue class="h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"

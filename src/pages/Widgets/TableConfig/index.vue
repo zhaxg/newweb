@@ -2,7 +2,6 @@
 /** 对应 FrmTableConfig（配置表管理）：Hmx.WinForms.Widgets.TableConfig.FrmTableConfig
  *  画面迁移，逻辑不迁移到 */
 
-
 import { ref } from "vue";
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
@@ -10,8 +9,6 @@ import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
-
-/** 配置表管理：画面迁移，逻辑不迁移到 */
 
 const theme = makeHmxGridTheme();
 const rows = ref<any[]>([]);
@@ -29,15 +26,15 @@ const colDefs = ref<ColDef[]>([
 
 function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
 
-function on查询() { /* TODO */ }
-function on添加基表() { /* TODO */ }
-function on删除基表() { /* TODO */ }
-function on保存基表() { /* TODO */ }
-function on添加属性() { /* TODO */ }
-function on删除() { /* TODO */ }
-function on保存() { /* TODO */ }
-function on修改生效() { /* TODO */ }
-function on预览配置表() { /* TODO */ }
+function onquery() { /* TODO */ }
+function onaddBaseTable() { /* TODO */ }
+function ondeleteBaseTable() { /* TODO */ }
+function onsaveBaseTable() { /* TODO */ }
+function onhandler32() { /* TODO */ }
+function ondelete() { /* TODO */ }
+function onsave() { /* TODO */ }
+function onapplyChange() { /* TODO */ }
+function onpreviewConfig() { /* TODO */ }
 
 async function onQuery() {
   querying.value = true;
@@ -55,15 +52,15 @@ async function onQuery() {
       <Button label="查询" icon="pi pi-search" :loading="querying" @click="onQuery" />
     </div>
     <div class="flex items-center gap-2 rounded bg-white p-2 shadow-sm dark:bg-gray-900">
-      <Button label="查询" severity="secondary" @click="on查询" />
-      <Button label="添加基表" severity="success" @click="on添加基表" />
-      <Button label="删除基表" severity="danger" @click="on删除基表" />
-      <Button label="保存基表" severity="success" @click="on保存基表" />
-      <Button label="添加属性" severity="success" @click="on添加属性" />
-      <Button label="删除" severity="danger" @click="on删除" />
-      <Button label="保存" severity="success" @click="on保存" />
-      <Button label="修改生效" severity="secondary" @click="on修改生效" />
-      <Button label="预览配置表" severity="secondary" @click="on预览配置表" />
+      <Button label="查询" severity="secondary" @click="onquery" />
+      <Button label="添加基表" severity="success" @click="onaddBaseTable" />
+      <Button label="删除基表" severity="danger" @click="ondeleteBaseTable" />
+      <Button label="保存基表" severity="success" @click="onsaveBaseTable" />
+      <Button label="添加属性" severity="success" @click="onhandler37" />
+      <Button label="删除" severity="danger" @click="ondelete" />
+      <Button label="保存" severity="success" @click="onsave" />
+      <Button label="修改生效" severity="secondary" @click="onapplyChange" />
+      <Button label="预览配置表" severity="secondary" @click="onpreviewConfig" />
     </div>
     <div class="flex-1 overflow-hidden rounded bg-white shadow-sm dark:bg-gray-900">
       <AgGridVue class="h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"

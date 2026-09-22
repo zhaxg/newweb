@@ -2,7 +2,6 @@
 /** 对应 FrmSetting（settings）：HmxWinForms.Forms.Admin.Settings.FrmSetting
  *  画面迁移，逻辑不迁移到 */
 
-
 import { onMounted, ref } from "vue";
 import { IconDeviceFloppy, IconRefresh } from "@tabler/icons-vue";
 import Button from "primevue/button";
@@ -60,7 +59,6 @@ async function btnSave() {
 
 onMounted(btnQuery);
 
-/** 文本字段：[标签, key, placeholder]，按 hmx_web 两列栅格顺序排布 */
 const textFields: [string, keyof SystemSettingInfo, string][] = [
   ["报表基础地址", "reportBaseAddress", "请输入报表基础地址"],
   ["产品版本", "productVersion", "请输入产品版本"],

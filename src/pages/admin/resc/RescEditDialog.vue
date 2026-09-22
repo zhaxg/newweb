@@ -2,7 +2,6 @@
 /** 对应 FrmRescList（资源编辑）：HmxWinForms.Forms.Admin.FrmRescList
  *  画面迁移，逻辑不迁移到 */
 
-
 import { reactive, watch } from "vue";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
@@ -14,7 +13,7 @@ import type { HmxResTree } from "./tree-node";
 
 const props = defineProps<{
   open: boolean;
-  /** 编辑对象：id === "" 为新增草稿（createTreeNode 产物） */
+  
   node: HmxResTree | null;
 }>();
 

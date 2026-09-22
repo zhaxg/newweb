@@ -2,7 +2,6 @@
 /** 对应 FrmTsDept（部门管理）：HmxWinForms.Forms.Admin.Department.FrmTsDept
  *  画面迁移，逻辑不迁移到 */
 
-
 import { computed, defineComponent, h, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { IconBuilding, IconChevronDown, IconChevronRight, IconFolder, IconFolderOpen, IconNetwork, IconPencil, IconPlus, IconSearch, IconTrash } from "@tabler/icons-vue";
 
@@ -18,7 +17,6 @@ import { departmentApi } from "@/api/admin/request";
 import type { HmxDept } from "@/api/admin/types";
 import { buildDeptTree, type DeptTreeNode } from "@/data/departments";
 
-
 const { toast } = useToast();
 
 const theme = makeHmxGridTheme();
@@ -29,7 +27,7 @@ interface DeptGridRow extends HmxDept {
 }
 
 const rows = ref<HmxDept[]>([]);
-/** 展开的组节点 id；数据替换后重放 */
+
 const expandedIds = ref<Set<string>>(new Set());
 const selectedId = ref<string | null>(null);
 const gridApi = ref<GridApi | null>(null);
@@ -73,7 +71,6 @@ const columnDefs: ColDef[] = [
   { colId: "cSw03", field: "cSw03", headerName: "扩展3", width: 96, valueFormatter: nullFmt },
 ];
 
-/** 组列单元格：缩进 + 展开箭头 + 文件夹/楼宇图标 + 名称 */
 const DeptGroupCell = defineComponent({
   name: "DeptGroupCell",
   props: { params: { type: Object, required: true } },
@@ -124,7 +121,6 @@ const autoGroupColumnDef: AutoGroupColumnDef<DeptGridRow> = {
   cellRenderer: DeptGroupCell,
 };
 
-/** 对应原 ExpandToLevel(0)：根节点展开、更深层折叠 */
 function defaultExpanded(nodes: DeptTreeNode[]) {
   const next = new Set<string>();
   for (const n of nodes) if (n.children.length) next.add(n.id);

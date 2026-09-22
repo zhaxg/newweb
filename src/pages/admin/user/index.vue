@@ -2,7 +2,6 @@
 /** 对应 FrmUserList（用户管理）：HmxWinForms.Forms.Admin.FrmUserList
  *  画面迁移，逻辑不迁移到 */
 
-
 import { computed, nextTick, onMounted, ref } from "vue";
 import { IconKey, IconPencil, IconPlus, IconSearch, IconShieldCheck, IconTrash } from "@tabler/icons-vue";
 
@@ -21,7 +20,6 @@ import type { HmxUser } from "@/api/admin/types";
 import type { UserType } from "@/api/admin/enums";
 import { USER_TYPE_LABELS } from "@/data/userOptions";
 import { NextStrId } from "@/lib/yitIdHelper";
-
 
 const { toast } = useToast();
 
@@ -63,7 +61,6 @@ const columnDefs: ColDef[] = [
   { colId: "lastModifyTime", field: "lastModifyTime", headerName: "最后更新时间", width: 140, flex: 1 },
 ];
 
-/** 关键字过滤已移到「服务端」（mock adapter 的 getUsers）；本页只负责发起查询 */
 const querying = ref(false);
 
 function syncGridSelection() {

@@ -2,7 +2,6 @@
 /** 对应 FrmRoleList（角色管理）：HmxWinForms.Forms.Admin.FrmRoleList
  *  画面迁移，逻辑不迁移到 */
 
-
 import { nextTick, onMounted, ref, shallowRef } from "vue";
 import { IconDeviceFloppy, IconPlus, IconSearch, IconShieldCheck, IconTrash, IconUsers } from "@tabler/icons-vue";
 
@@ -22,7 +21,6 @@ import { crudAppService } from "@/api/common/crud-app-service";
 import { TrackableList } from "@/api/common/trackable-list";
 import { NextStrId } from "@/lib/yitIdHelper";
 import type { HmxRole } from "@/api/admin/types";
-
 
 const { toast } = useToast();
 const theme = makeHmxGridTheme();
@@ -87,12 +85,10 @@ function syncGridSelection() {
   });
 }
 
-/** 编辑提交：行对象引用即 TrackableList 内的源数据，改动被快照差异捕获，无需手工回写 */
 function onCellValueChanged(e: CellValueChangedEvent) {
   gridApi.value?.refreshCells({ rowNodes: e.node ? [e.node] : undefined, force: true });
 }
 
-/** 添加：表尾追加可编辑新行（默认角色{随机}，与 hmx_web 一致） */
 function onAdd() {
   const draft: HmxRole = {
     id: NextStrId(),
@@ -140,7 +136,6 @@ function confirmDelete() {
   toast("已从列表移除，点击「保存」后生效", 2000, "info");
 }
 
-/** 保存：整表差异提交（对应 hmx_web crudAppService.SaveList("HmxRole")） */
 function onSave() {
   crudAppService
     .SaveList(trackList.value, "HmxRole")

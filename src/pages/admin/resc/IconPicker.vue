@@ -19,7 +19,6 @@ const FAVORITES = [
 
 const PAGE_SIZE = 96;
 
-/** 默认视图 = 常用在前 + 全量字母序在后：一打开即可滚轮浏览全部图标 */
 const DEFAULT_LIST = [...FAVORITES, ...TABLER_ICON_NAMES.filter((n) => !FAVORITES.includes(n))];
 
 const popover = ref<InstanceType<typeof Popover> | null>(null);
@@ -27,7 +26,6 @@ const query = ref("");
 const searchInput = ref<InstanceType<typeof InputText> | null>(null);
 const shown = ref(PAGE_SIZE);
 
-/** 跟随鼠标指针的自定义提示（替代原生 title） */
 const tip = ref<{ text: string; x: number; y: number } | null>(null);
 function showTip(ev: MouseEvent, name: string) {
   tip.value = { text: name, x: ev.clientX, y: ev.clientY - 10 };
@@ -52,7 +50,6 @@ function toggle(ev: MouseEvent) {
   setTimeout(() => (searchInput.value as unknown as { $el?: HTMLElement } | null)?.$el?.querySelector("input")?.focus(), 0);
 }
 
-/** 滚动接近底部时增量渲染；图标 chunk 本就按挂载懒加载，未滚到不产生请求 */
 function onScroll(ev: Event) {
   const el = ev.target as HTMLElement;
   if (el.scrollTop + el.clientHeight >= el.scrollHeight - 64 && shown.value < allMatches.value.length)

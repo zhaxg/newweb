@@ -2,7 +2,6 @@
 /** 对应 FrmUserList（用户编辑）：HmxWinForms.Forms.Admin.FrmUserList
  *  画面迁移，逻辑不迁移到 */
 
-
 import { computed, reactive, ref, watch } from "vue";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
@@ -18,9 +17,9 @@ import { EDUS, NATIONS, POLITICS, PROVINCES, SEXES, USER_TYPES } from "@/data/us
 
 const props = defineProps<{
   open: boolean;
-  /** null 表示新增 */
+  
   editing: HmxUser | null;
-  /** 预置部门 id（预留） */
+  
   presetDeptId?: string | null;
 }>();
 

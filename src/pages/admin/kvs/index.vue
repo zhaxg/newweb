@@ -2,7 +2,6 @@
 /** 对应 HmxKvEdit（键值对维护）：HmxWinForms.Dialogs.HmxKvEdit
  *  画面迁移，逻辑不迁移到 */
 
-
 import { computed, defineComponent, h, nextTick, onMounted, reactive, ref, watch } from "vue";
 import { IconDeviceFloppy, IconPencil, IconPlus, IconRotateClockwise, IconSearch, IconTrash } from "@tabler/icons-vue";
 
@@ -20,7 +19,6 @@ import { useToast } from "@/composables/useToast";
 import { systemKeyValueApi } from "@/api/admin/request";
 import { NextStrId } from "@/lib/yitIdHelper";
 import type { HmxKv } from "@/api/admin/types";
-
 
 const { toast } = useToast();
 const theme = makeHmxGridTheme();
@@ -163,7 +161,6 @@ function onChildSave() {
 
 const ORANGE_CELL = "bg-orange-100/70 dark:bg-orange-950/60";
 
-/** 启用列：即时切换复选框（免进编辑态），点击即回写源对象 "1"/"0" */
 const EnableCheckboxCell = defineComponent({
   name: "EnableCheckboxCell",
   props: { params: { type: Object, required: true } },
@@ -199,7 +196,6 @@ function childRowId(p: GetRowIdParams) {
   return String((p.data as HmxKv).id);
 }
 
-/** ag-grid 已把新值写回源对象；cOrder 数字编辑器产出 number，统一转回 string */
 function onChildCellValueChanged(e: CellValueChangedEvent) {
   const row = e.data as HmxKv | undefined;
   if (!row) return;

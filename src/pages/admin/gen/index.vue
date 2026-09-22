@@ -2,7 +2,6 @@
 /** 对应 FrmLowCode（低代码管理）：HmxWinForms.Forms.Admin.LowCode.FrmLowCode
  *  画面迁移，逻辑不迁移到 */
 
-
 import { computed, ref } from "vue";
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
@@ -58,7 +57,6 @@ interface TabInfo {
 const lstTabInfo = ref<TabInfo[]>([]);
 const activeTab = ref("");
 
-/** 文件扩展名 → highlight.js 语言（vue 模板按 xml 着色，ts/js 同 grammar） */
 function langOf(title: string): string {
   const ext = title.split(".").pop()?.toLowerCase() ?? "";
   return (({ cs: "csharp", ts: "typescript", js: "typescript", vue: "xml", html: "xml", xml: "xml", sql: "sql", json: "json" }) as Record<string, string>)[ext] ?? "";

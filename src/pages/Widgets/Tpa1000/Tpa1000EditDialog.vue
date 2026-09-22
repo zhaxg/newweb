@@ -42,14 +42,12 @@ const LEVEL_OPTIONS = [
   { label: "设备", value: 30 },
 ];
 
-/** 对应原 CLineCodeTextEdit：仅层级=产线(10) 的记录可作为产线选项 */
 const lineOptions = computed(() =>
   props.parents
     .filter((p) => p.nLevel === 10)
     .map((p) => ({ label: p.cName, value: p.cCode })),
 );
 
-/** 对应原 CPidTextEdit（TreeListLookUpEdit）：父级列表 */
 const parentOptions = computed(() =>
   props.parents.map((p) => ({ label: p.cName, value: p.cCode })),
 );

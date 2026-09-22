@@ -2,7 +2,6 @@
 /** 对应 FrmTsDept（部门编辑）：HmxWinForms.Forms.Admin.Department.FrmTsDept
  *  画面迁移，逻辑不迁移到 */
 
-
 import { computed, reactive, watch } from "vue";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
@@ -14,9 +13,9 @@ import { buildDeptTree, descendantIds, type DeptTreeNode, type HmxDept } from "@
 const props = defineProps<{
   open: boolean;
   allRows: HmxDept[];
-  /** null 表示新增 */
+  
   editing: HmxDept | null;
-  /** 新增子部门时预置的父级 id */
+  
   presetPid: string | null;
 }>();
 
@@ -53,7 +52,6 @@ function toPTree(nodes: DeptTreeNode[]): PTreeNode[] {
   });
 }
 
-/** 编辑时排除自身及后代，防止把部门挂到自己的子树下 */
 const selectableTree = computed<PTreeNode[]>(() => {
   const editing = props.editing;
   const rows = editing ? props.allRows.filter((r) => !descendantIds(props.allRows, editing.id ?? "").has(r.id ?? "")) : props.allRows;

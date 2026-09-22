@@ -2,7 +2,6 @@
 /** 对应 FrmRescList（资源按钮列表）：HmxWinForms.Forms.Admin.FrmRescList
  *  画面迁移，逻辑不迁移到 */
 
-
 import { nextTick, ref, shallowRef, watch } from "vue";
 import { IconClick, IconDeviceFloppy, IconPlus, IconRefresh, IconTrash } from "@tabler/icons-vue";
 
@@ -20,10 +19,9 @@ import { crudAppService } from "@/api/common/crud-app-service";
 import { NextStrId } from "@/lib/yitIdHelper";
 import { TrackableList } from "@/api/common/trackable-list";
 
-
 const props = defineProps<{
   open: boolean;
-  /** 目标菜单节点，其 Widget 子资源（功能点）在本对话框内维护 */
+  
   node: HmxRes | null;
 }>();
 
@@ -104,14 +102,12 @@ function onDelete() {
   gridApi.value?.applyTransaction({ remove: [row] });
 }
 
-/** ag-grid 已把新值写回源对象；cOrder 数字编辑器产出 number，统一转回 string */
 function onCellValueChanged(e: CellValueChangedEvent) {
   const row = e.data as HmxRes | undefined;
   if (!row) return;
   if (e.colDef.colId === "cOrder") row.cOrder = String(row.cOrder ?? "");
 }
 
-/** 对应 hmx_web btnSave：补齐权限树级联选择用的 [NULL] 哨兵行后整体保存 */
 async function onSave(closeAfter = false) {
   const node = props.node;
   if (!node?.id || saving.value) return;
