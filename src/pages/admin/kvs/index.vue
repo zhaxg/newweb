@@ -369,7 +369,7 @@ onMounted(onQuery);
         <div class="flex h-full min-h-0 flex-col overflow-hidden">
           <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="masterColumns"
             :default-col-def="hmxDefaultColDef" :row-data="masters" :get-row-id="masterRowId"
-            :row-selection="'single'" :loading="mastersLoading" :pagination="false" :animate-rows="false"
+            :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }" :loading="mastersLoading" :pagination="false" :animate-rows="false"
             :locale-text="AG_GRID_LOCALE_CN" @grid-ready="onMasterGridReady" @selection-changed="onMasterSelectionChanged"
             @first-data-rendered="autoSizeOnFirstData" />
         </div>
@@ -397,7 +397,7 @@ onMounted(onQuery);
           <div class="min-h-0 flex-1 overflow-hidden">
             <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="childColumns"
               :default-col-def="hmxDefaultColDef" :row-data="children" :get-row-id="childRowId"
-              :row-selection="'single'" :loading="childrenLoading" :pagination="false" :animate-rows="false"
+              :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }" :loading="childrenLoading" :pagination="false" :animate-rows="false"
               :locale-text="AG_GRID_LOCALE_CN" @grid-ready="onChildGridReady" @selection-changed="onChildSelectionChanged"
               @cell-value-changed="onChildCellValueChanged" @first-data-rendered="autoSizeOnFirstData" />
           </div>

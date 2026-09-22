@@ -1,48 +1,72 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import Button from "primevue/button";
+import { IconSearch } from "@tabler/icons-vue";
 
 import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
-import { hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
+import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
 
 /** 对应 FrmCustomerList（客户档案查询）：DDH.Winforms.SMP.Forms.FrmCustomerList
- *  画面迁移，逻辑不迁移到 */
+ *  画面迁移，逻辑不迁移到
+ *  2026-09-22 已完成精修 */
 
 const theme = makeHmxGridTheme();
 const rows = ref<any[]>([]);
 const querying = ref(false);
 const gridApi = ref<GridApi | null>(null);
 
-const colDefs = ref<ColDef[]>(([
-      { field: 'CCustCode', headerName: '客户编号', width: 116 },
-      { field: 'CCustName', headerName: '客户名称', width: 104 },
-      { field: 'CStatus', headerName: '状态', width: 133 },
-      { field: 'CCustClass', headerName: '客户类别', width: 133 },
-      { field: "Creator", headerName: "创建人", width: 112 },
-      { field: "CreateTime", headerName: "创建时间", width: 112 },
-      { field: "LastModifier", headerName: "最后修改人", width: 112 },
-      { field: "LastModifyTime", headerName: "最后修改时间", width: 112 },,
-]));
-function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
+const colDefs: ColDef[] = [
+  { field: "CCustCode", headerName: "客户编号", width: 116 },
+  { field: "CCustName", headerName: "客户名称", width: 104 },
+  { field: "CStatus", headerName: "状态", width: 133 },
+  { field: "CCustClass", headerName: "客户类别", width: 133 },
+  { field: "Creator", headerName: "创建人", width: 112 },
+  { field: "CreateTime", headerName: "创建时间", width: 112 },
+  { field: "LastModifier", headerName: "最后修改人", width: 112 },
+  { field: "LastModifyTime", headerName: "最后修改时间", width: 112 },
+];
+
+function onGridReady(e: GridReadyEvent) {
+  gridApi.value = e.api;
+}
 
 async function onQuery() {
   querying.value = true;
-  try { rows.value = []; } finally { querying.value = false; }
+  try {
+    rows.value = [];
+    requestAnimationFrame(() => gridApi.value?.autoSizeAllColumns());
+  } finally {
+    querying.value = false;
+  }
 }
 </script>
 
 <template>
-  <div class="flex h-full flex-col gap-2 p-2">
-    <div class="flex flex-wrap items-center gap-3 rounded bg-white p-3 shadow-sm dark:bg-gray-900">
-
-      <Button label="查询" icon="pi pi-search" :loading="querying" @click="onQuery" />
+  <div class="flex min-h-0 flex-1 flex-col">
+    <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
+      <Button text class="shrink-0 whitespace-nowrap" :loading="querying" @click="onQuery">
+        <IconSearch class="h-3 w-3" />查询
+      </Button>
+      <span class="ml-auto text-xs text-muted-foreground">客户档案查询（{{ rows.length }}）</span>
     </div>
-        <div class="flex-1 overflow-hidden rounded bg-white shadow-sm dark:bg-gray-900">
-      <AgGridVue class="h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows"
-        row-selection="multiple" @grid-ready="onGridReady" />
+    <div class="min-h-0 flex-1 overflow-hidden">
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="rows"
+        :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
+        :suppress-column-virtualisation="true"
+        :pagination="false"
+        :animate-rows="false"
+        :loading="querying"
+        @grid-ready="onGridReady"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
   </div>
 </template>

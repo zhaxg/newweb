@@ -2,6 +2,8 @@
 import { computed, defineComponent, h, ref } from "vue";import { IconPencil, IconPlus, IconRefresh, IconTrash } from "@tabler/icons-vue";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
+import Splitter from "primevue/splitter";
+import SplitterPanel from "primevue/splitterpanel";
 import { AgGridVue } from "ag-grid-vue3";
 import type { AutoGroupColumnDef, ColDef, GetRowIdParams, GridApi, GridReadyEvent, RowNode, ValueFormatterParams } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
@@ -254,50 +256,53 @@ function onEditSubmit() {
   <div class="flex min-h-0 flex-1 flex-col">
     <!-- 工具栏（对应原 stackPanel1：查询/添加/编辑工厂产线/删除工厂产线/编辑机台设备/删除机台设备） -->
     <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
-      <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onQuery">
+      <Button text size="small" class="shrink-0 whitespace-nowrap" @click="onQuery">
         <IconRefresh class="h-3.5 w-3.5" />查询
       </Button>
-      <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onAdd">
+      <Button text size="small" class="shrink-0 whitespace-nowrap" @click="onAdd">
         <IconPlus class="h-3.5 w-3.5" />添加
       </Button>
-      <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onEditLine">
+      <Button text size="small" class="shrink-0 whitespace-nowrap" @click="onEditLine">
         <IconPencil class="h-3.5 w-3.5" />编辑工厂产线
       </Button>
-      <Button variant="outlined" size="small" severity="danger" class="shrink-0 whitespace-nowrap" @click="onDeleteLine">
+      <Button text size="small" severity="danger" class="shrink-0 whitespace-nowrap" @click="onDeleteLine">
         <IconTrash class="h-3.5 w-3.5" />删除工厂产线
       </Button>
-      <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onEditMachine">
+      <Button text size="small" class="shrink-0 whitespace-nowrap" @click="onEditMachine">
         <IconPencil class="h-3.5 w-3.5" />编辑机台设备
       </Button>
-      <Button variant="outlined" size="small" severity="danger" class="shrink-0 whitespace-nowrap" @click="onDeleteMachine">
+      <Button text size="small" severity="danger" class="shrink-0 whitespace-nowrap" @click="onDeleteMachine">
         <IconTrash class="h-3.5 w-3.5" />删除机台设备
       </Button>
       <span class="ml-auto text-xs text-muted-foreground">工厂产线机台设备（{{ rows.length }}）</span>
     </div>
 
     <!-- 左右分栏（对应原 SplitContainerControl） -->
-    <div class="flex min-h-0 flex-1">
-      <div class="flex min-w-0 basis-1/3 flex-col border-r border-border/60">
-        <div class="shrink-0 px-2 py-1 text-xs font-medium text-muted-foreground">工厂/产线/区域</div>
+    <Splitter class="min-h-0 flex-1" layout="horizontal">
+      <SplitterPanel :size="35" :minSize="15" class="flex flex-col">
+        <div class="flex h-8 shrink-0 items-center border-b border-border/60 px-2">
+          <span class="text-xs font-medium text-muted-foreground">工厂/产线/区域</span>
+        </div>
         <div class="min-h-0 flex-1 overflow-hidden">
           <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="treeColDefs"
             :default-col-def="hmxDefaultColDef" :auto-group-column-def="autoGroupColumnDef" :row-data="treeRows"
-            :get-row-id="getTreeRowId" :tree-data="true" :get-data-path="getDataPath" :row-selection="'single'"
+            :get-row-id="getTreeRowId" :tree-data="true" :get-data-path="getDataPath" :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
             :pagination="false" :animate-rows="false" :loading="querying" :locale-text="AG_GRID_LOCALE_CN"
             @grid-ready="onTreeReady" @selection-changed="onTreeSelectionChanged" />
         </div>
-      </div>
-
-      <div class="flex min-w-0 flex-1 flex-col">
-        <div class="shrink-0 px-2 py-1 text-xs font-medium text-muted-foreground">机台设备</div>
+      </SplitterPanel>
+      <SplitterPanel :minSize="20" class="flex flex-col">
+        <div class="flex h-8 shrink-0 items-center border-b border-border/60 px-2">
+          <span class="text-xs font-medium text-muted-foreground">机台设备</span>
+        </div>
         <div class="min-h-0 flex-1 overflow-hidden">
           <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="machineColDefs"
             :default-col-def="hmxDefaultColDef" :row-data="machines" :get-row-id="getMachineRowId"
-            :row-selection="'single'" :pagination="false" :animate-rows="false" :locale-text="AG_GRID_LOCALE_CN"
+            :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }" :pagination="false" :animate-rows="false" :locale-text="AG_GRID_LOCALE_CN"
             @grid-ready="onGridReady" @selection-changed="onGridSelectionChanged" />
         </div>
-      </div>
-    </div>
+      </SplitterPanel>
+    </Splitter>
 
     <Tpa1000EditDialog v-model:open="editOpen" :item="editItem" :parents="treeRows" @submit="onEditSubmit" />
 

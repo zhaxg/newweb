@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { reactive, ref } from "vue";
-import { IconCheck, IconPlus, IconRefresh, IconRobot, IconTrash } from "@tabler/icons-vue";
+import { IconCheck, IconPlus, IconRefresh, IconRobot, IconSearch, IconTrash } from "@tabler/icons-vue";
 import Button from "primevue/button";
 import DatePicker from "primevue/datepicker";
 import Select from "primevue/select";
@@ -43,9 +43,12 @@ const input = reactive({
   cMachineId: "",
   cLineNo: "",
   cProcCd: "",
-  dBegTime: null as Date | null,
-  dEndTime: null as Date | null,
+  dates: null as Date[] | null,
 });
+
+// range 模式返回 [start, end]，拆给后端两个独立参数
+function begTime() { return input.dates?.[0] ?? null; }
+function endTime() { return input.dates?.[1] ?? null; }
 
 const columnDefs: ColDef[] = [
   { colId: "cPlantId", field: "cPlantId", headerName: "工厂", width: 100 },
@@ -102,63 +105,66 @@ function onAutoShift() {
 
 <template>
   <div class="flex min-h-0 flex-1 flex-col">
-    <!-- 查询条件区（对应原 dataLayoutControl1） -->
-    <div class="shrink-0 border-b border-border/60 px-2 py-1.5">
-      <div class="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-x-3 gap-y-1.5">
+    <!-- 查询条件：2行6列，第一行5个+1空，第二行时间段占2列 -->
+    <div class="shrink-0 border-b border-border/60 px-3 py-2">
+      <div class="grid grid-cols-6 items-center gap-x-3 gap-y-1.5">
+        <!-- 第一行：5个下拉 + 1空 -->
         <div class="flex min-w-0 items-center gap-1.5">
-          <label class="w-8 shrink-0 text-xs text-muted-foreground">工厂</label>
+          <label class="w-7 shrink-0 text-xs text-muted-foreground">工厂</label>
           <Select v-model="input.cPlantId" :options="[]" class="min-w-0 flex-1" />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
-          <label class="w-8 shrink-0 text-xs text-muted-foreground">车间</label>
+          <label class="w-7 shrink-0 text-xs text-muted-foreground">车间</label>
           <Select v-model="input.cWorkshop" :options="[]" class="min-w-0 flex-1" />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
-          <label class="w-8 shrink-0 text-xs text-muted-foreground">机台</label>
+          <label class="w-7 shrink-0 text-xs text-muted-foreground">机台</label>
           <Select v-model="input.cMachineId" :options="[]" class="min-w-0 flex-1" />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
-          <label class="w-8 shrink-0 text-xs text-muted-foreground">产线</label>
+          <label class="w-7 shrink-0 text-xs text-muted-foreground">产线</label>
           <Select v-model="input.cLineNo" :options="[]" class="min-w-0 flex-1" />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
-          <label class="w-8 shrink-0 text-xs text-muted-foreground">工序</label>
+          <label class="w-7 shrink-0 text-xs text-muted-foreground">工序</label>
           <Select v-model="input.cProcCd" :options="[]" class="min-w-0 flex-1" />
         </div>
-        <div class="flex min-w-0 items-center gap-1.5">
-          <label class="w-8 shrink-0 text-xs text-muted-foreground">时间</label>
-          <DatePicker v-model="input.dBegTime" date-format="yy-mm-dd" show-time hour-format="24" :show-icon="false"
-            placeholder="开始时间" class="min-w-0 flex-1" input-class="w-full" />
-          <span class="shrink-0 text-xs text-muted-foreground">至</span>
-          <DatePicker v-model="input.dEndTime" date-format="yy-mm-dd" show-time hour-format="24" :show-icon="false"
-            placeholder="结束时间" class="min-w-0 flex-1" input-class="w-full" />
+        <div />
+        <!-- 第二行：时间段占2列 + 4空 -->
+        <div class="col-span-2 flex min-w-0 items-center gap-1.5">
+          <label class="w-7 shrink-0 text-xs text-muted-foreground">时间</label>
+          <DatePicker v-model="input.dates" selectionMode="range" :manualInput="false"
+            date-format="yy-mm-dd" show-time hour-format="24" show-icon
+            placeholder="开始 至 结束" class="min-w-0 flex-1" />
         </div>
+        <div class="col-span-4" />
       </div>
     </div>
 
-    <!-- 工具栏（对应原 flowLayoutPanel1） -->
+    <!-- 所有操作按钮一行 -->
     <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
-      <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onQuery">
-        <IconRefresh class="h-3.5 w-3.5" />查询
+      <Button text size="small" class="whitespace-nowrap" :loading="querying" @click="onQuery">
+        <IconSearch class="h-3.5 w-3.5" />查询
       </Button>
-      <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onAdd">
+      <Button text size="small" class="whitespace-nowrap" @click="onAdd">
         <IconPlus class="h-3.5 w-3.5" />添加
       </Button>
-      <Button variant="outlined" size="small" severity="danger" class="shrink-0 whitespace-nowrap" @click="onDelete">
+      <Button text size="small" severity="danger" class="whitespace-nowrap" @click="onDelete">
         <IconTrash class="h-3.5 w-3.5" />删除
       </Button>
-      <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onSave">
+      <Button text size="small" class="whitespace-nowrap" @click="onSave">
         <IconCheck class="h-3.5 w-3.5" />保存
       </Button>
-      <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onAutoShift">
+      <Button text size="small" class="whitespace-nowrap" @click="onAutoShift">
         <IconRobot class="h-3.5 w-3.5" />自动排班
       </Button>
       <span class="ml-auto text-xs text-muted-foreground">排班结果（{{ rows.length }}）</span>
     </div>
 
+    <!-- 表格区 -->
     <div class="min-h-0 flex-1 overflow-hidden">
       <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="columnDefs"
-        :default-col-def="hmxDefaultColDef" :row-data="rows" :get-row-id="getRowId" :row-selection="'single'"
+        :default-col-def="hmxDefaultColDef" :row-data="rows" :get-row-id="getRowId" :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
         :pagination="false" :animate-rows="false" :loading="querying" :locale-text="AG_GRID_LOCALE_CN"
         @first-data-rendered="autoSizeOnFirstData" />
     </div>

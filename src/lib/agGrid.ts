@@ -121,9 +121,30 @@ export function hmxColumnMenuItems(p: GetColumnMenuItemsParams): (DefaultColumnM
 
 export const hmxDefaultColDef: ColDef = { sortable: true, resizable: true, filter: true, columnMenuItems: hmxColumnMenuItems };
 
+/** AG Grid 公共 GridOptions：禁用列虚拟化，确保 autoSizeAllColumns 能测到所有列内容 */
+export const hmxGridOptions = {
+  suppressColumnVirtualisation: true,
+} as const;
+
 /** 默认数据首次渲染完成后按内容自适应列宽（Community autoSizeAllColumns）。绑到 AgGridVue 的 @first-data-rendered。 */
 export function autoSizeOnFirstData(e: FirstDataRenderedEvent) {
-  e.api.autoSizeAllColumns();
+  requestAnimationFrame(() => e.api.autoSizeAllColumns());
+  setTimeout(() => e.api.autoSizeAllColumns(), 150);
+  setTimeout(() => e.api.autoSizeAllColumns(), 400);
+}
+
+/** 网格布局完成后执行 bestFit（绑到 @grid-size-changed，时机晚于 first-data-rendered） */
+export function autoSizeOnGridReady(api: { autoSizeAllColumns: () => void }) {
+  requestAnimationFrame(() => api.autoSizeAllColumns());
+  setTimeout(() => api.autoSizeAllColumns(), 200);
+}
+
+/** 页面初始化完成后对指定表格执行 bestFit */
+export function bestFitGrid(gridApi: GridApi | null | undefined) {
+  if (!gridApi) return;
+  requestAnimationFrame(() => gridApi.autoSizeAllColumns());
+  setTimeout(() => gridApi.autoSizeAllColumns(), 200);
+  setTimeout(() => gridApi.autoSizeAllColumns(), 500);
 }
 
 /** HMX 网格主题：行高 28、表头 29、边框/前景/背景走 CSS 变量（随明暗自动切换）。须在组件 setup 内调用。 */

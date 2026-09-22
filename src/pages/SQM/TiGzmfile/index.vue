@@ -1,62 +1,139 @@
 <script setup lang="ts">
+/** 对应 FrmTiGzmfile（标准/工艺文件管理）：DDH.Winforms.SQM.Forms.Tqmtq.FrmTiGzmfile
+ *  画面迁移，逻辑不迁移到
+ *  2026-09-22 已完成精修 */
+
 import { ref } from "vue";
 import Button from "primevue/button";
-
+import { IconDownload, IconEye, IconPencil, IconPlus, IconRefresh, IconSearch, IconTrash, IconUpload, IconX } from "@tabler/icons-vue";
 import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
-import { hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
+import { hmxDefaultColDef, makeHmxGridTheme, autoSizeOnFirstData } from "@/lib/agGrid";
+import { useToast } from "@/composables/useToast";
 
-/** 对应 FrmTiGzmfile（标准/工艺文件管理）：DDH.Winforms.SQM.Forms.Tqmtq.FrmTiGzmfile
- *  画面迁移，逻辑不迁移到 */
-
+const { toast } = useToast();
 const theme = makeHmxGridTheme();
 const rows = ref<any[]>([]);
 const querying = ref(false);
 const gridApi = ref<GridApi | null>(null);
 
-const colDefs = ref<ColDef[]>(([
-      { field: 'Selected', headerName: '选择', width: 120 },
-      { field: 'UseUnit', headerName: '使用单位', width: 60 },
-      { field: 'MatKind', headerName: '厂别区分', width: 60 },
-      { field: 'ControlState', headerName: '受控状态', width: 60 },
-      { field: 'Variety', headerName: '文件种类', width: 60 },
-      { field: 'RegulateNo', headerName: '工艺规程号', width: 60 },
-      { field: 'RegulateName', headerName: '文件名称', width: 60 },
-      { field: 'SgStd', headerName: '标准', width: 60 },
-      { field: 'SgSign', headerName: '钢种', width: 60 },
-      { field: 'VersionNo', headerName: '版本号', width: 60 },
-      { field: 'CIsEnable', headerName: '是否启用', width: 60 },
-      { field: 'DutyMan', headerName: '负责人', width: 60 },
-      { field: 'PublishDate', headerName: '发布日期', width: 60 },
-      { field: 'Remark', headerName: '备注', width: 60 },
-      { field: 'CUptUser', headerName: '修改人', width: 60 },
-      { field: 'DUptDate', headerName: '修改时间', width: 60 },
-      { field: 'CScrapUser', headerName: '报废操作人', width: 60 },
-      { field: 'DScrapDate', headerName: '作废时间', width: 60 },
-      { field: "Creator", headerName: "创建人", width: 112 },
-      { field: "CreateTime", headerName: "创建时间", width: 112 },
-      { field: "LastModifier", headerName: "最后修改人", width: 112 },
-      { field: "LastModifyTime", headerName: "最后修改时间", width: 112 },,
-]));
+// 列按 Designer.cs 排序
+const colDefs: ColDef[] = [
+      { field: "Selected", headerName: "Selected", width: 120 },
+      { field: "UseUnit", headerName: "UseUnit", width: 60 },
+      { field: "MatKind", headerName: "MatKind", width: 60 },
+      { field: "ControlState", headerName: "ControlState", width: 60 },
+      { field: "Variety", headerName: "Variety", width: 60 },
+      { field: "RegulateNo", headerName: "RegulateNo", width: 60 },
+      { field: "RegulateName", headerName: "RegulateName", width: 60 },
+      { field: "SgStd", headerName: "SgStd", width: 60 },
+      { field: "SgSign", headerName: "SgSign", width: 60 },
+      { field: "VersionNo", headerName: "VersionNo", width: 60 },
+      { field: "CIsEnable", headerName: "CIsEnable", width: 60 },
+      { field: "DutyMan", headerName: "DutyMan", width: 60 },
+      { field: "PublishDate", headerName: "PublishDate", width: 60 },
+      { field: "Remark", headerName: "Remark", width: 60 },
+      { field: "CUptUser", headerName: "CUptUser", width: 60 },
+      { field: "DUptDate", headerName: "DUptDate", width: 60 },
+      { field: "CScrapUser", headerName: "CScrapUser", width: 60 },
+      { field: "DScrapDate", headerName: "DScrapDate", width: 60 },
+      { field: "SerialNo", headerName: "SerialNo", width: 60 },
+      { field: "RegulateContent", headerName: "RegulateContent", width: 60 },
+      { field: "Rcn", headerName: "Rcn", width: 60 },
+      { field: "RcnPage", headerName: "RcnPage", width: 60 },
+      { field: "AsumeUnit", headerName: "AsumeUnit", width: 60 },
+      { field: "DraftUnit", headerName: "DraftUnit", width: 60 },
+      { field: "DraftMan", headerName: "DraftMan", width: 60 },
+      { field: "CheckMake", headerName: "CheckMake", width: 60 },
+      { field: "ApproveMan", headerName: "ApproveMan", width: 60 },
+      { field: "Operater", headerName: "Operater", width: 60 },
+      { field: "UseDate", headerName: "UseDate", width: 60 },
+      { field: "OperateDate", headerName: "OperateDate", width: 60 },
+      { field: "ControlId", headerName: "ControlId", width: 60 },
+      { field: "Holder", headerName: "Holder", width: 60 },
+      { field: "Type", headerName: "Type", width: 60 },
+      { field: "CSource", headerName: "CSource", width: 60 },
+      { field: "MatKindName", headerName: "MatKindName", width: 60 },
+      { field: "RegulateNameReplace", headerName: "RegulateNameReplace", width: 60 },
+      { field: "DCloseDate", headerName: "DCloseDate", width: 60 },
+      { field: "CSgStds", headerName: "CSgStds", width: 60 },
+      { field: "CPid", headerName: "CPid", width: 60 },
+      { field: "CGywjType", headerName: "CGywjType", width: 60 },
+      { field: "CMachineCodes", headerName: "CMachineCodes", width: 60 },
+      { field: "CMachineNames", headerName: "CMachineNames", width: 60 },
+      { field: "CSgCodes", headerName: "CSgCodes", width: 60 },
+      { field: "CSgStdCodes", headerName: "CSgStdCodes", width: 70 },
+];;
+
 function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
 
 async function onQuery() {
   querying.value = true;
-  try { rows.value = []; } finally { querying.value = false; }
+  try {
+    rows.value = [];
+    requestAnimationFrame(() => gridApi.value?.autoSizeAllColumns());
+  } finally {
+    querying.value = false;
+  }
 }
+function onLook() { toast("画面迁移：预览逻辑待接入", 2000, "warn"); }
+function onQueryBM() { toast("画面迁移：保密文件查询逻辑待接入", 2000, "warn"); }
+function onQueryZF() { toast("画面迁移：作废文件查询逻辑待接入", 2000, "warn"); }
+function onAdd() { toast("画面迁移：上传逻辑待接入", 2000, "warn"); }
+function onEdit() { toast("画面迁移：修改逻辑待接入", 2000, "warn"); }
+function onZf() { toast("画面迁移：作废逻辑待接入", 2000, "warn"); }
+function onCancelZf() { toast("画面迁移：取消作废逻辑待接入", 2000, "warn"); }
+function onDownload() { toast("画面迁移：下载逻辑待接入", 2000, "warn"); }
+function onDelete() { toast("画面迁移：删除逻辑待接入", 2000, "warn"); }
 </script>
 
 <template>
-  <div class="flex h-full flex-col gap-2 p-2">
-    <div class="flex flex-wrap items-center gap-3 rounded bg-white p-3 shadow-sm dark:bg-gray-900">
-
-      <Button label="查询" icon="pi pi-search" :loading="querying" @click="onQuery" />
+  <div class="flex min-h-0 flex-1 flex-col">
+    <!-- 工具栏：10个按钮，无查询条件 -->
+    <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
+      <Button text class="shrink-0 whitespace-nowrap" :loading="querying" @click="onQuery">
+        <IconSearch class="h-3 w-3" />查询
+      </Button>
+      <Button text class="shrink-0 whitespace-nowrap" @click="onLook">
+        <IconEye class="h-3 w-3" />预览
+      </Button>
+      <Button text class="shrink-0 whitespace-nowrap" @click="onQueryBM">
+        <IconSearch class="h-3 w-3" />保密文件查询
+      </Button>
+      <Button text class="shrink-0 whitespace-nowrap" @click="onQueryZF">
+        <IconSearch class="h-3 w-3" />作废文件查询
+      </Button>
+      <span class="mx-1 h-4 w-px bg-border" />
+      <Button text class="shrink-0 whitespace-nowrap" @click="onAdd">
+        <IconUpload class="h-3 w-3" />上传
+      </Button>
+      <Button text class="shrink-0 whitespace-nowrap" @click="onEdit">
+        <IconPencil class="h-3 w-3" />修改
+      </Button>
+      <Button text severity="danger" class="shrink-0 whitespace-nowrap" @click="onZf">
+        <IconX class="h-3 w-3" />作废
+      </Button>
+      <Button text class="shrink-0 whitespace-nowrap" @click="onCancelZf">
+        <IconRefresh class="h-3 w-3" />取消作废
+      </Button>
+      <Button text class="shrink-0 whitespace-nowrap" @click="onDownload">
+        <IconDownload class="h-3 w-3" />下载
+      </Button>
+      <Button text severity="danger" class="shrink-0 whitespace-nowrap" @click="onDelete">
+        <IconTrash class="h-3 w-3" />删除
+      </Button>
+      <span class="ml-auto text-xs text-muted-foreground">标准/工艺文件（{{ rows.length }}）</span>
     </div>
-        <div class="flex-1 overflow-hidden rounded bg-white shadow-sm dark:bg-gray-900">
-      <AgGridVue class="h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
+
+    <!-- 数据表格 -->
+    <div class="min-h-0 flex-1 overflow-hidden">
+      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
         :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows"
-        row-selection="multiple" @grid-ready="onGridReady" />
+        :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
+        :suppress-column-virtualisation="true"
+        :pagination="false" :animate-rows="false" :loading="querying"
+        @grid-ready="onGridReady" @first-data-rendered="autoSizeOnFirstData" />
     </div>
   </div>
 </template>

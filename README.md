@@ -302,6 +302,31 @@ SHR 110 窗体 · SMP 41 · SMS 37 · SQM 29 · SYD 19 · LIMS 18 · Widgets 14 
      - 标题文字：`<span class="text-xs font-medium text-muted-foreground">`，位于各栏顶部 `h-8` 行内；
      - 子表操作按钮用 `text` 样式 + `h-3 w-3` 图标，与工具栏按钮一致；
    - **AG Grid 直角**：全局 `borderRadius: "0px"` + `hmx-ag-grid` 类已设 `border-radius: 0`，新页面务必挂 `class="hmx-ag-grid"`；
+   - **列宽自适应（bestFit）**：所有带表格的迁移页面，在数据首次渲染和查询回填后各调用一次列宽自适应，确保列宽贴合实际内容，避免大片空白或截断。项目已封装 `autoSizeOnFirstData`（`@/lib/agGrid`），内部用 `requestAnimationFrame` 延迟一帧调用 `autoSizeAllColumns()`；查询回填后同样延迟一帧再调用。**注意：`flex: 1` 的列会忽略 autoSize，需列全部自适应时不要设 flex**：
+     ```typescript
+     // 模板：首次渲染自动适配
+     <AgGridVue ... @first-data-rendered="autoSizeOnFirstData" />
+
+     // 查询回填后再次适配
+     async function onQuery() {
+       rows.value = await fetchData();
+       requestAnimationFrame(() => gridApi.value?.autoSizeAllColumns());
+     }
+     ```
+     多栏/主子表布局中每个表格都需独立注册此回调。
+   - **选择列（checkbox）**：不要手动在 `colDefs` 中定义 `Selected` 列（会导致双 checkbox）。使用 AG Grid 原生 `rowSelection` 对象格式（v36 字符串值已废弃），checkbox 列由网格自动渲染在最左侧：
+     ```typescript
+     // 多选（列头全选 + 行点击选中）
+     :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
+     // 单选
+     :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
+     ```
+     - `checkboxes: true` — 行内 checkbox 开关（默认 true）
+     - `headerCheckbox: true` — 列头全选/反选 checkbox
+     - `enableClickSelection: true` — 点击行选中/取消
+     - `enableSelectionWithoutKeys: true` — 无需 Ctrl 单击即可切换
+     - 需要单元格划选时叠加 `:cell-selection="true"`（Enterprise 功能），与 rowSelection 并存互不冲突
+     - `colDefs` 中**不写**任何 `checkboxSelection` / `headerCheckboxSelection` 属性，避免重复
    - **分栏用 PrimeVue Splitter**：左右/多栏布局用 `Splitter` + `SplitterPanel`（`layout="horizontal"` 或 `layout="vertical"`），支持原生拖动，勿手写 mousemove 分割条。
 
 ### 9. AG Grid 列定义（colDefs）提取规则

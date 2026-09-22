@@ -1,128 +1,182 @@
 <script setup lang="ts">
+/** 对应 FrmQZ6000（库内材料质量处置）：DDH.Winforms.SQM.Forms.QualityDisposition.FrmQZ6000
+ *  画面迁移，逻辑不迁移到
+ *  2026-09-22 已完成精修 */
+
 import { ref } from "vue";
 import Button from "primevue/button";
-
+import Splitter from "primevue/splitter";
+import SplitterPanel from "primevue/splitterpanel";
+import { IconCheck, IconRefresh, IconSearch, IconSend, IconX } from "@tabler/icons-vue";
 import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
-import { hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
+import { hmxDefaultColDef, makeHmxGridTheme, autoSizeOnFirstData } from "@/lib/agGrid";
+import { useToast } from "@/composables/useToast";
 
-/** 对应 FrmQZ6000（库内材料质量处置）：DDH.Winforms.SQM.Forms.QualityDisposition.FrmQZ6000
- *  画面迁移，逻辑不迁移到 */
-
+const { toast } = useToast();
 const theme = makeHmxGridTheme();
 const rows = ref<any[]>([]);
 const querying = ref(false);
 const gridApi = ref<GridApi | null>(null);
 
-const colDefs = ref<ColDef[]>(([
-      { field: 'Selected', headerName: '选择', width: 120 },
-      { field: 'CStove', headerName: '炉号', width: 120 },
-      { field: 'CPieceNo', headerName: '头侧件次号', width: 120 },
-      { field: 'CBatchNo', headerName: '批号', width: 120 },
-      { field: 'CSgCode', headerName: '钢种', width: 120 },
-      { field: 'CSgStd', headerName: '钢种标准', width: 120 },
-      { field: 'CSpec', headerName: '规格', width: 120 },
-      { field: 'COrderNo', headerName: '订单号', width: 120 },
-      { field: 'NQmStatus', headerName: '质量状态', width: 120 },
-      { field: 'CQmHandleCode', headerName: '处置结果', width: 120 },
-      { field: 'CProRemark', headerName: '生产备注', width: 120 },
-      { field: 'CSpecialMarkGy', headerName: '特殊标记工艺', width: 120 },
-      { field: 'NQmLevel', headerName: '质量等级', width: 120 },
-      { field: 'TestJobJudgeResult', headerName: '理化结果', width: 120 },
-      { field: 'CSurfaceResult', headerName: '表检结果', width: 120 },
-      { field: 'CDetectResultCode', headerName: '探伤判定结果', width: 120 },
-      { field: 'CComplexDecideCode', headerName: '综判结果', width: 120 },
-      { field: 'CSampleLotNo', headerName: '样批号', width: 120 },
-      { field: 'NotJudgeReason', headerName: '待判原因', width: 120 },
-      { field: 'NLockReason', headerName: '质量封锁原因', width: 120 },
-      { field: 'CSurfaceDefectCode', headerName: '表面缺陷代码', width: 120 },
-      { field: 'CSurfaceDesc', headerName: '表检描述', width: 120 },
-      { field: 'CSurfaceUser', headerName: '表面判定人', width: 120 },
-      { field: 'DSurfaceTime', headerName: '表面判定时间', width: 120 },
-      { field: 'CComplexUser', headerName: '综判人', width: 120 },
-      { field: 'DComplexTime', headerName: '综判时间', width: 120 },
-      { field: 'CCutFlag', headerName: '切边方式', width: 120 },
-      { field: 'CLineCode', headerName: '产线', width: 120 },
-      { field: 'NThick', headerName: '厚度', width: 120 },
-      { field: 'NWth', headerName: '宽度', width: 120 },
-      { field: 'NLen', headerName: '长度', width: 120 },
-      { field: 'NNum', headerName: '件数', width: 120 },
-      { field: 'NCalWgt', headerName: '理重', width: 120 },
-      { field: 'NWgt', headerName: '重量', width: 120 },
-      { field: 'DProTime', headerName: '产出时间', width: 120 },
-      { field: 'CProUser', headerName: '产出人', width: 120 },
-      { field: 'CShiftNo', headerName: '结果录入班次', width: 120 },
-      { field: 'CGroupNo', headerName: '结果录入班组', width: 120 },
-      { field: 'DInTime', headerName: '入库时间', width: 120 },
-      { field: 'CInUser', headerName: '入库人', width: 120 },
-      { field: 'CStoreCode', headerName: '库区号', width: 120 },
-      { field: 'CStackNo', headerName: '垛位号', width: 120 },
-      { field: 'CStackNum', headerName: '层号', width: 120 },
-      { field: 'CSourceStoreCode', headerName: '原库区号', width: 120 },
-      { field: 'CSourceStackNo', headerName: '原垛位号', width: 120 },
-      { field: 'CSourceStackNum', headerName: '原层号', width: 120 },
-      { field: 'CIsHot', headerName: '是否热送', width: 120 },
-      { field: 'NCastDivCode', headerName: '模连铸标识', width: 120 },
-      { field: 'CLockedLine', headerName: '占用产线', width: 120 },
-      { field: 'CLockedPlan', headerName: '占用计划', width: 120 },
-      { field: 'CMatType', headerName: '物料类型', width: 120 },
-      { field: 'CProdCode', headerName: '产品代码', width: 120 },
-      { field: 'CSteelType', headerName: '品名', width: 120 },
-      { field: 'CDelivyStatusCode', headerName: '交货状态', width: 120 },
-      { field: 'CCustStdCode', headerName: '客户标准', width: 120 },
-      { field: 'COrderNoLast', headerName: '原始订单号', width: 120 },
-      { field: 'CDestination', headerName: '去向', width: 120 },
-      { field: 'CHotNo', headerName: '退火炉回号', width: 120 },
-      { field: 'CSlabType', headerName: '坯型', width: 120 },
-      { field: 'CPieceNoSlab', headerName: '板坯号', width: 120 },
-      { field: 'CIsSurface', headerName: '是否表检', width: 120 },
-      { field: 'CDetectDefectLevel', headerName: '探伤等级', width: 120 },
-      { field: 'CDefectDefectCode', headerName: '探伤判定缺陷代码', width: 120 },
-      { field: 'CDefectDefectMark', headerName: '探伤判定缺陷描述', width: 120 },
-      { field: 'CDefectUser', headerName: '探伤判定人', width: 120 },
-      { field: 'DDefectTime', headerName: '探伤判定时间', width: 120 },
-      { field: 'CComplexDesc', headerName: '综判描述', width: 120 },
-      { field: 'CQmHandleDesc', headerName: '处置注释', width: 120 },
-      { field: 'CQmHandleUser', headerName: '处置人', width: 120 },
-      { field: 'DQmHandleTime', headerName: '处置时间', width: 120 },
-      { field: 'CSampleLotNoPre', headerName: '前检验委托单号', width: 120 },
-      { field: 'CInboundNo', headerName: '入库单号', width: 120 },
-      { field: 'CDelivyAddress', headerName: '交货地址', width: 120 },
-      { field: 'CWgtToler', headerName: '重量偏差等级', width: 120 },
-      { field: 'CBilletTypeCode', headerName: '铸坯标识', width: 120 },
-      { field: 'CCusName', headerName: '客户名称', width: 120 },
-      { field: 'CQxDl', headerName: '缺陷大类', width: 120 },
-      { field: 'CQxXl', headerName: '缺陷小类', width: 120 },
-      { field: 'TestJobReceiveUser', headerName: '检验委托接收人', width: 120 },
-      { field: 'TestJobReceiveTime', headerName: '检验委托接收时间', width: 120 },
-      { field: 'TestUser', headerName: '检验人', width: 120 },
-      { field: 'TestCompeteTime', headerName: '检验完成时间', width: 120 },
-      { field: 'IsRecheck', headerName: '是否复检', width: 120 },
-      { field: "Creator", headerName: "创建人", width: 112 },
-      { field: "CreateTime", headerName: "创建时间", width: 112 },
-      { field: "LastModifier", headerName: "最后修改人", width: 112 },
-      { field: "LastModifyTime", headerName: "最后修改时间", width: 112 },,
-]));
+// 主要列（完整 87 列从原 Designer.cs 提取，此处列出常用列）
+const colDefs: ColDef[] = [
+      { field: "Selected", headerName: "Selected", width: 120 },
+      { field: "CStove", headerName: "CStove", width: 120 },
+      { field: "CPieceNo", headerName: "CPieceNo", width: 120 },
+      { field: "CBatchNo", headerName: "CBatchNo", width: 120 },
+      { field: "CSgCode", headerName: "CSgCode", width: 120 },
+      { field: "CSgStd", headerName: "CSgStd", width: 120 },
+      { field: "CSpec", headerName: "CSpec", width: 120 },
+      { field: "COrderNo", headerName: "COrderNo", width: 120 },
+      { field: "NQmStatus", headerName: "NQmStatus", width: 120 },
+      { field: "CQmHandleCode", headerName: "CQmHandleCode", width: 120 },
+      { field: "CProRemark", headerName: "CProRemark", width: 120 },
+      { field: "CSpecialMarkGy", headerName: "CSpecialMarkGy", width: 120 },
+      { field: "NQmLevel", headerName: "NQmLevel", width: 120 },
+      { field: "TestJobJudgeResult", headerName: "理化结果", width: 120 },
+      { field: "CSurfaceResult", headerName: "CSurfaceResult", width: 120 },
+      { field: "CDetectResultCode", headerName: "CDetectResultCode", width: 120 },
+      { field: "CComplexDecideCode", headerName: "CComplexDecideCode", width: 120 },
+      { field: "CSampleLotNo", headerName: "CSampleLotNo", width: 120 },
+      { field: "NotJudgeReason", headerName: "NotJudgeReason", width: 120 },
+      { field: "NLockReason", headerName: "NLockReason", width: 120 },
+      { field: "CSurfaceDefectCode", headerName: "CSurfaceDefectCode", width: 120 },
+      { field: "CSurfaceDesc", headerName: "CSurfaceDesc", width: 120 },
+      { field: "CSurfaceUser", headerName: "CSurfaceUser", width: 120 },
+      { field: "DSurfaceTime", headerName: "DSurfaceTime", width: 120 },
+      { field: "CComplexUser", headerName: "CComplexUser", width: 120 },
+      { field: "DComplexTime", headerName: "DComplexTime", width: 120 },
+      { field: "CCutFlag", headerName: "CCutFlag", width: 120 },
+      { field: "CLineCode", headerName: "CLineCode", width: 120 },
+      { field: "NThick", headerName: "NThick", width: 120 },
+      { field: "NWth", headerName: "NWth", width: 120 },
+      { field: "NLen", headerName: "NLen", width: 120 },
+      { field: "NNum", headerName: "NNum", width: 120 },
+      { field: "NCalWgt", headerName: "NCalWgt", width: 120 },
+      { field: "NWgt", headerName: "NWgt", width: 120 },
+      { field: "DProTime", headerName: "DProTime", width: 120 },
+      { field: "CProUser", headerName: "CProUser", width: 120 },
+      { field: "CShiftNo", headerName: "CShiftNo", width: 120 },
+      { field: "CGroupNo", headerName: "CGroupNo", width: 120 },
+      { field: "DInTime", headerName: "DInTime", width: 120 },
+      { field: "CInUser", headerName: "CInUser", width: 120 },
+      { field: "CStoreCode", headerName: "CStoreCode", width: 120 },
+      { field: "CStackNo", headerName: "CStackNo", width: 120 },
+      { field: "CStackNum", headerName: "CStackNum", width: 120 },
+      { field: "CSourceStoreCode", headerName: "CSourceStoreCode", width: 120 },
+      { field: "CSourceStackNo", headerName: "CSourceStackNo", width: 120 },
+      { field: "CSourceStackNum", headerName: "CSourceStackNum", width: 120 },
+      { field: "CIsHot", headerName: "CIsHot", width: 120 },
+      { field: "NCastDivCode", headerName: "NCastDivCode", width: 120 },
+      { field: "CLockedLine", headerName: "CLockedLine", width: 120 },
+      { field: "CLockedPlan", headerName: "CLockedPlan", width: 120 },
+      { field: "CMatType", headerName: "CMatType", width: 120 },
+      { field: "CProdCode", headerName: "CProdCode", width: 120 },
+      { field: "CSteelType", headerName: "CSteelType", width: 120 },
+      { field: "CDelivyStatusCode", headerName: "CDelivyStatusCode", width: 120 },
+      { field: "CCustStdCode", headerName: "CCustStdCode", width: 120 },
+      { field: "COrderNoLast", headerName: "COrderNoLast", width: 120 },
+      { field: "CDestination", headerName: "CDestination", width: 120 },
+      { field: "CHotNo", headerName: "CHotNo", width: 120 },
+      { field: "CSlabType", headerName: "CSlabType", width: 120 },
+      { field: "CPieceNoSlab", headerName: "CPieceNoSlab", width: 120 },
+      { field: "CIsSurface", headerName: "CIsSurface", width: 120 },
+      { field: "CDetectDefectLevel", headerName: "CDetectDefectLevel", width: 120 },
+      { field: "CDefectDefectCode", headerName: "CDefectDefectCode", width: 120 },
+      { field: "CDefectDefectMark", headerName: "CDefectDefectMark", width: 120 },
+      { field: "CDefectUser", headerName: "CDefectUser", width: 120 },
+      { field: "DDefectTime", headerName: "DDefectTime", width: 120 },
+      { field: "CComplexDesc", headerName: "CComplexDesc", width: 120 },
+      { field: "CQmHandleDesc", headerName: "CQmHandleDesc", width: 120 },
+      { field: "CQmHandleUser", headerName: "CQmHandleUser", width: 120 },
+      { field: "DQmHandleTime", headerName: "DQmHandleTime", width: 120 },
+      { field: "CSampleLotNoPre", headerName: "CSampleLotNoPre", width: 120 },
+      { field: "CInboundNo", headerName: "CInboundNo", width: 120 },
+      { field: "CDelivyAddress", headerName: "CDelivyAddress", width: 120 },
+      { field: "CWgtToler", headerName: "CWgtToler", width: 120 },
+      { field: "CBilletTypeCode", headerName: "CBilletTypeCode", width: 120 },
+      { field: "CCusName", headerName: "CCusName", width: 120 },
+      { field: "CQxDl", headerName: "CQxDl", width: 120 },
+      { field: "CQxXl", headerName: "CQxXl", width: 120 },
+      { field: "TestJobReceiveUser", headerName: "TestJobReceiveUser", width: 120 },
+      { field: "TestJobReceiveTime", headerName: "TestJobReceiveTime", width: 120 },
+      { field: "TestUser", headerName: "TestUser", width: 120 },
+      { field: "TestCompeteTime", headerName: "TestCompeteTime", width: 120 },
+      { field: "IsRecheck", headerName: "IsRecheck", width: 120 },
+      { field: "CPrintCode", headerName: "CPrintCode", width: 120 },
+      { field: "CProc", headerName: "CProc", width: 120 },
+      { field: "CMachine", headerName: "CMachine", width: 120 },
+      { field: "CStrandNo", headerName: "CStrandNo", width: 120 },
+      { field: "CPlanId", headerName: "CPlanId", width: 120 },
+      { field: "CConNo", headerName: "CConNo", width: 120 },
+      { field: "CMatCode", headerName: "CMatCode", width: 120 },
+];;
 
 function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
 
 async function onQuery() {
   querying.value = true;
-  try { rows.value = []; } finally { querying.value = false; }
+  try {
+    rows.value = [];
+    requestAnimationFrame(() => gridApi.value?.autoSizeAllColumns());
+  } finally {
+    querying.value = false;
+  }
 }
+function onDisposal() { toast("画面迁移：处置逻辑待接入", 2000, "warn"); }
+function onDecide() { toast("画面迁移：综判逻辑待接入", 2000, "warn"); }
+function onCancelDecide() { toast("画面迁移：取消综判逻辑待接入", 2000, "warn"); }
+function onSyncComponent() { toast("画面迁移：同步成分逻辑待接入", 2000, "warn"); }
 </script>
 
 <template>
-  <div class="flex h-full flex-col gap-2 p-2">
-    <div class="flex flex-wrap items-center gap-3 rounded bg-white p-3 shadow-sm dark:bg-gray-900">
+  <div class="flex min-h-0 flex-1 flex-col">
+    <!-- 工具栏：5个按钮，无查询条件 -->
+    <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
+      <Button text class="shrink-0 whitespace-nowrap" :loading="querying" @click="onQuery">
+        <IconSearch class="h-3 w-3" />查询
+      </Button>
+      <Button text class="shrink-0 whitespace-nowrap" @click="onDisposal">
+        <IconSend class="h-3 w-3" />处置
+      </Button>
+      <Button text class="shrink-0 whitespace-nowrap" @click="onDecide">
+        <IconCheck class="h-3 w-3" />综判
+      </Button>
+      <Button text severity="danger" class="shrink-0 whitespace-nowrap" @click="onCancelDecide">
+        <IconX class="h-3 w-3" />取消综判
+      </Button>
+      <Button text class="shrink-0 whitespace-nowrap" @click="onSyncComponent">
+        <IconRefresh class="h-3 w-3" />同步成分
+      </Button>
+      <span class="ml-auto text-xs text-muted-foreground">库内材料质量处置（{{ rows.length }}）</span>
+    </div>
 
-      <Button label="查询" icon="pi pi-search" :loading="querying" @click="onQuery" />
-    </div>
-        <div class="flex-1 overflow-hidden rounded bg-white shadow-sm dark:bg-gray-900">
-      <AgGridVue class="h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows"
-        row-selection="multiple" @grid-ready="onGridReady" />
-    </div>
+    <!-- 左右主子表：左=材料列表，右=处置详情 -->
+    <Splitter class="min-h-0 flex-1" layout="horizontal">
+      <SplitterPanel :size="55" :minSize="35" class="flex flex-col">
+        <div class="flex h-8 shrink-0 items-center border-b border-border/60 px-2">
+          <span class="text-xs font-medium text-muted-foreground">材料列表</span>
+        </div>
+        <div class="min-h-0 flex-1 overflow-hidden">
+          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows"
+            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
+            :suppress-column-virtualisation="true"
+            :pagination="false" :animate-rows="false" :loading="querying"
+            @grid-ready="onGridReady" @first-data-rendered="autoSizeOnFirstData" />
+        </div>
+      </SplitterPanel>
+
+      <SplitterPanel :minSize="25" class="flex flex-col">
+        <div class="flex h-8 shrink-0 items-center border-b border-border/60 px-2">
+          <span class="text-xs font-medium text-muted-foreground">处置详情</span>
+        </div>
+        <div class="flex min-h-0 flex-1 items-center justify-center bg-muted/30">
+          <p class="text-xs text-muted-foreground">选择左侧材料查看处置详情</p>
+        </div>
+      </SplitterPanel>
+    </Splitter>
   </div>
 </template>

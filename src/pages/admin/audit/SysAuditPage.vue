@@ -128,7 +128,7 @@ onMounted(() => {
     <!-- 日志表格 -->
     <div class="min-h-0 flex-1 overflow-hidden">
       <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="columnDefs"
-        :default-col-def="hmxDefaultColDef" :row-data="filtered" :get-row-id="getRowId" :row-selection="'single'"
+        :default-col-def="hmxDefaultColDef" :row-data="filtered" :get-row-id="getRowId" :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
         :pagination="false" :animate-rows="false" :locale-text="AG_GRID_LOCALE_CN"
         @first-data-rendered="autoSizeOnFirstData" />
     </div>

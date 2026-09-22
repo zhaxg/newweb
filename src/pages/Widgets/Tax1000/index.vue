@@ -2,6 +2,8 @@
 import { ref } from "vue";
 import { IconPencil, IconPlus, IconRefresh, IconRobot, IconTrash, IconCheck } from "@tabler/icons-vue";
 import Button from "primevue/button";
+import Splitter from "primevue/splitter";
+import SplitterPanel from "primevue/splitterpanel";
 import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, GetRowIdParams, GridApi, GridReadyEvent, ValueFormatterParams } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
@@ -52,9 +54,11 @@ const autoOpen = ref(false);
 
 // ---------- 左侧 排班配置 ----------
 const configColDefs: ColDef[] = [
-  { colId: "cPlantId", field: "cPlantId", headerName: "工厂", flex: 1 },
-  { colId: "cWorkshop", field: "cWorkshop", headerName: "车间", flex: 1 },
-  { colId: "cMachineId", field: "cMachineId", headerName: "机台", flex: 1 },
+  { colId: "cPlantId", field: "cPlantId", headerName: "工厂", minWidth: 70, flex: 1 },
+  { colId: "cLineNo", field: "cLineNo", headerName: "产线", minWidth: 60, flex: 1 },
+  { colId: "cProcCd", field: "cProcCd", headerName: "工序", minWidth: 60, flex: 1 },
+  { colId: "cWorkshop", field: "cWorkshop", headerName: "车间", minWidth: 70, flex: 1 },
+  { colId: "cMachineId", field: "cMachineId", headerName: "机台", minWidth: 70, flex: 1 },
 ];
 
 function getConfigRowId(p: GetRowIdParams) {
@@ -69,17 +73,25 @@ function onConfigReady(e: GridReadyEvent) {
 function onConfigSelectionChanged() {
   const row = configApi.value?.getSelectedRows()[0] as ShiftGroupConfig | undefined;
   selectedConfig.value = row ?? null;
-  // TODO: 接入 row.shiftLoops / row.groupLoops 联动加载
 }
 
 // ---------- 中间 班次循环 ----------
 const yesNoFmt = (p: ValueFormatterParams) => (p.value === 1 ? "是" : "否");
 
 const shiftColDefs: ColDef[] = [
-  { colId: "nSeqNo", field: "nSeqNo", headerName: "顺序", width: 64 },
-  { colId: "cClassRate", field: "cClassRate", headerName: "班次", width: 90 },
-  { colId: "nClassHours", field: "nClassHours", headerName: "班次小时", width: 84 },
-  { colId: "nIsUsing", field: "nIsUsing", headerName: "是否启用", width: 84, valueFormatter: yesNoFmt },
+  { colId: "nSeqNo", field: "nSeqNo", headerName: "顺序", width: 56, pinned: "left" as const },
+  { colId: "cClassRate", field: "cClassRate", headerName: "班次", width: 80 },
+  { colId: "nClassHours", field: "nClassHours", headerName: "班次小时", width: 80 },
+  { colId: "nIsUsing", field: "nIsUsing", headerName: "是否启用", width: 76, valueFormatter: yesNoFmt },
+  { colId: "cPlantId", field: "cPlantId", headerName: "工厂", width: 80 },
+  { colId: "cLineNo", field: "cLineNo", headerName: "产线", width: 70 },
+  { colId: "cProcCd", field: "cProcCd", headerName: "工序", width: 70 },
+  { colId: "cWorkshop", field: "cWorkshop", headerName: "车间", width: 70 },
+  { colId: "cMachineId", field: "cMachineId", headerName: "机台", width: 70 },
+  { colId: "Creator", field: "Creator", headerName: "创建人", width: 80 },
+  { colId: "CreateTime", field: "CreateTime", headerName: "创建时间", width: 130 },
+  { colId: "LastModifier", field: "LastModifier", headerName: "最后修改人", width: 90 },
+  { colId: "LastModifyTime", field: "LastModifyTime", headerName: "最后修改时间", width: 130 },
 ];
 
 function getShiftRowId(p: GetRowIdParams) {
@@ -88,18 +100,26 @@ function getShiftRowId(p: GetRowIdParams) {
 
 // ---------- 右侧 班组循环 ----------
 const groupColDefs: ColDef[] = [
-  { colId: "nSeqNo", field: "nSeqNo", headerName: "顺序", width: 64 },
-  { colId: "cClassGroup", field: "cClassGroup", headerName: "班组", width: 90 },
-  { colId: "nIsUsing", field: "nIsUsing", headerName: "是否启用", width: 84, valueFormatter: yesNoFmt },
+  { colId: "nSeqNo", field: "nSeqNo", headerName: "顺序", width: 56, pinned: "left" as const },
+  { colId: "cClassGroup", field: "cClassGroup", headerName: "班组", width: 80 },
+  { colId: "nIsUsing", field: "nIsUsing", headerName: "是否启用", width: 76, valueFormatter: yesNoFmt },
+  { colId: "cPlantId", field: "cPlantId", headerName: "工厂", width: 80 },
+  { colId: "cLineNo", field: "cLineNo", headerName: "产线", width: 70 },
+  { colId: "cProcCd", field: "cProcCd", headerName: "工序", width: 70 },
+  { colId: "cWorkshop", field: "cWorkshop", headerName: "车间", width: 70 },
+  { colId: "cMachineId", field: "cMachineId", headerName: "机台", width: 70 },
+  { colId: "Creator", field: "Creator", headerName: "创建人", width: 80 },
+  { colId: "CreateTime", field: "CreateTime", headerName: "创建时间", width: 130 },
+  { colId: "LastModifier", field: "LastModifier", headerName: "最后修改人", width: 90 },
+  { colId: "LastModifyTime", field: "LastModifyTime", headerName: "最后修改时间", width: 130 },
 ];
 
 function getGroupRowId(p: GetRowIdParams) {
   return (p.data as Tax1020).id;
 }
 
-// ---------- 工具栏（逻辑不迁移，占位） ----------
+// ---------- 工具栏 ----------
 function onQuery() {
-  // TODO: 接入 IShiftAppService.QueryShiftGroupConfigs
   toast("画面迁移：查询逻辑待接入", 2000, "warn");
 }
 
@@ -127,121 +147,100 @@ function onEditMain() {
 }
 
 function onEditSubmit() {
-  // TODO: 接入 IShiftAppService 保存配置及明细
   editOpen.value = false;
   toast("画面迁移：保存逻辑待接入", 2000, "warn");
 }
 
-function onAdd1010() {
-  if (!requireConfig()) return;
-  // TODO: 对应原 tax1010BindingSource.AddNew()
-}
+function onAdd1010() { if (requireConfig()) {/* TODO */} }
+function onDelete1010() { /* TODO */ }
+function onSave1010() { toast("画面迁移：保存逻辑待接入", 2000, "warn"); }
 
-function onDelete1010() {
-  // TODO: 对应原 tax1010BindingSource.RemoveCurrent()
-}
-
-function onSave1010() {
-  // TODO: 接入 IShiftAppService.SaveTax1010
-  toast("画面迁移：保存逻辑待接入", 2000, "warn");
-}
-
-function onAdd1020() {
-  if (!requireConfig()) return;
-  // TODO: 对应原 tax1020BindingSource.AddNew()
-}
-
-function onDelete1020() {
-  // TODO: 对应原 tax1020BindingSource.RemoveCurrent()
-}
-
-function onSave1020() {
-  // TODO: 接入 IShiftAppService.SaveTax1020
-  toast("画面迁移：保存逻辑待接入", 2000, "warn");
-}
+function onAdd1020() { if (requireConfig()) {/* TODO */} }
+function onDelete1020() { /* TODO */ }
+function onSave1020() { toast("画面迁移：保存逻辑待接入", 2000, "warn"); }
 
 function onAutoSubmit() {
-  // TODO: 接入自动排班
   autoOpen.value = false;
   toast("画面迁移：自动排班逻辑待接入", 2000, "warn");
 }
-
 </script>
 
 <template>
   <div class="flex min-h-0 flex-1 flex-col">
-    <!-- 顶部工具栏（对应原 flowLayoutPanel1：查询/自动排班） -->
+    <!-- 顶部工具栏：添加/编辑（左表） + 查询 + 自动排班 -->
     <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
-      <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onQuery">
+      <Button text size="small" class="shrink-0 whitespace-nowrap" @click="onAddMain">
+        <IconPlus class="h-3.5 w-3.5" />添加
+      </Button>
+      <Button text size="small" class="shrink-0 whitespace-nowrap" @click="onEditMain">
+        <IconPencil class="h-3.5 w-3.5" />编辑
+      </Button>
+      <Button text size="small" class="shrink-0 whitespace-nowrap" @click="onQuery">
         <IconRefresh class="h-3.5 w-3.5" />查询
       </Button>
-      <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onAutoShift">
+      <Button text size="small" class="shrink-0 whitespace-nowrap" @click="onAutoShift">
         <IconRobot class="h-3.5 w-3.5" />自动排班
       </Button>
       <span class="ml-auto text-xs text-muted-foreground">班次班组循环配置</span>
     </div>
 
-    <!-- 三栏布局（对应原 SplitContainerControl 嵌套） -->
-    <div class="flex min-h-0 flex-1">
-      <div class="flex min-w-0 basis-[28%] flex-col border-r border-border/60">
+    <!-- 三栏 + PrimeVue 可拖动分割 -->
+    <Splitter class="min-h-0 flex-1" layout="horizontal">
+      <!-- 左栏 -->
+      <SplitterPanel :size="28" :minSize="15" class="flex flex-col">
         <div class="flex h-8 shrink-0 items-center gap-1 border-b border-border/60 px-2">
-          <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onAddMain">
-            <IconPlus class="h-3.5 w-3.5" />添加
-          </Button>
-          <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onEditMain">
-            <IconPencil class="h-3.5 w-3.5" />编辑
-          </Button>
+          <span class="text-xs font-medium text-muted-foreground">排班配置</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
           <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="configColDefs"
             :default-col-def="hmxDefaultColDef" :row-data="configs" :get-row-id="getConfigRowId"
-            :row-selection="'single'" :pagination="false" :animate-rows="false" :locale-text="AG_GRID_LOCALE_CN"
+            :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }" :pagination="false" :animate-rows="false" :locale-text="AG_GRID_LOCALE_CN"
             @grid-ready="onConfigReady" @selection-changed="onConfigSelectionChanged" />
         </div>
-      </div>
+      </SplitterPanel>
 
-      <div class="flex min-w-0 basis-[38%] flex-col border-r border-border/60">
+      <!-- 中栏 -->
+      <SplitterPanel :size="36" :minSize="20" class="flex flex-col">
         <div class="flex h-8 shrink-0 items-center gap-1 border-b border-border/60 px-2">
-          <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onAdd1010">
+          <Button text size="small" class="shrink-0 whitespace-nowrap" @click="onAdd1010">
             <IconPlus class="h-3.5 w-3.5" />添加
           </Button>
-          <Button variant="outlined" size="small" severity="danger" class="shrink-0 whitespace-nowrap"
-            @click="onDelete1010">
+          <Button text size="small" severity="danger" class="shrink-0 whitespace-nowrap" @click="onDelete1010">
             <IconTrash class="h-3.5 w-3.5" />删除
           </Button>
-          <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onSave1010">
+          <Button text size="small" class="shrink-0 whitespace-nowrap" @click="onSave1010">
             <IconCheck class="h-3.5 w-3.5" />保存
           </Button>
+          <span class="ml-auto text-xs text-muted-foreground">班次循环</span>
         </div>
-        <div class="shrink-0 px-2 py-1 text-xs font-medium text-muted-foreground">班次循环</div>
         <div class="min-h-0 flex-1 overflow-hidden">
           <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="shiftColDefs"
             :default-col-def="hmxDefaultColDef" :row-data="shiftLoops" :get-row-id="getShiftRowId"
-            :row-selection="'single'" :pagination="false" :animate-rows="false" :locale-text="AG_GRID_LOCALE_CN" />
+            :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }" :pagination="false" :animate-rows="false" :locale-text="AG_GRID_LOCALE_CN" />
         </div>
-      </div>
+      </SplitterPanel>
 
-      <div class="flex min-w-0 flex-1 flex-col">
+      <!-- 右栏 -->
+      <SplitterPanel :minSize="20" class="flex flex-col">
         <div class="flex h-8 shrink-0 items-center gap-1 border-b border-border/60 px-2">
-          <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onAdd1020">
+          <Button text size="small" class="shrink-0 whitespace-nowrap" @click="onAdd1020">
             <IconPlus class="h-3.5 w-3.5" />添加
           </Button>
-          <Button variant="outlined" size="small" severity="danger" class="shrink-0 whitespace-nowrap"
-            @click="onDelete1020">
+          <Button text size="small" severity="danger" class="shrink-0 whitespace-nowrap" @click="onDelete1020">
             <IconTrash class="h-3.5 w-3.5" />删除
           </Button>
-          <Button variant="outlined" size="small" class="shrink-0 whitespace-nowrap" @click="onSave1020">
+          <Button text size="small" class="shrink-0 whitespace-nowrap" @click="onSave1020">
             <IconCheck class="h-3.5 w-3.5" />保存
           </Button>
+          <span class="ml-auto text-xs text-muted-foreground">班组循环</span>
         </div>
-        <div class="shrink-0 px-2 py-1 text-xs font-medium text-muted-foreground">班组循环</div>
         <div class="min-h-0 flex-1 overflow-hidden">
           <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="groupColDefs"
             :default-col-def="hmxDefaultColDef" :row-data="groupLoops" :get-row-id="getGroupRowId"
-            :row-selection="'single'" :pagination="false" :animate-rows="false" :locale-text="AG_GRID_LOCALE_CN" />
+            :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }" :pagination="false" :animate-rows="false" :locale-text="AG_GRID_LOCALE_CN" />
         </div>
-      </div>
-    </div>
+      </SplitterPanel>
+    </Splitter>
 
     <Tax1001EditDialog v-model:open="editOpen" :config="editTarget" @submit="onEditSubmit" />
     <Tax1002AutoDialog v-model:open="autoOpen" @submit="onAutoSubmit" />

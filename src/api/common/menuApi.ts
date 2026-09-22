@@ -39,7 +39,8 @@ function toNode(res: HmxRes, all: HmxRes[], prefix: string): HmxMenuNode {
     path: res.cResPath || undefined,
   };
   const sub = res.cResSubPath ?? "";
-  const children = all.filter((r) => r.cPid === res.id).sort(byOrder);
+  // 仅 cResType=2（菜单）的子节点才视为文件夹，cResType=4（按钮权限）不算
+  const children = all.filter((r) => r.cPid === res.id && r.cResType === 2).sort(byOrder);
   if (sub.startsWith("http")) {
     // 外链菜单（含 cResPath==="_blank" 新窗口 与 iframe 内嵌——壳层统一新窗口打开）
     node.url = sub;

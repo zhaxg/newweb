@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import Button from "primevue/button";
+import { IconSearch, IconSettings, IconTrash, IconUpload } from "@tabler/icons-vue";
 import InputText from "primevue/inputtext";
 import Select from "primevue/select";
 import DatePicker from "primevue/datepicker";
@@ -27,7 +28,6 @@ const txtStandard = ref('');
 const dtE = ref<Date | null>(null);
 
 const colDefs = ref<ColDef[]>(([
-      { field: 'Selected', headerName: '选择', width: 150 },
       { field: 'COrderNo', headerName: '订单号', width: 150 },
       { field: 'NFlag', headerName: '标志', width: 150 },
       { field: 'NOrderProcFlag', headerName: '处理标志', width: 150 },
@@ -60,7 +60,7 @@ const colDefs = ref<ColDef[]>(([
       { field: "Creator", headerName: "创建人", width: 112 },
       { field: "CreateTime", headerName: "创建时间", width: 112 },
       { field: "LastModifier", headerName: "最后修改人", width: 112 },
-      { field: "LastModifyTime", headerName: "最后修改时间", width: 112 },,
+      { field: "LastModifyTime", headerName: "最后修改时间", width: 112 },
 ]));
 function onGridReady(e: GridReadyEvent) {
   gridApi.value = e.api;
@@ -84,9 +84,9 @@ async function onQuery() {
 </script>
 
 <template>
-  <div class="flex h-full flex-col gap-2 p-2">
+  <div class="flex min-h-0 flex-1 flex-col">
     <!-- 查询条件 -->
-    <div class="flex flex-wrap items-center gap-3 rounded bg-white p-3 shadow-sm dark:bg-gray-900">
+    <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
 
         <label class="whitespace-nowrap">订单号</label>
         <InputText v-model="txtOrderNo" class="w-44" />
@@ -104,24 +104,24 @@ async function onQuery() {
         <InputText v-model="txtStandard" class="w-44" />
         <label class="whitespace-nowrap">截止时间</label>
         <DatePicker v-model="dtE" dateFormat="yy-mm-dd" showIcon />
-      <Button label="查询" icon="pi pi-search" :loading="querying" @click="onQuery" />
+      <Button text size="small" class="shrink-0 whitespace-nowrap" @click="onQuery"><IconSearch class="h-3.5 w-3.5" />查询</Button>
     </div>
 
     <!-- 工具栏 -->
-    <div class="flex items-center justify-between rounded bg-white p-2 shadow-sm dark:bg-gray-900">
+    <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
       <div class="flex flex-wrap items-center gap-2">
-      <Button label="查询" severity="secondary" @click="onbtnQuery" />
+      <Button text size="small" class="shrink-0 whitespace-nowrap" @click="onbtnQuery"><IconSearch class="h-3.5 w-3.5" />查询</Button>
       <Button label="下发排产" severity="success" @click="onbtnSend" />
-      <Button label="批量导入订单" severity="secondary" @click="onbtnImport" />
-      <Button label="删除" severity="danger" @click="onbtnDelete" />
-      <Button label="质量设计" severity="secondary" @click="onbtnQualityDesign" />
+      <Button text size="small" class="shrink-0 whitespace-nowrap" @click="onbtnImport"><IconUpload class="h-3.5 w-3.5" />批量导入订单</Button>
+      <Button text size="small" severity="danger" class="shrink-0 whitespace-nowrap" @click="onbtnDelete"><IconTrash class="h-3.5 w-3.5" />删除</Button>
+      <Button text size="small" class="shrink-0 whitespace-nowrap" @click="onbtnQualityDesign"><IconSettings class="h-3.5 w-3.5" />质量设计</Button>
       </div>
     </div>
 
     <!-- 数据表格 -->
-    <div class="flex-1 overflow-hidden rounded bg-white shadow-sm dark:bg-gray-900">
+    <div class="min-h-0 flex-1 overflow-hidden">
       <AgGridVue
-        class="h-full w-full"
+        class="hmx-ag-grid h-full w-full"
         :theme="theme"
         :locale-text="AG_GRID_LOCALE_CN"
         :default-col-def="hmxDefaultColDef"

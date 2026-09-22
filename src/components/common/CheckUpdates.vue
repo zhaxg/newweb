@@ -5,7 +5,8 @@ import Button from "primevue/button";
 
 /* 版本更新检测（移植自 hmx_web check-updates.vue）：
    对 BASE_URL 做 HEAD 请求，比较 etag/last-modified 变化则弹窗提示刷新。
-   原版 t-dialog 换为 PrimeVue Dialog，icon-[...] 换为 Lucide。localhost 下跳过检测。 */
+   原版 t-dialog 换为 PrimeVue Dialog，icon-[...] 换为 Lucide。
+   频率收敛：dev/localhost 不检测；「稍后」= snooze 5 分钟（窗口内只记不弹，恢复轮询）。 */
 
 interface Props {
   /** 轮询时间，分钟 */
@@ -21,12 +22,16 @@ const props = withDefaults(defineProps<Props>(), {
   checkUpdateUrl: import.meta.env.BASE_URL || "/",
 });
 
+/** 稍后 snooze 窗口：5 分钟内不再提示（etag 再变只静默观察，窗口过后才重新弹） */
+const SNOOZE_MS = 5 * 60 * 1000;
+
 const currentVersionTag = ref("");
 const lastVersionTag = ref("");
 const showModal = ref(false);
 const timer = ref<ReturnType<typeof setInterval>>();
 
 let isCheckingUpdates = false;
+let snoozeUntil = 0;
 
 function handleConfirm() {
   lastVersionTag.value = currentVersionTag.value;
@@ -35,11 +40,14 @@ function handleConfirm() {
 
 function handleCancel() {
   showModal.value = false;
+  snoozeUntil = Date.now() + SNOOZE_MS;
+  start(); // 弹窗时 checkForUpdates 已 stop()，稍后须恢复轮询
 }
 
 async function getVersionTag() {
   try {
-    if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
+    // 开发模式（含 0.0.0.0 局域网访问的 vite dev）etag 随热更改动，不检测
+    if (import.meta.env.DEV || location.hostname === "localhost" || location.hostname === "127.0.0.1") {
       return;
     }
     const response = await fetch(props.checkUpdateUrl, {
@@ -68,6 +76,9 @@ async function checkForUpdates() {
   }
 
   if (lastVersionTag.value !== versionTag) {
+    if (Date.now() < snoozeUntil) {
+      return; // 稍后窗口内：切回标签页也静默，不重复弹
+    }
     stop();
     handleNotice(versionTag);
   }
@@ -83,6 +94,8 @@ function start() {
     return;
   }
 
+  // 幂等：稍后恢复 / visibilitychange 回来都会走到这，先清旧定时器防叠加
+  clearInterval(timer.value);
   // 每 checkUpdatesIntervalMinutes（默认 1）分钟检查一次
   timer.value = setInterval(checkForUpdates, props.checkUpdatesIntervalMinutes * 60 * 1000);
 }

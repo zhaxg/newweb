@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import Button from "primevue/button";
+import { IconSearch } from "@tabler/icons-vue";
 import InputText from "primevue/inputtext";
 
 import { AgGridVue } from "ag-grid-vue3";
@@ -25,7 +26,6 @@ const groupControl1 = ref("");
 const groupControl2 = ref("");
 const ItemForNRollStatus = ref("");
 const colDefs = ref<ColDef[]>(([
-      { field: 'Selected', headerName: '选择', width: 150 },
       { field: 'PassNo', headerName: '轧制道次', width: 150 },
       { field: 'CLineCode', headerName: '产线', width: 150 },
       { field: 'Temp', headerName: '测量温度', width: 150 },
@@ -83,7 +83,7 @@ const colDefs = ref<ColDef[]>(([
       { field: "Creator", headerName: "创建人", width: 112 },
       { field: "CreateTime", headerName: "创建时间", width: 112 },
       { field: "LastModifier", headerName: "最后修改人", width: 112 },
-      { field: "LastModifyTime", headerName: "最后修改时间", width: 112 },,
+      { field: "LastModifyTime", headerName: "最后修改时间", width: 112 },
 ]));
 function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
 
@@ -99,8 +99,8 @@ async function onQuery() {
 </script>
 
 <template>
-  <div class="flex h-full flex-col gap-2 p-2">
-    <div class="flex flex-wrap items-center gap-3 rounded bg-white p-3 shadow-sm dark:bg-gray-900">
+  <div class="flex min-h-0 flex-1 flex-col">
+    <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
       <label class="whitespace-nowrap">炉号</label>
       <InputText v-model="ItemForCStove" class="w-40" />
       <label class="whitespace-nowrap">钢种</label>
@@ -117,16 +117,16 @@ async function onQuery() {
       <InputText v-model="groupControl2" class="w-40" />
       <label class="whitespace-nowrap">轧制状态</label>
       <InputText v-model="ItemForNRollStatus" class="w-40" />
-      <Button label="查询" icon="pi pi-search" :loading="querying" @click="onQuery" />
+      <Button text size="small" class="shrink-0 whitespace-nowrap" @click="onQuery"><IconSearch class="h-3.5 w-3.5" />查询</Button>
     </div>
-    <div class="flex items-center gap-2 rounded bg-white p-2 shadow-sm dark:bg-gray-900">
-      <Button label="查询" severity="secondary" @click="onbtnQuery" />
+    <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
+      <Button text size="small" class="shrink-0 whitespace-nowrap" @click="onbtnQuery"><IconSearch class="h-3.5 w-3.5" />查询</Button>
       <Button label="轧制完成" severity="success" @click="onbtnFinish" />
       <Button label="撤消完成" severity="success" @click="onbtnCancel" />
       <Button label="吊销" severity="success" @click="onbtnWaste" />
     </div>
-    <div class="flex-1 overflow-hidden rounded bg-white shadow-sm dark:bg-gray-900">
-      <AgGridVue class="h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
+    <div class="min-h-0 flex-1 overflow-hidden">
+      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
         :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows"
         row-selection="multiple" @grid-ready="onGridReady" />
     </div>

@@ -167,7 +167,7 @@ const columns: ColDef[] = [
 
     <div class="min-h-0 flex-1 overflow-hidden rounded-md border border-border/60">
       <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="columns"
-        :default-col-def="hmxDefaultColDef" :row-data="trackList" :get-row-id="rowId" :row-selection="'single'"
+        :default-col-def="hmxDefaultColDef" :row-data="trackList" :get-row-id="rowId" :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
         :loading="loading" :pagination="false" :animate-rows="false" :locale-text="AG_GRID_LOCALE_CN"
         overlay-no-rows-template="暂无功能点，点击「新增」" @grid-ready="onGridReady"
         @cell-value-changed="onCellValueChanged" @first-data-rendered="autoSizeOnFirstData" />

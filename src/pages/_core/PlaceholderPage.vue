@@ -7,6 +7,8 @@ defineProps<{
 </script>
 
 <template>
+  <!-- 占位页共用组件（销售出库/业绩排行/客户分析等未迁资源落此）
+     2026-09-22 已完成精修 -->
   <div class="flex h-full min-h-0 flex-col items-center justify-center gap-3 text-muted-foreground">
     <IconCone class="h-8 w-8" />
     <div class="text-sm font-medium text-foreground">{{ title }}</div>
