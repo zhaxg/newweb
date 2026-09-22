@@ -71,11 +71,11 @@ html .p-toast-message.p-toast-message-leave-to {
 }
 
 /* Header 三点导航 TieredMenu 宽度自适应：面板随最长菜单项撑开、菜单名不折行。
-   根面板 w-max 够用，但子级面板是 absolute 收缩宽度（受父 li 约束），
-   长名称会被迫换行，故 label 统一 nowrap、根/子面板都 max-content，
-   max-width 封顶防溢出视口。特异度 (0,2,0) 压过主题 .p-tieredmenu (0,1,0)。 */
+   根面板与子级面板都显式 max-content（子级不写会被 absolute shrink-to-fit
+   按 li 基准宽收缩回 192px）；选择器必须补 .p-tieredmenu 提特异度到 (0,3,0)，
+   压过 PrimeVue 自带的 ".p-tieredmenu.p-tieredmenu-submenu" (0,2,0)。 */
 .hmx-nav-menu.p-tieredmenu,
-.hmx-nav-menu .p-tieredmenu-submenu {
+.hmx-nav-menu .p-tieredmenu-submenu.p-tieredmenu {
   width: max-content;
   max-width: min(28rem, 90vw);
 }
