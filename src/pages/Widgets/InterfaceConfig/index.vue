@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/** 对应 FrmInterfaceConfig（接口配置）：Hmx.WinForms.Widgets.Interfaceplatform.FrmInterfaceConfig
+ *  画面迁移，逻辑不迁移到 */
+
+
 import { ref } from "vue";
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";

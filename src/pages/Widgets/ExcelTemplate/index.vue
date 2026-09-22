@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/** 对应 FrmExcelTemplate（EXCEL模板管理）：Hmx.WinForms.Widgets.Bindspreadsheet.FrmExcelTemplate
+ *  画面迁移，逻辑不迁移到 */
+
+
 import { ref } from "vue";
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";

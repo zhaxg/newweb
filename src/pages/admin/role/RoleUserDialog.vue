@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/** 对应 FrmRoleList（角色用户编辑）：HmxWinForms.Forms.Admin.FrmRoleList
+ *  画面迁移，逻辑不迁移到 */
+
+
 import { computed, ref, watch } from "vue";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";

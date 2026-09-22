@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/** 对应 FrmTsTask（计划任务管理）：HmxWinForms.Forms.Admin.FrmTsTask
+ *  画面迁移，逻辑不迁移到 */
+
+
 import { computed, defineComponent, h, onBeforeUnmount, onMounted, ref } from "vue";
 import { IconPencil, IconPlayerPlay, IconPlus, IconRefresh, IconTrash } from "@tabler/icons-vue";
 import Button from "primevue/button";

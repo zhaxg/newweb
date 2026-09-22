@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/** 对应 FrmUserList（用户管理）：HmxWinForms.Forms.Admin.FrmUserList
+ *  画面迁移，逻辑不迁移到 */
+
+
 import { computed, nextTick, onMounted, ref } from "vue";
 import { IconKey, IconPencil, IconPlus, IconSearch, IconShieldCheck, IconTrash } from "@tabler/icons-vue";
 

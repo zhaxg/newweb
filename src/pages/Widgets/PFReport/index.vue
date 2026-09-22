@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/** 对应 FrmPFReport（指标报表管理）：Hmx.WinForms.Widgets.CalculateItemForm.FrmPFReport
+ *  画面迁移，逻辑不迁移到 */
+
+
 import { ref } from "vue";
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";

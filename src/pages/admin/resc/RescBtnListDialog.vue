@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/** 对应 FrmRescList（资源按钮列表）：HmxWinForms.Forms.Admin.FrmRescList
+ *  画面迁移，逻辑不迁移到 */
+
+
 import { nextTick, ref, shallowRef, watch } from "vue";
 import { IconClick, IconDeviceFloppy, IconPlus, IconRefresh, IconTrash } from "@tabler/icons-vue";
 

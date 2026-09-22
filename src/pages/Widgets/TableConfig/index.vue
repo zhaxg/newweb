@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/** 对应 FrmTableConfig（配置表管理）：Hmx.WinForms.Widgets.TableConfig.FrmTableConfig
+ *  画面迁移，逻辑不迁移到 */
+
+
 import { ref } from "vue";
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";

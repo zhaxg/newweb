@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/** 对应 FrmUserRoleResource（用户角色权限查询）：Hmx.WinForms.Widgets.SysForms.FrmUserRoleResource
+ *  画面迁移，逻辑不迁移到 */
+
+
 import { ref } from "vue";
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";

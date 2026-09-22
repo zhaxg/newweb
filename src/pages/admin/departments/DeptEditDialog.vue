@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/** 对应 FrmTsDept（部门编辑）：HmxWinForms.Forms.Admin.Department.FrmTsDept
+ *  画面迁移，逻辑不迁移到 */
+
+
 import { computed, reactive, watch } from "vue";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";

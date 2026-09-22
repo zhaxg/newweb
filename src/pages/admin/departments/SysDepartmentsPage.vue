@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/** 对应 FrmTsDept（部门管理）：HmxWinForms.Forms.Admin.Department.FrmTsDept
+ *  画面迁移，逻辑不迁移到 */
+
+
 import { computed, defineComponent, h, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { IconBuilding, IconChevronDown, IconChevronRight, IconFolder, IconFolderOpen, IconNetwork, IconPencil, IconPlus, IconSearch, IconTrash } from "@tabler/icons-vue";
 

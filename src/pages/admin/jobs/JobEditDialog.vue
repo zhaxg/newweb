@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/** 对应 FrmTsTask（计划任务编辑）：HmxWinForms.Forms.Admin.FrmTsTask
+ *  画面迁移，逻辑不迁移到 */
+
+
 import { reactive, watch } from "vue";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";

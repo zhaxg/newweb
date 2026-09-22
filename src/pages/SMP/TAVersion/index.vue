@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/** 对应 FrmTAVersion（移动端管理）：DDH.Winforms.SMP.Forms.FrmTAVersion
+ *  画面迁移，逻辑不迁移到 */
+
+
 import { ref } from "vue";
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";

@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/** 对应 FrmRescList（资源编辑）：HmxWinForms.Forms.Admin.FrmRescList
+ *  画面迁移，逻辑不迁移到 */
+
+
 import { reactive, watch } from "vue";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";

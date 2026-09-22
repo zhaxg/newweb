@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/** 对应 FrmLowCode（低代码管理）：HmxWinForms.Forms.Admin.LowCode.FrmLowCode
+ *  画面迁移，逻辑不迁移到 */
+
+
 import { computed, ref } from "vue";
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";

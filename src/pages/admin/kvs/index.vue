@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/** 对应 HmxKvEdit（键值对维护）：HmxWinForms.Dialogs.HmxKvEdit
+ *  画面迁移，逻辑不迁移到 */
+
+
 import { computed, defineComponent, h, nextTick, onMounted, reactive, ref, watch } from "vue";
 import { IconDeviceFloppy, IconPencil, IconPlus, IconRotateClockwise, IconSearch, IconTrash } from "@tabler/icons-vue";
 

@@ -1,4 +1,8 @@
 <script setup lang="ts">
+/** 对应 FrmSetting（settings）：HmxWinForms.Forms.Admin.Settings.FrmSetting
+ *  画面迁移，逻辑不迁移到 */
+
+
 import { onMounted, ref } from "vue";
 import { IconDeviceFloppy, IconRefresh } from "@tabler/icons-vue";
 import Button from "primevue/button";
