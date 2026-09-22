@@ -10,12 +10,11 @@ export interface FontOption {
 
 export const chineseFontOptions: FontOption[] = [
   { label: "系统默认", family: "" },
-  { label: "思源黑体", family: "Noto Sans CJK", cssUrl: "https://fontsapi.zeoseven.com/69/main/result.css" },
-  { label: "汇文明朝体", family: "Huiwen-mincho", cssUrl: "https://fontsapi.zeoseven.com/256/main/result.css" },
-  { label: "京华老宋体", family: "KingHwaOldSong", cssUrl: "https://fontsapi.zeoseven.com/309/main/result.css" },
-  { label: "霞鹜文楷", family: "LXGW WenKai", cssUrl: "https://fontsapi.zeoseven.com/292/main/result.css" },
-  { label: "寒蝉活楷", family: "ChillHuoKai", cssUrl: "https://fontsapi.zeoseven.com/874/main/result.css" },
-  { label: "寒蝉活仿楷", family: "ChillHuoFangKai_F", cssUrl: "https://fontsapi.zeoseven.com/872/main/result.css" },
+  { label: "小米黑体", family: "MiSans", cssUrl: "https://cdn.jsdelivr.net/npm/misans@4.1.0/lib/Normal/MiSans-Regular.min.css" },
+  { label: "思源黑体", family: "Noto Sans SC Variable", cssUrl: "https://cdn.jsdelivr.net/npm/@fontsource-variable/noto-sans-sc@5.3.0/index.css" },
+  { label: "思源宋体", family: "Noto Serif SC Variable", cssUrl: "https://cdn.jsdelivr.net/npm/@fontsource-variable/noto-serif-sc@5.3.0/index.css" },
+  { label: "霞鹜文楷", family: "LXGW WenKai", cssUrl: "https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css" },
+  { label: "京华老宋体", family: "KingHwaOldSong", cssUrl: "https://fontsapi.zeoseven.com/309/main/result.css" }
 
 ];
 

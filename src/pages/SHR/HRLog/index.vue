@@ -1,0 +1,74 @@
+<script setup lang="ts">
+import { ref } from "vue";
+import Button from "primevue/button";
+
+
+
+import { AgGridVue } from "ag-grid-vue3";
+import type { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
+import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
+import { hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
+
+/** 对应 FrmHRLog（轧钢日志查询）：DDH.Winforms.SHR.Forms.FrmHRLog
+ *  画面迁移，逻辑不迁移到 */
+
+const theme = makeHmxGridTheme();
+const rows = ref<any[]>([]);
+const querying = ref(false);
+const gridApi = ref<GridApi | null>(null);
+
+
+const colDefs = ref<ColDef[]>(([
+      { field: 'CLineCode', headerName: '产线', width: 150 },
+      { field: 'COrderNo', headerName: '订单号', width: 150 },
+      { field: 'CBatchNo', headerName: '批号', width: 150 },
+      { field: 'CStove', headerName: '炉号', width: 150 },
+      { field: 'CPieceNo', headerName: '头侧件次号', width: 150 },
+      { field: 'CSgCode', headerName: '钢种', width: 150 },
+      { field: 'CSgStd', headerName: '钢种标准', width: 150 },
+      { field: 'CSpec', headerName: '规格', width: 150 },
+      { field: 'NThick', headerName: '厚度', width: 150 },
+      { field: 'NWidth', headerName: '宽度', width: 150 },
+      { field: 'NLen', headerName: '长度', width: 150 },
+      { field: 'NQua', headerName: '支数', width: 150 },
+      { field: 'NWgt', headerName: '重量', width: 150 },
+      { field: 'CDeviceCode', headerName: '设备编号', width: 150 },
+      { field: 'CGxId', headerName: '工序主键', width: 150 },
+      { field: 'CIsCancel', headerName: '是否取消', width: 150 },
+      { field: 'CType', headerName: '类型', width: 150 },
+      { field: 'CShift', headerName: '班次', width: 150 },
+      { field: 'CGroup', headerName: '班组', width: 150 },
+      { field: 'CRemark', headerName: '备注', width: 150 },
+      { field: 'CPlateNo', headerName: '大板号', width: 150 },
+      { field: 'NL2Status', headerName: 'L2计划状态', width: 150 },
+      { field: 'CReadFlag', headerName: '读取标记', width: 150 },
+      { field: 'DReadTime', headerName: '读取时间', width: 150 },
+      { field: 'CL2Id', headerName: 'L2消息标识', width: 150 },
+      { field: 'CL2Code', headerName: 'L2消息标识', width: 150 },
+]));
+function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
+
+
+
+async function onQuery() {
+  querying.value = true;
+  try { rows.value = []; } finally { querying.value = false; }
+}
+</script>
+
+<template>
+  <div class="flex h-full flex-col gap-2 p-2">
+    <div class="flex flex-wrap items-center gap-3 rounded bg-white p-3 shadow-sm dark:bg-gray-900">
+
+      <Button label="查询" icon="pi pi-search" :loading="querying" @click="onQuery" />
+    </div>
+    <div class="flex items-center gap-2 rounded bg-white p-2 shadow-sm dark:bg-gray-900">
+
+    </div>
+    <div class="flex-1 overflow-hidden rounded bg-white shadow-sm dark:bg-gray-900">
+      <AgGridVue class="h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows"
+        row-selection="multiple" @grid-ready="onGridReady" />
+    </div>
+  </div>
+</template>

@@ -45,14 +45,14 @@ interface PTreeNode {
 function toPTree(nodes: DeptTreeNode[]): PTreeNode[] {
   return nodes.map((n) => {
     const children = toPTree(n.children);
-    return { key: n.id, label: n.cDeptName, ...(children.length ? { children } : {}) };
+    return { key: n.id, label: n.cDeptName ?? "", ...(children.length ? { children } : {}) };
   });
 }
 
 /** 编辑时排除自身及后代，防止把部门挂到自己的子树下 */
 const selectableTree = computed<PTreeNode[]>(() => {
   const editing = props.editing;
-  const rows = editing ? props.allRows.filter((r) => !descendantIds(props.allRows, editing.id).has(r.id)) : props.allRows;
+  const rows = editing ? props.allRows.filter((r) => !descendantIds(props.allRows, editing.id ?? "").has(r.id ?? "")) : props.allRows;
   return toPTree(buildDeptTree(rows));
 });
 
@@ -87,18 +87,20 @@ function onSave() {
     emit("invalid", "请输入部门名称");
     return;
   }
+  const emptyToUndef = (v: string) => v || undefined;
   emit("save", {
+    ...(props.editing ?? { selected: false }),
     id: props.editing?.id ?? "",
     cDeptName: form.cDeptName.trim(),
-    cDeptPid: form.cDeptPid,
-    cDeptDesc: form.cDeptDesc.trim() || null,
-    cCompany: form.cCompany.trim() || null,
-    cClassify: form.cClassify.trim() || null,
-    cSw01: form.cSw01.trim() || null,
-    cSw02: form.cSw02.trim() || null,
-    cSw03: form.cSw03.trim() || null,
-    cSw04: form.cSw04.trim() || null,
-    cSw05: form.cSw05.trim() || null,
+    cDeptPid: form.cDeptPid ?? undefined,
+    cDeptDesc: emptyToUndef(form.cDeptDesc.trim()),
+    cCompany: emptyToUndef(form.cCompany.trim()),
+    cClassify: emptyToUndef(form.cClassify.trim()),
+    cSw01: emptyToUndef(form.cSw01.trim()),
+    cSw02: emptyToUndef(form.cSw02.trim()),
+    cSw03: emptyToUndef(form.cSw03.trim()),
+    cSw04: emptyToUndef(form.cSw04.trim()),
+    cSw05: emptyToUndef(form.cSw05.trim()),
   });
 }
 </script>

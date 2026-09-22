@@ -133,6 +133,20 @@ src/
 - `cResSubPath` = 窗体全名（如 `DDH.Winforms.SYD.Forms.FrmYD2001`）→ 最后一段类名即窗体文件
 - 源文件 = `<项目>/**/<类名>.cs` + `<类名>.Designer.cs`，**布局一律以 Designer.cs 为准**（控件树、Caption、列定义、初始尺寸）
 
+#### 1.1 追溯原始 WinForms 来源
+
+如果 `rescs.ts` 中的路由已被修改（cResPath/cResSubPath 已改为 Vue 路径），需要回溯原始窗体来源时，使用导出的原始数据文件：
+
+```
+temp/HMX_RES.json
+```
+
+该文件包含后端 `HM_X_RES` 表的原始导出，字段为大写下划线命名（`C_RES_SUB_PATH`、`C_PID`、`C_CODE`、`C_TITLE` 等）。追溯步骤：
+
+1. 用菜单的 `ID`（或 `C_TITLE`）在 `HMX_RES.json` 中查找对应记录
+2. 读取 `C_RES_SUB_PATH` 字段，得到原始 WinForms 全限定类名（如 `Hmx.WinForms.Widgets.TableConfig.FrmTableConfig`）
+3. 据此在 `../ddh_gzmes` 中定位 Designer.cs 文件
+
 ### 2. 项目 → 目标目录映射
 
 | 源项目 | 位置 | 目标目录 |
@@ -154,6 +168,20 @@ src/
 - 窗体 `Frm<CODE>` → `src/pages/<目标目录>/<CODE>/index.vue`（去掉 `Frm` 前缀；带对话框等配套组件时同目录放 `XxxDialog.vue`）
 - 多个菜单共用同一窗体（`cResSubPath` 相同、`cQueryString` 不同，如 `FrmHR2000` 同挂轧钢/棒材日计划）→ 只产出一个 vue，运行参数经路由 query 传入
 - 已迁移的 admin 7 页（user/role/resc/kv/department/jobs/gen）即此规则的先行样例
+
+#### 3.1 Vue 页面来源注释（必须）
+
+每个迁移后的 Vue 页面**必须**在 `<script setup>` 开头写明来源注释，格式如下：
+
+```typescript
+/** 对应 FrmHR2000（轧钢日计划管理）：DDH.Winforms.SHR.Forms.FrmHR2000
+ *  画面迁移，逻辑不迁移到 */
+```
+
+注释包含三部分：
+1. **WinForms 类名**：`Frm<CODE>`
+2. **中文标题**：原窗体标题
+3. **完全类限定名**：命名空间 + 类名（如 `DDH.Winforms.SHR.Forms.FrmHR2000`），用于后续修改时快速定位源文件
 
 ### 4. 控件 → Web 组件映射
 
@@ -182,6 +210,72 @@ SHR 110 窗体 · SMP 41 · SMS 37 · SQM 29 · SYD 19 · LIMS 18 · Widgets 14 
 ### 7. 不迁移内容
 
 业务逻辑与服务端调用、权限判定、打印/导出实现、DevExpress 非可视机制、菜单资源未收录的内部二级窗体（由父页面需要时再评估移植）。
+
+### 8. 批量提效（试迁 Tpa1000/Tax1000/Tax1100 后的经验）
+
+单迁 3 个菜单实测耗时约 40 分钟，瓶颈依次是：读 Designer.cs（信息密度低，单画面 500~900 行）、参考既有页面确认约定、产出量大、返工修正。批量迁移按以下方式执行：
+
+1. **先脚本化提取画面骨架**：用 Node 脚本从 Designer.cs 批量解析 `SimpleButton.Text`（按钮及顺序）、`LayoutControlItem.Text`（字段标题与位置）、`GridColumn.Visible/VisibleIndex/FieldName/Caption`（列序）、`SplitContainer/TabControl` 层级，输出每个窗体一页结构化摘要；只按需回读原文件核对个别细节，避免整文件通读。
+2. **约定只确认一次**：首迁产出即为模板样例（`src/pages/Widgets/Tpa1000`、`Tax1100`），同批后续页面直接套模板，不再重复读 jobs/SysDepartmentsPage 等参考页。
+3. **批量接线**：一批页面全部写完后，种子行 `cResPath/cResSubPath` 集中改、`RESCS_KEY` 只 +1 一次、`typecheck` 只跑一次收尾。
+4. **二级弹窗先问后迁**：主窗体 `ShowDialog()` 调用的内部弹窗（如 FrmTax1001/1002）默认只在父页面留占位，经确认后再连带迁移，避免多读多写。
+5. **固定写法防返工**：
+   - 分栏小工具栏直接用 Tailwind div，不抽临时组件；
+   - 日期区间一律用两个独立 `DatePicker`（开始 至 结束）绑定 `Date | null`，PrimeVue 区间模式属性名是 `selection-mode="range"`，勿写 `selection-range`；
+   - 列头中文字典优先取 Designer 里的 Caption/Text，无中文时才用字段名意译，保持与 Tpa1000 样例同风格。
+
+### 9. AG Grid 列定义（colDefs）提取规则
+
+#### 9.1 列定义来源（按优先级）
+
+1. **Designer.cs 中的 `colXXX.FieldName` + `colXXX.Caption`**：如果 Designer.cs 里同时有 FieldName 和 Caption 赋值，直接使用 Caption 作为 `headerName`，FieldName 作为 `field`。
+2. **实体类 `[LDisplay("中文")]` 属性**：如果 Designer.cs 没有 Caption，去 `rmes.service` 下对应的实体类（Entity/Dto）查找 `[LDisplay("xxx")]` 注解。原系统的 `DXGridColumnCaption.AutoSetGridColumnCaption()` 在运行时从实体属性的 `DisplayNameAttribute` 或 `DescriptionAttribute` 读取中文列头，`[LDisplay]` 是项目自定义的等效属性。
+3. **UserControl 内嵌列定义**：部分窗体（如 FrmYl01、FrmJg01）的 GridView 列定义不在主窗体 Designer.cs 中，而在内嵌的 User Control（`UC*.Designer.cs`）里。提取时需先在主窗体 Designer.cs 中查找 `new UCXxx()` 引用，再到对应的 UC Designer.cs 中提取 FieldName/Caption。
+
+#### 9.2 列定义提取脚本
+
+用 Node 脚本从 Designer.cs 提取：
+```javascript
+// FieldName: colXXX.FieldName = "YYY"
+// Caption:  colXXX.Caption = "YYY"（有则用，无则跳过）
+// 可见性:  colXXX.VisibleIndex = N（有则按序排列）
+// 宽度:    colXXX.Width = N
+```
+
+过滤规则：
+- 跳过 `Id`、`Creator`、`CreateTime`、`LastModifier`、`LastModifyTime`、`NStatus` 等系统字段
+- 按 `VisibleIndex` 排序，去重（同一 FieldName 只保留第一个）
+
+#### 9.3 空 colDefs 处理
+
+以下情况的窗体 colDefs 为空数组 `[]`（不需要列定义）：
+- **纯按钮面板**：窗体只有工具栏按钮，没有 GridView（如 FrmTqmtd10 = 执行标准管理）
+- **数据录入表单**：窗体是表单输入而非列表展示（如 FrmQL4000 = 检验结果录入）
+- **列定义在代码中**：列在 code-behind 中动态创建，Designer.cs 和 UC 均无定义（如 FrmYll01Record）
+
+这类页面保留空 `colDefs`，后续需要手动补充列定义。
+
+#### 9.4 字段名→中文列头内联规则
+
+**禁止使用共享映射文件**（如 `fieldLabelMap.ts`）。所有中文列头必须**直接内联**在每个 Vue 页面的 `colDefs` 中：
+```typescript
+// ✅ 正确：中文列头直接写在 colDefs 里
+const colDefs = ref<ColDef[]>([
+  { field: 'COrderNo', headerName: '订单号', width: 150 },
+  { field: 'CSgCode', headerName: '钢种', width: 100 },
+]);
+
+// ❌ 错误：通过 import 引用共享映射
+import { FIELD_LABEL_MAP } from '@/lib/fieldLabelMap';
+// ...
+headerName: FIELD_LABEL_MAP[field]
+```
+
+这样做的好处：每个页面自包含，不依赖外部映射文件，便于维护和调试。
+
+#### 9.5 化学元素符号保持英文
+
+钢种成分表中的列头（Si、Mn、Cr、Ni、Mo、V、Nb、Ti、Al、P、S、Cu 等）保持英文符号，不翻译为中文。
 
 ## 环境变量
 

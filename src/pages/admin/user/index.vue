@@ -13,9 +13,10 @@ import { useToast } from "@/composables/useToast";
 import UserEditDialog from "./UserEditDialog.vue";
 import UserRoleEditDialog from "./UserRoleEditDialog.vue";
 import { adminApi } from "@/api/admin/request";
-import type { HmxUser as ApiUser } from "@/api/admin/types";
+import type { HmxUser } from "@/api/admin/types";
+import type { UserType } from "@/api/admin/enums";
+import { USER_TYPE_LABELS } from "@/data/userOptions";
 import { NextStrId } from "@/lib/yitIdHelper";
-import type { HmxUser } from "@/data/users";
 
 
 const { toast } = useToast();
@@ -47,7 +48,7 @@ const resetNewPwd = ref("");
 const columnDefs: ColDef[] = [
   { colId: "id", field: "id", headerName: "登录名", width: 110 },
   { colId: "cUserName", field: "cUserName", headerName: "用户名", width: 90 },
-  { colId: "cUserType", field: "cUserType", headerName: "用户类型", width: 90 },
+  { colId: "cUserType", field: "cUserType", headerName: "用户类型", width: 90, valueFormatter: (p) => USER_TYPE_LABELS[p.value as UserType] ?? String(p.value ?? "") },
   { colId: "cPhone", field: "cPhone", headerName: "手机", width: 110 },
   { colId: "cSex", field: "cSex", headerName: "性别", width: 60 },
   { colId: "cEmail", field: "cEmail", headerName: "邮件", width: 160 },
@@ -73,8 +74,7 @@ async function query() {
   if (querying.value) return;
   querying.value = true;
   try {
-    // mock「服务端」数据源即本地扩展模型（含 cDeptId 等 UI 字段）；接真实后端时页面模型向后端 DTO 对齐
-    allRows.value = (await adminApi.getUsers(keyword.value.trim() || undefined)) as unknown as HmxUser[];
+    allRows.value = await adminApi.getUsers(keyword.value.trim() || undefined);
     rows.value = allRows.value;
     selectedId.value = null;
   } catch {
@@ -89,7 +89,7 @@ onMounted(query);
 const selectedRow = computed(() => rows.value.find((r) => r.id === selectedId.value) ?? null);
 
 function getRowId(p: GetRowIdParams) {
-  return (p.data as HmxUser).id;
+  return (p.data as HmxUser).id ?? "";
 }
 
 function onGridReady(e: GridReadyEvent) {
@@ -172,7 +172,7 @@ async function confirmResetPwd() {
 
 function onRoleEdit() {
   if (!requireSelection()) return;
-  roleUserId.value = selectedRow.value!.id;
+  roleUserId.value = selectedRow.value!.id ?? "";
   roleOpen.value = true;
 }
 
@@ -189,7 +189,7 @@ async function onSaveUser(user: HmxUser) {
     ? { ...user, id: editing.id, creator: editing.creator, createTime: editing.createTime, lastModifier: "admin", lastModifyTime: now }
     : { ...user, id: user.id || NextStrId(), creator: "admin", createTime: now, lastModifier: "", lastModifyTime: "" };
   try {
-    await adminApi.addOrEditUser(record as unknown as ApiUser);
+    await adminApi.addOrEditUser(record);
   } catch {
     return; // 校验/网络失败：拦截层已 toast，编辑弹窗保持可修改
   }

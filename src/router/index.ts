@@ -33,11 +33,10 @@ declare module "vue-router" {
  */
 const pageModules = import.meta.glob("/src/pages/**/*.vue") as Record<string, () => Promise<{ default: Component }>>;
 
-function resolvePageComponent(src?: string): Component | undefined {
+function resolvePageComponent(src?: string): (() => Promise<{ default: Component }>) | undefined {
   if (!src) return undefined;
   const norm = src.startsWith("/") ? src : `/${src}`;
-  const loader = pageModules[`/src/pages${norm}`];
-  return loader ? defineAsyncComponent(loader) : undefined;
+  return pageModules[`/src/pages${norm}`];
 }
 
 const routes: RouteRecordRaw[] = [

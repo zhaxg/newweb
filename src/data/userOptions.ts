@@ -1,6 +1,18 @@
 /** 用户编辑下拉的界面配置数据（真实前端常量，非 mock；对应原 WinForms 维护界面的固定选项） */
 
-export const USER_TYPES = ["普通用户", "普通管理员", "超级管理员", "系统账号"];
+import { UserType } from "@/api/admin/enums";
+
+/** 用户类型显示名（cUserType 存 UserType 数字枚举，展示/下拉统一用这份映射） */
+export const USER_TYPE_LABELS: Record<UserType, string> = {
+  [UserType.Nomral]: "普通用户",
+  [UserType.Admin]: "普通管理员",
+  [UserType.Root]: "超级管理员",
+};
+
+/** Select 组件选项表（option-value="value" option-label="label"） */
+export const USER_TYPES: { value: UserType; label: string }[] = (
+  Object.entries(USER_TYPE_LABELS) as [string, string][]
+).map(([value, label]) => ({ value: Number(value) as UserType, label }));
 export const SEXES = ["男", "女"];
 export const EDUS = ["高中以下", "大学本科", "硕士研究生", "博士研究生"];
 export const POLITICS = ["中共党员", "共青团员", "民主党派", "群众"];

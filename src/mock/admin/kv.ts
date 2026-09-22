@@ -1,14 +1,9 @@
 import { loadKvs, saveKvs } from "./store";
 import { NextStrId } from "@/lib/yitIdHelper";
-import type { HmxKv as LocalKv } from "@/data/kv";
 import type { HmxKv, KvEditInput } from "@/api/admin/types";
 import { API_BASE, fail, getBody, getParams, ok, type RouteMap } from "./core";
 
 const P = `${API_BASE}/systemKeyValue`;
-
-function toApi(k: LocalKv): HmxKv {
-  return { selected: false, ...k };
-}
 
 function buildMasterCode(input: KvEditInput): string {
   const group = input.useClassfy ? `${input.classA ?? ""}${input.classB ?? ""}${input.classC ?? ""}` : "";
@@ -21,8 +16,9 @@ export const kvRoutes: RouteMap = {
     const masters = loadKvs().filter((k) => k.cPid === "");
     const ck = (code ?? "").trim();
     const nk = (name ?? "").trim();
-    const filtered = masters.filter((m) => (!ck || m.cCode.includes(ck)) && (!nk || m.cName.includes(nk)));
-    return ok(config, filtered.map(toApi));
+    const filtered = masters.filter((m) => (!(ck) || (m.cCode ?? "").includes(ck)) && (!nk || (m.cName ?? "").includes(nk)));
+    // 查询回显一律重置勾选态（同旧 toApi 转换语义）
+    return ok(config, filtered.map((k) => ({ ...k, selected: false })));
   },
   [`post ${P}/querySysKvItemList`]: (config) => {
     const { parentCode } = getParams(config);
@@ -32,7 +28,7 @@ export const kvRoutes: RouteMap = {
     const children = all
       .filter((k) => k.cPid === parentCode || (!!masterCode && k.cPid === masterCode))
       .sort((a, b) => parseInt(a.cOrder || "0", 10) - parseInt(b.cOrder || "0", 10));
-    return ok(config, children.map(toApi));
+    return ok(config, children.map((k) => ({ ...k, selected: false })));
   },
   [`post ${P}/prepareNewKvEditInput`]: (config) => {
     const input: KvEditInput = { classA: "A", classB: "0", classC: "0", code: "", name: "", useClassfy: false, filedItems: [] };
@@ -46,14 +42,14 @@ export const kvRoutes: RouteMap = {
     const rows = loadKvs();
     let master = rows.find((k) => k.cPid === "" && k.cCode === cCode);
     if (!master) {
-      master = { id: NextStrId(), cCode, cName: input.name, cDesc: "", cValue: "", cGroup: "", cOrder: "", cEnable: "1", cSw01: "", cSw02: "", cSw03: "", cPid: "" };
+      master = { selected: false, id: NextStrId(), cCode, cName: input.name, cDesc: "", cValue: "", cGroup: "", cOrder: "", cEnable: "1", cSw01: "", cSw02: "", cSw03: "", cPid: "" };
       rows.push(master);
     } else {
       master.cName = input.name;
     }
     master.cSw01 = JSON.stringify(input.filedItems ?? []);
     saveKvs(rows);
-    return ok(config, toApi(master));
+    return ok(config, master);
   },
   [`post ${P}/removeParentKvItem`]: (config) => {
     const { kvItemId } = getParams(config);
@@ -70,9 +66,8 @@ export const kvRoutes: RouteMap = {
     for (const item of list) {
       if (!item.id) continue;
       const index = rows.findIndex((k) => k.id === item.id);
-      const { selected: _sel, ...rest } = item;
-      if (index >= 0) rows[index] = { ...rows[index], ...rest } as LocalKv;
-      else rows.push(rest as LocalKv);
+      if (index >= 0) rows[index] = { ...rows[index], ...item };
+      else rows.push(item);
     }
     saveKvs(rows);
     return ok(config, list.length);

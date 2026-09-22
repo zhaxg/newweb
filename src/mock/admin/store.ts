@@ -1,14 +1,25 @@
-import type { HmxBackgroudJobInfo, HmxRes, HmxSchedulerStatusInfo, SystemSettingInfo } from "@/api/admin/types";
+import type {
+  HmxBackgroudJobInfo,
+  HmxDept,
+  HmxKv,
+  HmxRes,
+  HmxRole,
+  HmxSchedulerStatusInfo,
+  HmxUser,
+  SystemSettingInfo,
+} from "@/api/admin/types";
 import { HmxJobMisfiredEnums, YesNo } from "@/api/admin/enums";
-import type { HmxDept } from "@/data/departments";
-import type { HmxKv } from "@/data/kv";
-import type { HmxRole, UserRowLite } from "@/data/roles";
-import type { HmxUser } from "@/data/users";
 import { seedDeptsData } from "./data/depts";
 import { seedKvsData } from "./data/kvs";
 import { seedRescsData } from "./data/rescs";
 import { seedRolesData } from "./data/roles";
 import { seedUsersData } from "./data/users";
+
+/** 用户行只读引用（角色关联用户列表用） */
+interface UserRowLite {
+  id: string;
+  cUserName: string;
+}
 
 /**
  * mock「数据库」：localStorage 持久层。表数据一律来自 ./data（一表一文件，
@@ -16,11 +27,11 @@ import { seedUsersData } from "./data/users";
  * 只有 mock 路由代码依赖本模块，页面一律走接口层（request.ts）。
  */
 
-const USERS_KEY = "hmx.users.v2";
+const USERS_KEY = "hmx.users.v3";
 const ROLES_KEY = "hmx.roles.v2";
 const USER_ROLES_KEY = "hmx.user_roles.v3";
 const DEPTS_KEY = "hmx.departments.v3";
-const RESCS_KEY = "hmx.rescs.v8";
+const RESCS_KEY = "hmx.rescs.v11";
 const KVS_KEY = "hmx.kv.v2";
 const SETTINGS_KEY = "hmx.settings";
 const JOBS_KEY = "hmx.jobs";
@@ -42,9 +53,22 @@ function saveJson<T>(key: string, value: T): void {
   localStorage.setItem(key, JSON.stringify(value));
 }
 
+/** 行模型含 UI 字段 selected 的表：种子不带、旧持久数据可能缺失，装载统一归一化 */
+function loadTable<Row extends { selected: boolean }>(key: string, seed: () => Omit<Row, "selected">[]): Row[] {
+  try {
+    const raw = localStorage.getItem(key);
+    if (raw) return (JSON.parse(raw) as Row[]).map((r) => ({ ...r, selected: r.selected ?? false }));
+  } catch {
+    /* 数据损坏时回退种子 */
+  }
+  const seeded = seed().map((r) => ({ ...r, selected: false })) as Row[];
+  saveJson(key, seeded);
+  return seeded;
+}
+
 /* ---------- 用户 ---------- */
 
-export const loadUsers = () => loadJson<HmxUser[]>(USERS_KEY, () => seedUsersData);
+export const loadUsers = () => loadTable<HmxUser>(USERS_KEY, () => seedUsersData);
 export const saveUsers = (rows: HmxUser[]) => saveJson(USERS_KEY, rows);
 
 /** userId -> roleId 列表 */
@@ -53,12 +77,12 @@ export const saveUserRoles = (map: Record<string, string[]>) => saveJson(USER_RO
 
 /* ---------- 角色 ---------- */
 
-export const loadRoles = () => loadJson<HmxRole[]>(ROLES_KEY, () => seedRolesData);
+export const loadRoles = () => loadTable<HmxRole>(ROLES_KEY, () => seedRolesData);
 export const saveRoles = (rows: HmxRole[]) => saveJson(ROLES_KEY, rows);
 
 /** 读取用户列表只读引用（角色关联用户用） */
 export function loadAllUsersLite(): UserRowLite[] {
-  return loadUsers().map(({ id, cUserName }) => ({ id, cUserName }));
+  return loadUsers().map(({ id, cUserName }) => ({ id: id ?? "", cUserName: cUserName ?? "" }));
 }
 
 /** "YYYY-MM-DD HH:mm" 当前时间（新增/修改时间列） */
@@ -70,13 +94,13 @@ export function formatNow(): string {
 
 /* ---------- 部门 / 资源 / 键值对 ---------- */
 
-export const loadDepartments = () => loadJson<HmxDept[]>(DEPTS_KEY, () => seedDeptsData);
+export const loadDepartments = () => loadTable<HmxDept>(DEPTS_KEY, () => seedDeptsData);
 export const saveDepartments = (rows: HmxDept[]) => saveJson(DEPTS_KEY, rows);
 
 export const loadRescs = () => loadJson<HmxRes[]>(RESCS_KEY, () => seedRescsData);
 export const saveRescs = (rows: HmxRes[]) => saveJson(RESCS_KEY, rows);
 
-export const loadKvs = () => loadJson<HmxKv[]>(KVS_KEY, () => seedKvsData);
+export const loadKvs = () => loadTable<HmxKv>(KVS_KEY, () => seedKvsData);
 export const saveKvs = (rows: HmxKv[]) => saveJson(KVS_KEY, rows);
 
 /* ---------- 系统参数 ---------- */

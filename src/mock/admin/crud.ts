@@ -1,8 +1,7 @@
 import { Formatter } from "@hprose/io";
 
 import { formatNow, loadRescs, loadRoles, saveRescs, saveRoles } from "./store";
-import type { HmxRole as LocalRole } from "@/data/roles";
-import type { SaveChangesInputV2 } from "@/api/admin/types";
+import type { HmxRole, SaveChangesInputV2 } from "@/api/admin/types";
 import type { SaveChangesData as Scd } from "@/api/common/trackable-list";
 import { API_BASE, getBody, ok, type RouteMap } from "./core";
 import { fromApi as rescFromApi } from "./resc";
@@ -30,11 +29,11 @@ function applyRoles(data: Scd<Record<string, any>>): Scd<Record<string, any>> {
     return rest;
   };
   for (const item of data.addedItems) {
-    rows.push({ ...strip(item), creator: item.creator || "admin", createTime: item.createTime || formatNow() } as LocalRole);
+    rows.push({ selected: false, ...strip(item), creator: item.creator || "admin", createTime: item.createTime || formatNow() } as HmxRole);
   }
   for (const item of data.changedItems) {
     const i = rows.findIndex((r) => r.id === item.id);
-    if (i >= 0) rows[i] = { ...rows[i], ...strip(item), lastModifier: "admin", lastModifyTime: formatNow() } as LocalRole;
+    if (i >= 0) rows[i] = { ...rows[i], ...strip(item), lastModifier: "admin", lastModifyTime: formatNow() };
   }
   for (const item of data.deletedItems) {
     const i = rows.findIndex((r) => r.id === item.id);
@@ -92,8 +91,8 @@ export const crudRoutes: RouteMap = {
         const rows = loadRoles();
         const i = rows.findIndex((r) => r.id === single.id);
         const { selected: _s, ...rest } = single;
-        if (i >= 0) rows[i] = { ...rows[i], ...rest } as LocalRole;
-        else rows.push(rest as LocalRole);
+        if (i >= 0) rows[i] = { ...rows[i], ...rest };
+        else rows.push({ selected: false, ...rest } as HmxRole);
         saveRoles(rows);
         respValue = rest;
       } else {

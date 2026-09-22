@@ -1,7 +1,7 @@
-import type { HmxRole } from "@/data/roles";
+import type { HmxRole } from "@/api/admin/types";
 
 /* 由 temp/roles.csv（真实后端导出）转换；"系统管理员"固定 id=r-admin（权限种子依赖） */
-export const seedRolesData: HmxRole[] = [
+export const seedRolesData: Omit<HmxRole, "selected">[] = [
   {"id":"r-001","cRoleName":"中厚板车牌维护","cDescription":"","creator":"system","createTime":"2025-11-09 12:11:20","lastModifier":"","lastModifyTime":"","cState":"1"},
   {"id":"r-002","cRoleName":"发货管理","cDescription":"","creator":"system","createTime":"2025-11-03 11:32:14","lastModifier":"system","lastModifyTime":"2025-11-03 11:32:50","cState":"1"},
   {"id":"r-003","cRoleName":"信息部人员权限管理","cDescription":"","creator":"XXB0044","createTime":"2025-12-13 08:06:02","lastModifier":"","lastModifyTime":"","cState":"1"},

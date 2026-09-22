@@ -72,6 +72,8 @@ export const hmxAgGridPlugin: Plugin = {
       cellSelection: true,
       rowNumbers: { width: 32, minWidth: 32, maxWidth: 64 },
       getContextMenuItems: hmxGetContextMenuItems,
+      // 右键「导出」子菜单只保留 Excel，隐藏「导出为PDF」（页面级 gridOptions 可覆盖）
+      suppressPdfExport: true,
     });
   },
 };

@@ -11,8 +11,8 @@ import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/a
 import { useToast } from "@/composables/useToast";
 import DeptEditDialog from "./DeptEditDialog.vue";
 import { departmentApi } from "@/api/admin/request";
-import type { HmxDept as ApiDept } from "@/api/admin/types";
-import { buildDeptTree, type DeptTreeNode, type HmxDept } from "@/data/departments";
+import type { HmxDept } from "@/api/admin/types";
+import { buildDeptTree, type DeptTreeNode } from "@/data/departments";
 
 
 const { toast } = useToast();
@@ -138,7 +138,7 @@ function applyExpansion() {
 }
 
 async function query() {
-  rows.value = (await departmentApi.queryAllDepartments()) as unknown as HmxDept[];
+  rows.value = await departmentApi.queryAllDepartments();
   defaultExpanded(buildDeptTree(rows.value));
   selectedId.value = null;
   nextTick(applyExpansion);
@@ -169,7 +169,7 @@ function currentRow(): HmxDept | null {
 }
 
 function getRowId(p: GetRowIdParams) {
-  return (p.data as DeptGridRow).id;
+  return (p.data as DeptGridRow).id ?? "";
 }
 
 function onGridReady(e: GridReadyEvent) {
@@ -238,7 +238,7 @@ async function confirmDelete() {
   const target = confirmTarget.value;
   if (!target) return;
   try {
-    await departmentApi.delete(target as unknown as ApiDept);
+    await departmentApi.delete(target);
   } catch {
     return; // 失败提示由请求层统一 toast
   }
@@ -252,17 +252,17 @@ async function confirmDelete() {
 async function onSaveDept(dept: HmxDept) {
   try {
     if (editTarget.value) {
-      await departmentApi.save(dept as unknown as ApiDept);
+      await departmentApi.save(dept);
       rows.value = rows.value.map((r) => (r.id === dept.id ? dept : r));
     } else {
-      await departmentApi.save({ ...dept, id: "" } as unknown as ApiDept);
+      await departmentApi.save({ ...dept, id: "" });
       // 新增子部门时展开父级，保证可见
       if (dept.cDeptPid) {
         const next = new Set(expandedIds.value);
         next.add(dept.cDeptPid);
         expandedIds.value = next;
       }
-      rows.value = (await departmentApi.queryAllDepartments()) as unknown as HmxDept[];
+      rows.value = await departmentApi.queryAllDepartments();
     }
   } catch {
     return; // 失败提示由请求层统一 toast

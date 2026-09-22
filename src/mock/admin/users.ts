@@ -1,6 +1,6 @@
 import { loadRoles, loadUserRoles as loadUserRolesMap, loadUsers, saveUserRoles as saveUserRolesMapFrom, saveUsers } from "./store";
 import { NextStrId } from "@/lib/yitIdHelper";
-import type { HmxUser } from "@/data/users";
+import type { HmxUser } from "@/api/admin/types";
 import { API_BASE, fail, getBody, getParams, matchKeyword, ok, type RouteMap } from "./core";
 
 function filterUsers(rows: HmxUser[], keywords?: string): HmxUser[] {
@@ -50,7 +50,7 @@ export const userRoutes: RouteMap = {
     const map = loadUserRolesMap();
     const roleIds = userId ? (map[userId] ?? []) : [];
     const all = loadRoles();
-    return ok(config, all.filter((r) => roleIds.includes(r.id)));
+    return ok(config, all.filter((r) => roleIds.includes(r.id ?? "")));
   },
   [`post ${P}/updateUserRoleList`]: (config) => {
     const { userId, roleIds } = getBody<{ userId?: string; roleIds?: string[] }>(config);

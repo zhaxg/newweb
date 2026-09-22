@@ -20,8 +20,11 @@ export async function fetchUserMenuTreeFromServer(): Promise<{ tree: HmxMenuNode
   return { tree, resources: resources ?? [] };
 }
 
+/** cOrder 契约为字符串，按字符串比较排序（对齐后端行为，如 "010"<"020"<"140"） */
 function byOrder(a: HmxRes, b: HmxRes): number {
-  return (Number(a.cOrder) || 0) - (Number(b.cOrder) || 0);
+  const oa = a.cOrder ?? "";
+  const ob = b.cOrder ?? "";
+  return oa < ob ? -1 : oa > ob ? 1 : 0;
 }
 
 /** prefix = 祖先 cResPath 链（如 "admin"）；叶子 pageId = 完整路径（如 "admin/user"）→ 路由 /admin/user。

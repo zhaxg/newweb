@@ -6,6 +6,13 @@ import { API_BASE, fail, getBody, getParams, ok, type RouteMap } from "./core";
 
 const P = `${API_BASE}/admin`;
 
+/** 查询结果按排序字段 cOrder 的字符串格式升序（对齐后端 varchar 列排序，不转数字） */
+function byOrder(a: HmxRes, b: HmxRes): number {
+  const x = a.cOrder ?? "";
+  const y = b.cOrder ?? "";
+  return x < y ? -1 : x > y ? 1 : 0;
+}
+
 /** 种子表与接口契约同为 HmxRes（api/admin/types），fromApi 仅补新增行的默认值 */
 export function fromApi(api: Partial<HmxRes>, existing?: HmxRes): HmxRes {
   const base: HmxRes = existing ?? {
@@ -35,14 +42,14 @@ export function fromApi(api: Partial<HmxRes>, existing?: HmxRes): HmxRes {
 export const rescRoutes: RouteMap = {
   [`post ${P}/getResources`]: (config) => {
     const { ns } = getParams(config);
-    return ok(config, loadRescs().filter((r) => !ns || r.cNsCode === ns));
+    return ok(config, loadRescs().filter((r) => !ns || r.cNsCode === ns).sort(byOrder));
   },
   [`post ${P}/getAllResouces`]: (config) => {
     const { ns } = getParams(config);
     const types = getBody<RbacRescType[]>(config);
     const all = loadRescs().filter((r) => !ns || r.cNsCode === ns);
     const filtered = Array.isArray(types) && types.length ? all.filter((r) => types.includes(r.cResType)) : all;
-    return ok(config, filtered);
+    return ok(config, filtered.sort(byOrder));
   },
   [`post ${P}/addOrEditResource`]: (config) => {
     const body = getBody<Partial<HmxRes>>(config);

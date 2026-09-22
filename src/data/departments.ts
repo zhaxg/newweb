@@ -1,19 +1,11 @@
-/** 部门表（HM_X_DEPT 本地形态）行类型与树工具；数据源见 src/mock/admin/data/depts.ts */
-export interface HmxDept {
-  id: string;
-  cDeptName: string;
-  cDeptPid: string | null;
-  cDeptDesc: string | null;
-  cCompany: string | null;
-  cClassify: string | null;
-  cSw01: string | null;
-  cSw02: string | null;
-  cSw03: string | null;
-  cSw04: string | null;
-  cSw05: string | null;
-}
+/** 部门行模型以 @/api/admin/types 为唯一权威定义；本文件只提供树工具与本地必填性收窄 */
+import type { HmxDept } from "@/api/admin/types";
+
+export type { HmxDept };
 
 export interface DeptTreeNode extends HmxDept {
+  /** 树内节点 id 必有（种子/导出行总携带 Id，建树时统一收窄为必填） */
+  id: string;
   children: DeptTreeNode[];
   depth: number;
 }
@@ -21,7 +13,7 @@ export interface DeptTreeNode extends HmxDept {
 /** 按 Id/CDeptPid 建树（与原 TreeList 的 KeyFieldName/ParentFieldName 一致），根为 pid 空或找不到父级 */
 export function buildDeptTree(rows: HmxDept[]): DeptTreeNode[] {
   const byPid = new Map<string | null, HmxDept[]>();
-  const ids = new Set(rows.map((r) => r.id));
+  const ids = new Set(rows.map((r) => r.id).filter((v): v is string => !!v));
   for (const row of rows) {
     const pid = row.cDeptPid && ids.has(row.cDeptPid) ? row.cDeptPid : null;
     const bucket = byPid.get(pid) ?? [];
@@ -29,7 +21,9 @@ export function buildDeptTree(rows: HmxDept[]): DeptTreeNode[] {
     byPid.set(pid, bucket);
   }
   const walk = (pid: string | null, depth: number): DeptTreeNode[] =>
-    (byPid.get(pid) ?? []).map((row) => ({ ...row, depth, children: walk(row.id, depth + 1) }));
+    (byPid.get(pid) ?? [])
+      .filter((row): row is HmxDept & { id: string } => !!row.id)
+      .map((row) => ({ ...row, depth, children: walk(row.id, depth + 1) }));
   return walk(null, 0);
 }
 
@@ -40,7 +34,7 @@ export function descendantIds(rows: HmxDept[], id: string): Set<string> {
   while (grew) {
     grew = false;
     for (const row of rows) {
-      if (row.cDeptPid && result.has(row.cDeptPid) && !result.has(row.id)) {
+      if (row.cDeptPid && result.has(row.cDeptPid) && row.id && !result.has(row.id)) {
         result.add(row.id);
         grew = true;
       }

@@ -143,11 +143,9 @@ const expandedIds = ref<Set<string>>(new Set());
 const selectedId = ref<string | null>(null);
 const gridApi = ref<GridApi | null>(null);
 
-/** 根节点展开、更深层折叠 */
-function defaultExpanded(nodes: HmxResTree[]) {
-  const next = new Set<string>();
-  for (const n of nodes) if (n.children?.length && n.id) next.add(n.id);
-  expandedIds.value = next;
+/** 刷新数据后默认整树折叠 */
+function collapseAll() {
+  expandedIds.value = new Set();
 }
 
 function applyExpansion() {
@@ -167,7 +165,7 @@ async function query() {
     const res = await adminApi.getResources(namespace.value);
     const menuList = (res ?? []).filter((x) => x.cResType !== undefined && x.cResType === RbacRescType.Menu);
     treeRoots.value = convertToTree(menuList);
-    defaultExpanded(treeRoots.value);
+    collapseAll();
     selectedId.value = null;
     nextTick(applyExpansion);
   } catch {

@@ -1,7 +1,7 @@
-import type { HmxKv } from "@/data/kv";
+import type { HmxKv } from "@/api/admin/types";
 
 /* 键值对种子表：由 temp/HMX_KV.json（后端 HM_X_KV 导出）转换；cPid 为父项 cCode */
-export const seedKvsData: HmxKv[] = [
+export const seedKvsData: Omit<HmxKv, "selected">[] = [
   {"id":"714135554646021","cCode":"A0000:QX_XL","cName":"表判缺陷小类","cDesc":"","cValue":"","cGroup":"","cOrder":"","cEnable":"","cSw01":"","cSw02":"","cSw03":"","cPid":""},
   {"id":"714135680360453","cCode":"2","cName":"裂纹","cDesc":"","cValue":"","cGroup":"","cOrder":"3","cEnable":"1","cSw01":"","cSw02":"","cSw03":"","cPid":"A0000:QX_DL"},
   {"id":"714135704051717","cCode":"3","cName":"变形","cDesc":"","cValue":"","cGroup":"","cOrder":"4","cEnable":"1","cSw01":"","cSw02":"","cSw03":"","cPid":"A0000:QX_DL"},

@@ -7,17 +7,12 @@ import {
   saveRoles,
   saveUserRoles,
 } from "./store";
-import type { HmxRole as LocalRole } from "@/data/roles";
 import type { HmxKv, HmxRole, RolePermissionOfViewAndWidgets, RoleUserDto } from "@/api/admin/types";
 import { RbacRescType } from "@/api/admin/enums";
 import { API_BASE, fail, getBody, getParams, matchKeyword, ok, type RouteMap } from "./core";
 
 const P = `${API_BASE}/admin`;
 const ROLE_RESC_PERMS_KEY = "hmx.role_resc_perms";
-
-function toApiRole(r: LocalRole): HmxRole {
-  return { selected: false, ...r };
-}
 
 function loadRoleRescPerms(): Record<string, string[]> {
   try {
@@ -38,7 +33,8 @@ export const roleRoutes: RouteMap = {
     const rows = loadRoles().filter((r) =>
       matchKeyword(r as unknown as Record<string, any>, keywords, ["id", "cRoleName", "cDescription"]),
     );
-    return ok(config, rows.map(toApiRole));
+    // 查询回显一律重置勾选态（同旧 toApi 转换语义）
+    return ok(config, rows.map((r) => ({ ...r, selected: false })));
   },
   [`post ${P}/addOrEditRole`]: (config) => {
     const body = getBody<Partial<HmxRole>>(config);
@@ -47,9 +43,10 @@ export const roleRoutes: RouteMap = {
     const rows = loadRoles();
     const index = rows.findIndex((r) => r.id === id);
     const audit = { lastModifier: "admin", lastModifyTime: formatNow() };
-    if (index >= 0) rows[index] = { ...rows[index], ...body, ...audit } as LocalRole;
+    if (index >= 0) rows[index] = { ...rows[index], ...body, ...audit };
     else
       rows.push({
+        selected: false,
         id,
         cRoleName: body.cRoleName ?? "",
         cDescription: body.cDescription ?? "",
@@ -57,7 +54,7 @@ export const roleRoutes: RouteMap = {
         creator: "admin",
         createTime: formatNow(),
         ...audit,
-      } as LocalRole);
+      });
     saveRoles(rows);
     return ok(config, id);
   },
@@ -110,7 +107,7 @@ export const roleRoutes: RouteMap = {
     const nodes: RolePermissionOfViewAndWidgets[] = loadRescs()
       .filter((r) => (!groupId || r.cNsCode === groupId) && (r.cResType === RbacRescType.Menu || r.cResType === RbacRescType.Widget))
       .map((r) => ({
-        selected: perms.has(r.id),
+        selected: perms.has(r.id ?? ""),
         id: r.id,
         cpId: r.cPid ?? "",
         cCode: r.cCode,

@@ -6,7 +6,7 @@ export interface HmxResTree extends HmxRes {
   children?: HmxResTree[];
 }
 
-/** 扁平数组 → 树：根为 cPid===rootParentId，children 按 parseInt(cOrder) 升序 */
+/** 扁平数组 → 树：根为 cPid===rootParentId，children 按 cOrder 字符串升序（对齐 mock/后端 varchar 排序，不转数字） */
 export function convertToTree(items: HmxRes[], rootParentId = ""): HmxResTree[] {
   const nodeMap: Record<string, HmxResTree> = {};
   for (const item of items) {
@@ -27,11 +27,15 @@ export function convertToTree(items: HmxRes[], rootParentId = ""): HmxResTree[] 
     }
   }
 
-  const parseOrder = (n: HmxResTree) => Number.parseInt(n.cOrder || "0", 10);
+  const byOrder = (a: HmxResTree, b: HmxResTree) => {
+    const x = a.cOrder ?? "";
+    const y = b.cOrder ?? "";
+    return x < y ? -1 : x > y ? 1 : 0;
+  };
   for (const node of Object.values(nodeMap)) {
-    if (node.children?.length) node.children.sort((a, b) => parseOrder(a) - parseOrder(b));
+    if (node.children?.length) node.children.sort(byOrder);
   }
-  tree.sort((a, b) => parseOrder(a) - parseOrder(b));
+  tree.sort(byOrder);
   return tree;
 }
 

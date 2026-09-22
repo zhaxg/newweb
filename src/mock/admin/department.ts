@@ -1,6 +1,6 @@
 import { loadDepartments, saveDepartments } from "./store";
 import { NextStrId } from "@/lib/yitIdHelper";
-import type { HmxDept } from "@/data/departments";
+import type { HmxDept } from "@/api/admin/types";
 import { API_BASE, getBody, ok, type RouteMap } from "./core";
 
 /** 部门接口 mock：department/queryAllDepartments | save | delete（单行语义，同真实后端） */

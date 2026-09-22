@@ -1,0 +1,148 @@
+<script setup lang="ts">
+import { ref } from "vue";
+import Button from "primevue/button";
+import InputText from "primevue/inputtext";
+import Select from "primevue/select";
+import DatePicker from "primevue/datepicker";
+import { AgGridVue } from "ag-grid-vue3";
+import type { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
+import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
+import { hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
+
+/** 对应 FrmMP2021（轧钢计划下发）：DDH.Winforms.SMP.Forms.FrmMP2021
+ *  画面迁移，逻辑不迁移到 */
+
+const theme = makeHmxGridTheme();
+const rows = ref<any[]>([]);
+const querying = ref(false);
+const gridApi = ref<GridApi | null>(null);
+
+const txtOrderNo = ref('');
+const txtSteelType = ref('');
+const dtS = ref<Date | null>(null);
+const dtE = ref<Date | null>(null);
+const icboStatus = ref('');
+
+const colDefs = ref<ColDef[]>(([
+      { field: 'Selected', headerName: '选择', width: 150 },
+      { field: 'CLineCode', headerName: '产线', width: 150 },
+      { field: 'CPlanTime', headerName: '计划时间', width: 150 },
+      { field: 'CCool', headerName: '冷却', width: 150 },
+      { field: 'COrderNo', headerName: '订单号', width: 150 },
+      { field: 'COrderNo1', headerName: '订单号1', width: 150 },
+      { field: 'COrderNo2', headerName: '订单号2', width: 150 },
+      { field: 'COrderNo3', headerName: '订单号3', width: 150 },
+      { field: 'COrderNo4', headerName: '订单号4', width: 150 },
+      { field: 'NLenTq1', headerName: '套切1', width: 150 },
+      { field: 'NLenTq2', headerName: '套切2', width: 150 },
+      { field: 'NLenTq3', headerName: '套切3', width: 150 },
+      { field: 'NLenTq4', headerName: '套切4', width: 150 },
+      { field: 'NOrder', headerName: '排序', width: 150 },
+      { field: 'CSgCode', headerName: '钢种', width: 150 },
+      { field: 'CSgStd', headerName: '钢种标准', width: 150 },
+      { field: 'CSpec', headerName: '规格', width: 150 },
+      { field: 'NPlanedWgt', headerName: '计划重量', width: 150 },
+      { field: 'NThick', headerName: '厚度', width: 150 },
+      { field: 'NWidth', headerName: '宽度', width: 150 },
+      { field: 'NLen', headerName: '长度', width: 150 },
+      { field: 'CSteelType', headerName: '品名', width: 150 },
+      { field: 'CProdCode', headerName: '产品代码', width: 150 },
+      { field: 'NDbc', headerName: '单重', width: 150 },
+      { field: 'NNum', headerName: '件数', width: 150 },
+      { field: 'CSlabSource', headerName: '坯料来源', width: 150 },
+      { field: 'CTlSgCode', headerName: '提料钢种', width: 150 },
+      { field: 'CTlSgStd', headerName: '提料钢种标准', width: 150 },
+      { field: 'CSlabSize', headerName: '钢坯尺寸', width: 150 },
+      { field: 'NSlabThick', headerName: '坯料厚度', width: 150 },
+      { field: 'NSlabWidth', headerName: '坯料宽度', width: 150 },
+      { field: 'NSlabLen', headerName: '钢坯长', width: 150 },
+      { field: 'NSlabQua', headerName: '坯料数量', width: 150 },
+      { field: 'NSlabWgt', headerName: '坯料重量', width: 150 },
+      { field: 'NWgtUnit', headerName: '单位重量', width: 150 },
+      { field: 'NRate', headerName: '收得率', width: 150 },
+      { field: 'CDelivyStatusCode', headerName: '交货状态', width: 150 },
+      { field: 'CCustStdCode', headerName: '客户标准', width: 150 },
+      { field: 'COrderCustNo', headerName: '订货客户编号', width: 150 },
+      { field: 'COrderCustCname', headerName: '订货客户', width: 150 },
+      { field: 'CDelivyQtyFlag', headerName: '交货数量标志', width: 150 },
+      { field: 'CDeptCode', headerName: '部门编码', width: 150 },
+      { field: 'NFlag', headerName: '标志', width: 150 },
+      { field: 'CProdName', headerName: '产品名称', width: 150 },
+      { field: 'CDelivyStatusDesc', headerName: '交货状态描述', width: 150 },
+      { field: 'CCustStdDesc', headerName: '客户标准描述', width: 150 },
+      { field: 'NWidthWgt', headerName: '宽重', width: 150 },
+      { field: 'CTrimFlag', headerName: '切边方式', width: 150 },
+      { field: 'CFlawDesc', headerName: '表面缺陷', width: 150 },
+      { field: 'CDelivyAddress', headerName: '交货地址', width: 150 },
+      { field: 'CTol', headerName: '公差', width: 150 },
+      { field: 'COverstepBl', headerName: '超差', width: 150 },
+      { field: 'CInboundNo', headerName: '入库单号', width: 150 },
+      { field: 'CShape', headerName: '形状', width: 150 },
+      { field: 'CSlabRemark', headerName: '坯料备注', width: 150 },
+      { field: 'CTlOrderFlag', headerName: '提料订单标志', width: 150 },
+      { field: 'CStNo', headerName: '炉号', width: 150 },
+      { field: 'NBoarCleanLen', headerName: '板清洁长度', width: 150 },
+      { field: 'NLlCleanLen', headerName: '余量清洁长度', width: 150 },
+      { field: 'NPlanBoarLen', headerName: '计划板长', width: 150 },
+]));
+function onGridReady(e: GridReadyEvent) {
+  gridApi.value = e.api;
+}
+
+function onbtnQuery() { /* TODO: 接入业务逻辑 */ }
+function onbtnSend() { /* TODO: 接入业务逻辑 */ }
+function onbtnClose() { /* TODO: 接入业务逻辑 */ }
+
+async function onQuery() {
+  querying.value = true;
+  try {
+    // TODO: 接入真实查询
+    rows.value = [];
+  } finally {
+    querying.value = false;
+  }
+}
+</script>
+
+<template>
+  <div class="flex h-full flex-col gap-2 p-2">
+    <!-- 查询条件 -->
+    <div class="flex flex-wrap items-center gap-3 rounded bg-white p-3 shadow-sm dark:bg-gray-900">
+
+        <label class="whitespace-nowrap">订单号</label>
+        <InputText v-model="txtOrderNo" class="w-44" />
+        <label class="whitespace-nowrap">钢种</label>
+        <InputText v-model="txtSteelType" class="w-44" />
+        <label class="whitespace-nowrap">评审时间</label>
+        <DatePicker v-model="dtS" dateFormat="yy-mm-dd" showIcon />
+        <span class="text-gray-400">~</span>
+        <DatePicker v-model="dtE" dateFormat="yy-mm-dd" showIcon />
+        <label class="whitespace-nowrap">状态</label>
+        <Select v-model="icboStatus" :options="[]" placeholder="请选择" class="w-40" />
+      <Button label="查询" icon="pi pi-search" :loading="querying" @click="onQuery" />
+    </div>
+
+    <!-- 工具栏 -->
+    <div class="flex items-center justify-between rounded bg-white p-2 shadow-sm dark:bg-gray-900">
+      <div class="flex flex-wrap items-center gap-2">
+      <Button label="查询" severity="secondary" @click="onbtnQuery" />
+      <Button label="下发" severity="success" @click="onbtnSend" />
+      <Button label="关闭" severity="secondary" @click="onbtnClose" />
+      </div>
+    </div>
+
+    <!-- 数据表格 -->
+    <div class="flex-1 overflow-hidden rounded bg-white shadow-sm dark:bg-gray-900">
+      <AgGridVue
+        class="h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="rows"
+        row-selection="multiple"
+        @grid-ready="onGridReady"
+      />
+    </div>
+  </div>
+</template>

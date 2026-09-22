@@ -1,0 +1,223 @@
+<script setup lang="ts">
+import { ref } from "vue";
+import Button from "primevue/button";
+
+
+
+import { AgGridVue } from "ag-grid-vue3";
+import type { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
+import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
+import { hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
+
+/** 对应 FrmHR9070（轧制实绩）：DDH.Winforms.SHR.Forms.FrmHR9070
+ *  画面迁移，逻辑不迁移到 */
+
+const theme = makeHmxGridTheme();
+const rows = ref<any[]>([]);
+const querying = ref(false);
+const gridApi = ref<GridApi | null>(null);
+
+
+const colDefs = ref<ColDef[]>(([
+      { field: 'NOrder', headerName: '排序', width: 150 },
+      { field: 'COrderNo', headerName: '订单号', width: 150 },
+      { field: 'CBatchNo', headerName: '批号', width: 150 },
+      { field: 'CStove', headerName: '炉号', width: 150 },
+      { field: 'CBatchOrder', headerName: '组批号', width: 150 },
+      { field: 'CPlateNo', headerName: '大板号', width: 150 },
+      { field: 'CPieceNo', headerName: '头侧件次号', width: 150 },
+      { field: 'CPrintCode', headerName: '喷号', width: 150 },
+      { field: 'CSgCode', headerName: '钢种', width: 150 },
+      { field: 'CSgStd', headerName: '钢种标准', width: 150 },
+      { field: 'CSpec', headerName: '规格', width: 150 },
+      { field: 'NThick', headerName: '厚度', width: 150 },
+      { field: 'NWidth', headerName: '宽度', width: 150 },
+      { field: 'NLen', headerName: '长度', width: 150 },
+      { field: 'NWgt', headerName: '重量', width: 150 },
+      { field: 'NWgtCz', headerName: '称重重量', width: 150 },
+      { field: 'CSgCodePlan', headerName: '订单钢种', width: 150 },
+      { field: 'CSgStdPlan', headerName: '订单标准', width: 150 },
+      { field: 'CSpecPlan', headerName: '轧制规格', width: 150 },
+      { field: 'NThickPlan', headerName: '轧制厚度', width: 150 },
+      { field: 'NWidthPlan', headerName: '轧制宽度', width: 150 },
+      { field: 'NLenPlan', headerName: '计划长度', width: 150 },
+      { field: 'NFurType', headerName: '装炉方式', width: 120 },
+      { field: 'CCustName', headerName: '客户名称', width: 150 },
+      { field: 'CConRemark', headerName: '合同备注', width: 112 },
+      { field: 'CIsGcd', headerName: '是否过称', width: 112 },
+      { field: 'COrderNo1', headerName: '订单号1', width: 150 },
+      { field: 'COrderNo2', headerName: '订单号2', width: 150 },
+      { field: 'COrderNo3', headerName: '订单号3', width: 150 },
+      { field: 'COrderNo4', headerName: '订单号4', width: 150 },
+      { field: 'NLenTq1', headerName: '套切1', width: 150 },
+      { field: 'NLenTq2', headerName: '套切2', width: 150 },
+      { field: 'NLenTq3', headerName: '套切3', width: 150 },
+      { field: 'NLenTq4', headerName: '套切4', width: 150 },
+      { field: 'CInboundNo1', headerName: '入库标识1', width: 150 },
+      { field: 'CInboundNo2', headerName: '入库标识2', width: 150 },
+      { field: 'CInboundNo3', headerName: '入库标识3', width: 150 },
+      { field: 'CInboundNo4', headerName: '入库标识4', width: 150 },
+      { field: 'NBc', headerName: '倍尺', width: 150 },
+      { field: 'NQuaPlan', headerName: '计划收料支数', width: 150 },
+      { field: 'NWgtPlan', headerName: '计划重量', width: 150 },
+      { field: 'NWgtOrder', headerName: '订单重量', width: 150 },
+      { field: 'NWidthWgt', headerName: '宽重', width: 150 },
+      { field: 'CTrimFlag', headerName: '切边方式', width: 150 },
+      { field: 'CFlawDesc', headerName: '表面缺陷', width: 150 },
+      { field: 'CDelivyAddress', headerName: '交货地址', width: 150 },
+      { field: 'CTol', headerName: '公差', width: 150 },
+      { field: 'NThickMin', headerName: '最小厚度', width: 112 },
+      { field: 'NThickMax', headerName: '最大厚度', width: 112 },
+      { field: 'CSpecialMarkGy', headerName: '特殊标记工艺', width: 150 },
+      { field: 'CDn', headerName: '需要堆冷', width: 150 },
+      { field: 'SteelGrade', headerName: '钢种', width: 150 },
+      { field: 'DDischargeTime', headerName: '出炉时间', width: 120 },
+      { field: 'DRollingTimeStart', headerName: '轧制开始时间', width: 120 },
+      { field: 'DRollingTimeEnd', headerName: '轧制结束时间', width: 120 },
+      { field: 'CrCode', headerName: '铬代码', width: 150 },
+      { field: 'TotalRollingTime', headerName: '总轧制时间', width: 150 },
+      { field: 'FmPass', headerName: '精轧道次', width: 150 },
+      { field: 'RollingStatus', headerName: '轧制状态', width: 150 },
+      { field: 'DwThick', headerName: '待温厚度', width: 150 },
+      { field: 'ExitThick', headerName: '出口厚度', width: 150 },
+      { field: 'ExitWidth', headerName: '出口宽度', width: 150 },
+      { field: 'ExitLength', headerName: '出口长度', width: 150 },
+      { field: 'OperateUserCode', headerName: '轧制操作人员代码（改规标记1）', width: 150 },
+      { field: 'CrownMark', headerName: '钢板凸度（实绩标记)', width: 150 },
+      { field: 'MeaThickWs', headerName: '西面测量厚度', width: 150 },
+      { field: 'MeaThickDs', headerName: '南面测量厚度', width: 150 },
+      { field: 'ThickHp', headerName: '厚度液压', width: 150 },
+      { field: 'HsbExitTempAvg', headerName: '高压水除鳞出口平均温度', width: 150 },
+      { field: 'HsbExitTempMax', headerName: '除鳞后温度（最大）', width: 150 },
+      { field: 'RmPass', headerName: '粗轧道次', width: 150 },
+      { field: 'RmEntTempTar', headerName: '粗轧开轧温度目标', width: 150 },
+      { field: 'RmEntTempCal', headerName: '粗轧入口温度计算', width: 150 },
+      { field: 'RmEntTempAvg', headerName: '粗轧入轧平均温度', width: 150 },
+      { field: 'RmEntTempMin', headerName: '粗轧开轧温度（测量最小）', width: 150 },
+      { field: 'RmEntTempMax', headerName: '粗轧开轧温度（测量最大）', width: 150 },
+      { field: 'RmExitTempCal', headerName: '粗轧出口温度计算', width: 150 },
+      { field: 'RmExitTempAvg', headerName: '粗轧出轧平均温度', width: 150 },
+      { field: 'RmExitTempMin', headerName: '粗轧终轧温度（测量最小）', width: 150 },
+      { field: 'RmExitTempMax', headerName: '粗轧终轧温度（测量最大）', width: 150 },
+      { field: 'RmEntThick', headerName: '粗轧入口厚度', width: 150 },
+      { field: 'FmEntThick', headerName: '精轧入口厚度', width: 150 },
+      { field: 'FmEntTempCal', headerName: '精轧入口温度计算', width: 150 },
+      { field: 'FmEntTempTar', headerName: '精轧开轧温度目标', width: 150 },
+      { field: 'FmEntTempAvg', headerName: '精轧入轧平均温度', width: 150 },
+      { field: 'FmEntTempMin', headerName: '精轧开轧温度（测量最小）', width: 150 },
+      { field: 'FmEntTempMax', headerName: '精轧开轧温度（测量最大）', width: 150 },
+      { field: 'FmExitTempTar', headerName: '精轧终轧温度目标', width: 150 },
+      { field: 'FmExitTempCal', headerName: '精轧出口温度计算', width: 150 },
+      { field: 'FmExitTempAvg', headerName: '精轧出轧平均温度', width: 150 },
+      { field: 'FmExitTempMin', headerName: '精轧终轧温度（测量最小）', width: 150 },
+      { field: 'FmExitTempMax', headerName: '精轧终轧温度（测量最大）', width: 150 },
+      { field: 'ShiftNo', headerName: '班次号', width: 150 },
+      { field: 'ShiftGroup', headerName: '班次组', width: 150 },
+      { field: 'DProductTime', headerName: '生产时间', width: 120 },
+      { field: 'Author', headerName: '作者', width: 150 },
+      { field: 'SlabWeight', headerName: '坯料重量', width: 150 },
+      { field: 'RmAuthorA', headerName: '粗轧责任者A', width: 150 },
+      { field: 'RmAuthorB', headerName: '粗轧责任者B', width: 150 },
+      { field: 'FmAuthorA', headerName: '精轧操作员A', width: 150 },
+      { field: 'FmAuthorB', headerName: '精轧操作员B', width: 150 },
+      { field: 'NCcl', headerName: '成材率', width: 150 },
+      { field: 'TotalPass', headerName: '总道次', width: 150 },
+      { field: 'EntryTime', headerName: '入炉时间', width: 150 },
+      { field: 'EndTime', headerName: '结束时间', width: 150 },
+      { field: 'EntryTemp', headerName: '入炉温度', width: 150 },
+      { field: 'LevelerSpeed', headerName: '矫直速度', width: 150 },
+      { field: 'BitSpeed', headerName: '位速度', width: 150 },
+      { field: 'EntryGap', headerName: '入口间隙', width: 150 },
+      { field: 'ExitGap', headerName: '出口间隙', width: 150 },
+      { field: 'EntrySideRollGap', headerName: '入口侧辊间隙', width: 150 },
+      { field: 'ExitSideRollGap', headerName: '出口侧辊间隙', width: 150 },
+      { field: 'Tilt1', headerName: '倾斜1', width: 150 },
+      { field: 'Tilt2', headerName: '倾斜2', width: 150 },
+      { field: 'L2Force', headerName: '矫直力', width: 150 },
+      { field: 'BendPosition', headerName: '弯曲位置', width: 150 },
+      { field: 'TorqueMotor', headerName: '扭矩电机', width: 150 },
+      { field: 'EmptyFlag', headerName: '空标志', width: 150 },
+      { field: 'CoolMode', headerName: '冷却模式', width: 150 },
+      { field: 'IsAutoUse', headerName: '是否投用自动', width: 105 },
+      { field: 'StartCoolTime', headerName: '开始冷却时间', width: 150 },
+      { field: 'FinishCoolTime', headerName: '结束冷却时间', width: 150 },
+      { field: 'EntryAveTemp', headerName: '入炉平均温度', width: 150 },
+      { field: 'EntryMaxTemp', headerName: '最高入炉温度', width: 150 },
+      { field: 'EntryMinTemp', headerName: '最低入炉温度', width: 150 },
+      { field: 'TargetFinishTemp', headerName: '目标终轧温度', width: 150 },
+      { field: 'NTempXb', headerName: '实测下表返红温度', width: 112 },
+      { field: 'FinishAveTemp', headerName: '终轧平均温度', width: 150 },
+      { field: 'FinishMaxTemp', headerName: '最高终轧温度', width: 150 },
+      { field: 'FinishMinTemp', headerName: '最低终轧温度', width: 150 },
+      { field: 'CoolingRate', headerName: '冷却速率', width: 150 },
+      { field: 'FluxA', headerName: '熔剂A', width: 150 },
+      { field: 'FluxB', headerName: '熔剂B', width: 150 },
+      { field: 'ActFluxA', headerName: '实际熔剂A', width: 150 },
+      { field: 'ActFluxB', headerName: '实际熔剂B', width: 150 },
+      { field: 'RatioA', headerName: '配比A', width: 150 },
+      { field: 'RatioB', headerName: '配比B', width: 150 },
+      { field: 'ActRatioA', headerName: '实际配比A', width: 150 },
+      { field: 'ActRatioB', headerName: '实际配比B', width: 150 },
+      { field: 'Speed', headerName: '速度', width: 150 },
+      { field: 'ActSpeed', headerName: '实际速度', width: 150 },
+      { field: 'Aspd', headerName: '喷吹速度', width: 150 },
+      { field: 'ActAspd', headerName: '实际喷吹速度', width: 150 },
+      { field: 'Num', headerName: '数量', width: 150 },
+      { field: 'HTSIS', headerName: '头尾遮蔽投入信号', width: 150 },
+      { field: 'HeadUpLength', headerName: '头部上弯长度', width: 150 },
+      { field: 'HeadBotLength', headerName: '头部下弯长度', width: 150 },
+      { field: 'HeadUpCoef', headerName: '头部上弯系数', width: 150 },
+      { field: 'HeadBotCoef', headerName: '头部下弯系数', width: 150 },
+      { field: 'TailUpLength', headerName: '尾部上弯长度', width: 150 },
+      { field: 'TailBotLength', headerName: '尾部下弯长度', width: 150 },
+      { field: 'TailUpCoef', headerName: '尾部上弯系数', width: 150 },
+      { field: 'TailBotCoef', headerName: '尾部下弯系数', width: 150 },
+      { field: 'TempWater', headerName: '水温', width: 150 },
+      { field: 'PressWater', headerName: '压力水', width: 150 },
+      { field: 'total_flow', headerName: '总水量', width: 150 },
+      { field: 'TotalPassRj', headerName: '热矫总次数', width: 150 },
+      { field: 'EntryTimeRj', headerName: '热矫进入时间', width: 150 },
+      { field: 'EndTimeRj', headerName: '热矫结束时间', width: 150 },
+      { field: 'EntryTempRj', headerName: '热矫钢板温度', width: 150 },
+      { field: 'LevelerSpeedRj', headerName: '热矫速度', width: 150 },
+      { field: 'BitSpeedRj', headerName: '热矫咬入速度', width: 150 },
+      { field: 'EntryGapRj', headerName: '热矫入口辊缝', width: 150 },
+      { field: 'ExitGapRj', headerName: '热矫出口辊缝', width: 150 },
+      { field: 'EntrySideRollGapRj', headerName: '热矫入口边辊高度', width: 150 },
+      { field: 'ExitSideRollGapRj', headerName: '热矫出口边辊高度', width: 150 },
+      { field: 'Tilt1Rj', headerName: '热矫倾斜量', width: 150 },
+      { field: 'Tilt2Rj', headerName: '热矫倾动量', width: 150 },
+      { field: 'L2ForceRj', headerName: '热矫矫直力', width: 150 },
+      { field: 'BendPositionRj', headerName: '热矫弯辊量', width: 150 },
+      { field: 'TorqueMotorRj', headerName: '热矫扭矩', width: 150 },
+      { field: 'EmptyFlagRj', headerName: '热矫是否空过', width: 150 },
+      { field: 'CBilletTypeCode', headerName: '铸坯标识', width: 150 },
+      { field: 'CProRemark', headerName: '生产备注', width: 150 },
+      { field: 'CIsQy', headerName: '原取样板标记', width: 112 },
+]));
+function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
+
+
+
+async function onQuery() {
+  querying.value = true;
+  try { rows.value = []; } finally { querying.value = false; }
+}
+</script>
+
+<template>
+  <div class="flex h-full flex-col gap-2 p-2">
+    <div class="flex flex-wrap items-center gap-3 rounded bg-white p-3 shadow-sm dark:bg-gray-900">
+
+      <Button label="查询" icon="pi pi-search" :loading="querying" @click="onQuery" />
+    </div>
+    <div class="flex items-center gap-2 rounded bg-white p-2 shadow-sm dark:bg-gray-900">
+
+    </div>
+    <div class="flex-1 overflow-hidden rounded bg-white shadow-sm dark:bg-gray-900">
+      <AgGridVue class="h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows"
+        row-selection="multiple" @grid-ready="onGridReady" />
+    </div>
+  </div>
+</template>

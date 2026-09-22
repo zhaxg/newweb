@@ -7,9 +7,10 @@ import Select from "primevue/select";
 import ToggleSwitch from "primevue/toggleswitch";
 import TreeSelect from "primevue/treeselect";
 import { departmentApi } from "@/api/admin/request";
+import type { HmxUser } from "@/api/admin/types";
+import { UserType } from "@/api/admin/enums";
 import { buildDeptTree, type DeptTreeNode, type HmxDept } from "@/data/departments";
 import { EDUS, NATIONS, POLITICS, PROVINCES, SEXES, USER_TYPES } from "@/data/userOptions";
-import type { HmxUser } from "@/data/users";
 
 const props = defineProps<{
   open: boolean;
@@ -30,19 +31,19 @@ const form = reactive({
   cUserName: "",
   cPhone: "",
   cEmail: "",
-  cUserType: USER_TYPES[0],
+  cUserType: UserType.Nomral as UserType,
   cSex: SEXES[0],
   cStatus: "1",
-  cManager: false,
-  cDeptId: null as string | null,
+  cMaster: false,
+  cDepartment: null as string | null,
   cPost: "",
-  cDuty: "",
-  cEdu: null as string | null,
+  cPosition: "",
+  cEducation: null as string | null,
   cNation: null as string | null,
-  cNative: null as string | null,
-  cPolitics: null as string | null,
-  cIdCard: "",
-  cSocialSec: "",
+  cNativePlace: null as string | null,
+  cPoliticsStatus: null as string | null,
+  cIdCardNo: "",
+  cSbcard: "",
 });
 
 // ---------- 部门树选择（TreeSelect） ----------
@@ -55,7 +56,7 @@ interface PTreeNode {
 function toPTree(nodes: DeptTreeNode[]): PTreeNode[] {
   return nodes.map((n) => {
     const children = toPTree(n.children);
-    return { key: n.id, label: n.cDeptName, ...(children.length ? { children } : {}) };
+    return { key: n.id, label: n.cDeptName ?? "", ...(children.length ? { children } : {}) };
   });
 }
 
@@ -63,10 +64,10 @@ const deptRows = ref<HmxDept[]>([]);
 const deptTreeNodes = computed(() => toPTree(buildDeptTree(deptRows.value)));
 
 // TreeSelect 的 v-model 是 {key:true} 选择映射，这里适配回 string|null
-const deptSelection = computed<Record<string, boolean> | null>(() => (form.cDeptId ? { [form.cDeptId]: true } : null));
+const deptSelection = computed<Record<string, boolean> | null>(() => (form.cDepartment ? { [form.cDepartment]: true } : null));
 
 function onDeptSelection(keys: Record<string, boolean> | null) {
-  form.cDeptId = keys ? Object.keys(keys).find((k) => keys[k]) ?? null : null;
+  form.cDepartment = keys ? Object.keys(keys).find((k) => keys[k]) ?? null : null;
 }
 
 const statusOptions = [
@@ -78,25 +79,25 @@ watch(
   () => props.open,
   async (open) => {
     if (!open) return;
-    deptRows.value = (await departmentApi.queryAllDepartments()) as unknown as HmxDept[];
+    deptRows.value = await departmentApi.queryAllDepartments();
     const e = props.editing;
     form.id = e?.id ?? "";
     form.cUserName = e?.cUserName ?? `用户${Math.floor(Math.random() * 10000)}`;
     form.cPhone = e?.cPhone ?? "";
     form.cEmail = e?.cEmail ?? "";
-    form.cUserType = e?.cUserType || USER_TYPES[0];
+    form.cUserType = e?.cUserType ?? UserType.Nomral;
     form.cSex = e?.cSex || SEXES[0];
     form.cStatus = e?.cStatus || "1";
-    form.cManager = e?.cManager ?? false;
-    form.cDeptId = typeof (e ? e.cDeptId : props.presetDeptId) === "string" ? ((e ? e.cDeptId : props.presetDeptId) as string) : null;
+    form.cMaster = (e?.cMaster ?? "0") === "1";
+    form.cDepartment = typeof (e ? e.cDepartment : props.presetDeptId) === "string" ? ((e ? e.cDepartment : props.presetDeptId) as string) : null;
     form.cPost = e?.cPost ?? "";
-    form.cDuty = e?.cDuty ?? "";
-    form.cEdu = e?.cEdu || null;
+    form.cPosition = e?.cPosition ?? "";
+    form.cEducation = e?.cEducation || null;
     form.cNation = e?.cNation || null;
-    form.cNative = e?.cNative || null;
-    form.cPolitics = e?.cPolitics || null;
-    form.cIdCard = e?.cIdCard ?? "";
-    form.cSocialSec = e?.cSocialSec ?? "";
+    form.cNativePlace = e?.cNativePlace || null;
+    form.cPoliticsStatus = e?.cPoliticsStatus || null;
+    form.cIdCardNo = e?.cIdCardNo ?? "";
+    form.cSbcard = e?.cSbcard ?? "";
   },
 );
 
@@ -106,6 +107,7 @@ function onSave() {
     return;
   }
   emit("save", {
+    ...(props.editing ?? { selected: false }),
     id: props.editing?.id ?? form.id.trim(),
     cUserName: form.cUserName.trim(),
     cUserType: form.cUserType,
@@ -113,20 +115,21 @@ function onSave() {
     cSex: form.cSex,
     cEmail: form.cEmail.trim(),
     cStatus: form.cStatus,
-    cManager: form.cManager,
+    cMaster: form.cMaster ? "1" : "0",
     creator: props.editing?.creator ?? "",
     createTime: props.editing?.createTime ?? "",
     lastModifier: props.editing?.lastModifier ?? "",
     lastModifyTime: props.editing?.lastModifyTime ?? "",
-    cDeptId: form.cDeptId,
+    cTimestamp: props.editing?.cTimestamp ?? "",
+    cDepartment: form.cDepartment ?? undefined,
     cPost: form.cPost.trim(),
-    cDuty: form.cDuty.trim(),
-    cEdu: form.cEdu ?? "",
-    cNative: form.cNative ?? "",
-    cPolitics: form.cPolitics ?? "",
+    cPosition: form.cPosition.trim(),
+    cEducation: form.cEducation ?? "",
+    cNativePlace: form.cNativePlace ?? "",
+    cPoliticsStatus: form.cPoliticsStatus ?? "",
     cNation: form.cNation ?? "",
-    cIdCard: form.cIdCard.trim(),
-    cSocialSec: form.cSocialSec.trim(),
+    cIdCardNo: form.cIdCardNo.trim(),
+    cSbcard: form.cSbcard.trim(),
   });
 }
 </script>
@@ -165,7 +168,8 @@ function onSave() {
 
           <div class="min-w-0 space-y-1">
             <label class="text-xs font-medium text-muted-foreground">用户类型</label>
-            <Select v-model="form.cUserType" :options="USER_TYPES" placeholder="-请选择-" class="w-full min-w-0" />
+            <Select v-model="form.cUserType" :options="USER_TYPES" option-label="label" option-value="value"
+              placeholder="-请选择-" class="w-full min-w-0" />
           </div>
 
           <div class="min-w-0 space-y-1">
@@ -182,7 +186,7 @@ function onSave() {
           <div class="min-w-0 space-y-1">
             <label class="text-xs font-medium text-muted-foreground">管理者</label>
             <div class="flex h-8 items-center">
-              <ToggleSwitch v-model="form.cManager" />
+              <ToggleSwitch v-model="form.cMaster" />
             </div>
           </div>
         </div>
@@ -205,12 +209,12 @@ function onSave() {
 
           <div class="min-w-0 space-y-1">
             <label class="text-[11px] text-muted-foreground/80">职务</label>
-            <InputText v-model="form.cDuty" class="w-full min-w-0" />
+            <InputText v-model="form.cPosition" class="w-full min-w-0" />
           </div>
 
           <div class="min-w-0 space-y-1">
             <label class="text-[11px] text-muted-foreground/80">教育程度</label>
-            <Select v-model="form.cEdu" :options="EDUS" placeholder="-请选择-" show-clear class="w-full min-w-0" />
+            <Select v-model="form.cEducation" :options="EDUS" placeholder="-请选择-" show-clear class="w-full min-w-0" />
           </div>
 
           <div class="min-w-0 space-y-1">
@@ -220,23 +224,23 @@ function onSave() {
 
           <div class="min-w-0 space-y-1">
             <label class="text-[11px] text-muted-foreground/80">籍贯</label>
-            <Select v-model="form.cNative" :options="PROVINCES" placeholder="-请选择-" show-clear filter
+            <Select v-model="form.cNativePlace" :options="PROVINCES" placeholder="-请选择-" show-clear filter
               class="w-full min-w-0" />
           </div>
 
           <div class="min-w-0 space-y-1">
             <label class="text-[11px] text-muted-foreground/80">政治面貌</label>
-            <Select v-model="form.cPolitics" :options="POLITICS" placeholder="-请选择-" show-clear class="w-full min-w-0" />
+            <Select v-model="form.cPoliticsStatus" :options="POLITICS" placeholder="-请选择-" show-clear class="w-full min-w-0" />
           </div>
 
           <div class="min-w-0 space-y-1">
             <label class="text-[11px] text-muted-foreground/80">身份证</label>
-            <InputText v-model="form.cIdCard" class="w-full min-w-0" />
+            <InputText v-model="form.cIdCardNo" class="w-full min-w-0" />
           </div>
 
           <div class="min-w-0 space-y-1">
             <label class="text-[11px] text-muted-foreground/80">社保号</label>
-            <InputText v-model="form.cSocialSec" class="w-full min-w-0" />
+            <InputText v-model="form.cSbcard" class="w-full min-w-0" />
           </div>
         </div>
       </div>

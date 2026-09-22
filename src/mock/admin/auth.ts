@@ -85,7 +85,7 @@ export const authRoutes: RouteMap = {
       userName: user?.cUserName ?? userId,
       token,
       isAuthenticated: true,
-      userType: user?.cManager ? UserType.Root : UserType.Admin,
+      userType: user?.cMaster === "1" ? UserType.Root : UserType.Admin,
       roles: [],
     };
     return ok(config, session);
