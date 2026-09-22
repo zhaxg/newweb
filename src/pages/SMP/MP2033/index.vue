@@ -58,6 +58,10 @@ const colDefs = ref<ColDef[]>(([
       { field: 'NStrandNoSeq1PlanTime', headerName: '计划日期流号一切顺序号', width: 142 },
       { field: 'CSpecOrder', headerName: '成品规格', width: 120 },
       { field: 'CZGLineCode', headerName: '轧制产线', width: 95 },
+      { field: "Creator", headerName: "创建人", width: 112 },
+      { field: "CreateTime", headerName: "创建时间", width: 112 },
+      { field: "LastModifier", headerName: "最后修改人", width: 112 },
+      { field: "LastModifyTime", headerName: "最后修改时间", width: 112 },,
 ]));
 function onGridReady(e: GridReadyEvent) {
   gridApi.value = e.api;

@@ -84,6 +84,10 @@ const colDefs = ref<ColDef[]>(([
       { field: 'NBoarCleanLen', headerName: '板清洁长度', width: 150 },
       { field: 'NLlCleanLen', headerName: '余量清洁长度', width: 150 },
       { field: 'NPlanBoarLen', headerName: '计划板长', width: 150 },
+      { field: "Creator", headerName: "创建人", width: 112 },
+      { field: "CreateTime", headerName: "创建时间", width: 112 },
+      { field: "LastModifier", headerName: "最后修改人", width: 112 },
+      { field: "LastModifyTime", headerName: "最后修改时间", width: 112 },,
 ]));
 function onGridReady(e: GridReadyEvent) {
   gridApi.value = e.api;

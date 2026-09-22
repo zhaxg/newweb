@@ -2,8 +2,6 @@
 import { ref } from "vue";
 import Button from "primevue/button";
 
-
-
 import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
@@ -16,7 +14,6 @@ const theme = makeHmxGridTheme();
 const rows = ref<any[]>([]);
 const querying = ref(false);
 const gridApi = ref<GridApi | null>(null);
-
 
 const colDefs = ref<ColDef[]>(([
       { field: 'TestItemType', headerName: '试验项目种类', width: 120 },
@@ -34,6 +31,10 @@ const colDefs = ref<ColDef[]>(([
       { field: 'Other7', headerName: '预留7', width: 120 },
       { field: 'Other8', headerName: '预留8', width: 120 },
       { field: 'Seq', headerName: '录入排序', width: 120 },
+      { field: "Creator", headerName: "创建人", width: 112 },
+      { field: "CreateTime", headerName: "创建时间", width: 112 },
+      { field: "LastModifier", headerName: "最后修改人", width: 112 },
+      { field: "LastModifyTime", headerName: "最后修改时间", width: 112 },,
 ]));
 function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
 

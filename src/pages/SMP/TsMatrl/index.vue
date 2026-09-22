@@ -2,8 +2,6 @@
 import { ref } from "vue";
 import Button from "primevue/button";
 
-
-
 import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
@@ -17,7 +15,6 @@ const rows = ref<any[]>([]);
 const querying = ref(false);
 const gridApi = ref<GridApi | null>(null);
 
-
 const colDefs = ref<ColDef[]>(([
       { field: 'CMatCode', headerName: '钢坯物料号', width: 149 },
       { field: 'CMatName', headerName: '钢坯物料名称', width: 149 },
@@ -29,8 +26,11 @@ const colDefs = ref<ColDef[]>(([
       { field: 'NWidth', headerName: '宽度', width: 149 },
       { field: 'NLen', headerName: '长度', width: 149 },
       { field: 'NWeight', headerName: '重量', width: 149 },
+      { field: "Creator", headerName: "创建人", width: 112 },
+      { field: "CreateTime", headerName: "创建时间", width: 112 },
+      { field: "LastModifier", headerName: "最后修改人", width: 112 },
+      { field: "LastModifyTime", headerName: "最后修改时间", width: 112 },,
 ]));
-
 
 function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
 

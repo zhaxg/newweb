@@ -3,7 +3,6 @@ import { ref } from "vue";
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
 
-
 import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
@@ -81,6 +80,10 @@ const colDefs = ref<ColDef[]>(([
       { field: 'COverstepBl', headerName: '超差', width: 150 },
       { field: 'CInboundNo', headerName: '入库单号', width: 150 },
       { field: 'CShape', headerName: '形状', width: 150 },
+      { field: "Creator", headerName: "创建人", width: 112 },
+      { field: "CreateTime", headerName: "创建时间", width: 112 },
+      { field: "LastModifier", headerName: "最后修改人", width: 112 },
+      { field: "LastModifyTime", headerName: "最后修改时间", width: 112 },,
 ]));
 function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
 

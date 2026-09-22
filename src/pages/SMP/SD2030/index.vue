@@ -56,6 +56,10 @@ const colDefs = ref<ColDef[]>(([
       { field: 'CSpec', headerName: '规格', width: 150 },
       { field: 'CConRemark', headerName: '合同备注', width: 150 },
       { field: 'CInboundNo', headerName: '入库单号', width: 150 },
+      { field: "Creator", headerName: "创建人", width: 112 },
+      { field: "CreateTime", headerName: "创建时间", width: 112 },
+      { field: "LastModifier", headerName: "最后修改人", width: 112 },
+      { field: "LastModifyTime", headerName: "最后修改时间", width: 112 },,
 ]));
 function onGridReady(e: GridReadyEvent) {
   gridApi.value = e.api;

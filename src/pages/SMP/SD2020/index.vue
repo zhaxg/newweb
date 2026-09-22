@@ -81,6 +81,10 @@ const colDefs = ref<ColDef[]>(([
       { field: 'CSendUserId', headerName: '销售提报人', width: 150 },
       { field: 'DSendTime', headerName: '发送时间', width: 150 },
       { field: 'CExitem3', headerName: '原始订单号', width: 150 },
+      { field: "Creator", headerName: "创建人", width: 112 },
+      { field: "CreateTime", headerName: "创建时间", width: 112 },
+      { field: "LastModifier", headerName: "最后修改人", width: 112 },
+      { field: "LastModifyTime", headerName: "最后修改时间", width: 112 },,
 ]));
 function onGridReady(e: GridReadyEvent) {
   gridApi.value = e.api;
