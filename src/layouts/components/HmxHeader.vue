@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import { IconBook, IconChevronDown, IconDots, IconKey, IconLogout, IconSettings } from "@tabler/icons-vue";
+import { onBeforeUnmount, onMounted, ref } from "vue";
+import { IconBook, IconChevronDown, IconDots, IconKey, IconLogout, IconMaximize, IconMinimize, IconSettings } from "@tabler/icons-vue";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import Menu from "primevue/menu";
@@ -71,6 +71,23 @@ function navIcon(item: MenuItem) {
   const name = (item.data as HmxMenuNode | undefined)?.icon;
   return tablerIcon(name) ?? TABLER_FALLBACK_ICON;
 }
+
+/* 全屏切换（Fullscreen API）：状态以 fullscreenchange 为准——
+   覆盖 Esc / 系统退出等非本钮触发的离开，图标与 title 跟随真实状态 */
+const isFullscreen = ref(false);
+function onFullscreenChange() {
+  isFullscreen.value = !!document.fullscreenElement;
+}
+async function toggleFullscreen() {
+  try {
+    if (document.fullscreenElement) await document.exitFullscreen();
+    else await document.documentElement.requestFullscreen();
+  } catch {
+    /* 浏览器拒绝（策略/非用户手势）已无统一 toast 通道，静默即可 */
+  }
+}
+onMounted(() => document.addEventListener("fullscreenchange", onFullscreenChange));
+onBeforeUnmount(() => document.removeEventListener("fullscreenchange", onFullscreenChange));
 </script>
 
 <template>
@@ -96,6 +113,12 @@ function navIcon(item: MenuItem) {
     </div>
     <div class="flex shrink-0 items-center gap-1">
       <!-- 与 ThemeToggle 同款圆形图标钮，保持右侧视觉统一 -->
+      <button type="button" :title="isFullscreen ? '退出全屏' : '全屏'"
+        class="inline-flex size-8 items-center justify-center rounded-full text-base text-current transition-colors hover:bg-black/5 active:bg-black/10 dark:hover:bg-white/20 dark:active:bg-white/30"
+        @click="toggleFullscreen">
+        <IconMinimize v-if="isFullscreen" class="size-[1em]" />
+        <IconMaximize v-else class="size-[1em]" />
+      </button>
       <button type="button" title="系统设置"
         class="inline-flex size-8 items-center justify-center rounded-full text-base text-current transition-colors hover:bg-black/5 active:bg-black/10 dark:hover:bg-white/20 dark:active:bg-white/30"
         @click="emit('openSettings')">

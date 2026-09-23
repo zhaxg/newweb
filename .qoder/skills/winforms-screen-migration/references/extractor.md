@@ -25,8 +25,8 @@
 
 | 盲区 | 后果 | 兜底 |
 |---|---|---|
-| 不解析 `Location`/`Size`/`Anchor` | 拿不到像素坐标。**这是有意的**：迁移只要布局结构对，坐标靠 `Splitter :size` 百分比 + flex 自适应重排，抄像素反而错（全站 rem + 用户三档缩放） | 分栏比例用 `SplitterPosition` ÷ 容器尺寸；其余按 `references/ui-rules.md` |
-| `Dock` 只在容器归属里间接体现 | 纯 `Dock=Fill`/`Top` 的堆叠顺序不保证 | 对照原程序截图 |
+| 不解析 `Location`/`Size`/`Anchor` | 拿不到像素坐标。**这是有意的**：验收看**元素齐全 + 结构关系**（谁包含谁、上下左右、Splitter 轴向与大致比例），不看 `Location` 数值；坐标靠 flex + `Splitter :size` 百分比自适应，抄 px 会吃掉三档缩放 | 分栏比例用 `SplitterPosition` ÷ 容器尺寸；其余按 `references/ui-rules.md` §3.5 |
+| `Dock` 只在容器归属里间接体现 | 纯 `Dock=Fill`/`Top` 的堆叠顺序不保证 | 必要时回读 Designer/`Controls.Add` 顺序核对上下左右；**仍不抄 Location 像素** |
 | 属性正则只吃单行 `x.Prop = value;` 与三类已知多行写法 | 其它多行/子属性（`AppearanceOptions.*`、`FormatInfo`）被丢 | 需要格式串时直接搜字段名 |
 | 实体解析依赖同文件的 `DataSource = typeof(X)` | 绑定源在别的 `.cs` 里时打印 `?`，列头退回全局字典（会串味） | 手工按实体核 `[LDisplay]` |
 | 分组表头（BandedGridView 的 band）、列脚合计、运行时灌入的下拉选项 | 不输出（选项写在 `.cs` 里的 `Items.Add`，Designer 抓取不到） | 回读同名 `.cs`，或按枚举定义补 |
@@ -46,4 +46,4 @@ D=< Designer 路径 >; printf "声明=%s 摘要可见+hide+待确认=%s\n" \
 
 注意：**主窗体 `声明=0` 不一定是错**——列定义常整批住在内嵌 `UC*.Designer.cs` 里（FrmYl01、FrmJg01），这时改对 UC 文件跑自检，或用 `--uc` 看递归后的各表小计。
 
-一句话：**列集/列序/按钮/分栏/调用台账可以照抄摘要；几何与分组必须自己回读**，且第 8 步的截图核对是唯一能否掉摘要结论的证据。
+一句话：**列集/列序/按钮/归属/分栏/调用台账可以照抄摘要；坐标不抠**。布局必核对：①元素不丢 ②父子包含对 ③上下左右对 ④Splitter 轴向与比例对——`Location`/`Size` 不在交付标准里（见 SKILL 硬规则 4）。画面最终是否对版由用户打开检查（迁移流程不做浏览器截图，见 SKILL 硬规则 8）。

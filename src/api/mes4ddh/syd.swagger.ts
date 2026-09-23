@@ -351,6 +351,8 @@ export interface QueryNotInStorageDto {
 export interface RKDBDto {
   cStore?: string | null;
   carNo?: string | null;
+  /** 备注 */
+  remark?: string | null;
   pieceNos?: string[] | null;
 }
 export interface SlSjInfoDto {
@@ -621,6 +623,19 @@ export interface Tyd2000 {
   qm?: Tyd2000Qm | null;
   info?: Tyd2000Info | null;
   appendices?: Tyd2000Appendices[] | null;
+  cStrandNo?: string | null;
+  cPlanId?: string | null;
+  cPono?: string | null;
+  nLenMin?: number | null;
+  nLenMax?: number | null;
+  cRemark?: string | null;
+  cMsc?: string | null;
+  cMscLine?: string | null;
+  cStNo?: string | null;
+  cIsFinishPath?: string | null;
+  cRouteCode?: string | null;
+  cCcfs?: string | null;
+  cSlabSource?: string | null;
 }
 export interface Tyd2000Appendices {
   selected?: boolean;
@@ -718,6 +733,41 @@ export interface Tyd2000Dto {
   cWgtToler?: string | null;
   cBilletTypeCode?: string | null;
   cCusName?: string | null;
+  cAutoJudgeResult?: string | null;
+  cJudgeUser?: string | null;
+  dJudgeTime?: string | null;
+  cJudgeResult?: string | null;
+  cJudgeRemark?: string | null;
+  cStatus?: string | null;
+  cRecheckFlag?: string | null;
+  cBatchOrder?: string | null;
+  cTlSgCode?: string | null;
+  dOutTime?: string | null;
+  cIsQy?: string | null;
+  cPlanTime?: string | null;
+  cOrderCustCname?: string | null;
+  cInboundNo1?: string | null;
+  cInboundNo2?: string | null;
+  cInboundNo3?: string | null;
+  cInboundNo4?: string | null;
+  cInboundNo5?: string | null;
+  cInboundNo6?: string | null;
+  nKSgCode?: string | null;
+  cSpecialMarkGy?: string | null;
+  nBoarCleanLen?: number | null;
+  cTol?: string | null;
+  nThickMin?: number | null;
+  nThickMax?: number | null;
+  nDbc?: number | null;
+  cIsFinishPath?: string | null;
+  cRouteCode?: string | null;
+  cPono?: string | null;
+  cCcfs?: string | null;
+  cMsc?: string | null;
+  cMscLine?: string | null;
+  cStNo?: string | null;
+  cRemark?: string | null;
+  cArer?: string | null;
 }
 export interface Tyd2000InOutRecord {
   selected?: boolean;

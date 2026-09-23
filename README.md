@@ -144,13 +144,13 @@ npm run audit:ui     # node scripts/audit-ui.mjs，零依赖
 
 | 要查什么 | 去哪 |
 |---|---|
-| 迁移契约、执行流程（9 步 + 批量提效）、实测踩坑 | `SKILL.md` |
-| 窗体来源定位、源项目→目标目录、产出命名、路由接线、四档字阶与红线、控件→组件映射、工具栏/查询条件区/主子表布局、AG Grid 与 colDefs 规则 | `references/ui-rules.md` |
-| C# `Svc<I*AppService>.Proxy.Method()` → 前端 `<svc>Api.<method>()` → URL、swagger 复用、`GetTrackingList<T>()` → `TrackableList<T>` + `crudAppService.SaveList`、事件逻辑搬迁 | `references/backend-api.md` |
+| 迁移契约、执行流程（8 步 + 批量提效）、踩坑 | `SKILL.md` |
+| 窗体来源定位、源项目→目标目录、产出命名、路由接线、四档字阶与红线、控件→组件映射、**布局结构（包含/上下左右/Splitter，不抄 Location）**、工具栏/查询条件区/主子表布局、AG Grid 与 colDefs 规则 | `references/ui-rules.md` |
+| C# `Svc<I*AppService>.Proxy.Method()` → 前端 `<svc>Api.<method>()` → URL、swagger 复用、各类保存按台账映射、`TrackableList` 使用边界、Mock 占位、事件逻辑搬迁 | `references/backend-api.md` |
 | Designer/事件代码提取器能还原什么、丢什么、怎么自检 | `references/extractor.md` |
-| 可执行脚本 | `scripts/extract-screen.mjs`（骨架 + 后端调用台账）、`scripts/verify-page.mjs`（无头浏览器实测） |
+| 可执行脚本 | `scripts/extract-screen.mjs`（骨架 + 后端调用台账）。`scripts/verify-page.mjs` **迁移默认不用**——静态校验后由用户自行打开浏览器验收，AI 不跑无头截图 |
 
-一句话契约：**一个窗体一次迁完**——画面 + 事件逻辑 + 后端接口 + 增删改保存，不做「先只迁画面、逻辑留空」的两阶段迁移。
+一句话契约：**一个窗体一次迁完**——画面 + 事件逻辑 + 后端接口 + 增删改保存，不做「先只迁画面、逻辑留空」的两阶段迁移。**布局最重元素齐全 + 结构关系**（包含/上下左右/Splitter），不抄 `Location` 像素坐标。**AI 侧止于静态校验**（`vue-tsc` + `audit:ui`）；不跑浏览器实测/截图，画面由你自行打开检查。
 
 待迁规模（按菜单资源去重统计）：SHR 110 窗体 · SMP 41 · SMS 37 · SQM 29 · SYD 19 · LIMS 18 · Widgets 14 · DDH.Winforms 2 · Hmx.WinForms 2，合计约 280 个窗体 / 400+ 菜单。C# 源码副本在 `temp/ddh_rmes`（已 gitignore）。
 

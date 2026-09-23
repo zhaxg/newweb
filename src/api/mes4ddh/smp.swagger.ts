@@ -504,12 +504,69 @@ export interface InputFh2000Dto {
   cSgCode?: string | null;
   nThick?: number;
   nWidth?: number;
+  cStove?: string | null;
   cOutStockCode?: string | null;
   nNum?: number;
   cPlanId?: string | null;
   flag?: string | null;
   cardId?: string | null;
   cQualityNo?: string | null;
+  cInboundNo?: string | null;
+  cStackNo?: string | null;
+  cPieceNo?: string | null;
+  cCutFlag?: string | null;
+  cWgtToler?: string | null;
+  creator?: string | null;
+  tclass?: string | null;
+  cInterfaceid?: string | null;
+}
+/** 装车出厂/质保书材料明细（原 QueryMatOutDto） */
+export interface QueryMatOutDto {
+  selected?: boolean;
+  cMatchId?: string | null;
+  cOrderCustCname?: string | null;
+  cVehicleNo?: string | null;
+  nStatus?: number;
+  cMatNo?: string | null;
+  nMatCount?: number;
+  cSgCode?: string | null;
+  nMatActWgt?: number;
+  nMatThick?: number;
+  nMatWidth?: number | null;
+  nMatLen?: number | null;
+  cTrimFlag?: string | null;
+  cWgtToler?: string | null;
+  cDelivyStatusCode?: string | null;
+  cInboundNo?: string | null;
+  cShiftNo?: string | null;
+  cGroupNo?: string | null;
+  creator?: string | null;
+  createTime?: string | null;
+  cShipName?: string | null;
+  cPort?: string | null;
+  nSelectMode?: number;
+  cBillOfLadingNo?: string | null;
+  cTaskId?: string | null;
+  cMatCode?: string | null;
+  cMatName?: string | null;
+  cRemark?: string | null;
+  cComplexDecideCode?: number;
+  cDetectResultCode?: number;
+  cStove?: string | null;
+  cSgStd?: string | null;
+  cGcStd?: string | null;
+  cTsStd?: string | null;
+  cZStd?: string | null;
+  cArer?: string | null;
+  cStockRoomNo?: string | null;
+  cReserveField1?: string | null;
+}
+/** 质保书打印记录（原 ZbsPrintDto） */
+export interface ZbsPrintDto {
+  cPieceNo?: string | null;
+  cZbsCode?: string | null;
+  creator?: string | null;
+  createTime?: string | null;
 }
 export interface InputPlanDto {
   dTimeStart?: string;
@@ -2120,6 +2177,11 @@ export interface ZgPlanDto {
   cSlabRemark?: string | null;
   cTlOrderFlag?: string | null;
   cStNo?: string | null;
+  cPlanTime?: string | null;
+  cCool?: string | null;
+  nBoarCleanLen?: number | null;
+  nLlCleanLen?: number | null;
+  nPlanBoarLen?: number | null;
 }
 
 /* ---------- 请求 ---------- */
@@ -2361,6 +2423,26 @@ export const fh2000Api = {
       "/dDH.Service.SMP.Services/fh2000/sendJLSync",
       {
         method: "post",
+      },
+    );
+  },
+  /** 装车明细/质保书材料（原 GetZcDetailLst，FH3030/FH3031） */
+  getZcDetailLst(data?: InputFh2000Dto) {
+    return requestClient.request<QueryMatOutDto[]>(
+      "/dDH.Service.SMP.Services/fh2000/getZcDetailLst",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+  /** 质保书打印记录（原 GetZbsDetailLst） */
+  getZbsDetailLst(cPieceNo?: string) {
+    return requestClient.request<ZbsPrintDto[]>(
+      "/dDH.Service.SMP.Services/fh2000/getZbsDetailLst",
+      {
+        method: "post",
+        params: { cPieceNo },
       },
     );
   },

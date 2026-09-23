@@ -4,6 +4,9 @@
  */
 
 import { requestClient } from "@/api/_core/request";
+import type { NProTypeEnum, SurFaceResultEnum } from "./sqm.swagger";
+import type { Tyd2000Dto } from "./syd.swagger";
+import type { FrmQL8100QueryInputDto } from "./shr.swagger";
 
 /* ---------- 枚举 ---------- */
 
@@ -272,6 +275,11 @@ export interface SampleRequires {
   cNeedSend?: YesNo;
   cTestAdditionDesc?: string | null;
 }
+export interface UpdateSamplePositionInput {
+  id?: string | null;
+  actualSamplePos?: string | null;
+  actualSamplePosDesc?: string | null;
+}
 export interface StoveChemInfo {
   stoveNo?: string | null;
   std?: QueryCFStdInput;
@@ -470,6 +478,8 @@ export interface TestJob {
   cSpecialMarkHt?: string | null;
   cWarrantyDesc?: string | null;
   cSpecialPackDesc?: string | null;
+  /** 采集样品标记（C# TestJob.CZYFlag，swagger 旧版漏收） */
+  czyFlag?: YesNo;
 }
 export interface TestSample {
   selected?: boolean;
@@ -715,6 +725,10 @@ export interface TqlImpactCollect {
   cEnergy3?: string | null;
   cAveEnergy?: string | null;
   cSendDevice?: string | null;
+  /** 缺口类型（C# TqlImpactCollect.CNotchType 族，swagger 旧版漏收） */
+  cNotchType?: string | null;
+  cTemperature?: string | null;
+  cDirection?: string | null;
 }
 export interface TqlLxCollect {
   selected?: boolean;
@@ -882,6 +896,37 @@ export const qL3200Api = {
       {
         method: "post",
         data,
+      },
+    );
+  },
+};
+
+/** 检验委托查询（IQL9010AppService） */
+export const qL9010Api = {
+  queryTestJob(data?: QueryTestJobInput) {
+    return requestClient.request<TestJob[]>(
+      "/dDH.Service.LIMS.Services/qL9010/queryTestJob",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+  querySamples(tql3100Id?: string) {
+    return requestClient.request<TestSample[]>(
+      "/dDH.Service.LIMS.Services/qL9010/querySamples",
+      {
+        method: "post",
+        params: { tql3100Id },
+      },
+    );
+  },
+  querySampleRequires(tql3100Id?: string) {
+    return requestClient.request<SampleRequires[]>(
+      "/dDH.Service.LIMS.Services/qL9010/querySampleRequires",
+      {
+        method: "post",
+        params: { tql3100Id },
       },
     );
   },
@@ -1148,6 +1193,15 @@ export const testJobApi = {
       },
     );
   },
+  updateTestJobItems(data?: string[]) {
+    return requestClient.request<any>(
+      "/dDH.Service.LIMS.Services/testJob/updateTestJobItems",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
   remark(remark?: string, data?: string[]) {
     return requestClient.request<any>(
       "/dDH.Service.LIMS.Services/testJob/remark",
@@ -1244,6 +1298,47 @@ export const testJobApi = {
   receive(data?: string[]) {
     return requestClient.request<any>(
       "/dDH.Service.LIMS.Services/testJob/receive",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+  /** 采集试验结果（原 CollectTestData） */
+  collectTestData(tql3100Id?: string) {
+    return requestClient.request<any>(
+      "/dDH.Service.LIMS.Services/testJob/collectTestData",
+      {
+        method: "post",
+        params: { tql3100Id },
+      },
+    );
+  },
+  /** 取消登记（原 BatchCancelReceive） */
+  batchCancelReceive(data?: string[]) {
+    return requestClient.request<any>(
+      "/dDH.Service.LIMS.Services/testJob/batchCancelReceive",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+  /** 拒收（原 BatchReject(ids, reason)：标量走 params、id 列表走 data） */
+  batchReject(data?: string[], reason?: string) {
+    return requestClient.request<any>(
+      "/dDH.Service.LIMS.Services/testJob/batchReject",
+      {
+        method: "post",
+        params: { reason },
+        data,
+      },
+    );
+  },
+  /** 修改实际取样位置（原 UpdateSamplePosition） */
+  updateSamplePosition(data?: UpdateSamplePositionInput[]) {
+    return requestClient.request<any>(
+      "/dDH.Service.LIMS.Services/testJob/updateSamplePosition",
       {
         method: "post",
         data,
@@ -1424,6 +1519,13 @@ export const testJobApi = {
       },
     );
   },
+  /** 查看代表样取样记录 */
+  getShowedQy(pieceNo?: string) {
+    return requestClient.request<QyRecordItemDto[]>(
+      "/dDH.Service.LIMS.Services/testJob/getShowedQy",
+      { method: "post", params: { pieceNo } },
+    );
+  },
 };
 
 export const tql2001Api = {
@@ -1501,6 +1603,16 @@ export const tqlCFCollectApi = {
       },
     );
   },
+  /** 铁水成分查询（原 QueryTqlCfCollectsTs） */
+  queryTqlCfCollectsTs(data?: QueryTqlCFCollectDto) {
+    return requestClient.request<TqlCfCollect[]>(
+      "/dDH.Service.LIMS.Services/tqlCFCollect/queryTqlCfCollectsTs",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
 };
 
 export const tqlLXCollectApi = {
@@ -1531,7 +1643,7 @@ export const tqlLXCollectApi = {
     );
   },
   queryTqlLxCollects(data?: QueryTqlLXCollectDto) {
-    return requestClient.request<TqlLxCollect[]>(
+    return requestClient.request<FrmTqlLxCollectDto[]>(
       "/dDH.Service.LIMS.Services/tqlLXCollect/queryTqlLxCollects",
       {
         method: "post",
@@ -1567,7 +1679,7 @@ export const tqlLXCollectApi = {
     );
   },
   queryTqlImpactCollects(data?: QueryTqlLXCollectDto) {
-    return requestClient.request<TqlImpactCollect[]>(
+    return requestClient.request<FrmTqlLxImpactCollectDto[]>(
       "/dDH.Service.LIMS.Services/tqlLXCollect/queryTqlImpactCollects",
       {
         method: "post",
@@ -1592,4 +1704,370 @@ export const tqlLXCollectApi = {
       },
     );
   },
+  getTensileCollectDataByBatch(batchNo?: string) {
+    return requestClient.request<TqlLxCollect[]>(
+      "/dDH.Service.LIMS.Services/tqlLXCollect/getTensileCollectDataByBatch",
+      {
+        method: "post",
+        params: { batchNo },
+      },
+    );
+  },
+  getImpactCollectDataByBatch(batchNo?: string) {
+    return requestClient.request<TqlImpactCollect[]>(
+      "/dDH.Service.LIMS.Services/tqlLXCollect/getImpactCollectDataByBatch",
+      {
+        method: "post",
+        params: { batchNo },
+      },
+    );
+  },
+  getTensileCollectDataBySampleNos(data?: string[]) {
+    return requestClient.request<TqlLxCollect[]>(
+      "/dDH.Service.LIMS.Services/tqlLXCollect/getTensileCollectDataBySampleNos",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+  getImpactCollectDataBySampleNos(data?: string[]) {
+    return requestClient.request<TqlImpactCollect[]>(
+      "/dDH.Service.LIMS.Services/tqlLXCollect/getImpactCollectDataBySampleNos",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
 };
+
+/** 代表样取样记录行（DDH.Service.LIMS.Services.QyRecordItemDto） */
+export interface QyRecordItemDto {
+  cLineCode?: string | null;
+  cSampBatchNo?: string | null;
+  cBatchNo?: string | null;
+  cStove?: string | null;
+  cPieceNo?: string | null;
+  nOrder?: number | null;
+  cPlateNo?: string | null;
+  isQy?: string | null;
+}
+
+/** 表面判定库存查询条件（DDH.Service.LIMS.Services.Tql1050InputDto） */
+export interface Tql1050InputDto {
+  /** 产线 */
+  lineCode?: string | null;
+  /** 炉号 */
+  stove?: string | null;
+  /** 件次号 */
+  pieceNo?: string | null;
+  /** 批次号 */
+  batchNo?: string | null;
+  /** 库存类型 */
+  nProType?: NProTypeEnum;
+  /** 产出时间 */
+  timeRange?: TimeRange;
+}
+
+/** 表面判定记录查询条件（DDH.Service.LIMS.Services.Tql1050QueryDto，TimeRange 语义=判定时间） */
+export interface Tql1050QueryDto {
+  /** 产线 */
+  lineCode?: string | null;
+  /** 炉号 */
+  stove?: string | null;
+  /** 件次号 */
+  pieceNo?: string | null;
+  /** 库存类型 */
+  nProType?: NProTypeEnum;
+  /** 判定时间 */
+  timeRange?: TimeRange;
+}
+
+/** 表面判定记录（DDH.Service.LIMS.Entities.Tql1050） */
+export interface Tql1050 {
+  selected?: boolean;
+  id?: string | null;
+  creator?: string | null;
+  createTime?: string | null;
+  lastModifier?: string | null;
+  lastModifyTime?: string | null;
+  /** 产线 */
+  cLineCode?: string | null;
+  /** 炉号 */
+  cStove?: string | null;
+  /** 件次号 */
+  cPieceNo?: string | null;
+  /** 板坯号 */
+  cSlabPieceNo?: string | null;
+  /** 库存类型 */
+  nProType?: NProTypeEnum;
+  /** 钢种 */
+  cSgCode?: string | null;
+  /** 炼钢钢种 */
+  cTlSgCode?: string | null;
+  /** 执行标准 */
+  cSgStd?: string | null;
+  /** 厚度 */
+  nThick?: number | null;
+  /** 宽度 */
+  nWth?: number | null;
+  /** 长度 */
+  nLen?: number | null;
+  /** 长度下限 */
+  nLenMin?: number | null;
+  /** 长度上限 */
+  nLenMax?: number | null;
+  /** 规格 */
+  cSpec?: string | null;
+  /** 支数 */
+  nNum?: number | null;
+  /** 理重 */
+  nCalWgt?: number | null;
+  /** 实重 */
+  nWgt?: number | null;
+  /** 表检结果 */
+  cSurfaceResult?: SurFaceResultEnum;
+  /** 表面缺陷代码 */
+  cSurfaceDefectCode?: string | null;
+  /** 表面缺陷位置 */
+  cSurfaceDefectPosition?: string | null;
+  /** 表检描述 */
+  cSurfaceDesc?: string | null;
+  /** 表面判定人 */
+  cSurfaceUser?: string | null;
+  /** 表面判定时间 */
+  dSurfaceTime?: string | null;
+  /** 处置措施 */
+  cFaceHandleAdvice?: string | null;
+  /** 表判班次 */
+  cShiftNo?: string | null;
+  /** 表判班组 */
+  cGroupNo?: string | null;
+  /** 尺寸厚1 */
+  nSurfaceThick1?: number | null;
+  /** 尺寸厚2 */
+  nSurfaceThick2?: number | null;
+  /** 尺寸厚3 */
+  nSurfaceThick3?: number | null;
+  /** 尺寸长 */
+  nSurfaceLen?: number | null;
+  /** 尺寸宽 */
+  nSurfaceWidth?: number | null;
+  /** 作废标记 */
+  cIsDisable?: string | null;
+  /** 订单号 */
+  cOrderNo?: string | null;
+  /** 判定分类 */
+  cSurfaceCategory?: string | null;
+}
+
+/** 表面判定服务（ITql1050AppService，原 SF<ITql1050AppService>.Proxy） */
+export const tql1050Api = {
+  /** 查询库存数据 */
+  queryStorage(data?: Tql1050InputDto) {
+    return requestClient.request<Tyd2000Dto[]>(
+      "/dDH.Service.LIMS.Services/tql1050/queryStorage",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+  /** 查询表面判定记录 */
+  queryRecord(data?: Tql1050QueryDto) {
+    return requestClient.request<Tql1050[]>(
+      "/dDH.Service.LIMS.Services/tql1050/queryRecord",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+  /** 作废标记 */
+  setDisable(data?: string[]) {
+    return requestClient.request<any>(
+      "/dDH.Service.LIMS.Services/tql1050/setDisable",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+};
+
+/** FrmTqlLxCollectDto（DDH.Service.LIMS.Dtos，ITqlLXCollectAppService 两个查询的返回行） */
+export interface FrmTqlLxCollectDto {
+  selected?: boolean | null;
+  /** 主键 */ id?: string | null;
+  /** 创建人 */ creator?: string | null;
+  /** 创建时间 */ createTime?: string | null;
+  /** 最后修改人 */ lastModifier?: string | null;
+  /** 最后修改时间 */ lastModifyTime?: string | null;
+  /** 顺序号 */ nOrder?: number | null;
+  /** 试验编号 */ cTestNo?: string | null;
+  /** 试验项目号 */ cTestItem?: string | null;
+  /** 试验项目表名 */ cItemTable?: string | null;
+  /** 试样编号 */ cSampleNo?: string | null;
+  /** 操作员姓名 */ cOperatorName?: string | null;
+  /** 当前第几根 */ nCurOrder?: number | null;
+  /** 当前试验编号下试样个数 */ nTestCount?: number | null;
+  /** 最大力 */ nMaxLoad?: number | null;
+  /** 抗拉压折弯强度 */ nMaxDistort?: number | null;
+  /** 抗拉强度 */ nMaxStrength?: number | null;
+  /** 上屈服力 */ nYieLdUpLoad?: number | null;
+  /** 上屈服强度 */ nYieLdUpStrength?: number | null;
+  /** 屈服力 */ nYieLdLoad?: number | null;
+  /** 下屈服强度 */ nYieLdStrength?: number | null;
+  /** 规定非比例延伸力 */ nFpLoad?: number | null;
+  /** 规定非比例延伸强度 */ nFpStrength?: number | null;
+  /** 规定总延伸力 */ nFtLoad?: number | null;
+  /** 规定总延伸强度 */ nFtStrength?: number | null;
+  /** 断后标距 */ nFinalLength?: number | null;
+  /** 断后伸长率 */ nFinalRate?: number | null;
+  /** 断面收缩率 */ nFinalShrink?: number | null;
+  /** 断后直径 */ nFinalDia?: number | null;
+  /** 断后宽度 */ nFinalWidth?: number | null;
+  /** 断后厚度 */ nFinalThick?: number | null;
+  /** 断后边量 */ nFinalBorder?: number | null;
+  /** 弹性模量 */ nElasticity?: number | null;
+  /** 持续时间 */ nDuration?: number | null;
+  /** 加荷速度峰值 */ nMaxSpeed?: number | null;
+  /** 试验温度 */ nTemperature?: number | null;
+  /** 试验湿度 */ nHumidity?: number | null;
+  /** 试验时间 */ cTestTime?: string | null;
+  /** 断裂位置 */ nFinalPosition?: number | null;
+  /** 断裂形态 */ cFinalState?: string | null;
+  /** 弯曲结果 */ cBendResult?: string | null;
+  /** 母材长度 */ nMotherLength?: number | null;
+  /** 母材重量 */ nMotherWeight?: number | null;
+  /** 原始标距 */ nOrgGaugeLength?: number | null;
+  /** 引伸计标距 */ nExtGaugeLength?: number | null;
+  /** 试样直径 */ nDia?: number | null;
+  /** 跨距 */ nSpan?: number | null;
+  /** 试样长度 */ nLength?: number | null;
+  /** 试样宽度 */ nWidth?: number | null;
+  /** 试样厚度 */ nThickness?: number | null;
+  /** 试样边长 */ nBorder?: number | null;
+  /** 试样外径 */ nOutDia?: number | null;
+  /** 试样壁厚 */ nInnerDia?: number | null;
+  /** 试样面积 */ nArea?: number | null;
+  /** 设备编号 */ cEquipCode?: string | null;
+  /** 试验机量程 */ nMeasureRange?: number | null;
+  /** 标识 */ cIdentifier?: string | null;
+  /** 类型 */ cCategory?: string | null;
+  /** 是否完成本组所有试样标记 */ nIsFinished?: number | null;
+  /** 测试编号 */ cTestId?: string | null;
+  /** 保存文件名 */ cSaveFileName?: string | null;
+  /** 控制模式 */ cCtrlMode?: string | null;
+  /** 测试前距离 */ nDistanceBeforeTest?: number | null;
+  /** 测试后距离 */ nDistanceAfterTest?: number | null;
+  /** 最大量规长度 */ nMaxGaugeLength?: number | null;
+  /** 最大最终长度 */ nMaxFinalLength?: number | null;
+  /** 重量长度1 */ nWeightLenght1?: number | null;
+  /** 重量长度2 */ nWeightLenght2?: number | null;
+  /** 重量长度3 */ nWeightLenght3?: number | null;
+  /** 重量长度4 */ nWeightLenght4?: number | null;
+  /** 重量长度5 */ nWeightLenght5?: number | null;
+  /** 总重量 */ nTotalWeight?: number | null;
+  /** 直径1 */ nDiameter1?: number | null;
+  /** 直径2 */ nDiameter2?: number | null;
+  /** 直径3 */ nDiameter3?: number | null;
+  /** 直径4 */ nDiameter4?: number | null;
+  /** 直径5 */ nDiameter5?: number | null;
+  /** 样本信息1 */ cSampleInfo1?: string | null;
+  /** 样本信息2 */ cSampleInfo2?: string | null;
+  /** 样本信息3 */ cSampleInfo3?: string | null;
+  /** 样本信息4 */ cSampleInfo4?: string | null;
+  /** 样本信息5 */ cSampleInfo5?: string | null;
+  /** 样本信息6 */ cSampleInfo6?: string | null;
+  /** 样本信息7 */ cSampleInfo7?: string | null;
+  /** 样本信息8 */ cSampleInfo8?: string | null;
+  /** 样本信息9 */ cSampleInfo9?: string | null;
+  /** 样本信息10 */ cSampleInfo10?: string | null;
+  /** 曲线图 */ cCurvePicture?: string | null;
+  /** 消息内容 */ cRemark?: string | null;
+  /** 状态 */ nStatus?: number | null;
+  /** 发送设备 */ cSendDevice?: string | null;
+  /** 炉号 */ stoveNo?: string | null;
+  /** 板坯号 */ slabPieceNo?: string | null;
+  /** 代表样号 */ testNo?: string | null;
+  /** 批次号 */ batchNo?: string | null;
+}
+
+/** FrmTqlLxImpactCollectDto（DDH.Service.LIMS.Dtos，ITqlLXCollectAppService 两个查询的返回行） */
+export interface FrmTqlLxImpactCollectDto {
+  selected?: boolean | null;
+  /** 主键 */ id?: string | null;
+  /** 创建人 */ creator?: string | null;
+  /** 创建时间 */ createTime?: string | null;
+  /** 最后修改人 */ lastModifier?: string | null;
+  /** 最后修改时间 */ lastModifyTime?: string | null;
+  /** 顺序号 */ nOrder?: number | null;
+  /** 试样编号 */ cSampleNo?: string | null;
+  /** 试样长度 */ cLength?: string | null;
+  /** 试样宽度 */ cWidth?: string | null;
+  /** 试样厚度 */ cThickness?: string | null;
+  /** 消息内容 */ cRemark?: string | null;
+  /** 状态 */ nStatus?: number | null;
+  /** 缺口深度mm */ cNotchDepth?: string | null;
+  /** 吸收功1[J] */ cEnergy1?: string | null;
+  /** 吸收功2[J] */ cEnergy2?: string | null;
+  /** 吸收功3[J] */ cEnergy3?: string | null;
+  /** 平均吸收功[J] */ cAveEnergy?: string | null;
+  /** 发送设备 */ cSendDevice?: string | null;
+  /** 缺口类型 */ cNotchType?: string | null;
+  /** 试验温度 */ cTemperature?: string | null;
+  /** 试验方向 */ cDirection?: string | null;
+  /** 炉号 */ stoveNo?: string | null;
+  /** 板坯号 */ slabPieceNo?: string | null;
+  /** 代表样号 */ testNo?: string | null;
+  /** 批次号 */ batchNo?: string | null;
+}
+
+/** 检验结果查询行（DDH.Service.LIMS.Dtos.FrmQL8100Dto，动态试验项目列由 results 驱动） */
+export interface FrmQL8100Dto {
+  /** 委托单号 */ cTestNo?: string | null;
+  /** 交货状态代码 */ cDelivyStatusCode?: string | null;
+  /** 交货状态描述 */ cDeliveryStateDesc?: string | null;
+  /** 炉号 */ cStove?: string | null;
+  /** 批号 */ cBatch?: string | null;
+  /** 钢种 */ cSgSign?: string | null;
+  /** 执行标准 */ cSgStd?: string | null;
+  /** 规格 */ cSpec?: string | null;
+  /** 厚 */ thick?: number | null;
+  /** 宽 */ width?: number | null;
+  /** 长 */ len?: number | null;
+  /** 最终判定结果 */ cJudgeResult?: TestJobJudgeResult;
+  /** 检验时间 */ jyTime?: string | null;
+  /** 试样号 */ cSampleNo?: string | null;
+  /** 试验次数 */ nTestTimes?: number;
+  /** 复验标记 */ cRecheckFlag?: YesNo;
+  results?: FrmQL8100TestItemResult[] | null;
+}
+
+/** 检验结果明细（FrmQL8100Dto.TestItemResult，动态列的取值来源） */
+export interface FrmQL8100TestItemResult {
+  /** 项目代码 */ subItemCode?: string | null;
+  /** 项目名称 */ subItemName?: string | null;
+  /** 试验结果 */ cTestResult?: string | null;
+  judgeResult?: SampleJudgeResult;
+  type?: string | null;
+  typeCode?: string | null;
+  testItemName?: string | null;
+  testItem?: string | null;
+}
+
+/** 检验结果查询（IFrmQL8100Service，原 Svc<IFrmQL8100Service>.Proxy.Query） */
+export const frmQL8100Api = {
+  query(data?: FrmQL8100QueryInputDto) {
+    return requestClient.request<FrmQL8100Dto[]>(
+      "/dDH.Service.LIMS.Services/frmQL8100/query",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+};
+

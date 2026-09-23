@@ -17,8 +17,8 @@ const props = withDefaults(
     mode?: "decimal" | "currency" | "percent";
     minFractionDigits?: number;
     maxFractionDigits?: number;
-    min?: number;
-    max?: number;
+    inputMin?: number;
+    inputMax?: number;
     step?: number;
     incrementButtonClass?: string;
     decrementButtonClass?: string;
@@ -45,8 +45,8 @@ const props = withDefaults(
 );
 
 const op = ref();
-const draftMin = ref<number | null>(null);
-const draftMax = ref<number | null>(null);
+const draftMin = ref<number | null | undefined>(null);
+const draftMax = ref<number | null | undefined>(null);
 
 const displayText = computed(() => {
   if (min.value == null && max.value == null) return "";
@@ -61,8 +61,8 @@ const inputNumberProps = computed(() => ({
   showButtons: props.showButtons,
   minFractionDigits: props.minFractionDigits,
   maxFractionDigits: props.maxFractionDigits,
-  min: props.min,
-  max: props.max,
+  min: props.inputMin,
+  max: props.inputMax,
   step: props.step,
   locale: props.locale,
   currency: props.currency,

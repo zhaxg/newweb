@@ -1,6 +1,6 @@
-# 页面设计纪律（字号 / 密度 / 布局 / 控件映射）
+# 页面设计纪律（字号 / 密度 / 布局结构 / 控件映射）
 
-迁移产出的每一页都必须过这一关；`npm run audit:ui` 机检 R1–R4，人工核布局。本文件与 `scripts/audit-ui.mjs` 一致，冲突时以审计脚本为准。
+迁移产出的每一页都必须过这一关；`npm run audit:ui` 机检 R1–R4，**人工核的是布局结构**（见 §3.5）。本文件与 `scripts/audit-ui.mjs` 一致，冲突时以审计脚本为准。
 
 ## 0. 窗体来源与产出路径
 
@@ -10,7 +10,7 @@
 
 - `cResPath` = 源程序集名（如 `DDH.Winforms.SYD.dll`）→ 决定源项目与目标目录；
 - `cResSubPath` = 窗体全名（如 `DDH.Winforms.SYD.Forms.FrmYD2001`）→ 最后一段类名即窗体文件；
-- 源文件 = `<项目>/**/<类名>.cs` + `<类名>.Designer.cs`，**布局一律以 Designer.cs 为准**（控件树、Caption、列定义、初始尺寸）；
+- 源文件 = `<项目>/**/<类名>.cs` + `<类名>.Designer.cs`，**布局以 Designer 控件树为准**（`Controls.Add` 归属与顺序、`Dock`、`SplitContainer`/`SplitterPosition`、Caption、列定义）；**`Location`/`Size` 像素不抄**（见 §3.5）；
 - 种子行已被改写（`cResSubPath` 已是 vue 路径）、需要回溯原始窗体 → 查 `temp/HMX_RES.json`（`HM_X_RES` 表原始导出，字段大写下划线：`C_RES_SUB_PATH`/`C_CODE`/`C_TITLE`/`C_PID`）按 `C_TITLE` 或 `ID` 找到记录，读 `C_RES_SUB_PATH` 得全限定类名。
 
 ### 0.2 源项目 → 目标目录
@@ -34,7 +34,7 @@
 
 1. 种子行 `cResPath` 改语义段、`cResSubPath` 改 vue 组件路径（相对 `src/pages`，如 `/SYD/YD2001/index.vue`）；
 2. `src/mock/admin/store.ts` 的 `RESCS_KEY` 版本号 +1（强制 localStorage 重播种）——**一批页面集中改、只 +1 一次**；
-3. 静态校验 + 浏览器实测（见 SKILL.md §7、§8）。
+3. 静态校验（见 SKILL.md §7）。浏览器画面验收由用户自行打开检查，迁移流程不跑无头截图。
 
 ## 1. 四档字阶（唯一合法字号）
 
@@ -62,7 +62,18 @@
 
 ## 3. 用户缩放档位
 
-系统设置「字体大小」三档：标准 ×1 / 大字体 ×1.15 / 更大字体 ×1.3。机制：`settingsStore.fontScale` → `--hmx-scale` → `html { font-size: calc(var(--hmx-scale,1) * 100%) }`，全站 rem 等比缩放。**这就是布局不抄像素坐标的原因**：抄 px 会吃掉缩放。
+系统设置「字体大小」三档：标准 ×1 / 大字体 ×1.15 / 更大字体 ×1.3。机制：`settingsStore.fontScale` → `--hmx-scale` → `html { font-size: calc(var(--hmx-scale,1) * 100%) }`，全站 rem 等比缩放。
+
+### 3.5 布局结构优先（最重要）；不抄 Location/Size
+
+| 必须正确 | 明确不做 |
+|---|---|
+| **元素齐全**：Designer 里有的按钮/输入/表/页签/隐藏列都进 vue | 抄 `Location.X/Y`、`Size.Width/Height` 写 `absolute`/`left`/`top`/`width: 120px` 定位 |
+| **包含关系**：谁在哪个 Panel/Group/页签/SplitterPanel 里（对应 DOM 父子） | 为了「和原截图像素一样」去调坐标 |
+| **顺序与方位**：`Controls.Add` 顺序、`Dock` Top/Bottom/Left/Right → 上下左右、flex 主轴 | 用坐标差推断左右关系（应用 Dock/树/摘要） |
+| **分割**：`SplitContainer` 横竖、`SplitterPosition` → `Splitter layout` + 大致 `:size` 百分比 | 手写 mousemove 分割条；抠分割条像素位置 |
+
+自检口令：**元素丢没丢？父子对不对？上下左右反没反？Splitter 轴向与比例对不对？** 四问都过即可；`Location` 数值本身不进交付标准。这也是布局不抄像素的原因之一：抄 px 会吃掉用户三档缩放。
 
 ## 4. 审计
 
@@ -79,8 +90,9 @@ npm run audit:ui      # scripts/audit-ui.mjs，零依赖，扫 src/pages|layouts
 | XtraForm / UserControl 壳 | Vue 页面（页签、面包屑由壳层负责，页面只管内容区） |
 | GridView（列 Caption/宽度/样式） | AG Grid Enterprise colDefs（沿用 hmxAgGridPlugin 全站约定） |
 | BarManager / 工具栏按钮 | 页面顶部 Button 组（名称、顺序、位置照原样） |
-| XtraTabControl | PrimeVue `Tabs` + `TabList`/`Tab` + `TabPanels`/`TabPanel`（**PrimeVue 5 无 `TabView`**）；用法 `src/pages/Widgets/InterfaceCallLog/index.vue` |
-| TextEdit / SpinEdit / DateEdit / CheckEdit / LookUpEdit | InputText / InputNumber / DatePicker / Checkbox / Select |
+| XtraTabControl（独立内容页签） | PrimeVue `Tabs` + `TabList`/`Tab` + `TabPanels`/`TabPanel`（**PrimeVue 5 无 `TabView`**）；用法 `src/pages/Widgets/InterfaceCallLog/index.vue` |
+| XtraTabControl（录入模式切换，页签下各为一组左右双表） | PrimeVue `SelectButton`（`v-model` 切模式，**不用 Tabs**）；工具栏与双表布局见 §6「模式切换工具栏 + 左右双表」，样例 `src/pages/LIMS/QL4000/index.vue` |
+| TextEdit / SpinEdit / DateEdit / CheckEdit / LookUpEdit | InputText / **InputNumber（定宽必须 容器+`fluid`，见 §6）** / DatePicker / Checkbox / Select |
 | ImageComboBoxEdit（下拉候选写死在 Designer） | Select + 选项表（候选值来自提取摘要的 `下拉[文本=枚举值]`） |
 | Panel / GroupControl / SplitContainer | Tailwind flex/grid + Card + PrimeVue Splitter |
 | 窗体内嵌弹窗（GridFilter、选择器） | 对应 Dialog 组件 |
@@ -89,23 +101,70 @@ Designer 里没有的控件**一律不许发明**（历史上凭空加过"查找
 
 ## 6. 布局固定写法
 
-- **工具栏**：所有操作按钮集中成一行 `flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2`，按钮 `variant="outlined"` + `h-3 w-3` 图标 + `whitespace-nowrap`；
+- **工具栏高度（硬规则）**：**凡一行里放了操作按钮（原 stackPanel/BarManager），高度统一 `h-9`**——顶部查询条、子表按钮条、与表标题共用的表头条，一律 `h-9`，禁止 `h-8`/`h-10`/`py-*` 另起高度。固定 class：
+
+  ```
+  flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2
+  ```
+
+  按钮 `variant="outlined"` + `h-3 w-3` 图标 + `whitespace-nowrap`。
+- **按钮 + 表标题共用一行**（原 stackPanel2 与 ViewCaption 同屏时）：同一 `h-9` 行内 **按钮靠左、表格标题靠右**（`ml-auto`），不再拆成「按钮条 + 标题条」两行：
+
+  ```
+  <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
+    <Button …>审核报出</Button><Button …>驳回</Button><Button …>撤销报出</Button>
+    <span class="ml-auto text-xs font-medium text-muted-foreground">试验项目</span>
+  </div>
+  ```
+
+  纯标题、**不含任何按钮**的分区头（如「委托单信息」「试样信息」）才用 `h-8`。
 - **查询条件区**：
   - 1–2 个条件：与按钮同行 `flex items-center gap-1`，**不用 label**，靠 `placeholder` 提示字段含义；
   - ≥3 个条件：`grid grid-cols-6 items-center gap-x-3 gap-y-1.5`，最多 3 行；超过 3 行改用 Tabs 分组；每个条件配 `<label class="w-16 shrink-0 text-xs text-muted-foreground">`；日期范围占 `col-span-2`；
 - **日期区间**：`<DatePicker selectionMode="range" :manualInput="false" date-format="yy-mm-dd" show-time hour-format="24" show-icon />`（属性名是 `selectionMode`，不是 `selection-range`）；绑定 `Date[] | null`，拆分函数转成后端的 `dBegTime` / `dEndTime`；
 - **数字范围**：厚度/宽度/长度等区间用 `RangeInput`（`src/components/common/RangeInput.vue`），不手写两个 `InputNumber + ~`；透传 `show-buttons` / `min-fraction-digits` / `max-fraction-digits` / `mode` / `min` / `max` 等；
-- **主子表**：PrimeVue `Splitter` + `SplitterPanel`（`layout="horizontal"` 左右 / `"vertical"` 上下），**子表工具栏必须与主表列头同高**（均 `h-8`），子表数据从主表列头之下开始：
+- **工具栏里的定宽数字框（硬规则）**：`InputNumber` **不加 `fluid` 时内部 input 吃浏览器 intrinsic 宽（约 170px），不认外层 `w-*`**，会向右溢出、被同一行后续按钮叠画（HR5200/HR5300「支数」踩过）。固定写法——**外层定宽容器 + `fluid`**，工具栏里再关 spinner：
+
+  ```html
+  <div class="w-28 shrink-0">
+    <InputNumber v-model="n" :min="0" :show-buttons="false" fluid />
+  </div>
+  ```
+
+  - `fluid` → `.p-inputnumber-fluid { width:100% }` + input `width:1%`/`flex:1` 撑满容器（PrimeVue 官方填充），宽度以容器为准；
+  - **禁止**只写 `<InputNumber class="w-28 shrink-0" />`（class 打在 `.p-inputnumber` 根上，管不住 input 的 intrinsic 宽）；
+  - 工具栏场景 `:show-buttons="false"`（stacked spinner 绝对定位叠在框上，观感也是「按钮压 input」）；需要步进按钮时用 `button-layout="horizontal"` 并给容器留出按钮宽，仍必须 `fluid` + 定宽容器；
+  - 弹窗表单里占满列宽的数字框：同样 `fluid`（可不套容器，随父列宽走）。
+- **主子表**：PrimeVue `Splitter` + `SplitterPanel`（`layout="horizontal"` 左右 / `"vertical"` 上下），**轴向与原 `SplitContainer.Orientation` 一致**；子表若带按钮，表头条 = **`h-9` 按钮靠左 + 标题靠右**（见上「按钮 + 表标题共用一行」），子表数据从该表头之下开始；无按钮的纯标题条用 `h-8`：
 
   ```
   [顶部工具栏 h-9：查询条件 + 主表操作按钮]
-  ┌─主表标题 h-8──────┐ ┌─子表标题 h-8──[添加][删除][保存]─┐
-  │ 主表列头           │ │ 子表列头                        │
-  │ 主表数据           │ │ 子表数据                        │
-  └───────────────────┘ └─────────────────────────────────┘
+  ┌─主表标题 h-8（无按钮）──────────────┐
+  │ 主表列头                             │
+  └─────────────────────────────────────┘
+  ┌[添加][删除][保存] ………… 子表标题] h-9 ┐  ← 有按钮：按钮左、标题右，同一 h-9
+  │ 子表列头                             │
+  │ 子表数据                             │
+  └─────────────────────────────────────┘
   ```
 
   标题文字 `<span class="text-xs font-medium text-muted-foreground">`；分栏比例 = `SplitterPosition` ÷ 容器高度 → `:size` 百分比；**勿手写 mousemove 分割条**；
+- **模式切换工具栏 + 左右双表**（原 `XtraTabControl` 只切「批量/单行」等录入模式、页签下各为同一对左右分栏表时，**不要用 Tabs**，验收样例 `src/pages/LIMS/QL4000/index.vue`）：
+
+  ```
+  [顶部工具栏 h-9：查询条件 + 主表操作按钮 ……… 主表标题 右侧]
+  ┌ 上下 Splitter：主表（ViewCaption 可并入顶部工具栏右侧，主表可无独立标题条）
+  │
+  │  [h-9：SelectButton 模式A｜模式B ……………… 页面名 右侧]   ← 两表共用工具栏
+  │  ┌ 左右 Splitter ────────────┬──────────────────┐
+  │  │ h-9：[子表按钮…] 表标题右     │ h-9：[按钮] 表标题右   │
+  │  │ 左表列头+数据                │ 右表列头+数据          │
+  │  └──────────────────────────┴──────────────────┘
+  ```
+
+  - `SelectButton v-model` 绑模式字符串数组（如 `["批量录入","单行录入"]`），内容区 `v-if/v-else` 切两套左右 Splitter，**不引 Tabs 组件**；
+  - 该 `h-9` 行即下方两表的共用工具栏：SelectButton 靠左，右上角 `ml-auto` 页面/区域名（如「检验结果录入」）；
+  - 左右面板表头条仍守 §6 硬规则：有按钮 → `h-9` 按钮左 + 标题右；两面板对称同构。
 - **列宽**：`autoSizeOnFirstData`（`@/lib/agGrid`，内部延一帧 `autoSizeAllColumns()`）挂 `@first-data-rendered`；查询回填后再 `requestAnimationFrame(() => gridApi.value?.autoSizeAllColumns())`；多栏布局每个表格独立注册。`flex: 1` 的列会忽略 autoSize；窄固定列（转移列 `>>`）要给足 `minWidth`（列头右侧 ⋮ 菜单占宽，30/34 会把 `>>` 截成 `>`，给 52）。
 
 ## 7. AG Grid 约定

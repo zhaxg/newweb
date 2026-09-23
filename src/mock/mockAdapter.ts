@@ -11,6 +11,10 @@ import { jobRoutes } from "./admin/jobs";
 import { settingsRoutes } from "./admin/settings";
 import { codeGenRoutes } from "./admin/codegen";
 import { crudRoutes } from "./admin/crud";
+import { limsRoutes } from "./lims";
+import { shrRoutes } from "./shr";
+import { sqmRoutes } from "./sqm";
+import { smpRoutes } from "./smp";
 
 /**
  * 进程内 mock axios adapter：拦截 `${API_BASE}/**`，读写现有 localStorage 数据源，
@@ -31,6 +35,10 @@ const routes: RouteMap = {
   ...settingsRoutes,
   ...codeGenRoutes,
   ...crudRoutes,
+  ...limsRoutes,
+  ...shrRoutes,
+  ...sqmRoutes,
+  ...smpRoutes,
 };
 
 /** 登录前/登出接口：真实后端同样不校验 Authorization 头，豁免 mock 的 401 门 */

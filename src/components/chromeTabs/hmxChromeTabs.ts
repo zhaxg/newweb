@@ -504,17 +504,16 @@ export class HmxChromeTabsElement extends HTMLElement {
   }
 
   #showContextMenu(event: MouseEvent, tabId: string) {
-    /* 固定标签：菜单四项均为关闭操作，直接不弹 */
+    /* 固定标签：菜单均为关闭操作，直接不弹 */
     if (this.#tabs.find((t) => t.id === tabId)?.pinned) return;
     this.#contextMenu.hidden = true;
     this.#closeTabPopover();
     const text = messages[this.#locale];
     const fragment = document.createDocumentFragment();
+    /* 仅保留 关闭 / 关闭其他所有，无分割线 */
     for (const [label, eventName] of [
       [text.close, hmxChromeTabsEvents.close],
-      [text.closeRight, hmxChromeTabsEvents.closeRight],
       [text.closeOthers, hmxChromeTabsEvents.closeOthers],
-      [text.closeLeft, hmxChromeTabsEvents.closeLeft],
     ] as const) {
       const button = document.createElement("button");
       button.type = "button";
@@ -524,12 +523,6 @@ export class HmxChromeTabsElement extends HTMLElement {
         this.#emit(eventName, { tabId });
       });
       fragment.append(button);
-      /* 首项后插入常规流分割元素（与 ag-grid .ag-menu-separator 同机制，缩放屏下 1px 线不跑半像素） */
-      if (eventName === hmxChromeTabsEvents.close) {
-        const sep = document.createElement("div");
-        sep.className = "tab-menu-separator";
-        fragment.append(sep);
-      }
     }
     this.#contextMenu.replaceChildren(fragment);
     this.#contextMenu.style.left = `${Math.min(event.clientX, window.innerWidth - 176)}px`;

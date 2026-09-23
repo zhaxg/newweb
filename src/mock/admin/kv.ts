@@ -30,6 +30,13 @@ export const kvRoutes: RouteMap = {
       .sort((a, b) => parseInt(a.cOrder || "0", 10) - parseInt(b.cOrder || "0", 10));
     return ok(config, children.map((k) => ({ ...k, selected: false })));
   },
+  [`post ${P}/getSysKvListByGroup`]: (config) => {
+    const { group } = getParams(config);
+    const children = loadKvs()
+      .filter((k) => !!group && k.cPid === group)
+      .sort((a, b) => parseInt(a.cOrder || "0", 10) - parseInt(b.cOrder || "0", 10));
+    return ok(config, children.map((k) => ({ ...k, selected: false })));
+  },
   [`post ${P}/prepareNewKvEditInput`]: (config) => {
     const input: KvEditInput = { classA: "A", classB: "0", classC: "0", code: "", name: "", useClassfy: false, filedItems: [] };
     return ok(config, input);

@@ -1,133 +1,472 @@
 <script setup lang="ts">
-/** 对应 FrmTql1050（中厚板表面判定）：DDH.Winforms.SQM.Forms.Tqmtq.FrmTql1050
- *  画面迁移，逻辑不迁移到
- *  2026-09-22 已完成精修 */
+/** 对应 FrmTql1050（一炼钢表面判定）：DDH.Winforms.SQM.Forms.Tqmtq.FrmTql1050
+ *  已接入：tql1050Api.queryStorage / queryRecord / setDisable；产线下拉 tPa1000Api.queryLines（原 UCLine.RefreshData → ITpa1000AppService.QueryLines）
+ *  待接入：表面判定二级弹窗 FrmQZ6003（未勾选校验已迁；同名菜单 QZ6003 已迁为 /SQM/QZ6000 页面，弹窗/页签接入方式待确认）
+ *  菜单参数：cQueryString JSON {LineCode:"LG01",NProType:0} 经 useMenuQuery 下发（产线 ShowLines 单选项 + 库存分类；缺省回落 LG01/坯料）
+ *  库存表：列集按 UCStorage.InitSlabColumns（NProType=P 板坯库模式）置前可见，其余 Designer 列以 hide:true 收着（右键列面板可唤出）
+ *  偏差：原 SetCodeFormatterAsync 的 UserFormatter/KV 字典翻译（表面缺陷代码/位置、处置措施、班次/组别、库区、切边方式、品名、探伤与委托判定等）未迁，web 显示原值；
+ *        已内联翻译：产线(LineFormatter→产线名)、库存分类、表检结果、判定分类 */
 
-import { ref } from "vue";
+import { computed, reactive, ref } from "vue";
 import Button from "primevue/button";
+import Dialog from "primevue/dialog";
 import InputText from "primevue/inputtext";
 import DatePicker from "primevue/datepicker";
+import Select from "primevue/select";
 import Splitter from "primevue/splitter";
 import SplitterPanel from "primevue/splitterpanel";
 import { IconCheck, IconSearch, IconTrash } from "@tabler/icons-vue";
 import { AgGridVue } from "ag-grid-vue3";
-import type { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
+import type { ColDef, GridApi, GridReadyEvent, ValueFormatterParams } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { hmxDefaultColDef, makeHmxGridTheme, autoSizeOnFirstData } from "@/lib/agGrid";
+import { useMenuQuery } from "@/lib/menuQuery";
 import { useToast } from "@/composables/useToast";
+import { tql1050Api, type Tql1050, type TimeRange } from "@/api/mes4ddh/lims.swagger";
+import type { Tyd2000Dto } from "@/api/mes4ddh/syd.swagger";
+import { NProTypeEnum } from "@/api/mes4ddh/sqm.swagger";
+import { tPa1000Api, type Tpa1000 } from "@/api/mes4ddh/shr.swagger";
 
 const { toast } = useToast();
 const theme = makeHmxGridTheme();
-const rows = ref<any[]>([]);
-const recordRows = ref<any[]>([]);
-const querying = ref(false);
-const gridApi = ref<GridApi | null>(null);
-const recordGridApi = ref<GridApi | null>(null);
+const { json: menuJson } = useMenuQuery();
 
-const recordTime = ref<Date[] | null>(null);
-const stoveNo = ref("");
-const pieceNo = ref("");
+/* ---------- 菜单参数（原 FrmTql1050_Load：QueryJsonDeserialize → QueryInput.LineCode/NProType） ---------- */
+const qsLineCode =
+  typeof menuJson.LineCode === "string" ? menuJson.LineCode
+  : typeof menuJson.lineCode === "string" ? menuJson.lineCode
+  : "LG01";
+const qsNProType =
+  typeof menuJson.NProType === "number" ? menuJson.NProType
+  : typeof menuJson.nProType === "number" ? menuJson.nProType
+  : NProTypeEnum.P;
 
-// 表面判定记录列
-const recordColDefs: ColDef[] = [
-  { field: "CStove", headerName: "炉号", width: 90 },
-  { field: "CPieceNo", headerName: "头侧件次号", width: 110 },
-  { field: "CSlabPieceNo", headerName: "板坯号", width: 100 },
-  { field: "CLineCode", headerName: "产线", width: 70 },
-  { field: "CSgCode", headerName: "钢种", width: 90 },
-  { field: "CSpec", headerName: "规格", width: 120 },
-  { field: "NNum", headerName: "件数", width: 60 },
-  { field: "NCalWgt", headerName: "理重", width: 70 },
-  { field: "CSurfaceResult", headerName: "表检结果", width: 90 },
-  { field: "CSurfaceCategory", headerName: "判定分类", width: 90 },
-  { field: "CSurfaceDefectCode", headerName: "表面缺陷代码", width: 110 },
-  { field: "CSurfaceDesc", headerName: "表检描述", width: 150 },
-  { field: "CSurfaceUser", headerName: "表面判定人", width: 100 },
-  { field: "DSurfaceTime", headerName: "表面判定时间", width: 140 },
-  { field: "CFaceHandleAdvice", headerName: "处置措施", width: 110 },
-  { field: "NThick", headerName: "厚度", width: 70 },
-  { field: "NWth", headerName: "宽度", width: 70 },
-  { field: "NLen", headerName: "长度", width: 70 },
-  { field: "CIsDisable", headerName: "作废标记", width: 80 },
-  { field: "Creator", headerName: "创建人", width: 90 },
-  { field: "CreateTime", headerName: "创建时间", width: 140 },
-];
+/* ---------- 时间（原 Load：TimeRange(今天-3, 今天+1)，ucTimeRange1/2 各一份） ---------- */
+function defaultRange(): Date[] {
+  const a = new Date();
+  a.setHours(0, 0, 0, 0);
+  a.setDate(a.getDate() - 3);
+  const b = new Date();
+  b.setHours(0, 0, 0, 0);
+  b.setDate(b.getDate() + 1);
+  return [a, b];
+}
+function isoLocal(d: Date): string {
+  const p = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+}
+function toTimeRange(dates: Date[] | null): TimeRange | undefined {
+  if (!dates || dates.length < 2 || !dates[0] || !dates[1]) return undefined;
+  return { min: isoLocal(dates[0]), max: isoLocal(dates[dates.length - 1]) };
+}
 
-function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
-function onRecordGridReady(e: GridReadyEvent) { recordGridApi.value = e.api; }
-
-async function onQuery() {
-  querying.value = true;
+/* ---------- 产线（原 ucLine1：ShowLines=[qs.LineCode] 单选项；LineFormatter 全量译名） ---------- */
+const allLines = ref<Tpa1000[]>([]);
+const lineNameMap = computed(() => new Map(allLines.value.map((l) => [String(l.cCode ?? ""), String(l.cName ?? "")])));
+const lineOptions = computed(() =>
+  allLines.value
+    .filter((l) => !qsLineCode || l.cCode === qsLineCode)
+    .map((l) => ({ label: `${l.cCode}${l.cName ? "-" + l.cName : ""}`, value: String(l.cCode ?? "") })),
+);
+async function loadLines() {
   try {
-    rows.value = [];
-    recordRows.value = [];
-    requestAnimationFrame(() => {
-      gridApi.value?.autoSizeAllColumns();
-      recordGridApi.value?.autoSizeAllColumns();
-    });
-  } finally {
-    querying.value = false;
+    allLines.value = (await tPa1000Api.queryLines()) ?? [];
+  } catch {
+    /* 拦截层已 toast */
   }
 }
-function onSurfaceJudge() { toast("画面迁移：表面判定逻辑待接入", 2000, "warn"); }
-function onQueryRecord() { toast("画面迁移：查询判定记录逻辑待接入", 2000, "warn"); }
-function onDisable() { toast("画面迁移：作废逻辑待接入", 2000, "warn"); }
+loadLines();
+
+/* ---------- 库存查询条件（原 dataLayoutControl2 / bscInput→Tql1050InputDto） ---------- */
+const storageQuery = reactive({
+  lineCode: qsLineCode,
+  stove: "",
+  pieceNo: "",
+  dates: defaultRange() as Date[] | null,
+});
+
+/* ---------- 记录查询条件（原 stackPanel2：ucTimeRange2 + textEdit1/textEdit2 → Tql1050QueryDto） ---------- */
+const recordQuery = reactive({
+  dates: defaultRange() as Date[] | null,
+  stove: "",
+  pieceNo: "",
+});
+
+/* ---------- 两表状态 ---------- */
+const storageRows = ref<Tyd2000Dto[]>([]);
+const storageLoading = ref(false);
+const storageApi = ref<GridApi | null>(null);
+const recordRows = ref<Tql1050[]>([]);
+const recordLoading = ref(false);
+const recordApi = ref<GridApi | null>(null);
+function onStorageReady(e: GridReadyEvent) { storageApi.value = e.api; }
+function onRecordReady(e: GridReadyEvent) { recordApi.value = e.api; }
+function autosizeLater() {
+  requestAnimationFrame(() => {
+    storageApi.value?.autoSizeAllColumns();
+    recordApi.value?.autoSizeAllColumns();
+  });
+}
+
+/* ---------- 列头翻译（原 SetCodeFormatterAsync 中已内联的部分） ---------- */
+function mapFmt(map: Record<string, string>) {
+  return (p: ValueFormatterParams) => {
+    if (p.value === null || p.value === undefined || p.value === "") return "";
+    return map[String(p.value)] ?? String(p.value);
+  };
+}
+const lineFmt = (p: ValueFormatterParams) => {
+  if (p.value === null || p.value === undefined || p.value === "") return "";
+  const code = String(p.value);
+  return lineNameMap.value.get(code) || code;
+};
+const nProTypeFmt = mapFmt({
+  [NProTypeEnum.P]: "坯料",
+  [NProTypeEnum.R]: "半成品",
+  [NProTypeEnum.C]: "产成品",
+});
+const surfaceResultFmt = mapFmt({ 0: "待检", 10: "合格", 20: "不合格", 30: "让步放行", 40: "待处理" });
+const surfaceCategoryFmt = mapFmt({ 1: "待处理品", 10: "轧制非计划", 20: "降级品", 30: "次品" });
+
+/* ---------- 库存表列（原 ucStorage1 / UCStorage.Designer + InitSlabColumns 板坯库模式前置，其余 hide:true） ---------- */
+const storageColDefs: ColDef[] = [
+    { field: "cStackNo", headerName: "垛位号", width: 99, pinned: "left" },
+    { field: "nStackNum", headerName: "层号", width: 86, pinned: "left" },
+    { field: "cPieceNo", headerName: "件次号", width: 99, pinned: "left" },
+    { field: "cSgCode", headerName: "钢种", width: 86, pinned: "left" },
+    { field: "nThick", headerName: "厚度", width: 86, pinned: "left" },
+    { field: "nWth", headerName: "宽度", width: 86, pinned: "left" },
+    { field: "nLen", headerName: "长度", width: 86, pinned: "left" },
+    { field: "cPrintCode", headerName: "喷号", width: 86 },
+    { field: "nQmStatus", headerName: "质量状态", width: 112 },
+    { field: "nLockReason", headerName: "质量封锁原因", width: 138 },
+    { field: "cStove", headerName: "炉号", width: 86, pinned: "left" },
+    { field: "nWgt", headerName: "实重", width: 86 },
+    { field: "nStatus", headerName: "库存状态", width: 112 },
+    { field: "dProTime", headerName: "产出时间", width: 112 },
+    { field: "cOrderNo", headerName: "订单号", width: 99 },
+    { field: "pLAN_NThickPlan", headerName: "轧制厚", width: 99 },
+    { field: "pLAN_NWidthPlan", headerName: "轧制宽", width: 99 },
+    { field: "pLAN_NLlCleanLen", headerName: "轧制长", width: 99 },
+    { field: "nDbc", headerName: "倍尺", width: 86 },
+    { field: "cCutFlag", headerName: "切边方式", width: 112 },
+    { field: "cPlanTime", headerName: "计划日期", width: 112 },
+    { field: "cProRemark", headerName: "生产备注", width: 112 },
+    { field: "cSurfaceDesc", headerName: "表检描述", width: 112 },
+    { field: "nKSgCode", headerName: "国标钢种", width: 112 },
+    { field: "cSgStd", headerName: "执行标准", width: 112 },
+    { field: "cSpec", headerName: "规格", width: 86 },
+    { field: "cInUser", headerName: "入库人", width: 99 },
+    { field: "dInTime", headerName: "入库时间", width: 112 },
+    { field: "lastModifier", headerName: "最后修改人", width: 125 },
+    { field: "lastModifyTime", headerName: "最后修改时间", width: 138 },
+    { field: "cSurfaceResult", headerName: "表检结果", width: 112, valueFormatter: surfaceResultFmt },
+    { field: "cDetectResultCode", headerName: "探伤判定结果", width: 138 },
+    { field: "cComplexDecideCode", headerName: "综判结果", width: 112 },
+    { field: "cSurfaceDefectCode", headerName: "表面缺陷代码", width: 138 },
+    { field: "pLAN_COrderNo1", headerName: "订单号1", width: 112 },
+    { field: "pLAN_COrderNo2", headerName: "订单号2", width: 112 },
+    { field: "pLAN_COrderNo3", headerName: "订单号3", width: 112 },
+    { field: "pLAN_COrderNo4", headerName: "订单号4", width: 112 },
+    { field: "pLAN_NLenPlan1", headerName: "套切长度1", width: 125 },
+    { field: "pLAN_NLenPlan2", headerName: "套切长度2", width: 125 },
+    { field: "pLAN_NLenPlan3", headerName: "套切长度3", width: 125 },
+    { field: "pLAN_NLenPlan4", headerName: "套切长度4", width: 125 },
+    { field: "cInboundNo1", headerName: "入库标识1", width: 125 },
+    { field: "cInboundNo2", headerName: "入库标识2", width: 125 },
+    { field: "cInboundNo3", headerName: "入库标识3", width: 125 },
+    { field: "cInboundNo4", headerName: "入库标识4", width: 125 },
+    { field: "pLAN_CSpec", headerName: "剪切计划规格", width: 138 },
+    { field: "id", headerName: "主键", width: 86, hide: true },
+    { field: "nProType", headerName: "库存分类", width: 112, hide: true, valueFormatter: nProTypeFmt },
+    { field: "cLineCode", headerName: "产线", width: 86, hide: true, valueFormatter: lineFmt },
+    { field: "cProc", headerName: "工序代码", width: 112, hide: true },
+    { field: "cMachine", headerName: "机台号", width: 99, hide: true },
+    { field: "cStrandNo", headerName: "流号", width: 86, hide: true },
+    { field: "cPlanId", headerName: "计划号", width: 99, hide: true },
+    { field: "cConNo", headerName: "合同号", width: 99, hide: true },
+    { field: "cMatCode", headerName: "物料编码", width: 112, hide: true },
+    { field: "nNum", headerName: "支数", width: 86, hide: true },
+    { field: "nCalWgt", headerName: "理重", width: 86, hide: true },
+    { field: "cProUser", headerName: "产出人", width: 99, hide: true },
+    { field: "cShiftNo", headerName: "产出班次", width: 112, hide: true },
+    { field: "cGroupNo", headerName: "产出班组", width: 112, hide: true },
+    { field: "cStoreCode", headerName: "库区号", width: 99, hide: true },
+    { field: "cArer", headerName: "区域", width: 86, hide: true },
+    { field: "cSourceStoreCode", headerName: "原库区号", width: 112, hide: true },
+    { field: "cSourceStackNo", headerName: "原垛位号", width: 112, hide: true },
+    { field: "cSourceStackNum", headerName: "原层号", width: 99, hide: true },
+    { field: "cIsHot", headerName: "热送区分", width: 112, hide: true },
+    { field: "nCastDivCode", headerName: "模连铸标识", width: 125, hide: true },
+    { field: "cLockedLine", headerName: "占用产线", width: 112, hide: true },
+    { field: "cLockedPlan", headerName: "占用计划", width: 112, hide: true },
+    { field: "cMatType", headerName: "产品大类", width: 112, hide: true },
+    { field: "cProdCode", headerName: "品名", width: 86, hide: true },
+    { field: "cSteelType", headerName: "钢类", width: 86, hide: true },
+    { field: "cDelivyStatusCode", headerName: "交货状态", width: 112, hide: true },
+    { field: "cCustStdCode", headerName: "加工用途代码", width: 138, hide: true },
+    { field: "cBatchNo", headerName: "批号", width: 86, hide: true },
+    { field: "cOrderNoLast", headerName: "原始订单号", width: 125, hide: true },
+    { field: "cDestination", headerName: "去向", width: 86, hide: true },
+    { field: "cHotNo", headerName: "退火炉回号", width: 125, hide: true },
+    { field: "cSlabType", headerName: "坯类", width: 86, hide: true },
+    { field: "cPieceNoSlab", headerName: "板坯号", width: 99, hide: true },
+    { field: "nQmLevel", headerName: "质量等级", width: 112, hide: true },
+    { field: "cIsSurface", headerName: "是否表检", width: 112, hide: true },
+    { field: "cSurfaceUser", headerName: "表面判定人", width: 125, hide: true },
+    { field: "dSurfaceTime", headerName: "表面判定时间", width: 138, hide: true },
+    { field: "cDetectDefectLevel", headerName: "探伤等级", width: 112, hide: true },
+    { field: "cDefectDefectCode", headerName: "探伤判定缺陷代码", width: 164, hide: true },
+    { field: "cDefectDefectMark", headerName: "探伤判定缺陷描述", width: 164, hide: true },
+    { field: "cDefectUser", headerName: "表面判定人", width: 125, hide: true },
+    { field: "dDefectTime", headerName: "表面判定时间", width: 138, hide: true },
+    { field: "cComplexDesc", headerName: "综判描述", width: 112, hide: true },
+    { field: "cComplexUser", headerName: "综判人", width: 99, hide: true },
+    { field: "dComplexTime", headerName: "综判时间", width: 112, hide: true },
+    { field: "cQmHandleCode", headerName: "处置结果", width: 112, hide: true },
+    { field: "cQmHandleDesc", headerName: "处置注释", width: 112, hide: true },
+    { field: "cQmHandleUser", headerName: "处置人", width: 99, hide: true },
+    { field: "dQmHandleTime", headerName: "处置时间", width: 112, hide: true },
+    { field: "cSampleLotNo", headerName: "试批号", width: 99, hide: true },
+    { field: "cSampleLotNoPre", headerName: "前试批号", width: 112, hide: true },
+    { field: "cInboundNo", headerName: "入库标识", width: 112, hide: true },
+    { field: "cDelivyAddress", headerName: "流向", width: 86, hide: true },
+    { field: "cWgtToler", headerName: "公差等级", width: 112, hide: true },
+    { field: "cBilletTypeCode", headerName: "铸坯标识", width: 112, hide: true },
+    { field: "cCusName", headerName: "客户名称", width: 112, hide: true },
+    { field: "pLAN_COrderNo5", headerName: "订单号5", width: 112, hide: true },
+    { field: "pLAN_COrderNo6", headerName: "订单号6", width: 112, hide: true },
+    { field: "pLAN_NLenPlan5", headerName: "套切长度5", width: 125, hide: true },
+    { field: "pLAN_NLenPlan6", headerName: "套切长度6", width: 125, hide: true },
+    { field: "cTol", headerName: "公差", width: 86, hide: true },
+    { field: "typeValues", headerName: "钢板分类", width: 112, hide: true },
+    { field: "cAutoJudgeResult", headerName: "委托自动判定结果", width: 164, hide: true },
+    { field: "cJudgeRemark", headerName: "委托判定备注", width: 138, hide: true },
+    { field: "cJudgeResult", headerName: "委托最终判定结果", width: 164, hide: true },
+    { field: "cJudgeUser", headerName: "委托判定人", width: 125, hide: true },
+    { field: "cRecheckFlag", headerName: "复验标记", width: 112, hide: true },
+    { field: "cStatus", headerName: "委托单状态", width: 125, hide: true },
+    { field: "dJudgeTime", headerName: "委托判定时间", width: 138, hide: true },
+    { field: "cTlSgCode", headerName: "炼钢钢种", width: 112, hide: true },
+    { field: "cOutUser", headerName: "出库人", width: 99, hide: true },
+    { field: "dOutTime", headerName: "出库时间", width: 112, hide: true },
+    { field: "cInboundNo5", headerName: "入库标识5", width: 125, hide: true },
+    { field: "cInboundNo6", headerName: "入库标识6", width: 125, hide: true },
+    { field: "cOrderCustCname", headerName: "订货客户中文名称", width: 164, hide: true },
+    { field: "cSpecialMarkGy", headerName: "工艺/性能要求", width: 151, hide: true },
+    { field: "cIsMatchOrder", headerName: "是否满足订单要求", width: 164, hide: true },
+    { field: "nTransferNo", headerName: "吊号", width: 86, hide: true },
+    { field: "cStackNum", headerName: "层号", width: 86, hide: true },
+];
+
+/* ---------- 判定记录表列（原 gvTql1050Record 按 VisibleIndex；Selected 由行选择 checkbox 承担） ---------- */
+const recordColDefs: ColDef[] = [
+    { field: "cStove", headerName: "炉号", width: 86, pinned: "left" },
+    { field: "cPieceNo", headerName: "件次号", width: 99, pinned: "left" },
+    { field: "cSlabPieceNo", headerName: "板坯号", width: 99, pinned: "left" },
+    { field: "cIsDisable", headerName: "作废标记", width: 112, pinned: "left" },
+    { field: "cLineCode", headerName: "产线", width: 86, valueFormatter: lineFmt },
+    { field: "nProType", headerName: "库存类型", width: 112, valueFormatter: nProTypeFmt },
+    { field: "cSgCode", headerName: "钢种", width: 86 },
+    { field: "cTlSgCode", headerName: "炼钢钢种", width: 112 },
+    { field: "cSgStd", headerName: "执行标准", width: 112 },
+    { field: "cSpec", headerName: "规格", width: 86 },
+    { field: "nNum", headerName: "支数", width: 86 },
+    { field: "nCalWgt", headerName: "理重", width: 86 },
+    { field: "cSurfaceResult", headerName: "表检结果", width: 112, valueFormatter: surfaceResultFmt },
+    { field: "cSurfaceCategory", headerName: "判定分类", width: 112, valueFormatter: surfaceCategoryFmt },
+    { field: "cSurfaceDefectCode", headerName: "表面缺陷代码", width: 138 },
+    { field: "cSurfaceDefectPosition", headerName: "表面缺陷位置", width: 138 },
+    { field: "cSurfaceDesc", headerName: "表检描述", width: 112 },
+    { field: "cSurfaceUser", headerName: "表面判定人", width: 125 },
+    { field: "dSurfaceTime", headerName: "表面判定时间", width: 138 },
+    { field: "cFaceHandleAdvice", headerName: "处置措施", width: 112 },
+    { field: "cShiftNo", headerName: "表判班次", width: 112 },
+    { field: "cGroupNo", headerName: "表判班组", width: 112 },
+    { field: "nSurfaceThick1", headerName: "尺寸厚1", width: 112 },
+    { field: "nSurfaceThick2", headerName: "尺寸厚2", width: 112 },
+    { field: "nSurfaceThick3", headerName: "尺寸厚3", width: 112 },
+    { field: "nSurfaceLen", headerName: "尺寸长", width: 99 },
+    { field: "nSurfaceWidth", headerName: "尺寸宽", width: 99 },
+    { field: "nThick", headerName: "厚度", width: 86 },
+    { field: "nWth", headerName: "宽度", width: 86 },
+    { field: "nLen", headerName: "长度", width: 86 },
+    { field: "nLenMin", headerName: "长度下限", width: 112 },
+    { field: "nLenMax", headerName: "长度上限", width: 112 },
+    { field: "nWgt", headerName: "实重", width: 86 },
+    { field: "id", headerName: "主键", width: 86, hide: true },
+    { field: "creator", headerName: "创建人", width: 99, hide: true },
+    { field: "createTime", headerName: "创建时间", width: 112, hide: true },
+    { field: "lastModifier", headerName: "最后修改人", width: 125, hide: true },
+    { field: "lastModifyTime", headerName: "最后修改时间", width: 138, hide: true },
+];
+
+/* ---------- 事件（原 btnQueryStorage / btnPD / btnQueryRecord / btnDisable） ---------- */
+async function onQueryStorage() {
+  storageLoading.value = true;
+  try {
+    storageRows.value =
+      (await tql1050Api.queryStorage({
+        lineCode: storageQuery.lineCode,
+        stove: storageQuery.stove.trim(),
+        pieceNo: storageQuery.pieceNo.trim(),
+        nProType: qsNProType as NProTypeEnum,
+        timeRange: toTimeRange(storageQuery.dates),
+      })) ?? [];
+    autosizeLater();
+  } catch {
+    /* 拦截层已 toast */
+  } finally {
+    storageLoading.value = false;
+  }
+}
+
+async function onQueryRecord() {
+  recordLoading.value = true;
+  try {
+    recordRows.value =
+      (await tql1050Api.queryRecord({
+        lineCode: qsLineCode,
+        nProType: qsNProType as NProTypeEnum,
+        timeRange: toTimeRange(recordQuery.dates),
+        stove: recordQuery.stove.trim(),
+        pieceNo: recordQuery.pieceNo.trim(),
+      })) ?? [];
+    autosizeLater();
+  } catch {
+    /* 拦截层已 toast */
+  } finally {
+    recordLoading.value = false;
+  }
+}
+
+function onSurfaceJudge() {
+  const selected = (storageApi.value?.getSelectedRows() ?? []) as Tyd2000Dto[];
+  if (selected.length === 0) {
+    toast("请勾选需要判定的材料后在操作", 2000, "warn");
+    return;
+  }
+  // 原 new FrmQZ6003(tyds).ShowDialog()：二级弹窗待接入（见来源注释）
+  toast("表面判定弹窗（FrmQZ6003）待接入", 2000, "warn");
+}
+
+/* ---------- ShowYesNo 受控确认（原 btnDisable_Click） ---------- */
+const confirmOpen = ref(false);
+const confirmMsg = ref("");
+let confirmAction: (() => Promise<void>) | null = null;
+function askConfirm(msg: string, action: () => Promise<void>) {
+  confirmMsg.value = msg;
+  confirmAction = action;
+  confirmOpen.value = true;
+}
+async function onConfirmOk() {
+  confirmOpen.value = false;
+  const act = confirmAction;
+  confirmAction = null;
+  if (act) await act();
+}
+
+function onDisable() {
+  const selected = (recordApi.value?.getSelectedRows() ?? []) as Tql1050[];
+  const ids = selected
+    .filter((w) => w.cIsDisable === "N")
+    .map((w) => w.id)
+    .filter((id): id is string => !!id);
+  if (ids.length === 0) {
+    toast("请勾选要作废的数据", 2000, "warn");
+    return;
+  }
+  askConfirm("请确定作废判定记录？作废不影响现有判定结果", async () => {
+    try {
+      await tql1050Api.setDisable(ids);
+    } catch {
+      return; /* 拦截层已 toast，失败不重载 */
+    }
+    await onQueryRecord();
+  });
+}
 </script>
 
 <template>
   <div class="flex min-h-0 flex-1 flex-col">
-    <!-- 顶部工具栏：查询 + 表面判定 -->
+    <!-- 查询条件（原 dataLayoutControl2，Dock=Top：产线/炉号/件次号/产出时间 各一，按 ui-rules grid-cols-6） -->
+    <div class="shrink-0 border-b border-border/60 px-2 py-1.5">
+      <div class="grid grid-cols-6 items-center gap-x-3 gap-y-1.5">
+        <div class="col-span-2 flex min-w-0 items-center gap-1.5">
+          <label class="w-16 shrink-0 text-xs text-muted-foreground">产线</label>
+          <Select v-model="storageQuery.lineCode" :options="lineOptions" option-label="label" option-value="value"
+            class="min-w-0 flex-1" />
+        </div>
+        <div class="col-span-2 flex min-w-0 items-center gap-1.5">
+          <label class="w-16 shrink-0 text-xs text-muted-foreground">炉号</label>
+          <InputText v-model="storageQuery.stove" class="min-w-0 flex-1" />
+        </div>
+        <div class="col-span-2 flex min-w-0 items-center gap-1.5">
+          <label class="w-16 shrink-0 text-xs text-muted-foreground">件次号</label>
+          <InputText v-model="storageQuery.pieceNo" class="min-w-0 flex-1" />
+        </div>
+        <div class="col-span-2 flex min-w-0 items-center gap-1.5">
+          <label class="w-16 shrink-0 text-xs text-muted-foreground">产出时间</label>
+          <DatePicker v-model="storageQuery.dates" selection-mode="range" :manual-input="false"
+            date-format="yy-mm-dd" show-icon class="min-w-0 flex-1" />
+        </div>
+      </div>
+    </div>
+
+    <!-- 工具栏（原 stackPanel1，Dock=Top：查询 + 表面判定） -->
     <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
-      <Button text class="shrink-0 whitespace-nowrap" :loading="querying" @click="onQuery">
+      <Button text class="shrink-0 whitespace-nowrap" :loading="storageLoading" @click="onQueryStorage">
         <IconSearch class="h-3 w-3" />查询
       </Button>
       <Button text class="shrink-0 whitespace-nowrap" @click="onSurfaceJudge">
         <IconCheck class="h-3 w-3" />表面判定
       </Button>
-      <span class="ml-auto text-xs text-muted-foreground">中厚板表面判定</span>
     </div>
 
-    <!-- 左右主子表：左=库存查看器，右=判定记录 -->
-    <Splitter class="min-h-0 flex-1" layout="horizontal">
-      <!-- 左：库存查看器（对应原 ucStorage1） -->
-      <SplitterPanel :size="30" :minSize="20" class="flex flex-col">
-        <div class="flex h-8 shrink-0 items-center border-b border-border/60 px-2">
-          <span class="text-xs font-medium text-muted-foreground">库存材料</span>
-        </div>
+    <!-- 上下分栏（原 splitContainerControl1 Horizontal=false，SplitterPosition 343/798≈43%：上=库存 ucStorage1，下=判定记录） -->
+    <Splitter class="min-h-0 flex-1" layout="vertical">
+      <SplitterPanel :size="43" :minSize="15" class="flex min-h-0 flex-col">
         <div class="min-h-0 flex-1 overflow-hidden">
           <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="recordColDefs" :row-data="rows"
-            :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
-            :suppress-column-virtualisation="true"
-            :pagination="false" :animate-rows="false" :loading="querying"
-            @grid-ready="onGridReady" @first-data-rendered="autoSizeOnFirstData" />
+            :default-col-def="hmxDefaultColDef" :column-defs="storageColDefs" :row-data="storageRows"
+            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
+            :suppress-column-virtualisation="true" :pagination="false" :animate-rows="false" :loading="storageLoading"
+            @grid-ready="onStorageReady" @first-data-rendered="autoSizeOnFirstData" />
         </div>
       </SplitterPanel>
 
-      <!-- 右：判定记录 + 查询栏 -->
-      <SplitterPanel :minSize="30" class="flex flex-col">
+      <SplitterPanel :size="57" :minSize="15" class="flex min-h-0 flex-col">
+        <!-- 记录查询条（原 stackPanel2，Dock=Top：时间范围/炉号/材料号/查询/作废 同一行 StackPanel） -->
         <div class="flex h-8 shrink-0 items-center gap-1 border-b border-border/60 px-2">
-          <DatePicker v-model="recordTime" selection-mode="range" :manual-input="false"
-            date-format="yy-mm-dd" show-icon placeholder="时间" class="w-56 shrink-0" />
-          <InputText v-model="stoveNo" placeholder="炉号" class="w-28 shrink-0" />
-          <InputText v-model="pieceNo" placeholder="件次号" class="w-28 shrink-0" />
-          <Button text class="shrink-0 whitespace-nowrap" @click="onQueryRecord">
+          <DatePicker v-model="recordQuery.dates" selection-mode="range" :manual-input="false"
+            date-format="yy-mm-dd" show-icon placeholder="时间范围" class="w-64 shrink-0" />
+          <InputText v-model="recordQuery.stove" placeholder="请输入搜索炉号" class="w-44 shrink-0" />
+          <InputText v-model="recordQuery.pieceNo" placeholder="请输入搜索材料号" class="w-44 shrink-0" />
+          <Button text class="shrink-0 whitespace-nowrap" :loading="recordLoading" @click="onQueryRecord">
             <IconSearch class="h-3 w-3" />查询
           </Button>
           <Button text severity="danger" class="shrink-0 whitespace-nowrap" @click="onDisable">
             <IconTrash class="h-3 w-3" />作废
           </Button>
-          <span class="ml-auto text-xs text-muted-foreground">判定记录（{{ recordRows.length }}）</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
           <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
             :default-col-def="hmxDefaultColDef" :column-defs="recordColDefs" :row-data="recordRows"
             :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-            :suppress-column-virtualisation="true"
-            :pagination="false" :animate-rows="false"
-            @grid-ready="onRecordGridReady" @first-data-rendered="autoSizeOnFirstData" />
+            :suppress-column-virtualisation="true" :pagination="false" :animate-rows="false" :loading="recordLoading"
+            @grid-ready="onRecordReady" @first-data-rendered="autoSizeOnFirstData" />
         </div>
       </SplitterPanel>
     </Splitter>
+
+    <!-- 确认（对应原 MsgBox.ShowYesNo("请确定作废判定记录？作废不影响现有判定结果")） -->
+    <Dialog :visible="confirmOpen" modal header="确认" :style="{ width: 'min(28rem, calc(100vw - 2rem))' }"
+      @update:visible="confirmOpen = $event">
+      <p class="text-xs whitespace-pre-line">{{ confirmMsg }}</p>
+      <template #footer>
+        <Button label="取消" variant="outlined" @click="confirmOpen = false" />
+        <Button label="确定" variant="outlined" @click="onConfirmOk" />
+      </template>
+    </Dialog>
   </div>
 </template>

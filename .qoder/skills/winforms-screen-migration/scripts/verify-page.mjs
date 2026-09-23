@@ -30,7 +30,17 @@ const OUT = opt("out", "temp/verify");
 const USER = opt("user", "admin");
 
 const { chromium } = loadPlaywright();
-const browser = await chromium.launch();
+// root/容器下 Chromium 需 no-sandbox；/dev/shm 小、无 GPU 时 renderer 会直接 crash（waitForTimeout: Page crashed）
+const browser = await chromium.launch({
+  args: [
+    "--no-sandbox",
+    "--disable-dev-shm-usage",
+    "--disable-gpu",
+    "--disable-software-rasterizer",
+    "--no-zygote",
+    "--single-process",
+  ],
+});
 const page = await browser.newPage({ viewport: { width: 1600, height: 950 } });
 const issues = [];
 page.on("console", (m) => m.type() === "error" && issues.push("console: " + m.text().slice(0, 200)));
@@ -38,16 +48,28 @@ page.on("pageerror", (e) => issues.push("pageerror: " + e.message.slice(0, 200))
 
 const BASE = await pickBase(opt("base", ""));
 await page.goto(BASE, { waitUntil: "domcontentloaded", timeout: 60000 });
-await page.waitForTimeout(2500);
-await page.locator("input").first().fill(USER);
+await page.waitForTimeout(3000);
+// 用户名可能被首屏其它 input 抢占，优先按 placeholder；失败再退回 first()
+const userInput = page.getByPlaceholder(/用户名/).first();
+await (await userInput.count() ? userInput : page.locator("input").first()).fill(USER);
 const pwd = page.locator("input").nth(1);
 await pwd.click();
 await pwd.pressSequentially("123456", { delay: 20 });
 dropOverlay(page);
 await page.getByText("点击开始人机验证").first().click({ timeout: 8000 }).catch(() => {});
-await page.waitForTimeout(3500);
+// 等人机验证通过再点登录，否则偶发停在登录页
+await page.getByText("验证成功").first().waitFor({ timeout: 10000 }).catch(() => {});
+await page.waitForTimeout(800);
 await page.getByRole("button", { name: /登\s*录/ }).first().click({ timeout: 8000 }).catch(() => {});
 await page.waitForTimeout(6000);
+// 仍停在登录则再试一次（验证码偶发失效）
+if (page.url().includes("/login")) {
+  await page.getByText("点击开始人机验证").first().click({ timeout: 5000 }).catch(() => {});
+  await page.getByText("验证成功").first().waitFor({ timeout: 8000 }).catch(() => {});
+  await page.waitForTimeout(500);
+  await page.getByRole("button", { name: /登\s*录/ }).first().click({ timeout: 5000 }).catch(() => {});
+  await page.waitForTimeout(6000);
+}
 
 if (MENU.length) {
   for (const m of MENU) {

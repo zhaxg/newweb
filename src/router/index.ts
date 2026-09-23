@@ -24,6 +24,8 @@ declare module "vue-router" {
     url?: string;
     /** 刷新白屏过渡遮罩开关：默认启用，置 false 的路由不显示（见 components/loading） */
     loading?: boolean;
+    /** 菜单资源的 cQueryString（共用窗体按它区分行为，如 "ZG01,1" / "FUR" / JSON 串），页面经 useMenuQuery 读取 */
+    qs?: string;
   }
 }
 
@@ -97,7 +99,7 @@ export function registerUserRoutes(tree: HmxMenuNode[]) {
       name,
       // iframe 叶子（内置菜单）→ 承载组件；其余按配置的组件地址动态解析，未命中落占位页
       component: leaf.iframe ? IframePage : resolvePageComponent(leaf.src, leaf.label),
-      meta: { pageId: leaf.page, title: leaf.label, url: leaf.iframe, loading: leaf.loading },
+      meta: { pageId: leaf.page, title: leaf.label, url: leaf.iframe, loading: leaf.loading, qs: leaf.query },
     });
     addedNames.push(name);
   });

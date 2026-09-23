@@ -1448,3 +1448,84 @@ export const quYangApi = {
     );
   },
 };
+
+/* ---------- 表配置（Hmx 表格配置服务，FrmBxGYImport/基表视图共用） ---------- */
+import type { TsTableProVal, DataStatusEnum } from "./sqm.swagger";
+
+export interface TsTableConfig {
+  id?: string | null;
+  cTbName?: string | null;
+  cTbCode?: string | null;
+  cRemark?: string | null;
+  createTime?: string | null;
+  creator?: string | null;
+  lastModifyTime?: string | null;
+  lastModifier?: string | null;
+  cLoaderFullName?: string | null;
+  cValidFlag?: number | null;
+}
+export interface TsTablePro {
+  id?: string | null;
+  cProName?: string | null;
+  cProCode?: string | null;
+  cTbCode?: string | null;
+  cProType?: string | null;
+  nSourceType?: number | null;
+  cSourceCode?: string | null;
+  cSourceQuerystring?: string | null;
+  nSeq?: number | null;
+  cRemark?: string | null;
+  cLoaderFullName?: string | null;
+  cVisible?: string | null;
+  createTime?: string | null;
+  creator?: string | null;
+  lastModifyTime?: string | null;
+  lastModifier?: string | null;
+}
+export interface TsTableSettingDto {
+  tableSetting?: TsTableConfig | null;
+  tableColumnSettings?: TsTablePro[] | null;
+}
+export interface TsTableProValDto extends TsTableProVal {
+  dataStatus?: DataStatusEnum;
+}
+
+export const tableConfigApi = {
+  queryTableConfig(tableCode?: string) {
+    return requestClient.request<TsTableSettingDto>(
+      "/hmx.Service.Widgets.Services/tableConfig/queryTableConfig",
+      {
+        method: "post",
+        params: { tableCode },
+      },
+    );
+  },
+  queryData(tableCode?: string, arrIdxNo?: string[]) {
+    return requestClient.request<TsTableProValDto[]>(
+      "/hmx.Service.Widgets.Services/tableConfig/queryData",
+      {
+        method: "post",
+        params: { tableCode },
+        data: arrIdxNo,
+      },
+    );
+  },
+  save(data?: TsTableProValDto[]) {
+    return requestClient.request<any>(
+      "/hmx.Service.Widgets.Services/tableConfig/save",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+  removeAllAndSave(data?: TsTableProVal[]) {
+    return requestClient.request<any>(
+      "/hmx.Service.Widgets.Services/tableConfig/removeAllAndSave",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+};

@@ -19,6 +19,8 @@ export interface HmxMenuNode {
   iframe?: string;
   /** 刷新白屏过渡遮罩开关：false = 该页面路由不启用（透传 RouteMeta.loading，默认启用） */
   loading?: boolean;
+  /** 真实后端资源：cQueryString，共用窗体多菜单的运行参数（透传 RouteMeta.qs） */
+  query?: string;
 }
 
 const HOME_NODE: HmxMenuNode = { id: "home", label: "首页", icon: "Home", page: "home" };
@@ -56,6 +58,7 @@ function toNode(res: HmxRes, all: HmxRes[], prefix: string): HmxMenuNode {
     label: res.cCode ? `${res.cCode}-${res.cTitle ?? res.cName ?? ""}` : (res.cTitle ?? res.cName ?? ""),
     icon: res.cIcon ?? undefined,
     path: res.cResPath || undefined,
+    query: res.cQueryString || undefined,
   };
   const sub = res.cResSubPath ?? "";
   // 仅 cResType=2（菜单）的子节点才视为文件夹，cResType=4（按钮权限）不算
