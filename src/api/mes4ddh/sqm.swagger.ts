@@ -2555,6 +2555,115 @@ export interface YlgyEntities {
   tqmts02s?: Tqmts02[] | null;
 }
 
+/** 标准/工艺文件（DDH.Service.SQM.Entities.Tqmtq.TiGzmfile，列按 Designer 可见序/隐藏列一一对应） */
+export interface TiGzmfile {
+  selected?: boolean;
+  id?: string | null;
+  creator?: string | null;
+  createTime?: string | null;
+  lastModifier?: string | null;
+  lastModifyTime?: string | null;
+  /** 老mesID（上传到服务器后的文件名也用这个） */
+  serialNo?: string | null;
+  regulateNo?: string | null;
+  regulateName?: string | null;
+  regulateNameReplace?: string | null;
+  cLocalName?: string | null;
+  sgStd?: string | null;
+  sgSign?: string | null;
+  versionNo?: number | null;
+  useUnit?: string | null;
+  matKind?: string | null;
+  matKindName?: string | null;
+  controlState?: GzmFileControlStateEnum;
+  variety?: string | null;
+  cIsEnable?: string | null;
+  dutyMan?: string | null;
+  publishDate?: string | null;
+  remark?: string | null;
+  cUptUser?: string | null;
+  dUptDate?: string | null;
+  cScrapUser?: string | null;
+  dScrapDate?: string | null;
+  dCloseDate?: string | null;
+  regulateContent?: number | null;
+  rcn?: string | null;
+  rcnPage?: string | null;
+  asumeUnit?: string | null;
+  draftUnit?: string | null;
+  draftMan?: string | null;
+  checkMake?: string | null;
+  approveMan?: string | null;
+  operater?: string | null;
+  useDate?: string | null;
+  operateDate?: string | null;
+  controlId?: string | null;
+  holder?: string | null;
+  type?: string | null;
+  cSource?: string | null;
+  cSgStds?: string | null;
+  cPid?: string | null;
+  cGywjType?: string | null;
+  cMachineCodes?: string | null;
+  cMachineNames?: string | null;
+  cSgCodes?: string | null;
+  cSgStdCodes?: string | null;
+}
+
+/** 标准/工艺文件操作履历（DDH.Service.SQM.Entities.Tqmtq.TiGzmfileRecord） */
+export interface TiGzmfileRecord {
+  selected?: boolean;
+  id?: string | null;
+  /** 文件名 */
+  serialNo?: string | null;
+  /** 文件id */
+  fileId?: string | null;
+  operater?: string | null;
+  operateDate?: string | null;
+  operateType?: string | null;
+  cRemark?: string | null;
+  regulateNo?: string | null;
+}
+
+/** 查询入参（DDH.Service.SQM.Services.Tmptq.QueryTiGzmfileDto） */
+export interface QueryTiGzmfileDto {
+  variety?: string | null;
+  regulateNo?: string | null;
+  regulateName?: string | null;
+  sgStd?: string | null;
+  useUnit?: string | null;
+  matKind?: string | null;
+  controlState?: GzmFileControlStateEnum;
+  cIsEnable?: string | null;
+  timeRange?: TimeRange;
+}
+
+/** ITqmylAppService.QueryAllSGSign 返回 List<(string sgSign, string sgStd)>。
+ *  后端 System.Text.Json + CamelCase 对 ValueTuple 输出 item1/item2；
+ *  若序列化器保留了元素名则为 sgSign/sgStd —— 两种形状都收，读取处归一化。 */
+export interface SgStdSignPair {
+  sgSign?: string | null;
+  sgStd?: string | null;
+  item1?: string | null;
+  item2?: string | null;
+}
+
+export enum GzmFileVarietyEnum {
+  /** 工艺文件 */
+  GYFile = 0,
+  /** 结论文件 */
+  JLFile = 1,
+  /** 技术文件 */
+  JSFile = 2,
+}
+
+export enum GzmFileControlStateEnum {
+  /** 非保密 */
+  NC = 10,
+  /** 保密 */
+  C = 20,
+}
+
 /* ---------- 请求 ---------- */
 
 
@@ -2784,6 +2893,27 @@ export const qualityDesignApi = {
       },
     );
   },
+  /** 中厚板质量设计（原 Design，SD2000DG） */
+  design(data?: QualityDesignInput) {
+    return requestClient.request<QualityDesignOutput>(
+      "/dDH.Service.SQM.Services.QualityDesign/qualityDesign/design",
+      { method: "post", data },
+    );
+  },
+  /** 铁前/钢后质量设计结果（原 QueryTqmtdDesignResult，SD2040） */
+  queryTqmtdDesignResult(orderNo?: string) {
+    return requestClient.request<TqmtdEntities>(
+      "/dDH.Service.SQM.Services.QualityDesign/qualityDesign/queryTqmtdDesignResult",
+      { method: "post", params: { orderNo } },
+    );
+  },
+  /** 更新轧钢工艺（原 UpdateZggy，SD2040） */
+  updateZggy(data?: QualityDesignInput) {
+    return requestClient.request<QualityDesignOutput>(
+      "/dDH.Service.SQM.Services.QualityDesign/qualityDesign/updateZggy",
+      { method: "post", data },
+    );
+  },
 };
 
 export const testItemApi = {
@@ -2865,6 +2995,63 @@ export const testStandardApi = {
       {
         method: "post",
         data,
+      },
+    );
+  },
+};
+
+export const tiGzmfileApi = {
+  getGzmfiles(data?: QueryTiGzmfileDto) {
+    return requestClient.request<TiGzmfile[]>(
+      "/dDH.Service.SQM.Services.Tmptq/tiGzmfile/getGzmfiles",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+  getGzmFilesRecord(data?: QueryTiGzmfileDto) {
+    return requestClient.request<TiGzmfileRecord[]>(
+      "/dDH.Service.SQM.Services.Tmptq/tiGzmfile/getGzmFilesRecord",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+  addEditGzmfiles(data?: TiGzmfile) {
+    return requestClient.request<any>(
+      "/dDH.Service.SQM.Services.Tmptq/tiGzmfile/addEditGzmfiles",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+  zFGzmfiles(cId?: string) {
+    return requestClient.request<any>(
+      "/dDH.Service.SQM.Services.Tmptq/tiGzmfile/zFGzmfiles",
+      {
+        method: "post",
+        params: { cId },
+      },
+    );
+  },
+  canleZFGzmfiles(cId?: string) {
+    return requestClient.request<any>(
+      "/dDH.Service.SQM.Services.Tmptq/tiGzmfile/canleZFGzmfiles",
+      {
+        method: "post",
+        params: { cId },
+      },
+    );
+  },
+  delGzmfiles(cId?: string) {
+    return requestClient.request<any>(
+      "/dDH.Service.SQM.Services.Tmptq/tiGzmfile/delGzmfiles",
+      {
+        method: "post",
+        params: { cId },
       },
     );
   },
@@ -3723,6 +3910,14 @@ export const tqmylApi = {
       },
     );
   },
+  queryAllSGSign() {
+    return requestClient.request<SgStdSignPair[]>(
+      "/dDH.Service.SQM.Services.Tqmyl/tqmyl/queryAllSGSign",
+      {
+        method: "post",
+      },
+    );
+  },
 };
 
 export const tqmyl10Api = {
@@ -3887,5 +4082,15 @@ export const tyd2000DSApi = {
         data,
       },
     );
+  },
+};
+
+/** tql6100Api（质量判定重迁补齐） */
+export const tql6100Api = {
+  getTql6100Dtos(data?: unknown) {
+    return requestClient.request<any>("/dDH.Service.SQM.Services.Tmptq/tql6100/getTql6100Dtos", {
+      method: "post",
+      data,
+    });
   },
 };

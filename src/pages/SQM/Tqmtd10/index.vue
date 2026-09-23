@@ -9,13 +9,9 @@ import { reactive, ref } from "vue";
 import Button from "primevue/button";
 import InputText from "primevue/inputtext";
 import Select from "primevue/select";
+import SelectButton from "primevue/selectbutton";
 import Splitter from "primevue/splitter";
 import SplitterPanel from "primevue/splitterpanel";
-import Tab from "primevue/tab";
-import TabList from "primevue/tablist";
-import TabPanel from "primevue/tabpanel";
-import TabPanels from "primevue/tabpanels";
-import Tabs from "primevue/tabs";
 import { IconCheck, IconCopy, IconList, IconPencil, IconPlus, IconRefresh, IconSearch, IconTrash, IconX } from "@tabler/icons-vue";
 import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, GridApi, GridReadyEvent, ValueFormatterParams } from "ag-grid-community";
@@ -40,16 +36,17 @@ const statusOptions = [
 
 const input = reactive({ sgStd: "", sgSign: "", nStatus: null as number | null });
 const querying = ref(false);
-const activeTab = ref("cf");
+/** 原 xtraTabControl1 四页签（成分/性能/取样/其他，默认「成分」）
+ *  → SelectButton 切换，不引 Tabs（ui-rules §6 模式切换页签） */
+const tabModes = ["成分", "性能", "取样", "其他"];
+const activeTab = ref(tabModes[0]);
 
 const rows = ref<any[]>([]);
 const gridApi = ref<GridApi | null>(null);
 function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
 
-/* ---------- 下栏三页签：左=候选字典、右=已选明细（画面态，数据一律空） ---------- */
-const cfFind = ref("");
-const xnFind = ref("");
-const qyFind = ref("");
+/* ---------- 下栏三页签：左=候选字典、右=已选明细（画面态，数据一律空；
+ *  原左候选 OptionsFind.AlwaysVisible 查找栏按需求裁撤，不迁 quick-filter） ---------- */
 const cfLeftRows = ref<any[]>([]);
 const cfRows = ref<any[]>([]);
 const xnLeftRows = ref<any[]>([]);
@@ -85,7 +82,7 @@ const masterColDefs: ColDef[] = [
   { field: "CNkStlGrd", headerName: "内控钢种", width: 100, hide: true },
 ];
 
-/* 成分-候选：HmxKv（gridView1，原 AlwaysVisible 查找栏） */
+/* 成分-候选：HmxKv（gridView1，原 OptionsFind 查找栏已裁撤） */
 const cfLeftColDefs: ColDef[] = [
   { field: "CCode", headerName: "编码", width: 90 },
   { field: "CName", headerName: "组名", width: 90 },
@@ -323,101 +320,84 @@ function onUpdateTestItem() { toast("画面迁移：更新检验项目逻辑待�
       </SplitterPanel>
 
       <SplitterPanel :minSize="25" class="flex flex-col overflow-hidden">
-        <!-- xtraTabControl1：成分 / 性能 / 取样 / 其他（原默认选中「成分」） -->
-        <Tabs v-model:value="activeTab" class="min-h-0 flex-1 flex-col">
-          <div class="flex shrink-0 items-center border-b border-border/60">
-            <TabList class="min-w-0 flex-1">
-              <Tab value="cf">成分</Tab>
-              <Tab value="xn">性能</Tab>
-              <Tab value="qy">取样</Tab>
-              <Tab value="qt">其他</Tab>
-            </TabList>
+        <!-- xtraTabControl1：成分 / 性能 / 取样 / 其他（原默认选中「成分」）
+             → SelectButton 切换（ui-rules §6：页签下各为同一对左右双表，模式切换不引 Tabs） -->
+        <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
+          <SelectButton v-model="activeTab" :options="tabModes" class="shrink-0" />
+        </div>
+
+        <div class="min-h-0 flex-1 overflow-hidden">
+          <!-- 成分：UCTqmtd13EditView（左候选 253/943） -->
+          <div v-if="activeTab === tabModes[0]" class="h-full overflow-hidden">
+            <Splitter class="h-full min-h-0">
+              <SplitterPanel :size="27" :minSize="14" class="flex flex-col overflow-hidden">
+                <div class="min-h-0 flex-1 overflow-hidden">
+                  <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
+                    :default-col-def="hmxDefaultColDef" :column-defs="cfLeftColDefs" :row-data="cfLeftRows"
+                    :suppress-column-virtualisation="true"
+                    :pagination="false" :animate-rows="false" @first-data-rendered="autoSizeOnFirstData" />
+                </div>
+              </SplitterPanel>
+              <SplitterPanel :minSize="30" class="flex flex-col overflow-hidden">
+                <div class="min-h-0 flex-1 overflow-hidden">
+                  <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
+                    :default-col-def="hmxDefaultColDef" :column-defs="cfColDefs" :row-data="cfRows"
+                    :suppress-column-virtualisation="true"
+                    :pagination="false" :animate-rows="false" @first-data-rendered="autoSizeOnFirstData" />
+                </div>
+              </SplitterPanel>
+            </Splitter>
           </div>
-          <TabPanels class="min-h-0 flex-1 overflow-hidden !p-0">
-            <!-- 成分：UCTqmtd13EditView（左候选 253/943） -->
-            <TabPanel value="cf" class="h-full overflow-hidden">
-              <Splitter class="h-full min-h-0">
-                <SplitterPanel :size="27" :minSize="14" class="flex flex-col overflow-hidden">
-                  <div class="flex h-8 shrink-0 items-center gap-1.5 border-b border-border/60 px-2">
-                    <IconSearch class="h-3 w-3 shrink-0 text-muted-foreground" />
-                    <InputText v-model="cfFind" placeholder="查找" class="min-w-0 flex-1" />
-                  </div>
-                  <div class="min-h-0 flex-1 overflow-hidden">
-                    <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                      :default-col-def="hmxDefaultColDef" :column-defs="cfLeftColDefs" :row-data="cfLeftRows"
-                      :quick-filter-text="cfFind" :suppress-column-virtualisation="true"
-                      :pagination="false" :animate-rows="false" @first-data-rendered="autoSizeOnFirstData" />
-                  </div>
-                </SplitterPanel>
-                <SplitterPanel :minSize="30" class="flex flex-col overflow-hidden">
-                  <div class="min-h-0 flex-1 overflow-hidden">
-                    <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                      :default-col-def="hmxDefaultColDef" :column-defs="cfColDefs" :row-data="cfRows"
-                      :suppress-column-virtualisation="true"
-                      :pagination="false" :animate-rows="false" @first-data-rendered="autoSizeOnFirstData" />
-                  </div>
-                </SplitterPanel>
-              </Splitter>
-            </TabPanel>
 
-            <!-- 性能：UCTqmtd11EditView（左候选 311/943） -->
-            <TabPanel value="xn" class="h-full overflow-hidden">
-              <Splitter class="h-full min-h-0">
-                <SplitterPanel :size="33" :minSize="14" class="flex flex-col overflow-hidden">
-                  <div class="flex h-8 shrink-0 items-center gap-1.5 border-b border-border/60 px-2">
-                    <IconSearch class="h-3 w-3 shrink-0 text-muted-foreground" />
-                    <InputText v-model="xnFind" placeholder="查找" class="min-w-0 flex-1" />
-                  </div>
-                  <div class="min-h-0 flex-1 overflow-hidden">
-                    <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                      :default-col-def="hmxDefaultColDef" :column-defs="xnLeftColDefs" :row-data="xnLeftRows"
-                      :quick-filter-text="xnFind" :suppress-column-virtualisation="true"
-                      :pagination="false" :animate-rows="false" @first-data-rendered="autoSizeOnFirstData" />
-                  </div>
-                </SplitterPanel>
-                <SplitterPanel :minSize="30" class="flex flex-col overflow-hidden">
-                  <div class="min-h-0 flex-1 overflow-hidden">
-                    <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                      :default-col-def="hmxDefaultColDef" :column-defs="xnColDefs" :row-data="xnRows"
-                      :suppress-column-virtualisation="true"
-                      :pagination="false" :animate-rows="false" @first-data-rendered="autoSizeOnFirstData" />
-                  </div>
-                </SplitterPanel>
-              </Splitter>
-            </TabPanel>
+          <!-- 性能：UCTqmtd11EditView（左候选 311/943） -->
+          <div v-else-if="activeTab === tabModes[1]" class="h-full overflow-hidden">
+            <Splitter class="h-full min-h-0">
+              <SplitterPanel :size="33" :minSize="14" class="flex flex-col overflow-hidden">
+                <div class="min-h-0 flex-1 overflow-hidden">
+                  <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
+                    :default-col-def="hmxDefaultColDef" :column-defs="xnLeftColDefs" :row-data="xnLeftRows"
+                    :suppress-column-virtualisation="true"
+                    :pagination="false" :animate-rows="false" @first-data-rendered="autoSizeOnFirstData" />
+                </div>
+              </SplitterPanel>
+              <SplitterPanel :minSize="30" class="flex flex-col overflow-hidden">
+                <div class="min-h-0 flex-1 overflow-hidden">
+                  <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
+                    :default-col-def="hmxDefaultColDef" :column-defs="xnColDefs" :row-data="xnRows"
+                    :suppress-column-virtualisation="true"
+                    :pagination="false" :animate-rows="false" @first-data-rendered="autoSizeOnFirstData" />
+                </div>
+              </SplitterPanel>
+            </Splitter>
+          </div>
 
-            <!-- 取样：UCTqmtd12EditView（左候选 253/943） -->
-            <TabPanel value="qy" class="h-full overflow-hidden">
-              <Splitter class="h-full min-h-0">
-                <SplitterPanel :size="27" :minSize="14" class="flex flex-col overflow-hidden">
-                  <div class="flex h-8 shrink-0 items-center gap-1.5 border-b border-border/60 px-2">
-                    <IconSearch class="h-3 w-3 shrink-0 text-muted-foreground" />
-                    <InputText v-model="qyFind" placeholder="查找" class="min-w-0 flex-1" />
-                  </div>
-                  <div class="min-h-0 flex-1 overflow-hidden">
-                    <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                      :default-col-def="hmxDefaultColDef" :column-defs="qyLeftColDefs" :row-data="qyLeftRows"
-                      :quick-filter-text="qyFind" :suppress-column-virtualisation="true"
-                      :pagination="false" :animate-rows="false" @first-data-rendered="autoSizeOnFirstData" />
-                  </div>
-                </SplitterPanel>
-                <SplitterPanel :minSize="30" class="flex flex-col overflow-hidden">
-                  <div class="min-h-0 flex-1 overflow-hidden">
-                    <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                      :default-col-def="hmxDefaultColDef" :column-defs="qyColDefs" :row-data="qyRows"
-                      :suppress-column-virtualisation="true"
-                      :pagination="false" :animate-rows="false" @first-data-rendered="autoSizeOnFirstData" />
-                  </div>
-                </SplitterPanel>
-              </Splitter>
-            </TabPanel>
+          <!-- 取样：UCTqmtd12EditView（左候选 253/943） -->
+          <div v-else-if="activeTab === tabModes[2]" class="h-full overflow-hidden">
+            <Splitter class="h-full min-h-0">
+              <SplitterPanel :size="27" :minSize="14" class="flex flex-col overflow-hidden">
+                <div class="min-h-0 flex-1 overflow-hidden">
+                  <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
+                    :default-col-def="hmxDefaultColDef" :column-defs="qyLeftColDefs" :row-data="qyLeftRows"
+                    :suppress-column-virtualisation="true"
+                    :pagination="false" :animate-rows="false" @first-data-rendered="autoSizeOnFirstData" />
+                </div>
+              </SplitterPanel>
+              <SplitterPanel :minSize="30" class="flex flex-col overflow-hidden">
+                <div class="min-h-0 flex-1 overflow-hidden">
+                  <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
+                    :default-col-def="hmxDefaultColDef" :column-defs="qyColDefs" :row-data="qyRows"
+                    :suppress-column-virtualisation="true"
+                    :pagination="false" :animate-rows="false" @first-data-rendered="autoSizeOnFirstData" />
+                </div>
+              </SplitterPanel>
+            </Splitter>
+          </div>
 
-            <!-- 其他：xtraTabPage4 原为空页签 -->
-            <TabPanel value="qt" class="h-full overflow-auto">
-              <div class="p-3 text-xs text-muted-foreground">暂无内容</div>
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
+          <!-- 其他：xtraTabPage4 原为空页签 -->
+          <div v-else class="h-full overflow-auto">
+            <div class="p-3 text-xs text-muted-foreground">暂无内容</div>
+          </div>
+        </div>
       </SplitterPanel>
     </Splitter>
   </div>

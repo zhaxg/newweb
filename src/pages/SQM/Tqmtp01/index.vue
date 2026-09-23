@@ -273,9 +273,9 @@ function onSubReady(e: GridReadyEvent) { subApi.value = e.api; }
           <InputText v-model="input.cSgSign" class="min-w-0 flex-1" @keydown.enter="onQuery" />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
-          <label class="w-16 shrink-0 text-xs text-muted-foreground">产品大类及形状</label>
+          <label class="w-16 shrink-0 text-xs text-muted-foreground">产品大类</label>
           <Select v-model="input.cProdClass" :options="kvProdClass" :filter="true" show-clear
-            option-label="label" option-value="value" placeholder="产品大类及形状" class="min-w-0 flex-1" />
+            option-label="label" option-value="value" placeholder="产品大类" class="min-w-0 flex-1" />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">工厂</label>

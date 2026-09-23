@@ -79,4 +79,14 @@ export const kvRoutes: RouteMap = {
     saveKvs(rows);
     return ok(config, list.length);
   },
+
+  [`post ${P}/queryKvFileds`]: (config) => {
+    const { key } = getParams(config);
+    return ok(config, [
+      { id: `F-${key || "X"}-1`, key: key || "", name: "编码", controlType: "text" },
+      { id: `F-${key || "X"}-2`, key: key || "", name: "名称", controlType: "text" },
+      { id: `F-${key || "X"}-3`, key: key || "", name: "描述", controlType: "text" },
+    ]);
+  },
+  [`post ${P}/insertOrUpdateKvFileds`]: (config) => ok(config, null),
 };

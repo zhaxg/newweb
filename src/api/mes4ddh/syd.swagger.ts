@@ -434,6 +434,10 @@ export interface StorageSearchInput {
   cStove?: string | null;
   cBatchNo?: string | null;
   cPieceNo?: string | null;
+  /** 批量材料号（原 CPieceNos，FrmYD2000Search txtPieceNos） */
+  cPieceNos?: string[] | null;
+  /** 入库标识（原 CInboundNo） */
+  cInboundNo?: string | null;
 }
 export interface StoreMapInputDto {
   roomId?: string | null;
@@ -446,6 +450,8 @@ export interface StoreMapInputDto {
   thick?: DecimalRange;
   width?: DecimalRange;
   len?: DecimalRange;
+  /** C# NZZThick（轧制厚），服务端 WhereInRange(x => x.PlanItem.NThick, input.NZZThick) */
+  nZZThick?: DecimalRange;
 }
 export interface StoreMapItemDto {
   mapId?: string | null;
@@ -552,6 +558,177 @@ export interface Tyd1010Dto {
   cCutFlag?: string | null;
   cInboundNo?: string | null;
   cSpec?: string | null;
+}
+/** 库管科人员（原 Tyd1050，YD1050） */
+/** 出入库记录查询入参（原 QueryInOrOutInputDto / IStorageRecordService） */
+export interface QueryInOrOutInputDto2 {
+  cStoreCode?: string | null;
+  cStove?: string | null;
+  cPieceNo?: string | null;
+  cOrderNo?: string | null;
+  cSgCode?: string | null;
+  cSgStd?: string | null;
+  nThick?: DecimalRange;
+  nWth?: DecimalRange;
+  nLen?: DecimalRange;
+  dTime?: TimeRange;
+}
+/** 出入库记录行（原 SlabRecordViewItemDto，FrmYD2000Record） */
+export interface SlabRecordViewItemDto {
+  id?: string | null;
+  dTime?: string | null;
+  cUser?: string | null;
+  cStoreCode?: string | null;
+  cStackNo?: string | null;
+  cStackNum?: string | null;
+  cStove?: string | null;
+  cPieceNo?: string | null;
+  cLineCode?: string | null;
+  cSgCode?: string | null;
+  cSgStd?: string | null;
+  nThick?: number;
+  nWth?: number | null;
+  nLen?: number | null;
+  nLenMin?: number | null;
+  nLenMax?: number | null;
+  cSpec?: string | null;
+  nNum?: number;
+  nWgt?: number;
+  nZzThick?: number | null;
+  nBusinsType?: number;
+  cSourceStoreCode?: string | null;
+  cSourceStackNo?: string | null;
+  cSourceStackNum?: string | null;
+  cType?: string | null;
+  cBusNo?: string | null;
+  cShiftNo?: string | null;
+  cGroupNo?: string | null;
+  cIsDisable?: number;
+  nProType?: number;
+  cRecordRemark?: string | null;
+  cOrderNo?: string | null;
+  cCusName?: string | null;
+  cBatchNo?: string | null;
+  nCalWgt?: number | null;
+  dProTime?: string | null;
+  cProUser?: string | null;
+  dInTime?: string | null;
+  cInUser?: string | null;
+  cIsHot?: string | null;
+  cProRemark?: string | null;
+  nCastDivCode?: number | null;
+  cLockedLine?: string | null;
+  cLockedPlan?: string | null;
+  cMatType?: string | null;
+  cSteelType?: string | null;
+  cDelivyStatusCode?: string | null;
+  cCustStdCode?: string | null;
+  cOrderNoLast?: string | null;
+  cDestination?: string | null;
+  cHotNo?: string | null;
+  cSlabType?: string | null;
+  cPieceNoSlab?: string | null;
+  cPrintCode?: string | null;
+  cProdCode?: string | null;
+  nQmStatus?: number | null;
+  nLockReason?: string | null;
+  nQmLevel?: number | null;
+  cIsSurface?: string | null;
+  cSurfaceResult?: number | null;
+  cSurfaceDefectCode?: string | null;
+  cSurfaceDesc?: string | null;
+  cSurfaceUser?: string | null;
+  dSurfaceTime?: string | null;
+  cDetectResultCode?: number | null;
+  cDetectDefectLevel?: string | null;
+  cDefectDefectCode?: string | null;
+  cDefectDefectMark?: string | null;
+  cDefectUser?: string | null;
+  dDefectTime?: string | null;
+  cComplexDecideCode?: number | null;
+  cComplexDesc?: string | null;
+  cComplexUser?: string | null;
+  dComplexTime?: string | null;
+  cQmHandleCode?: string | null;
+  cQmHandleDesc?: string | null;
+  cQmHandleUser?: string | null;
+  dQmHandleTime?: string | null;
+  cSampleLotNo?: string | null;
+  cSampleLotNoPre?: string | null;
+  cCutFlag?: string | null;
+  cInboundNo?: string | null;
+  cDelivyAddress?: string | null;
+  cWgtToler?: string | null;
+  cBilletTypeCode?: string | null;
+  creator?: string | null;
+  createTime?: string | null;
+  lastModifier?: string | null;
+  lastModifyTime?: string | null;
+  selected?: boolean;
+}
+/** 指定钢板分类入参（原 Tyd2000TypeItemDto，FrmYD2000Type） */
+export interface Tyd2000TypeItemDto {
+  pieceNos?: string[] | null;
+  storeCode?: string | null;
+  typeValues?: string[] | null;
+}
+export interface Tyd1050 {
+  selected?: boolean;
+  id?: string | null;
+  creator?: string | null;
+  createTime?: string | null;
+  lastModifier?: string | null;
+  lastModifyTime?: string | null;
+  cCode?: string | null;
+  cName?: string | null;
+  cEmployeeId?: string | null;
+  cTeam?: string | null;
+}
+/** 库管科人员查询入参（原 Tyd1050QueryDto） */
+export interface Tyd1050QueryDto {
+  key?: string | null;
+  name?: string | null;
+  employeeId?: string | null;
+  id?: string | null;
+}
+/** 库管科人员存在性检查（原 Tyd1050CheckDto） */
+export interface Tyd1050CheckDto {
+  key?: string | null;
+  name?: string | null;
+  employeeId?: string | null;
+  id?: string | null;
+}
+/** 入库统计行（原 YD9200Dto，YD9200） */
+export interface YD9200Dto {
+  cInboundNo?: string | null;
+  cPieceNo?: string | null;
+  cDestination?: string | null;
+  cSgCode?: string | null;
+  nThick?: number;
+  nWth?: number | null;
+  nLen?: number | null;
+  nCalWgt?: number;
+  nWgt?: number;
+  cCutFlag?: string | null;
+  cWgtToler?: string | null;
+  cComplexDecideCode?: number;
+  cDetectResultCode?: number;
+  cSurfaceResult?: number;
+  cStoreCode?: string | null;
+  cStackNo?: string | null;
+  cStackNum?: string | null;
+  cSourceStoreCode?: string | null;
+  cSourceStackNo?: string | null;
+  cSourceStackNum?: string | null;
+  nNum?: number;
+  cShiftNo?: string | null;
+  cGroupNo?: string | null;
+  cInUser?: string | null;
+  dInTime?: string | null;
+}
+/** 入库统计查询入参（原 YD9200QueryDto） */
+export interface YD9200QueryDto {
+  timeRange?: TimeRange;
 }
 export interface Tyd1100 {
   selected?: boolean;
@@ -1129,6 +1306,17 @@ export const cPStorageApi = {
       },
     );
   },
+  /** 撤消成品出库（原 CancelXnfh，FrmYD2100） */
+  cancelXnfh(data?: string[]) {
+    return requestClient.request<any>(
+      "/dDH.Service.SYD.Services/cPStorage/cancelXnfh",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+
 };
 
 export const inventoryApi = {
@@ -1390,6 +1578,17 @@ export const storageRecordApi = {
       },
     );
   },
+  /** 出入库记录查询（原 QuerySlabReocrds，FrmYD2000Record） */
+  querySlabReocrds(data?: QueryInOrOutInputDto) {
+    return requestClient.request<SlabRecordViewItemDto[]>(
+      "/dDH.Service.SYD.Services/storageRecord/querySlabReocrds",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+
 };
 
 export const tyd1000Api = {
@@ -1505,6 +1704,72 @@ export const tyd1100Api = {
   },
 };
 
+export const tyd1050Api = {
+  /** 库管科人员名单查询（原 GetListAsync，YD1050） */
+  getListAsync(data?: Tyd1050QueryDto) {
+    return requestClient.request<Tyd1050[]>(
+      "/dDH.Service.SYD.Services/tyd1050/getListAsync",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+  /** 新增人员（原 AddAsync，FrmYD1050_Edit） */
+  addAsync(data?: Tyd1050) {
+    return requestClient.request<any>(
+      "/dDH.Service.SYD.Services/tyd1050/addAsync",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+  /** 修改人员（原 UpdateAsync，FrmYD1050_Edit） */
+  updateAsync(data?: Tyd1050) {
+    return requestClient.request<any>(
+      "/dDH.Service.SYD.Services/tyd1050/updateAsync",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+  /** 删除人员（原 DeleteAsync，YD1050） */
+  deleteAsync(id?: string) {
+    return requestClient.request<any>(
+      "/dDH.Service.SYD.Services/tyd1050/deleteAsync",
+      {
+        method: "post",
+        params: { id },
+      },
+    );
+  },
+  /** 人员唯一性检查（原 ExistsAsync） */
+  existsAsync(data?: Tyd1050CheckDto) {
+    return requestClient.request<boolean>(
+      "/dDH.Service.SYD.Services/tyd1050/existsAsync",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+};
+
+/** 入库统计（原 IFrmYD9200AppService，YD9200） */
+export const frmYd9200Api = {
+  queryStoreList(data?: YD9200QueryDto) {
+    return requestClient.request<YD9200Dto[]>(
+      "/dDH.Service.SYD.Services.InvStat/frmYD9200/queryStoreList",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+};
+
 export const tyd2000Api = {
   queryStorage(data?: StorageInputDto) {
     return requestClient.request<Tyd2000Dto[]>(
@@ -1578,6 +1843,48 @@ export const tyd2000Api = {
       },
     );
   },
+  /** 图形化倒垛入库（原 KanBanRKDD，FrmYD2000/2010） */
+  kanBanRKDD(data?: Tyd2000Dto[]) {
+    return requestClient.request<any>(
+      "/dDH.Service.SYD.Services/tyd2000/kanBanRKDD",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+  /** 图形化入库（原 KanBanRKDDNew1，FrmYD2010） */
+  kanBanRKDDNew1(data?: Tyd2000Dto[], lineCode?: string) {
+    return requestClient.request<any>(
+      "/dDH.Service.SYD.Services/tyd2000/kanBanRKDDNew1",
+      {
+        method: "post",
+        data,
+        params: { lineCode },
+      },
+    );
+  },
+  /** 手工照核（原 Zh，FrmYD2000 btnZh） */
+  zh(data?: string[]) {
+    return requestClient.request<any>(
+      "/dDH.Service.SYD.Services/tyd2000/zh",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+  /** 指定钢板分类（原 SetTypes，FrmYD2000 btnType） */
+  setTypes(data?: string[]) {
+    return requestClient.request<any>(
+      "/dDH.Service.SYD.Services/tyd2000/setTypes",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+
   appQueryStorage(data?: AppQueryStorageDto) {
     return requestClient.request<Tyd2000Dto[]>(
       "/dDH.Service.SYD.Services/tyd2000/appQueryStorage",
@@ -1617,6 +1924,17 @@ export const tyd2020Api = {
       },
     );
   },
+  /** 调拨明细查询（原 QueryYD2020，FrmYD2021） */
+  queryYD2020(data?: QueryDBDto) {
+    return requestClient.request<Tyd2020[]>(
+      "/dDH.Service.SYD.Services/tyd2020/queryYD2020",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+
   cancelDB(data?: string[]) {
     return requestClient.request<any>(
       "/dDH.Service.SYD.Services/tyd2020/cancelDB",

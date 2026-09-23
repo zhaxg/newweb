@@ -430,10 +430,8 @@ function btnSave() {
     <!-- 上下分栏：原 split1 417/1030 ≈ 40% -->
     <Splitter class="min-h-0 flex-1" layout="vertical">
       <SplitterPanel :size="40" :minSize="20" class="flex flex-col overflow-hidden">
-        <div class="flex h-8 shrink-0 items-center gap-2 border-b border-border/60 px-2">
-          <span class="text-xs font-medium text-muted-foreground">材料信息</span>
-        </div>
-        <!-- 材料查询条件（订单号/批号/件次号/炉号/钢种/规格/产出时间 + 查询） -->
+        <!-- 材料查询条件（订单号/批号/件次号/炉号/钢种/规格/产出时间 + 查询）
+             原独立 h-8 标题条「材料信息」按需求去掉（标题文案不要） -->
         <div class="grid shrink-0 grid-cols-6 items-center gap-x-3 gap-y-1.5 border-b border-border/60 px-3 py-2">
           <div class="flex min-w-0 items-center gap-1.5">
             <label class="w-16 shrink-0 text-xs text-muted-foreground">订单号</label>
@@ -481,18 +479,18 @@ function btnSave() {
       </SplitterPanel>
 
       <SplitterPanel :minSize="20" class="flex flex-col overflow-hidden">
-        <div class="flex h-8 shrink-0 items-center gap-2 border-b border-border/60 px-2">
-          <span class="text-xs font-medium text-muted-foreground">订单信息</span>
-        </div>
-        <!-- 订单查询条件（提料计划号/批量计划号/熔炼号/计划状态/厚度/宽度/长度/区间/时间区间 + 查询/保存） -->
+        <!-- 订单查询条件（提料计划号/批量计划号/熔炼号/计划状态/厚度/宽度/长度/区间/时间区间 + 查询/保存）
+             原独立 h-8 标题条「订单信息」按需求并入下方工具栏（按钮左、标题右 ml-auto） -->
         <div class="grid shrink-0 grid-cols-6 items-center gap-x-3 gap-y-1.5 border-b border-border/60 px-3 py-2">
           <div class="flex min-w-0 items-center gap-1.5">
-            <label class="w-20 shrink-0 text-xs text-muted-foreground">提料计划号</label>
+            <label class="w-16 shrink-0 text-xs text-muted-foreground">提料计划号</label>
             <InputText v-model="orderInput.cOrderNo" class="min-w-0 flex-1" @keydown.enter="queryOrder" />
           </div>
-          <div class="col-span-2 flex min-w-0 items-center gap-1.5">
-            <label class="w-20 shrink-0 text-xs text-muted-foreground">批量计划号</label>
-            <Textarea v-model="orderInput.orders" rows="2" class="min-w-0 flex-1" />
+          <!-- 批量计划号原 col-span-2 + rows=2：13 格排不满 6 列（行1 空1、行3 空4）且撑高首行；
+               改 span1 + rows=1 后 10×1 + 时间区间×2 = 12 格 = 正好 2 行满格 -->
+          <div class="flex min-w-0 items-center gap-1.5">
+            <label class="w-16 shrink-0 text-xs text-muted-foreground">批量计划号</label>
+            <Textarea v-model="orderInput.orders" rows="1" class="min-w-0 flex-1" />
           </div>
           <div class="flex min-w-0 items-center gap-1.5">
             <label class="w-16 shrink-0 text-xs text-muted-foreground">熔炼号</label>
@@ -509,16 +507,17 @@ function btnSave() {
               show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
           </div>
           <div class="flex min-w-0 items-center gap-1.5">
+            <!-- fluid：非 fluid 时内部 input 吃 intrinsic 宽(~170px)、不认外层 flex-1，会溢出单元格 -->
             <label class="w-16 shrink-0 text-xs text-muted-foreground">厚度</label>
-            <InputNumber v-model="orderInput.nThick" :show-buttons="false" :use-grouping="false" class="min-w-0 flex-1" />
+            <InputNumber v-model="orderInput.nThick" :show-buttons="false" :use-grouping="false" fluid class="min-w-0 flex-1" />
           </div>
           <div class="flex min-w-0 items-center gap-1.5">
             <label class="w-16 shrink-0 text-xs text-muted-foreground">宽度</label>
-            <InputNumber v-model="orderInput.nWidth" :show-buttons="false" :use-grouping="false" class="min-w-0 flex-1" />
+            <InputNumber v-model="orderInput.nWidth" :show-buttons="false" :use-grouping="false" fluid class="min-w-0 flex-1" />
           </div>
           <div class="flex min-w-0 items-center gap-1.5">
             <label class="w-16 shrink-0 text-xs text-muted-foreground">长度</label>
-            <InputNumber v-model="orderInput.nLen" :show-buttons="false" :use-grouping="false" class="min-w-0 flex-1" />
+            <InputNumber v-model="orderInput.nLen" :show-buttons="false" :use-grouping="false" fluid class="min-w-0 flex-1" />
           </div>
           <div class="flex min-w-0 items-center gap-1.5">
             <label class="w-16 shrink-0 text-xs text-muted-foreground">厚度区间</label>
@@ -538,6 +537,7 @@ function btnSave() {
             <IconSearch class="h-3 w-3" />查询
           </Button>
           <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="btnSave">保存</Button>
+          <span class="ml-auto text-xs font-medium text-muted-foreground">订单信息</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
           <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"

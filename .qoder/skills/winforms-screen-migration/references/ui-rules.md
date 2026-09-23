@@ -96,8 +96,11 @@ npm run audit:ui      # scripts/audit-ui.mjs，零依赖，扫 src/pages|layouts
 | ImageComboBoxEdit（下拉候选写死在 Designer） | Select + 选项表（候选值来自提取摘要的 `下拉[文本=枚举值]`） |
 | Panel / GroupControl / SplitContainer | Tailwind flex/grid + Card + PrimeVue Splitter |
 | 窗体内嵌弹窗（GridFilter、选择器） | 对应 Dialog 组件 |
+| **MemoExEdit / 多行批量录入**（批量计划号、批量订单号、合同号等「批量xx号」） | **`src/pages/Widgets/BatchIdInput/index.vue`**（只读触发框 + 弹出 Dialog 逗号/换行粘贴，`v-model` 为逗号串）；`label`/`unit` 传入字段名（如 `label="批量订单号"`、`label="合同号"`），**禁止在页面内再手写同构 Dialog**；解析可用 `Widgets/BatchIdInput/parse` 的 `parseBatchIds`。样例：`src/pages/SHR/HR2000/index.vue` |
 
 Designer 里没有的控件**一律不许发明**（历史上凭空加过"查找"快速过滤行，属违规）。
+
+**建议（批量xx号）**：查询区遇到「批量计划号 / 批量订单号 / 批量合同号 / 合同类多编号」等原 `MemoExEdit`（或等价多行粘贴）控件时，一律使用 **`Widgets/BatchIdInput`**，通过 `label`（及可选 `unit`）改名复用，不要复制粘贴各页 Dialog 逻辑。
 
 ## 6. 布局固定写法
 
@@ -120,7 +123,21 @@ Designer 里没有的控件**一律不许发明**（历史上凭空加过"查找
   纯标题、**不含任何按钮**的分区头（如「委托单信息」「试样信息」）才用 `h-8`。
 - **查询条件区**：
   - 1–2 个条件：与按钮同行 `flex items-center gap-1`，**不用 label**，靠 `placeholder` 提示字段含义；
-  - ≥3 个条件：`grid grid-cols-6 items-center gap-x-3 gap-y-1.5`，最多 3 行；超过 3 行改用 Tabs 分组；每个条件配 `<label class="w-16 shrink-0 text-xs text-muted-foreground">`；日期范围占 `col-span-2`；
+  - ≥3 个条件：`grid grid-cols-6 items-center gap-x-3 gap-y-1.5`，最多 3 行；超过 3 行改用 Tabs 分组；**只有日期范围占 `col-span-2`**——数字区间（`RangeInput`，厚/宽/长这类复合数字控件）**占 1 列、不跨列**，它信息密度高，一列够用；
+  - **label 宽度（硬规则）——按下表顺序判定，命中即停，不许跳级**（对齐是第一诉求，宽度档位、文案、个例放行都是它的让步手段）：
+
+    | 顺位 | 判据 | 动作 |
+    |---|---|---|
+    | **1** | **同一页内所有 label 必须同一个 `w-*`**（对齐优先） | 整页统一成一个值；**禁止按文字长短逐个凑**——`w-12`/`w-14`/`w-16`/`w-24` 混用会让输入框起点落在 54/62/70/102px 四处，两行同列也错开（TI1010 踩过） |
+    | **2** | 默认 `w-16`（64px，放得下 ≤5 字） | 就用 `w-16`，到此为止 |
+    | **3** | `w-16` 会折行（≥6 字） | **整页**放宽到 `w-18`（72px，正好 6 个 12px 中文）；仍折行进下一条 |
+    | **4** | `w-18` 还是放不下（≥7 字） | **改文案**（「装炉时间范围」→「装炉时间」、「销售合同号」→「销售合同」），不再加宽 |
+    | **5** | 前四条都走不通（原文案一字不可改） | **单页让步放行**：该页自定更宽的 `w-*`，必须在来源注释写明「放宽到 w-XX，因 XXX」 |
+
+    - 统一是**页内**要求：同页一个值即可，**跨页不必一致**（全站 `w-16` 568 处是默认惯性，不是跨页契约）；
+    - `label` 必须带 `shrink-0`——否则长文字会把 label 压窄，起点又漂回去；
+    - 固定 class：`<label class="w-XX shrink-0 text-xs text-muted-foreground">`；
+    - `audit:ui` 只查 R4（label 缺 `text-xs`），**不查宽度一致性**——这一条靠人工核对。
 - **日期区间**：`<DatePicker selectionMode="range" :manualInput="false" date-format="yy-mm-dd" show-time hour-format="24" show-icon />`（属性名是 `selectionMode`，不是 `selection-range`）；绑定 `Date[] | null`，拆分函数转成后端的 `dBegTime` / `dEndTime`；
 - **数字范围**：厚度/宽度/长度等区间用 `RangeInput`（`src/components/common/RangeInput.vue`），不手写两个 `InputNumber + ~`；透传 `show-buttons` / `min-fraction-digits` / `max-fraction-digits` / `mode` / `min` / `max` 等；
 - **工具栏里的定宽数字框（硬规则）**：`InputNumber` **不加 `fluid` 时内部 input 吃浏览器 intrinsic 宽（约 170px），不认外层 `w-*`**，会向右溢出、被同一行后续按钮叠画（HR5200/HR5300「支数」踩过）。固定写法——**外层定宽容器 + `fluid`**，工具栏里再关 spinner：

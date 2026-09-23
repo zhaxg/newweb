@@ -139,4 +139,18 @@ export const shrRoutes: RouteMap = {
     ok(config, demoRows(3, (i) => ({ ...row(i) }))),
   [`post ${S}/hR9500/queryOrderKc`]: (config) =>
     ok(config, demoRows(3, (i) => ({ ...row(i), nProType: i === 0 ? 0 : i === 1 ? 10 : 20, cStoreCode: i === 1 ? "ZG01-04" : "ZG01-01", nStatus: i === 2 ? 99 : 1 }))),
+
+  /* ---------- 销售/计划迁移占位（TI1010 / MP3000 queryLines） ---------- */
+  ["post /dDH.Service.SHR.Services.InterInfoQuery/tI1010/queryTi1010"]: (config) =>
+    ok(config, demoRows(3, (i) => ({ ...row(i), dHeatTime: "2026-09-20 06:00:00", nTempIn: 1180 + i }))),
+  ["post /dDH.Service.SHR.Services.InterInfoQuery/tI1010/getDate"]: (config) =>
+    ok(config, { begin: "2026-09-20 00:00:00", end: "2026-09-21 00:00:00" }),
+  ["post /hmx.Service.Widgets.Services/tPa1000/queryLines"]: (config) =>
+    ok(config, [
+      { cLineCode: "ZG01", cLineName: "中厚板产线" },
+      { cLineCode: "ZG02", cLineName: "卷板产线" },
+      { cLineCode: "ZG03", cLineName: "棒材产线" },
+      { cLineCode: "ZG04", cLineName: "线材产线" },
+      { cLineCode: "LG01", cLineName: "一炼钢" },
+    ]),
 };

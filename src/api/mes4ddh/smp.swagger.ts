@@ -4,6 +4,7 @@
  */
 
 import { requestClient } from "@/api/_core/request";
+import type { Tyd2000Dto } from "./syd.swagger";
 
 /* ---------- 枚举 ---------- */
 
@@ -300,6 +301,10 @@ export interface Fh1000 {
   cShiftNo?: string | null;
   cGroupNo?: string | null;
   cTrnpcodeact?: string | null;
+  /* 补齐自 C# DTO（原 swagger 生成缺字段） */
+  cWgtMethod?: string | null;
+  cArea?: string | null;
+  nPlanNum?: number | null;
 }
 export interface Fh1002 {
   selected?: boolean;
@@ -342,6 +347,18 @@ export interface Fh1002 {
   cWgtToler?: string | null;
   cShiftNo?: string | null;
   cGroupNo?: string | null;
+  /* 补齐自 C# DTO（原 swagger 生成缺字段） */
+  cGcStd?: string | null;
+  cTsStd?: string | null;
+  cDetectDefectLevel?: string | null;
+  cZStd?: string | null;
+  cComplexDecideCode?: number | null;
+  cDetectResultCode?: number | null;
+  cInterfaceId?: string | null;
+  cArer?: string | null;
+  cReserveField1?: string | null;
+  cReserveField2?: string | null;
+  cReserveField3?: string | null;
 }
 export interface HmxDept {
   selected?: boolean;
@@ -561,6 +578,94 @@ export interface QueryMatOutDto {
   cStockRoomNo?: string | null;
   cReserveField1?: string | null;
 }
+/** 退货录入行（原 QueryTsd3000Dto，FH4000） */
+export interface QueryTsd3000Dto {
+  selected?: boolean;
+  cCustName?: string | null;
+  cMatNo?: string | null;
+  cStove?: string | null;
+  nMatWgt?: number | null;
+  nMatNum?: number | null;
+  nMatThick?: number | null;
+  nMatWidth?: number | null;
+  nMatLen?: number | null;
+  cSgCode?: string | null;
+  cSgStd?: string | null;
+  cOrderNo?: string | null;
+  cMatName?: string | null;
+  cMatchId?: string | null;
+  cBillOfLadingNo?: string | null;
+  cTaskId?: string | null;
+}
+/** 装车异常日志（原 Tsd1000Log，FH3010） */
+export interface Tsd1000Log {
+  id?: string | null;
+  creator?: string | null;
+  createTime?: string | null;
+  lastModifier?: string | null;
+  lastModifyTime?: string | null;
+  cMatchId?: string | null;
+  cTaskId?: string | null;
+  cBillOfLadingNo?: string | null;
+  cMatCode?: string | null;
+  cMatName?: string | null;
+  cRemark?: string | null;
+  nStatus?: number;
+  nZcStatus?: number;
+  nSwlx?: number;
+  nWgt?: number;
+  nNum?: number;
+  cMatNo?: string | null;
+  cVehicleNo?: string | null;
+  cErrorCode?: string | null;
+}
+/** 派车计划查询入参（原 ApiBillDetailInput，FH3000） */
+export interface ApiBillDetailInput {
+  pageIndex?: number;
+  pageSize?: number;
+  orderNo?: string | null;
+  dealersName?: string | null;
+  entrustDealerName?: string | null;
+  carNo?: string | null;
+  shipNo?: string | null;
+  startDate?: string | null;
+  endDate?: string | null;
+}
+/** 派车计划明细（原 ApiBillDetail，FH3000） */
+export interface ApiBillDetail {
+  orderNo?: string | null;
+  dealersName?: string | null;
+  entrustDealerName?: string | null;
+  carNo?: string | null;
+  shipNo?: string | null;
+  bcArea?: string | null;
+  wharfName?: string | null;
+  orderRemark?: string | null;
+  firstAuTime?: string | null;
+  stateName?: string | null;
+  performanceMark?: string | null;
+  goodsName?: string | null;
+  nC_GoodsCode?: string | null;
+  goodsTypeName?: string | null;
+  materialName?: string | null;
+  goodsSpec?: string | null;
+  count?: number | null;
+  weight?: number | null;
+  amtWeight?: number | null;
+  gYText?: string | null;
+  gCText?: string | null;
+  qCNo?: string | null;
+  lengthMin?: string | null;
+  lengthMax?: string | null;
+  gyQb?: string | null;
+  gyTs?: string | null;
+  gyRcl?: string | null;
+  gC?: string | null;
+  gCJJ?: string | null;
+  recordId?: string | null;
+  zcNum?: number | null;
+  zcWgt?: number | null;
+}
 /** 质保书打印记录（原 ZbsPrintDto） */
 export interface ZbsPrintDto {
   cPieceNo?: string | null;
@@ -751,6 +856,20 @@ export interface QueryFhJl2000Dto {
   cItemFree1?: string | null;
   cItemFree2?: number;
   cItemFree3?: string | null;
+  /* 补齐自 C# DTO（原 swagger 生成缺字段） */
+  suttleapp?: number;
+  gyqb?: string | null;
+  gyqbDesc?: string | null;
+  gyts?: string | null;
+  gyrcl?: string | null;
+  cDelivyStatusCode?: string | null;
+  gc?: string | null;
+  performancemark?: string | null;
+  qualitygrade?: string | null;
+  qualitygradeDesc?: string | null;
+  bcarea?: string | null;
+  sysRemark?: string | null;
+  tclass?: string | null;
 }
 export interface QueryFhTyd2000Dto {
   selected?: boolean;
@@ -770,6 +889,29 @@ export interface QueryFhTyd2000Dto {
   cStoreCode?: string | null;
   cStackNo?: string | null;
   cStackNum?: string | null;
+  /* 补齐自 C# DTO（原 swagger 生成缺字段） */
+  nQmLevel?: number | null;
+  cDelivyStatusCode?: string | null;
+  cWgtToler?: string | null;
+  cCutFlag?: string | null;
+  cCutFlagDesc?: string | null;
+  cInboundNo?: string | null;
+  cDelivyAddress?: string | null;
+  cCustName?: string | null;
+  cDetectDefectLevel?: string | null;
+  nQmStatus?: number | null;
+  nLockReason?: string | null;
+  cSurfaceResult?: number | null;
+  cDetectResultCode?: number | null;
+  cComplexDecideCode?: number | null;
+  cSpecialMarkGy?: string | null;
+  cProdCode?: string | null;
+  cMatCode?: string | null;
+  cMatName?: string | null;
+  cPlanId?: string | null;
+  cInterfaceId?: string | null;
+  cArer?: string | null;
+  cProdClass?: string | null;
 }
 export interface QueryOrderTqmtd10Dto {
   cGbStlGrd?: string | null;
@@ -2186,7 +2328,227 @@ export interface ZgPlanDto {
 
 /* ---------- 请求 ---------- */
 
-
+/** 十进制区间（原 DecimalRange，SMP 域本地副本） */
+export interface DecimalRange {
+  min?: number | null;
+  max?: number | null;
+}
+/** 成品库存查询条件（原 InputStockDto，SD2061/SD3010） */
+export interface InputStockDto {
+  cOrderNo?: string | null;
+  cSettleCust?: string | null;
+  cConsignee?: string | null;
+  cBatchNo?: string | null;
+  cStackNo?: string | null;
+  cStove?: string | null;
+  cPieceNo?: string | null;
+  cSgCode?: string | null;
+  cSgStd?: string | null;
+  nThick?: DecimalRange | null;
+  nWth?: DecimalRange | null;
+  nLen?: DecimalRange | null;
+  cSteelType?: string | null;
+  cDelivyStatusCode?: string | null;
+  cInboundNo?: string | null;
+  dProTime?: TimeRange | null;
+  cStoreCode?: string | null;
+  cCutFlag?: string | null;
+  cWgtToler?: string | null;
+  cDetectDefectLevel?: string | null;
+  cSpecialMarkGy?: string | null;
+  nQmLevel?: number | null;
+  qCNo?: string | null;
+  nQmStatus?: number | null;
+}
+/** 成品库存行（原 QueryTyd2000Dto，SD2061/SD3010） */
+export interface QueryTyd2000Dto {
+  selected?: boolean;
+  cPieceNo?: string | null;
+  cStove?: string | null;
+  cBatchNo?: string | null;
+  cSgCode?: string | null;
+  cSgStd?: string | null;
+  cProdCode?: string | null;
+  cSpec?: string | null;
+  nNum?: number;
+  nCalWgt?: number;
+  nWgt?: number;
+  nThick?: number;
+  nWth?: number | null;
+  nLen?: number | null;
+  cOrderNo?: string | null;
+  cConsignee?: string | null;
+  cOrderNo2?: string | null;
+  cSettleCust?: string | null;
+  cStoreCode?: string | null;
+  cStackNo?: string | null;
+  cStackNum?: string | null;
+  nQmStatus?: number | null;
+  nLockReason?: string | null;
+  cWgtToler?: string | null;
+  cCutFlag?: string | null;
+  cInboundNo?: string | null;
+  cDelivyAddress?: string | null;
+  cPrintCode?: string | null;
+  nStatus?: number | null;
+  cProRemark?: string | null;
+  dProTime?: string | null;
+  dInTime?: string | null;
+  cDetectDefectLevel?: string | null;
+  cSpecialMarkGy?: string | null;
+  cDelivyStatusCode?: string | null;
+  nQmLevel?: number | null;
+  cSurfaceResult?: string | null;
+  cDetectResultCode?: string | null;
+  cComplexDecideCode?: string | null;
+  cSaleEmp?: string | null;
+  cProdClass?: string | null;
+  cArer?: string | null;
+}
+/** 调配日志查询（原 InputTyd2000AllocationDto，SD3000） */
+export interface InputTyd2000AllocationDto {
+  cOrderNo?: string | null;
+  cSettleCust?: string | null;
+  cPieceNo?: string | null;
+  dBegin?: string | null;
+  dEnd?: string | null;
+}
+/** 资源调配日志（原 Tyd2000Allocation，SD3000） */
+export interface Tyd2000Allocation {
+  id?: string | null;
+  creator?: string | null;
+  createTime?: string | null;
+  lastModifier?: string | null;
+  lastModifyTime?: string | null;
+  cPieceNo?: string | null;
+  cOrderNo?: string | null;
+  cSettleCust?: string | null;
+  cQcNo?: string | null;
+  cInboundNo?: string | null;
+  cInboundNo2?: string | null;
+  cCustName?: string | null;
+  nNum?: number | null;
+}
+/** 销售预约单模板（原 OrderTemplateDto，SD2061） */
+export interface OrderTemplateDto {
+  cProdName?: string | null;
+  cMateriel?: string | null;
+  nThick?: number | null;
+  nWth?: number | null;
+  nMinLen?: number | null;
+  nMaxLen?: number | null;
+  cCutFlag?: string | null;
+  cDetect?: string | null;
+  cHeatTreat?: string | null;
+  cZPerformance?: string | null;
+  cIsStandard?: string | null;
+  cWgtToler?: string | null;
+  cTolerPrice?: string | null;
+  nQty?: number | null;
+  cRemark?: string | null;
+}
+/** 浇次产出坯料（原 QueryCptJC，MP3100） */
+export interface QueryCptJC {
+  dProTime?: string | null;
+  cPlanNo?: string | null;
+  cCool?: string | null;
+  cOrderNo?: string | null;
+  cStove?: string | null;
+  cPieceNo?: string | null;
+  cSgCode?: string | null;
+  nThick?: number;
+  nWth?: number | null;
+  nLen?: number | null;
+  cSpec?: string | null;
+  nNum?: number;
+  nCalWgt?: number;
+  cStackNo?: string | null;
+  cStackNum?: string | null;
+  nQmStatus?: number | null;
+  nLockReason?: string | null;
+  cPrintCode?: string | null;
+  nStatus?: number | null;
+  cProRemark?: string | null;
+}
+/** 坯料计划查询（原 TLSlabDto，SD2020DG） */
+export interface TLSlabDto {
+  cCode?: string | null;
+  cName?: string | null;
+  cDesc?: string | null;
+  nSlabThick?: number | null;
+  nSlabWidth?: number | null;
+  nSlabLenMin?: number | null;
+  nWgtUnit?: number | null;
+}
+/** 插入提料 ZG02（原 InsertTlZG02Dto） */
+export interface InsertTlZG02Dto {
+  cLineCode?: string | null;
+}
+/** MP2033 查询参数（原 QueryParamDto : InputTmp2010Dto） */
+export interface QueryParamDto extends InputTmp2010Dto {
+  zGLineCode?: string | null;
+  stovePlanWgt?: number;
+  ccmCode?: string | null;
+  widths?: string | null;
+  _selList?: FrmMS2033Dto_PlanInfo[] | null;
+}
+/** MP2033 生产部下发计划行（原 FrmMS2033Dto_PlanInfo : SlabPcDto） */
+export type FrmMS2033Dto_PlanInfo = SlabPcDto;
+/** MP2033 炉次切割计划集（原 FrmMS2033Dto_StoveCutInfoAll） */
+export interface FrmMS2033Dto_StoveCutInfoAll {
+  dataSourceLeft?: FrmMS2033Dto_StoveCutInfo[] | null;
+  dataSourceRight?: FrmMS2033Dto_StoveCutInfo[] | null;
+}
+/** MP2033 炉次切割行（原 FrmMS2033Dto_StoveCutInfo） */
+export interface FrmMS2033Dto_StoveCutInfo {
+  [key: string]: unknown;
+  id?: string | null;
+  index?: number;
+  stoveSgCode?: string | null;
+  cPlanTime?: string | null;
+  nSortJc?: number | null;
+  stoveHaveMoreSgCode?: boolean;
+  cPieceNo?: string | null;
+  cStove?: string | null;
+  cSgCode?: string | null;
+  nThick?: number | null;
+  nWidth?: number | null;
+  nLen?: number | null;
+}
+/** MP2033 添加件次参数（原 FrmMS2033Dto_AddPieceParamDto） */
+export interface FrmMS2033Dto_AddPieceParamDto {
+  _stoveCutInfo?: FrmMS2033Dto_StoveCutInfo | null;
+  liu?: string | null;
+  nThick?: number;
+  nWidth?: number;
+  nLen?: number;
+  backUp?: string | null;
+}
+/** MP2033 增删件次入参（原 FrmMS2033Dto_AddOrRemovePieceDto） */
+export interface FrmMS2033Dto_AddOrRemovePieceDto {
+  paramDto?: QueryParamDto | null;
+  stoveCutInfoAll?: FrmMS2033Dto_StoveCutInfoAll | null;
+  addOrRemoveData?: FrmMS2033Dto_AddPieceParamDto | null;
+  dataOperateTypeEnum?: number;
+  dragSourceData?: FrmMS2033Dto_StoveCutInfo | null;
+  dragTragetUpData?: FrmMS2033Dto_StoveCutInfo | null;
+}
+/** MP2033 保存入参（原 SaveDataDto） */
+export interface SaveDataDto {
+  paramDto?: QueryParamDto | null;
+  datas?: FrmMS2033Dto_StoveCutInfoAll | null;
+  _removeDatas?: FrmMS2033Dto_StoveCutInfo[] | null;
+  planInfo?: FrmMS2033Dto_PlanInfo | null;
+}
+/** 钢种执行标准（原 SgCodeAndStdDto，MP2033） */
+export interface SgCodeAndStdDto {
+  cSgCode?: string | null;
+  cSgStd?: string | null;
+  nThick?: number | null;
+  nWidth?: number | null;
+  nLen?: number | null;
+  operationButtonText?: string | null;
+}
 
 export const castStoveApi = {
   getUnitWgt(data?: SlabPcDto) {
@@ -2326,6 +2688,26 @@ export const castStoveApi = {
       },
     );
   },
+  /** 浇次作废前校验（原 CheckJCInvalid，MP2050） */
+  checkJCInvalid(jcId?: string) {
+    return requestClient.request<any>(
+      "/dDH.Service.SMP.Services/castStove/checkJCInvalid",
+      {
+        method: "post",
+        params: { jcId },
+      },
+    );
+  },
+  /** 浇次作废（原 JCInvalid，MP2050） */
+  jCInvalid(jcId?: string) {
+    return requestClient.request<any>(
+      "/dDH.Service.SMP.Services/castStove/jCInvalid",
+      {
+        method: "post",
+        params: { jcId },
+      },
+    );
+  },
 };
 
 export const fh2000Api = {
@@ -2443,6 +2825,47 @@ export const fh2000Api = {
       {
         method: "post",
         params: { cPieceNo },
+      },
+    );
+  },
+  /** 异常处理计量材料号（原 SendJL2，FH1000 simpleButton1） */
+  sendJL2(data?: string[]) {
+    return requestClient.request<number>(
+      "/dDH.Service.SMP.Services/fh2000/sendJL2",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+  /** 装车异常日志（原 GetTsd1000Log，FH3010） */
+  getTsd1000Log(data?: InputFh2000Dto) {
+    return requestClient.request<Tsd1000Log[]>(
+      "/dDH.Service.SMP.Services/fh2000/getTsd1000Log",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+  /** 退货记录查询（原 GetTsd3000Lst，FH4000） */
+  getTsd3000Lst(data?: QueryTsd3000Dto) {
+    return requestClient.request<QueryTsd3000Dto[]>(
+      "/dDH.Service.SMP.Services/fh2000/getTsd3000Lst",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+  /** 确认退货（原 InsertTsd3000，FH4000） */
+  insertTsd3000(data?: QueryTsd3000Dto[], remark?: string) {
+    return requestClient.request<number>(
+      "/dDH.Service.SMP.Services/fh2000/insertTsd3000",
+      {
+        method: "post",
+        data,
+        params: { remark },
       },
     );
   },
@@ -2717,6 +3140,179 @@ export const tLApi = {
       },
     );
   },
+  /** 订单提料查询（原 GetOrderLst2，TL2000/MP2016） */
+  getOrderLst2(data?: InputTmp2000Dto) {
+    return requestClient.request<QueryTmp2000Dto[]>(
+      "/dDH.Service.SMP.Services/tL/getOrderLst2",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+  /** 提料生产关闭（原 TLProdClose，TL2000/TL2000DG） */
+  tlProdClose(data?: Tmp2005Dto[]) {
+    return requestClient.request<number>(
+      "/dDH.Service.SMP.Services/tL/tlProdClose",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+};
+
+/** 库存坯料挂单/转挂（原 ITLZG02AppService） */
+export const tLZG02Api = {
+  getSlabCodeList() {
+    return requestClient.request<TLSlabDto[]>(
+      "/dDH.Service.SMP.Services/tLZG02/getSlabCodeList",
+      {
+        method: "post",
+      },
+    );
+  },
+  insertTLZG02(data?: InsertTlZG02Dto, lst?: string[]) {
+    return requestClient.request<number>(
+      "/dDH.Service.SMP.Services/tLZG02/insertTLZG02",
+      {
+        method: "post",
+        params: { lst },
+        data,
+      },
+    );
+  },
+  checkedTlNew(data?: string[]) {
+    return requestClient.request<number>(
+      "/dDH.Service.SMP.Services/tLZG02/checkedTlNew",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+  cancleCheckedTlNew(data?: string[]) {
+    return requestClient.request<number>(
+      "/dDH.Service.SMP.Services/tLZG02/cancleCheckedTlNew",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+  delTl(data?: string[]) {
+    return requestClient.request<number>(
+      "/dDH.Service.SMP.Services/tLZG02/delTl",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+};
+
+/** 中厚板计划排产（原 IFrmMP2033AppService） */
+export const frmMP2033Api = {
+  getSlabOrderList(data?: QueryParamDto) {
+    return requestClient.request<FrmMS2033Dto_PlanInfo[]>(
+      "/dDH.Service.SMP.Services/frmMP2033/getSlabOrderList",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+  getGPWidthInfo(data?: QueryParamDto) {
+    return requestClient.request<number[]>(
+      "/dDH.Service.SMP.Services/frmMP2033/getGPWidthInfo",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+  checkCreateStoveCunInfo(data?: QueryParamDto) {
+    return requestClient.request<any>(
+      "/dDH.Service.SMP.Services/frmMP2033/checkCreateStoveCunInfo",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+  createStoveCunInfo(data?: QueryParamDto) {
+    return requestClient.request<any>(
+      "/dDH.Service.SMP.Services/frmMP2033/createStoveCunInfo",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+  calcuateNewData(data?: FrmMS2033Dto_AddOrRemovePieceDto) {
+    return requestClient.request<FrmMS2033Dto_StoveCutInfoAll>(
+      "/dDH.Service.SMP.Services/frmMP2033/calcuateNewData",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+  checkRemoveStoveCunInfo(data?: QueryParamDto) {
+    return requestClient.request<any>(
+      "/dDH.Service.SMP.Services/frmMP2033/checkRemoveStoveCunInfo",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+  removeStoveCunInfo(data?: QueryParamDto) {
+    return requestClient.request<any>(
+      "/dDH.Service.SMP.Services/frmMP2033/removeStoveCunInfo",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+  queryStoveCutInfo(data?: QueryParamDto) {
+    return requestClient.request<FrmMS2033Dto_StoveCutInfoAll>(
+      "/dDH.Service.SMP.Services/frmMP2033/queryStoveCutInfo",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+  createStoveCutData(data?: FrmMS2033Dto_AddPieceParamDto) {
+    return requestClient.request<FrmMS2033Dto_StoveCutInfo>(
+      "/dDH.Service.SMP.Services/frmMP2033/createStoveCutData",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+  updateStoveSgCodeInfo(stoveInfo?: FrmMS2033Dto_StoveCutInfo, sgCodeInfo?: SgCodeAndStdDto) {
+    return requestClient.request<any>(
+      "/dDH.Service.SMP.Services/frmMP2033/updateStoveSgCodeInfo",
+      {
+        method: "post",
+        params: { sgCodeInfo },
+        data: stoveInfo,
+      },
+    );
+  },
+  saveDatas(data?: SaveDataDto) {
+    return requestClient.request<any>(
+      "/dDH.Service.SMP.Services/frmMP2033/saveDatas",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
 };
 
 export const tmp1220Api = {
@@ -2911,7 +3507,180 @@ export const tmp2000Api = {
       },
     );
   },
-};
+  /** 试验料订单查询（原 GetSylOrderLst，SD2000SYL） */
+  getSylOrderLst(data?: InputTmp2000Dto) {
+    return requestClient.request<QueryTmp2000Dto[]>(
+      "/dDH.Service.SMP.Services/tmp2000/getSylOrderLst",
+      { method: "post", data },
+    );
+  },
+  /** 商品坯订单删除（原 DelGPOrder，SD2000DG_SYL） */
+  delGPOrder(data?: QueryTmp2000Dto[]) {
+    return requestClient.request<number>(
+      "/dDH.Service.SMP.Services/tmp2000/delGPOrder",
+      { method: "post", data },
+    );
+  },
+  /** 退回排产（原 BackOrderPlan，SD2000） */
+  backOrderPlan(data?: QueryTmp2000Dto[]) {
+    return requestClient.request<number>(
+      "/dDH.Service.SMP.Services/tmp2000/backOrderPlan",
+      { method: "post", data },
+    );
+  },
+  /** 商品坯计划下发（原 PushSlabOrderPlan，SD2020GP） */
+  pushSlabOrderPlan(data?: string[]) {
+    return requestClient.request<number>(
+      "/dDH.Service.SMP.Services/tmp2000/pushSlabOrderPlan",
+      { method: "post", data },
+    );
+  },
+  /** 退回销售订单（原 BackSaleOrder，SD2020 系列） */
+  backSaleOrder(data?: string[]) {
+    return requestClient.request<number>(
+      "/dDH.Service.SMP.Services/tmp2000/backSaleOrder",
+      { method: "post", data },
+    );
+  },
+  /** 退回销售订单2（原 BackSaleOrder2，SD2020GP） */
+  backSaleOrder2(data?: string[]) {
+    return requestClient.request<number>(
+      "/dDH.Service.SMP.Services/tmp2000/backSaleOrder2",
+      { method: "post", data },
+    );
+  },
+  /** 订单结案/取消结案（原 FinishOrder，flag=Y/N） */
+  finishOrder(flag?: string, data?: string[]) {
+    return requestClient.request<number>(
+      "/dDH.Service.SMP.Services/tmp2000/finishOrder",
+      { method: "post", params: { flag }, data },
+    );
+  },
+  /** 未提料长度查询（原 GetTmp2010Len，SD2050） */
+  getTmp2010Len(data?: InputTmp2000Dto) {
+    return requestClient.request<QueryCptTmp2010Dto[]>(
+      "/dDH.Service.SMP.Services/tmp2000/getTmp2010Len",
+      { method: "post", data },
+    );
+  },
+  /** 板长变更申请列表（原 GetTmp2010ApplyLen，SD2050Check） */
+  getTmp2010ApplyLen() {
+    return requestClient.request<QueryCptTmp2010Dto[]>(
+      "/dDH.Service.SMP.Services/tmp2000/getTmp2010ApplyLen",
+      { method: "post" },
+    );
+  },
+  /** 提交板长变更（原 InsertOrderLenPlan，SD2050） */
+  insertOrderLenPlan(data?: string[]) {
+    return requestClient.request<number>(
+      "/dDH.Service.SMP.Services/tmp2000/insertOrderLenPlan",
+      { method: "post", data },
+    );
+  },
+  /** 板长变更审核（原 CheckTmp2010ApplyLen，SD2050Check） */
+  checkTmp2010ApplyLen(checkApply?: number, data?: QueryCptTmp2010Dto[]) {
+    return requestClient.request<number>(
+      "/dDH.Service.SMP.Services/tmp2000/checkTmp2010ApplyLen",
+      { method: "post", params: { checkApply }, data },
+    );
+  },
+  /** 拆分订单列表（原 GetOrderCF，SD2020CheckCf） */
+  getOrderCF() {
+    return requestClient.request<QueryTmp2000Dto[]>(
+      "/dDH.Service.SMP.Services/tmp2000/getOrderCF",
+      { method: "post" },
+    );
+  },
+  /** 拆分订单审核（原 CheckOrderCFApply，SD2020CheckCf） */
+  checkOrderCFApply(checkApply?: number, data?: string[]) {
+    return requestClient.request<number>(
+      "/dDH.Service.SMP.Services/tmp2000/checkOrderCFApply",
+      { method: "post", params: { checkApply }, data },
+    );
+  },
+  /** 提料计划订单（原 GetTmp2005，MP3100） */
+  getTmp2005(data?: InputTmp2000Dto) {
+    return requestClient.request<Tmp2005Dto[]>(
+      "/dDH.Service.SMP.Services/tmp2000/getTmp2005",
+      { method: "post", data },
+    );
+  },
+  /** 炉次库存件次（原 GetTmp2005Storages，MP3100） */
+  getTmp2005Storages(data?: InputTmp2010Dto) {
+    return requestClient.request<Tyd2000Dto[]>(
+      "/dDH.Service.SMP.Services/tmp2000/getTmp2005Storages",
+      { method: "post", data },
+    );
+  },
+  /** 浇次产出坯料（原 GetCptJc，MP3100） */
+  getCptJc(data?: InputTmp2000Dto) {
+    return requestClient.request<QueryCptJC[]>(
+      "/dDH.Service.SMP.Services/tmp2000/getCptJc",
+      { method: "post", data },
+    );
+  },
+  /** 成品库存资源调配（原 GetStockList，SD2061/SD3010） */
+  getStockList(data?: InputStockDto) {
+    return requestClient.request<QueryTyd2000Dto[]>(
+      "/dDH.Service.SMP.Services/tmp2000/getStockList",
+      { method: "post", data },
+    );
+  },
+  /** 确认资源调配（原 UpdateStockAllocation，SD2061） */
+  updateStockAllocation(cSettleCust?: string, cInboundNo?: string, data?: InputStockDto) {
+    return requestClient.request<number>(
+      "/dDH.Service.SMP.Services/tmp2000/updateStockAllocation",
+      { method: "post", params: { cSettleCust, cInboundNo }, data },
+    );
+  },
+  /** 取消订单匹配（原 CancelMatchOrder，SD2061/SD3010） */
+  cancelMatchOrder(data?: string[]) {
+    return requestClient.request<number>(
+      "/dDH.Service.SMP.Services/tmp2000/cancelMatchOrder",
+      { method: "post", data },
+    );
+  },
+  /** 资源调配日志（原 GetTyd2000AllocationLogsAsync，SD3000） */
+  getTyd2000AllocationLogsAsync(data?: InputTyd2000AllocationDto) {
+    return requestClient.request<Tyd2000Allocation[]>(
+      "/dDH.Service.SMP.Services/tmp2000/getTyd2000AllocationLogsAsync",
+      { method: "post", data },
+    );
+  },
+  /** 生成销售预约单模板（原 GenerateOrderTemplate，SD2061） */
+  generateOrderTemplate(data?: QueryTyd2000Dto[]) {
+    return requestClient.request<OrderTemplateDto[]>(
+      "/dDH.Service.SMP.Services/tmp2000/generateOrderTemplate",
+      { method: "post", data },
+    );
+  },
+  /** 批量修改订单（原 BatchUpdateOrder，SD2000） */
+  batchUpdateOrder(
+    dJhqTime?: string,
+    cInboundNo?: string,
+    cOrderCustEname?: string,
+    cSgStd?: string,
+    data?: QueryTmp2000Dto[],
+  ) {
+    return requestClient.request<number>(
+      "/dDH.Service.SMP.Services/tmp2000/batchUpdateOrder",
+      { method: "post", params: { dJhqTime, cInboundNo, cOrderCustEname, cSgStd }, data },
+    );
+  },
+  /** 冶金规范钢种匹配（原 MatchNkSgCode，SD2000DG_SYL） */
+  matchNkSgCode(cLineCode?: string, data?: string[]) {
+    return requestClient.request<number>(
+      "/dDH.Service.SMP.Services/tmp2000/matchNkSgCode",
+      { method: "post", params: { cLineCode }, data },
+    );
+  },
+
+  getCptSlabNo(data?: unknown) {
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tmp2000/getCptSlabNo", {
+      method: "post",
+      data,
+    });
+  },};
 
 export const tmp2010Api = {
   queryOrder(data?: InputTmp2010Dto) {
@@ -2947,6 +3716,27 @@ export const tmp2010Api = {
       {
         method: "post",
         params: { code },
+        data,
+      },
+    );
+  },
+  /** 更新规格（原 UpdateSpec，MP2010） */
+  updateSpec(data?: string[]) {
+    return requestClient.request<any>(
+      "/dDH.Service.SMP.Services/tmp2010/updateSpec",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+  /** 修改计划日期（原 ChangePlanDate，MP2010） */
+  changePlanDate(cPlanTime?: string, data?: string[]) {
+    return requestClient.request<any>(
+      "/dDH.Service.SMP.Services/tmp2010/changePlanDate",
+      {
+        method: "post",
+        params: { cPlanTime },
         data,
       },
     );
@@ -3020,9 +3810,20 @@ export const tmp2020Api = {
       },
     );
   },
-  downTmp2020s(data?: string[]) {
+  downTmp2020s(cLineCode?: string, data?: string[]) {
     return requestClient.request<any>(
       "/dDH.Service.SMP.Services/tmp2020/downTmp2020s",
+      {
+        method: "post",
+        params: { cLineCode },
+        data,
+      },
+    );
+  },
+  /** 下发计划关闭（原 CloseDownPlan，MP2021） */
+  closeDownPlan(data?: string[]) {
+    return requestClient.request<any>(
+      "/dDH.Service.SMP.Services/tmp2020/closeDownPlan",
       {
         method: "post",
         data,
@@ -3307,5 +4108,26 @@ export const xSApi = {
         data,
       },
     );
+  },
+  /** 派车/提货单计划明细（原 GetBillDetailList，FH3000） */
+  getBillDetailList(data?: ApiBillDetailInput) {
+    return requestClient.request<ApiBillDetail[]>(
+      "/dDH.Service.Interface.Services.XS/xS/getBillDetailList",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+};
+
+/* ---------- 炼钢作业 MP3200 补齐 ---------- */
+/** frmMP3200Api（炼钢作业迁移补齐） */
+export const frmMP3200Api = {
+  query(data?: unknown) {
+    return requestClient.request<any>("/dDH.Service.SMP.Services/frmMP3200/query", {
+      method: "post",
+      data,
+    });
   },
 };

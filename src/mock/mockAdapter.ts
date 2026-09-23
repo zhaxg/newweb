@@ -15,6 +15,8 @@ import { limsRoutes } from "./lims";
 import { shrRoutes } from "./shr";
 import { sqmRoutes } from "./sqm";
 import { smpRoutes } from "./smp";
+import { sydRoutes } from "./syd";
+import { smsRoutes } from "./sms";
 
 /**
  * 进程内 mock axios adapter：拦截 `${API_BASE}/**`，读写现有 localStorage 数据源，
@@ -39,6 +41,8 @@ const routes: RouteMap = {
   ...shrRoutes,
   ...sqmRoutes,
   ...smpRoutes,
+  ...sydRoutes,
+  ...smsRoutes,
 };
 
 /** 登录前/登出接口：真实后端同样不校验 Authorization 头，豁免 mock 的 401 门 */

@@ -4,6 +4,7 @@
  */
 
 import { requestClient } from "@/api/_core/request";
+import type { Tyd2000Dto } from "./syd.swagger";
 import type { Tqmtpa6 } from "./sqm.swagger";
 
 /* ---------- 枚举 ---------- */
@@ -3791,6 +3792,68 @@ export interface ZzwdItemDto {
 /* ---------- 请求 ---------- */
 
 
+
+
+/** 修磨作业查询入参（原 DtoQueryThr3800SlabInfo，FrmHR3800） */
+export interface DtoQueryThr3800SlabInfo {
+  dProTime?: TimeRange;
+  cPieceNo?: string | null;
+  cPieceNoSlab?: string | null;
+  cSgCode?: string | null;
+  nResult?: number | null;
+  cStoreCode?: string | null;
+}
+/** 修磨录入行（原 Thr3800Dto，FrmHR3800_Add） */
+export interface Thr3800Dto {
+  cStoreCode?: string | null;
+  cPieceNo?: string | null;
+  cSgCode?: string | null;
+  nThick?: number;
+  nWidth?: number | null;
+  nLen?: number | null;
+  cSpec?: string | null;
+  nWgt?: number | null;
+  cSurfaceDesc?: string | null;
+  nResult?: number;
+  cInboundNo?: string | null;
+  cSurfaceRemark?: string | null;
+  cTol?: string | null;
+  cTrimFlag?: string | null;
+}
+/** 修磨日志（原 Thr3800，FrmHR3800 修磨日志表） */
+export interface Thr3800 {
+  id?: string | null;
+  creator?: string | null;
+  createTime?: string | null;
+  lastModifier?: string | null;
+  lastModifyTime?: string | null;
+  cPieceNo?: string | null;
+  cInboundNo?: string | null;
+  cSgCode?: string | null;
+  nThick?: number | null;
+  nWidth?: number | null;
+  nLen?: number | null;
+  cSpec?: string | null;
+  nWgt?: number | null;
+  cSurfaceDesc?: string | null;
+  nResult?: number | null;
+  cSurfaceRemark?: string | null;
+  nThickBefore?: number | null;
+  nWidthBefore?: number | null;
+  nLenBefore?: number | null;
+  cSpecBefore?: string | null;
+  nWgtBefore?: number | null;
+  cSgCodeBefore?: string | null;
+  nResultBefore?: number | null;
+  cSurfaceDescBefore?: string | null;
+  cSurfaceRemarkBefore?: string | null;
+  cInboundNoBefore?: string | null;
+  cTol?: string | null;
+  cTolBefore?: string | null;
+  cTrimFlag?: string | null;
+  cTrimFlagBefore?: string | null;
+  cStoreCode?: string | null;
+}
 
 export const bxApi = {
   addP48j03(data?: DtoP48J03[]) {
@@ -9361,3 +9424,37 @@ export interface TiL2me18Dto {
   /** 预留 */ spare1: number[];
   /** 预留 */ spare2: number[];
 }
+
+
+export const hR3800Api = {
+  /** 在制品材料查询（原 QuerySlab，FrmHR3800 DataBind） */
+  querySlab(data?: DtoQueryThr3800SlabInfo) {
+    return requestClient.request<Tyd2000Dto[]>(
+      "/dDH.Service.SHR.Services/hR3800/querySlab",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+  /** 修磨日志查询（原 QueryThr3800s，FrmHR3800 DataBindXM） */
+  queryThr3800s(timeRange?: TimeRange) {
+    return requestClient.request<Thr3800[]>(
+      "/dDH.Service.SHR.Services/hR3800/queryThr3800s",
+      {
+        method: "post",
+        data: timeRange,
+      },
+    );
+  },
+  /** 修磨提交（原 FrmHR3800_Add 内部保存） */
+  addThr3800(data?: Thr3800Dto) {
+    return requestClient.request<any>(
+      "/dDH.Service.SHR.Services/hR3800/addThr3800",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+};

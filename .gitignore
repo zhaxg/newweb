@@ -5,3 +5,6 @@ shots/
 .DS_Store
 temp/
 .code-graph/
+.playwright-mcp/
+.claude/
+.qoder/settings.local.json

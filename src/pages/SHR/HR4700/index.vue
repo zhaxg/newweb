@@ -95,7 +95,7 @@ function onRowDblClick() {
   <div class="flex min-h-0 flex-1 flex-col">
     <div class="grid shrink-0 grid-cols-6 items-center gap-x-3 gap-y-1.5 border-b border-border/60 px-3 py-2">
       <div class="col-span-2 flex min-w-0 items-center gap-1.5">
-        <label class="w-16 shrink-0 text-xs text-muted-foreground">轧制完成时间</label>
+        <label class="w-16 shrink-0 text-xs text-muted-foreground">完成时间</label>
         <DatePicker v-model="input.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
           show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
       </div>

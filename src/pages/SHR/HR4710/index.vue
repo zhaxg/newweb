@@ -39,7 +39,7 @@ const api = ref<GridApi | null>(null);
 function onReady(e: GridReadyEvent) { api.value = e.api; }
 
 const colDefs: ColDef[] = [
-  /*  { colId: "cSlabNo", field: "cSlabNo", headerName: "板坯号", width: 150 },
+  { colId: "cSlabNo", field: "cSlabNo", headerName: "板坯号", width: 150 },
   { colId: "cBatchOrder", field: "cBatchOrder", headerName: "组批号", width: 150 },
   { colId: "cSgCode", field: "cSgCode", headerName: "钢种", width: 150 },
   { colId: "dRollingTimeEnd", field: "dRollingTimeEnd", headerName: "轧制结束时间", width: 150 },
@@ -70,7 +70,7 @@ const colDefs: ColDef[] = [
   { colId: "thickHp", field: "thickHp", headerName: "测厚仪中部mm", width: 150 },
   { colId: "meaThickDs", field: "meaThickDs", headerName: "测厚仪传动侧mm", width: 150 },
   { colId: "nThickTolMin", field: "nThickTolMin", headerName: "厚度下偏差", width: 150 },
-  { colId: "nThickTolMax", field: "nThickTolMax", headerName: "厚度上偏差", width: 150 },*/
+  { colId: "nThickTolMax", field: "nThickTolMax", headerName: "厚度上偏差", width: 150 },
 ];
 
 async function query() {
@@ -92,7 +92,7 @@ async function query() {
   <div class="flex min-h-0 flex-1 flex-col">
     <div class="grid shrink-0 grid-cols-6 items-center gap-x-3 gap-y-1.5 border-b border-border/60 px-3 py-2">
       <div class="col-span-2 flex min-w-0 items-center gap-1.5">
-        <label class="w-16 shrink-0 text-xs text-muted-foreground">轧制完成时间</label>
+        <label class="w-16 shrink-0 text-xs text-muted-foreground">完成时间</label>
         <DatePicker v-model="input.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
           show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
       </div>

@@ -4,7 +4,7 @@
  *  待接入：订单导入 btnImport（原 DevExpress Excel 导入 ImportHR2000Dto → importHR2000，web 暂无 xlsx 解析设施）
  *  偏差：上表拖拽排序（原 GridViewDragDropHelper）以 AG Grid rowDrag 复刻，仅本地重排序号后随「添加」提交；
  *        订单号含-B 或 合同备注含「加急」整行标红（原 gridView2 RowStyle）；colCSteelType/colCTrimFlag KV 翻译缺省显示原值；
- *        批量计划号原 MemoExEdit 弹出编辑 → 单列触发框 + 页内 Dialog 批量粘贴（逗号/换行分隔，解析兼容原 \r\n Split） */
+ *        批量计划号原 MemoExEdit → Widgets/BatchIdInput（label=批量计划号） */
 
 import { computed, reactive, ref } from "vue";
 import Button from "primevue/button";
@@ -14,8 +14,9 @@ import InputText from "primevue/inputtext";
 import Select from "primevue/select";
 import Splitter from "primevue/splitter";
 import SplitterPanel from "primevue/splitterpanel";
-import Textarea from "primevue/textarea";
-import { IconChevronDown, IconSearch } from "@tabler/icons-vue";
+import { IconSearch } from "@tabler/icons-vue";
+import BatchIdInput from "@/pages/Widgets/BatchIdInput/index.vue";
+import { parseBatchIds } from "@/pages/Widgets/BatchIdInput/parse";
 import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, GridApi, GridReadyEvent, RowClassParams, RowDragEndEvent, ValueFormatterParams } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
@@ -83,33 +84,8 @@ const dayStatusOptions = [
 const addRemark = ref("");
 const closeReason = ref("");
 
-/* ---------- 批量计划号：原 MemoExEdit（弹出多行编辑）→ 单列 + Dialog 批量粘贴 ----------
-   存 dayInput.orders 为逗号串；查询时兼容逗号/换行拆分（原 C# 按 \r\n Split） */
-const ordersDialogOpen = ref(false);
-const ordersDraft = ref("");
-function parseOrderList(text: string): string[] {
-  return text
-    .split(/[,，\r\n]+/)
-    .map((s) => s.trim())
-    .filter(Boolean);
-}
-const ordersCount = computed(() => parseOrderList(dayInput.orders).length);
-const ordersDisplay = computed(() => {
-  const list = parseOrderList(dayInput.orders);
-  if (!list.length) return "";
-  return `${list.length} 个计划号`;
-});
-function openOrdersDialog() {
-  ordersDraft.value = parseOrderList(dayInput.orders).join("\n");
-  ordersDialogOpen.value = true;
-}
-function applyOrdersDialog() {
-  dayInput.orders = parseOrderList(ordersDraft.value).join(",");
-  ordersDialogOpen.value = false;
-}
-function clearOrdersDialog() {
-  ordersDraft.value = "";
-}
+/* ---------- 批量计划号：Widgets/BatchIdInput（原 MemoExEdit）；查询时 parseBatchIds 拆串 ---------- */
+const parseOrderList = parseBatchIds;
 
 /* ---------- 上表：轧钢计划（gridView1 / ZgPlanDto，勾选=Selected，可拖拽排序） ---------- */
 const tmpRows = ref<ZgPlanDto[]>([]);
@@ -491,16 +467,7 @@ function btnImport() {
             <label class="w-16 shrink-0 text-xs text-muted-foreground">提料计划号</label>
             <InputText v-model="dayInput.cOrderNo" class="min-w-0 flex-1" @keydown.enter="queryDay" />
           </div>
-          <div class="flex min-w-0 items-center gap-1.5">
-            <label class="w-16 shrink-0 text-xs text-muted-foreground">批量计划号</label>
-            <div class="flex min-w-0 flex-1 items-center gap-0.5">
-              <InputText :model-value="ordersDisplay" readonly class="min-w-0 flex-1" placeholder="批量录入…"
-                @click="openOrdersDialog" />
-              <Button text class="shrink-0 px-1" aria-label="批量录入计划号" @click="openOrdersDialog">
-                <IconChevronDown class="h-3 w-3" />
-              </Button>
-            </div>
-          </div>
+          <BatchIdInput v-model="dayInput.orders" label="批量计划号" />
           <div class="flex min-w-0 items-center gap-1.5">
             <label class="w-16 shrink-0 text-xs text-muted-foreground">熔炼号</label>
             <InputText v-model="dayInput.cPieceNo" class="min-w-0 flex-1" @keydown.enter="queryDay" />
@@ -540,20 +507,6 @@ function btnImport() {
         </div>
       </SplitterPanel>
     </Splitter>
-
-    <!-- 批量计划号（原 MemoExEdit 弹出编辑）：逗号/换行分隔，占单列 -->
-    <Dialog :visible="ordersDialogOpen" modal header="批量计划号"
-      :style="{ width: 'min(32rem, calc(100vw - 2rem))' }" @update:visible="ordersDialogOpen = $event">
-      <div class="flex flex-col gap-2">
-        <p class="text-xs text-muted-foreground">粘贴或输入多个计划号，用逗号或换行分隔（共 {{ ordersCount }} 个）</p>
-        <Textarea v-model="ordersDraft" rows="8" class="w-full" placeholder="例如：&#10;JH001,JH002,JH003&#10;JH004" />
-      </div>
-      <template #footer>
-        <Button label="清空" variant="outlined" severity="secondary" @click="clearOrdersDialog" />
-        <Button label="取消" variant="outlined" @click="ordersDialogOpen = false" />
-        <Button label="确定" @click="applyOrdersDialog" />
-      </template>
-    </Dialog>
 
     <Dialog :visible="confirmOpen" modal header="确认" :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
       @update:visible="confirmOpen = $event">

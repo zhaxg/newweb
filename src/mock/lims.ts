@@ -1,5 +1,11 @@
 import { getBody, getParams, ok, type RouteMap } from "./admin/core";
 
+/** 占位：≤5 条随机演示行（质量判定等查询端点共用） */
+function demoRows<T>(n: number, make: (i: number) => T): T[] {
+  const count = Math.min(5, Math.max(1, n));
+  return Array.from({ length: count }, (_, i) => make(i));
+}
+
 /**
  * LIMS 域 mock（QL3000 检验委托发送等）：
  * 键 = requestClient 的路径（去 /api 前缀），与 swagger URL 一致。
@@ -1266,5 +1272,107 @@ export const limsRoutes: RouteMap = {
         n: 0.004,
         cRemark: "",
       })),
+    ),
+
+  /* 质量判定重迁占位 2026-09-23 */
+  ["post /dDH.Service.LIMS.Services/tql1060/queryStorage"]: (config) =>
+    ok(
+      config,
+      demoRows(3, (i) => ({ id: `D${i + 1}`, selected: false, cPieceNo: `P00${i + 1}`, cStove: `S26C0${i + 1}`, nStatus: 1 })),
+    ),
+  ["post /dDH.Service.LIMS.Services/tql1060/queryRecord"]: (config) =>
+    ok(
+      config,
+      demoRows(3, (i) => ({ id: `D${i + 1}`, selected: false, cPieceNo: `P00${i + 1}`, cStove: `S26C0${i + 1}`, nStatus: 1 })),
+    ),
+  ["post /dDH.Service.LIMS.Services/tql1060/setDisable"]: (config) => ok(config, null),
+  ["post /dDH.Service.LIMS.Services/tql1070/queryStorage"]: (config) =>
+    ok(
+      config,
+      demoRows(3, (i) => ({ id: `D${i + 1}`, selected: false, cPieceNo: `P00${i + 1}`, cStove: `S26C0${i + 1}`, nStatus: 1 })),
+    ),
+  ["post /dDH.Service.LIMS.Services/tql1070/queryRecord"]: (config) =>
+    ok(
+      config,
+      demoRows(3, (i) => ({ id: `D${i + 1}`, selected: false, cPieceNo: `P00${i + 1}`, cStove: `S26C0${i + 1}`, nStatus: 1 })),
+    ),
+  ["post /dDH.Service.LIMS.Services/tql1070/queryTql1070"]: (config) =>
+    ok(
+      config,
+      demoRows(3, (i) => ({ id: `D${i + 1}`, selected: false, cPieceNo: `P00${i + 1}`, cStove: `S26C0${i + 1}`, nStatus: 1 })),
+    ),
+  ["post /dDH.Service.LIMS.Services/tql1070/setDisable"]: (config) => ok(config, null),
+  ["post /dDH.Service.LIMS.Services/qZ5000/queryCpcf"]: (config) =>
+    ok(
+      config,
+      demoRows(3, (i) => ({ id: `D${i + 1}`, selected: false, cPieceNo: `P00${i + 1}`, cStove: `S26C0${i + 1}`, nStatus: 1 })),
+    ),
+  ["post /dDH.Service.LIMS.Services/testJob/batchAutoJudge"]: (config) => ok(config, null),
+  ["post /dDH.Service.LIMS.Services/stoveCFRecord/queryRecord"]: (config) =>
+    ok(
+      config,
+      demoRows(3, (i) => ({ id: `D${i + 1}`, selected: false, cPieceNo: `P00${i + 1}`, cStove: `S26C0${i + 1}`, nStatus: 1 })),
+    ),
+  ["post /dDH.Service.LIMS.Services/stoveCFRecord/queryProcessRecord"]: (config) =>
+    ok(
+      config,
+      demoRows(3, (i) => ({ id: `D${i + 1}`, selected: false, cPieceNo: `P00${i + 1}`, cStove: `S26C0${i + 1}`, nStatus: 1 })),
+    ),
+  ["post /dDH.Service.LIMS.Services/tql1050/addImages"]: (config) => ok(config, null),
+
+  /* QZ6000 补漏 */
+  ["post /dDH.Service.LIMS.Services/testJob/queryAllSamples"]: (config) =>
+    ok(
+      config,
+      demoRows(3, (i) => ({ id: `D${i + 1}`, selected: false, cPieceNo: `P00${i + 1}`, cStove: `S26C0${i + 1}`, nStatus: 1 })),
+    ),
+  ["post /dDH.Service.LIMS.Services/stoveChemicalCompositionTest/syncStoveCf"]: (config) => ok(config, null),
+
+  /* 质量判定 LIMS 补漏 2026-09-23 */
+  ["post /dDH.Service.LIMS.Services/tql2001/queryStoveInfo"]: (config) =>
+    ok(
+      config,
+      demoRows(3, (i) => ({ id: `D${i + 1}`, selected: false, cTestNo: `T2609${i + 1}`, cStove: `S26C0${i + 1}`, cPieceNo: `P00${i + 1}` })),
+    ),
+  ["post /dDH.Service.LIMS.Services/tql2001/queryStoveData"]: (config) =>
+    ok(
+      config,
+      demoRows(3, (i) => ({ id: `D${i + 1}`, selected: false, cTestNo: `T2609${i + 1}`, cStove: `S26C0${i + 1}`, cPieceNo: `P00${i + 1}` })),
+    ),
+  ["post /dDH.Service.LIMS.Services/stoveChemicalCompositionTest/queryFinalOrDisableSamples"]: (config) =>
+    ok(
+      config,
+      demoRows(3, (i) => ({ id: `D${i + 1}`, selected: false, cTestNo: `T2609${i + 1}`, cStove: `S26C0${i + 1}`, cPieceNo: `P00${i + 1}` })),
+    ),
+  ["post /dDH.Service.LIMS.Services/stoveChemicalCompositionTest/queryFinalSample"]: (config) =>
+    ok(
+      config,
+      demoRows(3, (i) => ({ id: `D${i + 1}`, selected: false, cTestNo: `T2609${i + 1}`, cStove: `S26C0${i + 1}`, cPieceNo: `P00${i + 1}` })),
+    ),
+  ["post /dDH.Service.LIMS.Services/stoveChemicalCompositionTest/recheck"]: (config) => ok(config, null),
+  ["post /dDH.Service.LIMS.Services/stoveChemicalCompositionTest/getStoveTestStds"]: (config) =>
+    ok(
+      config,
+      demoRows(3, (i) => ({ id: `D${i + 1}`, selected: false, cTestNo: `T2609${i + 1}`, cStove: `S26C0${i + 1}`, cPieceNo: `P00${i + 1}` })),
+    ),
+  ["post /dDH.Service.LIMS.Services/stoveChemicalCompositionTest/stoveAutoJudge"]: (config) => ok(config, null),
+  ["post /dDH.Service.LIMS.Services/testJob/queryTestJobMainForJudge"]: (config) =>
+    ok(
+      config,
+      demoRows(3, (i) => ({ id: `D${i + 1}`, selected: false, cTestNo: `T2609${i + 1}`, cStove: `S26C0${i + 1}`, cPieceNo: `P00${i + 1}` })),
+    ),
+  ["post /dDH.Service.LIMS.Services/testJob/changeJudgeResult"]: (config) => ok(config, null),
+  ["post /dDH.Service.LIMS.Services/testJob/checkComplexDecide"]: (config) => ok(config, null),
+  ["post /dDH.Service.LIMS.Services/testJob/queryRecheckSampleRequires"]: (config) =>
+    ok(
+      config,
+      demoRows(3, (i) => ({ id: `D${i + 1}`, selected: false, cTestNo: `T2609${i + 1}`, cStove: `S26C0${i + 1}`, cPieceNo: `P00${i + 1}` })),
+    ),
+  ["post /dDH.Service.LIMS.Services/testJob/labRecheck"]: (config) => ok(config, null),
+  ["post /dDH.Service.LIMS.Services/testJob/qMRecheck"]: (config) => ok(config, null),
+  ["post /dDH.Service.LIMS.Services/testJob/querySamplesByTestNo"]: (config) =>
+    ok(
+      config,
+      demoRows(3, (i) => ({ id: `D${i + 1}`, selected: false, cTestNo: `T2609${i + 1}`, cStove: `S26C0${i + 1}`, cPieceNo: `P00${i + 1}` })),
     ),
 };

@@ -1,77 +1,108 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { reactive, ref } from "vue";
 import Button from "primevue/button";
-import { IconSearch } from "@tabler/icons-vue";
 import InputText from "primevue/inputtext";
-import Select from "primevue/select";
 import DatePicker from "primevue/datepicker";
+import { IconSearch } from "@tabler/icons-vue";
 import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
-import { hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
+import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
+import { useMenuQuery } from "@/lib/menuQuery";
+import { tmp2000Api, type InputTmp2000Dto, type QueryCptTmp2010Dto } from "@/api/mes4ddh/smp.swagger";
 
 /** 对应 FrmSD2030（中厚板未提料订单查询）：DDH.Winforms.SMP.Forms.FrmSD2030
- *  画面迁移，逻辑不迁移到 */
+ *  已接入：tmp2000Api.getTmp2010（查询）
+ *  布局：查询区(dataLayoutControl 6 项) → 查询(stackPanel2) → 单表 Fill
+ *  产线为 HiddenItems；查询 CLineCode 取菜单 cQueryString（原 C# BindData）；ribbon barButtonItem 忽略；
+ *  列集按 extract（可见31+隐藏2=33）；原 Designer 无创建人等审计列
+ *  不迁：原表单级 textEdit2（游离死控件，非查询条件）——
+ *    ① 不在 dataLayoutControl1.Controls.Add 里（该项只有 6 个）；
+ *    ② 其 layoutControlItem2 未挂进 Root.Items 也不在 layoutControlGroup1.Items，不参与布局；
+ *    ③ layoutControlItem2 无 .Text（无标签）、textEdit2 无 DataBindings；
+ *    ④ FrmSD2030.cs 逻辑与查询 DTO InputTmp2000Dto 均未引用。
+ *    它 Location(290,76) 正压在查询区行上，若照迁会渲染成「条件区多了个没标签的格子」 */
 
+const { raw: menuQs } = useMenuQuery();
 const theme = makeHmxGridTheme();
-const rows = ref<any[]>([]);
+const rows = ref<QueryCptTmp2010Dto[]>([]);
 const querying = ref(false);
 const gridApi = ref<GridApi | null>(null);
 
-const icboLine = ref('');
-const txtSteelType = ref('');
-const dtS = ref<Date | null>(null);
-const dtE = ref<Date | null>(null);
-const txtCust = ref('');
-const txtOrderNo = ref('');
+function day(y: number, m: number, d: number) {
+  return new Date(y, m, d);
+}
+const now = new Date();
 
-const colDefs = ref<ColDef[]>(([
-      { field: 'COrderCustCname', headerName: '订货客户', width: 150 },
-      { field: 'COrderNo', headerName: '订单号', width: 150 },
-      { field: 'CSteelType', headerName: '品名', width: 150 },
-      { field: 'CSgCode', headerName: '钢种', width: 150 },
-      { field: 'NThick', headerName: '厚度', width: 150 },
-      { field: 'NThickMin', headerName: '最小厚度', width: 150 },
-      { field: 'NThickMax', headerName: '最大厚度', width: 150 },
-      { field: 'NWidth', headerName: '宽度', width: 150 },
-      { field: 'NWidthMax', headerName: '最大宽度', width: 150 },
-      { field: 'NWidthWgt', headerName: '宽重', width: 150 },
-      { field: 'NLenMin', headerName: '最小长度', width: 150 },
-      { field: 'NLenMax', headerName: '最大长度', width: 150 },
-      { field: 'CDelivyStatusDesc', headerName: '交货状态描述', width: 150 },
-      { field: 'NNum', headerName: '件数', width: 150 },
-      { field: 'NWgt', headerName: '重量', width: 150 },
-      { field: 'CTrimFlagDesc', headerName: '切边方式', width: 150 },
-      { field: 'COverstepBl', headerName: '超差', width: 150 },
-      { field: 'CDelivyQtyFlag', headerName: '交货数量标志', width: 150 },
-      { field: 'CTol', headerName: '公差', width: 150 },
-      { field: 'CFlawDesc', headerName: '表面缺陷', width: 150 },
-      { field: 'CSgStd', headerName: '钢种标准', width: 150 },
-      { field: 'CConNo', headerName: '合同号', width: 150 },
-      { field: 'DJhqTime', headerName: '计划日期', width: 150 },
-      { field: 'CDelivyAddress', headerName: '交货地址', width: 150 },
-      { field: 'CSpecialMarkGy', headerName: '特殊标记工艺', width: 150 },
-      { field: 'NWtMin', headerName: '最小重量', width: 150 },
-      { field: 'NWtMax', headerName: '最大重量', width: 150 },
-      { field: 'CSpec', headerName: '规格', width: 150 },
-      { field: 'CConRemark', headerName: '合同备注', width: 150 },
-      { field: 'CInboundNo', headerName: '入库单号', width: 150 },
-      { field: "Creator", headerName: "创建人", width: 112 },
-      { field: "CreateTime", headerName: "创建时间", width: 112 },
-      { field: "LastModifier", headerName: "最后修改人", width: 112 },
-      { field: "LastModifyTime", headerName: "最后修改时间", width: 112 },
-]));
+/* 原 dataLayoutControl 查询区 6 项（产线为 HiddenItems，故 hidden 渲染保留在列位） */
+const input = reactive({
+  cOrderNo: "",
+  cSgCode: "",
+  cOrderCustCname: "",
+  dBegin: day(now.getFullYear(), now.getMonth(), 1),
+  dEnd: day(now.getFullYear(), now.getMonth(), now.getDate()),
+  cLineCode: "",
+});
+
+const colDefs: ColDef[] = [
+        { field: "selected", headerName: "选择", width: 56, minWidth: 56, cellRenderer: "agCheckboxCellRenderer", editable: true, sortable: false, filter: false },
+      { field: "cOrderCustCname", headerName: "客户", width: 150 },
+      { field: "cOrderNo", headerName: "编号", width: 150 },
+      { field: "cSteelType", headerName: "品名", width: 150 },
+      { field: "cSgCode", headerName: "钢种", width: 150 },
+      { field: "nThick", headerName: "板厚", width: 150 },
+      { field: "nThickMin", headerName: "板厚下限", width: 150 },
+      { field: "nThickMax", headerName: "板厚上限", width: 150 },
+      { field: "nWidth", headerName: "板宽下限", width: 150 },
+      { field: "nWidthMax", headerName: "板宽上限", width: 150 },
+      { field: "nWidthWgt", headerName: "边部宽度余量", width: 150 },
+      { field: "nLenMin", headerName: "板长下限", width: 150 },
+      { field: "nLenMax", headerName: "板长上限", width: 150 },
+      { field: "cDelivyStatusDesc", headerName: "交货状态", width: 150 },
+      { field: "nNum", headerName: "签订件数", width: 150 },
+      { field: "nWgt", headerName: "总量（吨）", width: 150 },
+      { field: "cTrimFlagDesc", headerName: "切边方式", width: 150 },
+      { field: "cOverstepBl", headerName: "短溢装比例", width: 150 },
+      { field: "cDelivyQtyFlag", headerName: "计重方式", width: 150 },
+      { field: "cTol", headerName: "公差", width: 150 },
+      { field: "cFlawDesc", headerName: "探伤等级", width: 150 },
+      { field: "cSgStd", headerName: "执行标准", width: 150 },
+      { field: "cConNo", headerName: "用户合同号", width: 150 },
+      { field: "dJhqTime", headerName: "交期", width: 150 },
+      { field: "cDelivyAddress", headerName: "流向", width: 150 },
+      { field: "cSpecialMarkGy", headerName: "性能", width: 150 },
+      { field: "nWtMin", headerName: "单重min", width: 150 },
+      { field: "nWtMax", headerName: "单重max", width: 150 },
+      { field: "cSpec", headerName: "订单规格", width: 150 },
+      { field: "cConRemark", headerName: "合同特殊要求", width: 150 },
+      { field: "cInboundNo", headerName: "入库标识", width: 150 },
+      { field: "cTrimFlag", headerName: "切边方式", width: 100, hide: true },
+      { field: "id", headerName: "主键", width: 100, hide: true },
+];
+
 function onGridReady(e: GridReadyEvent) {
   gridApi.value = e.api;
 }
 
-function onbtnQuery() { /* TODO: 接入业务逻辑 */ }
+function buildInput(): InputTmp2000Dto {
+  return {
+    cOrderNo: input.cOrderNo || null,
+    cSgCode: input.cSgCode || null,
+    cOrderCustCname: input.cOrderCustCname || null,
+    dBegin: input.dBegin?.toISOString() ?? null,
+    dEnd: input.dEnd?.toISOString() ?? null,
+    cLineCode: menuQs || null,
+  };
+}
 
+/* btnS 查询 → GetTmp2010 */
 async function onQuery() {
   querying.value = true;
   try {
-    // TODO: 接入真实查询
-    rows.value = [];
+    rows.value = (await tmp2000Api.getTmp2010(buildInput())) ?? [];
+    requestAnimationFrame(() => gridApi.value?.autoSizeAllColumns());
+  } catch {
+    /* 拦截层已 toast */
   } finally {
     querying.value = false;
   }
@@ -80,32 +111,44 @@ async function onQuery() {
 
 <template>
   <div class="flex min-h-0 flex-1 flex-col">
-    <!-- 查询条件 -->
-    <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
-
-        <label class="whitespace-nowrap">产线</label>
-        <Select v-model="icboLine" :options="[]" placeholder="请选择" class="w-40" />
-        <label class="whitespace-nowrap">钢种</label>
-        <InputText v-model="txtSteelType" class="w-44" />
-        <label class="whitespace-nowrap">开始时间</label>
-        <DatePicker v-model="dtS" dateFormat="yy-mm-dd" showIcon />
-        <label class="whitespace-nowrap">截止时间</label>
-        <DatePicker v-model="dtE" dateFormat="yy-mm-dd" showIcon />
-        <label class="whitespace-nowrap">订货客户</label>
-        <InputText v-model="txtCust" class="w-44" />
-        <label class="whitespace-nowrap">订单号</label>
-        <InputText v-model="txtOrderNo" class="w-44" />
-      <Button text size="small" class="shrink-0 whitespace-nowrap" @click="onQuery"><IconSearch class="h-3.5 w-3.5" />查询</Button>
-    </div>
-
-    <!-- 工具栏 -->
-    <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
-      <div class="flex flex-wrap items-center gap-2">
-      <Button text size="small" class="shrink-0 whitespace-nowrap" @click="onbtnQuery"><IconSearch class="h-3.5 w-3.5" />查询</Button>
+    <!-- 查询条件（原 dataLayoutControl 6 项：订单号/钢种/订货客户/开始时间/截止时间/产线(hidden)） -->
+    <div class="shrink-0 border-b border-border/60 px-3 py-2">
+      <div class="grid grid-cols-6 items-center gap-x-3 gap-y-1.5">
+        <div class="flex min-w-0 items-center gap-1.5">
+          <label class="w-16 shrink-0 text-xs text-muted-foreground">订单号</label>
+          <InputText v-model="input.cOrderNo" class="min-w-0 flex-1" />
+        </div>
+        <div class="flex min-w-0 items-center gap-1.5">
+          <label class="w-16 shrink-0 text-xs text-muted-foreground">钢种</label>
+          <InputText v-model="input.cSgCode" class="min-w-0 flex-1" />
+        </div>
+        <div class="flex min-w-0 items-center gap-1.5">
+          <label class="w-16 shrink-0 text-xs text-muted-foreground">订货客户</label>
+          <InputText v-model="input.cOrderCustCname" class="min-w-0 flex-1" />
+        </div>
+        <div class="flex min-w-0 items-center gap-1.5">
+          <label class="w-16 shrink-0 text-xs text-muted-foreground">开始时间</label>
+          <DatePicker v-model="input.dBegin" date-format="yy-mm-dd" show-icon class="min-w-0 flex-1" />
+        </div>
+        <div class="flex min-w-0 items-center gap-1.5">
+          <label class="w-16 shrink-0 text-xs text-muted-foreground">截止时间</label>
+          <DatePicker v-model="input.dEnd" date-format="yy-mm-dd" show-icon class="min-w-0 flex-1" />
+        </div>
+        <div class="hidden min-w-0 items-center gap-1.5">
+          <label class="w-16 shrink-0 text-xs text-muted-foreground">产线</label>
+          <InputText v-model="input.cLineCode" class="min-w-0 flex-1" />
+        </div>
       </div>
     </div>
 
-    <!-- 数据表格 -->
+    <!-- 查询按钮（原 stackPanel2） -->
+    <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
+      <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="querying" @click="onQuery">
+        <IconSearch class="h-3 w-3" />查询
+      </Button>
+    </div>
+
+    <!-- 数据表格（原 gridControl1 Dock.Fill） -->
     <div class="min-h-0 flex-1 overflow-hidden">
       <AgGridVue
         class="hmx-ag-grid h-full w-full"
@@ -114,8 +157,13 @@ async function onQuery() {
         :default-col-def="hmxDefaultColDef"
         :column-defs="colDefs"
         :row-data="rows"
-        row-selection="multiple"
+        :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
+        :suppress-column-virtualisation="true"
+        :pagination="false"
+        :animate-rows="false"
+        :loading="querying"
         @grid-ready="onGridReady"
+        @first-data-rendered="autoSizeOnFirstData"
       />
     </div>
   </div>

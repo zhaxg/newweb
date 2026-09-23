@@ -4,7 +4,7 @@ import { IconChevronsUp, IconSearch, IconX } from "@tabler/icons-vue";
 import InputText from "primevue/inputtext";
 import Tree from "primevue/tree";
 import type { TreeNode } from "primevue/treenode";
-import type { HmxMenuNode } from "@/data/hmxMenu";
+import type { HmxMenuNode } from "@/api/common/menuApi";
 import { TABLER_FALLBACK_ICON, tablerIcon } from "@/lib/tablerIcons";
 import { usePermissionStore } from "@/stores/permissionStore";
 
@@ -94,10 +94,32 @@ const expandedKeys = ref<Record<string, boolean>>({});
 watch(
   () => perm.menuTree,
   () => {
+    /* 菜单重载：清空搜索并保持全折叠 */
+    search.value = "";
     expandedKeys.value = {};
   },
   { immediate: true },
 );
+
+/** 收集树里所有带子节点的 key（用于搜索后一键全展开） */
+function collectExpandableKeys(nodes: TreeNode[], acc: Record<string, boolean> = {}): Record<string, boolean> {
+  for (const n of nodes) {
+    if (n.children?.length) {
+      acc[String(n.key)] = true;
+      collectExpandableKeys(n.children, acc);
+    }
+  }
+  return acc;
+}
+
+/* 搜索：有查询词 → 当前（过滤后）树全展开；清除查询 → 恢复默认全折叠 */
+watch(search, (q) => {
+  if (q.trim()) {
+    expandedKeys.value = collectExpandableKeys(treeNodes.value);
+  } else {
+    expandedKeys.value = {};
+  }
+});
 
 /* page → 树节点 key，用于把当前激活页映射为选中态 */
 const pageKeyMap = computed(() => {

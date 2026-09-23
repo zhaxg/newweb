@@ -210,6 +210,20 @@ export class HmxChromeTabsElement extends HTMLElement {
     this.dispatchEvent(new CustomEvent(name, { bubbles: true, composed: true, detail }));
   }
 
+  /** 关闭动画结束后 emit tab-close（关闭按钮 / 双击标签共用） */
+  #requestCloseTab(element: HTMLElement, tabId: string) {
+    if (element.hasAttribute("data-closing")) return;
+    element.toggleAttribute("data-closing", true);
+    let emitted = false;
+    const finish = () => {
+      if (emitted) return;
+      emitted = true;
+      this.#emit(hmxChromeTabsEvents.close, { tabId });
+    };
+    element.addEventListener("animationend", finish, { once: true });
+    window.setTimeout(finish, 200);
+  }
+
   #render() {
     this.#closeTabPopover();
     if (this.#tabs.length === 0) this.#viewport.scrollLeft = 0;
@@ -246,6 +260,12 @@ export class HmxChromeTabsElement extends HTMLElement {
       element.addEventListener("click", () => {
         this.#contextMenu.hidden = true;
         this.#emit(hmxChromeTabsEvents.activate, { tabId: tab.id });
+      });
+      /* 双击标签关闭（与关闭按钮同一收起动画；固定标签不可关） */
+      element.addEventListener("dblclick", (event) => {
+        event.preventDefault();
+        if (tab.pinned) return;
+        this.#requestCloseTab(element, tab.id);
       });
       element.addEventListener("contextmenu", (event) => {
         event.preventDefault();
@@ -320,16 +340,7 @@ export class HmxChromeTabsElement extends HTMLElement {
       close.addEventListener("dblclick", (event) => event.stopPropagation());
       close.addEventListener("click", (event) => {
         event.stopPropagation();
-        if (element.hasAttribute("data-closing")) return;
-        element.toggleAttribute("data-closing", true);
-        let emitted = false;
-        const finish = () => {
-          if (emitted) return;
-          emitted = true;
-          this.#emit(hmxChromeTabsEvents.close, { tabId: tab.id });
-        };
-        element.addEventListener("animationend", finish, { once: true });
-        window.setTimeout(finish, 200);
+        this.#requestCloseTab(element, tab.id);
       });
 
       /* 固定标签不渲染关闭按钮（content 宽度模式下也不占位） */

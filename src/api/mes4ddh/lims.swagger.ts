@@ -1526,7 +1526,13 @@ export const testJobApi = {
       { method: "post", params: { pieceNo } },
     );
   },
-};
+
+  batchAutoJudge(data?: unknown) {
+    return requestClient.request<any>("/dDH.Service.LIMS.Services/testJob/batchAutoJudge", {
+      method: "post",
+      data,
+    });
+  },};
 
 export const tql2001Api = {
   queryStoveInfo(data?: QueryStoveChemicalCompositionInput) {
@@ -1894,7 +1900,13 @@ export const tql1050Api = {
       },
     );
   },
-};
+
+  addImages(data?: unknown) {
+    return requestClient.request<any>("/dDH.Service.LIMS.Services/tql1050/addImages", {
+      method: "post",
+      data,
+    });
+  },};
 
 /** FrmTqlLxCollectDto（DDH.Service.LIMS.Dtos，ITqlLXCollectAppService 两个查询的返回行） */
 export interface FrmTqlLxCollectDto {
@@ -2071,3 +2083,78 @@ export const frmQL8100Api = {
   },
 };
 
+/** tql1060Api（质量判定重迁补齐） */
+export const tql1060Api = {
+  queryStorage(data?: unknown) {
+    return requestClient.request<any>("/dDH.Service.LIMS.Services/tql1060/queryStorage", {
+      method: "post",
+      data,
+    });
+  },
+  queryRecord(data?: unknown) {
+    return requestClient.request<any>("/dDH.Service.LIMS.Services/tql1060/queryRecord", {
+      method: "post",
+      data,
+    });
+  },
+  setDisable(data?: unknown) {
+    return requestClient.request<any>("/dDH.Service.LIMS.Services/tql1060/setDisable", {
+      method: "post",
+      data,
+    });
+  },
+};
+
+/** tql1070Api（质量判定重迁补齐） */
+export const tql1070Api = {
+  queryStorage(data?: unknown) {
+    return requestClient.request<any>("/dDH.Service.LIMS.Services/tql1070/queryStorage", {
+      method: "post",
+      data,
+    });
+  },
+  queryRecord(data?: unknown) {
+    return requestClient.request<any>("/dDH.Service.LIMS.Services/tql1070/queryRecord", {
+      method: "post",
+      data,
+    });
+  },
+  queryTql1070(data?: unknown) {
+    return requestClient.request<any>("/dDH.Service.LIMS.Services/tql1070/queryTql1070", {
+      method: "post",
+      data,
+    });
+  },
+  setDisable(data?: unknown) {
+    return requestClient.request<any>("/dDH.Service.LIMS.Services/tql1070/setDisable", {
+      method: "post",
+      data,
+    });
+  },
+};
+
+/** qZ5000Api（质量判定重迁补齐） */
+export const qZ5000Api = {
+  queryCpcf(data?: unknown) {
+    return requestClient.request<any>("/dDH.Service.LIMS.Services/qZ5000/queryCpcf", {
+      method: "post",
+      data,
+    });
+  },
+};
+
+/** stoveCFRecordApi（质量判定重迁补齐） */
+export const stoveCFRecordApi = {
+  queryRecord(data?: unknown) {
+    return requestClient.request<any>("/dDH.Service.LIMS.Services/stoveCFRecord/queryRecord", {
+      method: "post",
+      data,
+    });
+  },
+  queryProcessRecord(data?: unknown) {
+    return requestClient.request<any>("/dDH.Service.LIMS.Services/stoveCFRecord/queryProcessRecord", {
+      method: "post",
+      data,
+    });
+  },
+};
