@@ -7,7 +7,8 @@
  *          + tLApi.delTl（删除，读未审核表）
  *          + tLApi.tlProdClose（已审提料生产关闭，读已审核整行、.cs 不回查 → 「执行成功{n}条！」）
  *  列集：三表按 extract 全列——gvCheck 79可见+96隐藏（页签「已审核提料单」）/ gvTlNoCheck 78+98（「未审核提料单」）
- *        / gridView1 45+19（「销售订单」，无 Selected 列照原样）
+ *        / gridView1 45+19（「销售订单」，无 Selected 列照原样）；
+ *        原 Selected 勾选列由 AG Grid row-selection 复选框呈现（ui-rules §7），原列以 hide:true 保留在两表列面板
  *  页签：tabPage1 销售订单 → tabPage2 未审核提料单 → tabPage3 已审核提料单（PrimeVue Tabs，页签在顶部，与原 XtraTabControl HeaderLocation 默认一致）
  *  输入：时间 dtS~dtE（Load 默认今天-2/+1）、批量订单号 comOrder、提料状态 icboTlStatus（label=提料状态，与下拉成对可见）
  *  待接入：提料导入/冷坯提料导入（原 FrmTL2000Date → Excel ImportDataHelper → FrmTL2000Import → tLApi.importTmp2005，二级弹窗按 skill 占位）
@@ -146,7 +147,7 @@ const orderCols = ref<ColDef[]>(bridge([
 
 /* ===== tabPage2 未审核提料单（gcTlNoCheck/gvTlNoCheck：78 可见 + 98 隐藏） ===== */
 const noCheckCols = ref<ColDef[]>(bridge([
-      { field: "Selected", headerName: "选择", width: 64, minWidth: 64, cellRenderer: "agCheckboxCellRenderer", editable: true, sortable: false },
+      { field: "Selected", headerName: "选择", hide: true },
       { field: "CCool", headerName: "是否冷坯计划", width: 150 },
       { field: "CCheckRemark", headerName: "备注说明", width: 150 },
       { field: "CPlanTime", headerName: "计划日期", width: 150 },
@@ -326,7 +327,7 @@ const noCheckCols = ref<ColDef[]>(bridge([
 
 /* ===== tabPage3 已审核提料单（gcCheck/gvCheck：79 可见 + 96 隐藏；CreateTime/Creator 列头被 Designer 改为提料时间/提料人） ===== */
 const checkCols = ref<ColDef[]>(bridge([
-      { field: "Selected", headerName: "选择", width: 64, minWidth: 64, cellRenderer: "agCheckboxCellRenderer", editable: true, sortable: false },
+      { field: "Selected", headerName: "选择", hide: true },
       { field: "CCool", headerName: "是否冷坯计划", width: 150 },
       { field: "CPlanTime", headerName: "计划日期", width: 150 },
       { field: "CreateTime", headerName: "提料时间", width: 150 },
@@ -543,14 +544,14 @@ function autosizeAll() {
   });
 }
 
-function isPicked(r: TlRow): boolean {
-  return Boolean(r.selected ?? r.Selected);
+function pickedRows(api: GridApi | null): TlRow[] {
+  return (api?.getSelectedRows() ?? []) as TlRow[];
 }
 function ord(r: TlRow): string {
   return r.cOrderNo ?? r.COrderNo ?? "";
 }
 function distinctNos(list: TlRow[]): string[] {
-  return [...new Set(list.filter(isPicked).map(ord).filter(Boolean))];
+  return [...new Set(list.map(ord).filter(Boolean))];
 }
 
 async function bindTl() {
@@ -588,7 +589,7 @@ async function query() {
 
 /** 审核：simpleButton7_Click——读未审核表；长度=0 拦截 + 2290-3650 两级确认（文案逐字照抄） */
 async function onCheck() {
-  const sel = noCheckRows.value.filter(isPicked);
+  const sel = pickedRows(noCheckApi.value);
   if (sel.length <= 0) {
     toast("没有选择需要审核的订单！", 2500, "warn");
     return;
@@ -617,7 +618,7 @@ async function onCheck() {
 
 /** 取消审核：simpleButton4_Click——读已审核表 */
 async function onCancelCheck() {
-  const nos = distinctNos(checkRows.value);
+  const nos = distinctNos(pickedRows(checkApi.value));
   if (nos.length <= 0) {
     toast("没有选择需要取消审核的订单！", 2500, "warn");
     return;
@@ -631,7 +632,7 @@ async function onCancelCheck() {
 
 /** 删除：simpleButton2_Click——读未审核表 */
 async function onDel() {
-  const nos = distinctNos(noCheckRows.value);
+  const nos = distinctNos(pickedRows(noCheckApi.value));
   if (nos.length <= 0) {
     toast("没有选择需要删除的提料信息！", 2500, "warn");
     return;
@@ -645,7 +646,7 @@ async function onDel() {
 
 /** 已审提料生产关闭：btnProdClose_Click——读已审核整行，.cs 成功后不回查 */
 async function onProdClose() {
-  const sel = checkRows.value.filter(isPicked);
+  const sel = pickedRows(checkApi.value);
   if (sel.length <= 0) {
     toast("请选择项！", 2000, "warn");
     return;
@@ -737,6 +738,7 @@ onMounted(() => {
             :default-col-def="hmxDefaultColDef"
             :column-defs="noCheckCols"
             :row-data="noCheckRows"
+            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
             :pagination="false"
             :loading="querying"
             @grid-ready="onNoCheckReady"
@@ -751,6 +753,7 @@ onMounted(() => {
             :default-col-def="hmxDefaultColDef"
             :column-defs="checkCols"
             :row-data="checkRows"
+            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
             :pagination="false"
             :loading="querying"
             @grid-ready="onCheckReady"

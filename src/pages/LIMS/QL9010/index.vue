@@ -138,7 +138,7 @@ const detailGridApi = ref<GridApi | null>(null);
 /* ---------- 列定义 ---------- */
 /** UCTestJob.gridView1（TestJob，可见45+隐藏16，列序同 Designer / QL4000） */
 const jobColDefs = ref<ColDef[]>([
-  { colId: "selected", field: "selected", headerName: " ", width: 44, minWidth: 44, pinned: "left", cellRenderer: "agCheckboxCellRenderer", editable: true, sortable: false, filter: false },
+  { colId: "selected", field: "selected", headerName: "选择", hide: true },
   { field: "cStove", headerName: "炉号", width: 110, pinned: "left" },
   { field: "cBatch", headerName: "批号", width: 110, pinned: "left" },
   { field: "cInternalNo", headerName: "内部编号", width: 110 },

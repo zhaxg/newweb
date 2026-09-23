@@ -15,7 +15,9 @@
  *  cQueryString：JSON {LineCode,StoreCode}（useMenuQuery）；StoreCode 缺失查询时照 C# 弹「库区错误」
  *  二级弹窗：无（FrmMS9020QueryStringDto 仅参数 DTO）
  *  待接入：无（tyd2000/queryStorage 的 mock 占位本批禁改未登记，Mock 模式点查询会提示未注册端点）
- *  字段桥接：extract PascalCase → 后端 JSON camelCase（PLAN_* → pLAN_*） */
+ *  字段桥接：extract PascalCase → 后端 JSON camelCase（PLAN_* → pLAN_*）
+ *  偏差：UCStorage 原 Selected 勾选列由 row-selection 复选框呈现（ui-rules §7），原列 hide:true 保留在列面板；
+ *        本页无勾选读取逻辑（切割/取消切割均作用于焦点行） */
 import { onMounted, reactive, ref } from "vue";
 import Button from "primevue/button";
 import DatePicker from "primevue/datepicker";
@@ -55,7 +57,7 @@ const focusedSj = ref<Record<string, unknown> | null>(null);
 
 /* 主库存/火切结果共用 UCStorage 列集（extract：127 可见 + CStackNum 隐藏；列头 ←LDisplay:Tyd2000Dto） */
 const storageCols = ref<ColDef[]>([
-  { field: "selected", headerName: "选择", width: 64, minWidth: 64, cellRenderer: "agCheckboxCellRenderer", editable: true, sortable: false },
+  { field: "selected", headerName: "选择", hide: true },
   { field: "id", headerName: "主键", width: 149 },
   { field: "cStove", headerName: "炉号", width: 149 },
   { field: "cPieceNo", headerName: "件次号", width: 149 },
@@ -365,7 +367,7 @@ onMounted(() => {
                 :default-col-def="hmxDefaultColDef"
                 :column-defs="storageCols"
                 :row-data="storageRows"
-                :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
+                :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
                 :pagination="false"
                 :loading="querying"
                 @grid-ready="onStorageReady"
@@ -450,7 +452,7 @@ onMounted(() => {
             :default-col-def="hmxDefaultColDef"
             :column-defs="storageCols"
             :row-data="sjRows"
-            :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
+            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
             :pagination="false"
             :loading="sjQuerying"
             @grid-ready="onSjReady"

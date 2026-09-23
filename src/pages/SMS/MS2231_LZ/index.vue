@@ -8,7 +8,7 @@
  *  二级弹窗：查看曲线图 → FrmMS3110(dtoList).ShowDialog() —— 按批约留占位（校验文案照抄后 toast 提示）
  *  结构：stackPanel1（产线|机台|日期(时间范围)|炉次号|查询|保存|查看曲线图）——本页无 chkAutoRefresh「全选」；
  *       UCTimeRange → DatePicker range(show-time)，默认 今天 00:00 ~ 明天 00:00；校验：产线机台不得为空 / 时间范围不得大于31天
- *  列集：extract 待确认 70 可见（含 Selected 选择列→勾选格）+ 7 隐藏（hide:true）；班次/班组列 agSelect（0-2 / 01-04）
+ *  列集：extract 待确认 70 可见（Selected 选择列→row-selection 复选框，原列 hide:true 保留，勾选回写 Selected 字段）+ 7 隐藏（hide:true）；班次/班组列 agSelect（0-2 / 01-04）
  *  字段桥接：后端 JSON camelCase → 回填 toPascal 首字母还原 */
 import { ref, shallowRef } from "vue";
 import Button from "primevue/button";
@@ -116,7 +116,7 @@ const colDefs = ref<ColDef[]>([      { field: "CPono", headerName: "PONO", width
       { field: "CUserIdLuzhang", headerName: "炉长id", width: 112 },
       { field: "CUserIdYiCaoShou", headerName: "一操手Id", width: 125 },
       { field: "GSCF_CP_Al", headerName: "成品成分（%）Al", width: 177 },
-      { field: "Selected", headerName: "Selected", width: 164 },
+      { field: "Selected", headerName: "选择", hide: true },
       { field: "CUserNameLuzhang", headerName: "炉长姓名", width: 112, hide: true },
       { field: "Creator", headerName: "创建人", width: 99, hide: true },
       { field: "Tms2010Id", headerName: "Tms2010Id", width: 177, hide: true },
@@ -138,15 +138,8 @@ for (const c of colDefs.value) {
     c.cellEditorParams = { values: ["0", "1", "2"] };
   }
 }
-// Selected = 勾选标记列（原 CheckEdit；非行选择 checkbox），查看曲线图读它
-const selCol = colDefs.value.find((c) => c.field === "Selected");
-if (selCol) {
-  selCol.headerName = "选择";
-  selCol.width = 64;
-  selCol.minWidth = 64;
-  selCol.sortable = false;
-  selCol.cellRenderer = "agCheckboxCellRenderer";
-}
+// Selected = 勾选标记列（原 CheckEdit；非行选择 checkbox）：ui-rules §7——原列 hide:true 保留，
+// 勾选由 row-selection 复选框呈现；保存 payload 仍含 Selected 字段，selection-changed 回写保持契约
 
 function toPascal(row: Record<string, unknown>): Record<string, unknown> {
   const out: Record<string, unknown> = {};
@@ -188,10 +181,20 @@ async function onQuery() {
     const list = ((await frmMS2230LZApi.query(p)) ?? []) as Record<string, unknown>[];
     trackList.value = new TrackableList(list.map(toPascal));
     canEdit.value = list.some((x) => x.IsEnableEditAndSaveDatas === true || x.isEnableEditAndSaveDatas === true);
-    requestAnimationFrame(() => gridApi.value?.autoSizeAllColumns());
+    /* 原 CheckEdit 直接绑定 Selected 字段：查询回填后按数据字段回灌勾选态 */
+    requestAnimationFrame(() => {
+      gridApi.value?.forEachNode((node) => node.setSelected(!!(node.data as Record<string, unknown>).Selected));
+      gridApi.value?.autoSizeAllColumns();
+    });
   } finally {
     querying.value = false;
   }
+}
+
+/** 勾选态回写 Selected 数据字段（保存 SaveList 仍带该字段，后端契约不变） */
+function syncSelectedToData() {
+  const sel = new Set((gridApi.value?.getSelectedRows() ?? []) as Record<string, unknown>[]);
+  for (const r of trackList.value) r.Selected = sel.has(r);
 }
 
 async function onSave() {
@@ -210,7 +213,7 @@ async function onSave() {
 
 // 原 brnShowChart_Click：勾选行 → 开浇/停浇时间校验（本页不列炉号明细）→ FrmMS3110 弹窗（二级弹窗占位）
 function onShowChart() {
-  const list = trackList.value.filter((r) => r.Selected);
+  const list = (gridApi.value?.getSelectedRows() ?? []) as Record<string, unknown>[];
   if (!list.length) {
     toast("请选择一行数据后重试！", 2000, "warn");
     return;
@@ -273,8 +276,9 @@ onMounted(() => {
     <div class="min-h-0 flex-1 overflow-hidden">
       <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
         :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="trackList" :pagination="false"
+        :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
         :loading="querying" @grid-ready="onGridReady" @first-data-rendered="autoSizeOnFirstData"
-        @cell-value-changed="onCellValueChanged" />
+        @selection-changed="syncSelectedToData" @cell-value-changed="onCellValueChanged" />
     </div>
   </div>
 </template>

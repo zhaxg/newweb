@@ -15,7 +15,8 @@ import { tmp2000Api, type InputTmp2000Dto, type QueryCptTmp2010Dto } from "@/api
  *  已接入：tmp2000Api.getTmp2010（查询）
  *  布局：查询区(dataLayoutControl 6 项) → 查询(stackPanel2) → 单表 Fill
  *  产线为 HiddenItems；查询 CLineCode 取菜单 cQueryString（原 C# BindData）；ribbon barButtonItem 忽略；
- *  列集按 extract（可见31+隐藏2=33）；原 Designer 无创建人等审计列
+ *  列集按 extract（可见31+隐藏2=33）；原 Designer 无创建人等审计列；
+ *  原 Selected 勾选列由 AG Grid row-selection 复选框呈现（ui-rules §7），原列以 hide:true 保留在列面板
  *  不迁：原表单级 textEdit2（游离死控件，非查询条件）——
  *    ① 不在 dataLayoutControl1.Controls.Add 里（该项只有 6 个）；
  *    ② 其 layoutControlItem2 未挂进 Root.Items 也不在 layoutControlGroup1.Items，不参与布局；
@@ -45,7 +46,7 @@ const input = reactive({
 });
 
 const colDefs: ColDef[] = [
-        { field: "selected", headerName: "选择", width: 56, minWidth: 56, cellRenderer: "agCheckboxCellRenderer", editable: true, sortable: false, filter: false },
+        { field: "selected", headerName: "选择", hide: true },
       { field: "cOrderCustCname", headerName: "客户", width: 150 },
       { field: "cOrderNo", headerName: "编号", width: 150 },
       { field: "cSteelType", headerName: "品名", width: 150 },

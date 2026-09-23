@@ -114,7 +114,7 @@ function buildQuery(): InputTmp2000Query {
 
 /* ---------- 列（提取摘要：57 可见 + 17 hide） ---------- */
 const colDefs = ref<ColDef[]>([
-  { field: "selected", headerName: "选择", width: 70 },
+  { field: "selected", headerName: "选择", hide: true },
   { field: "cOrderNo", headerName: "订单号", width: 140 },
   { field: "nStatus", headerName: "订单状态", width: 100 },
   {

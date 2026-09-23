@@ -21,7 +21,7 @@ import Splitter from "primevue/splitter";
 import SplitterPanel from "primevue/splitterpanel";
 import { IconSearch } from "@tabler/icons-vue";
 import { AgGridVue } from "ag-grid-vue3";
-import type { ColDef, GridApi, GridReadyEvent, SelectionChangedEvent } from "ag-grid-community";
+import type { ColDef, GridApi, GridReadyEvent, RowClickedEvent } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
 import { frmMS2010Api } from "@/api/mes4ddh/sms.swagger";
@@ -65,7 +65,7 @@ const chkQueryConn1 = ref(false);
 
 /* 主表（原 gridControl1/gridView1 ViewCaption=铁水信息：FrmMS2010ViewDto 34 可见 + 54 隐藏） */
 const mainCols = ref<ColDef[]>([
-        { field: "selected", headerName: "选择", width: 60, minWidth: 56, cellRenderer: "agCheckboxCellRenderer", editable: true, sortable: false },
+      { field: "selected", headerName: "选择", hide: true },
       { field: "cIronNo", headerName: "铁次号", width: 99 },
       { field: "cPotNo", headerName: "罐号", width: 86 },
       { field: "nWgtMz", headerName: "钢水毛重", width: 112 },
@@ -197,9 +197,11 @@ async function queryReal() {
   tsqmRows.value = [];
 }
 
-/** gridView1_FocusedRowChanged → Proxy.GetTsQMInfo(tsId) */
-async function onMainSelection(e: SelectionChangedEvent) {
-  const row = (e.api.getSelectedRows()[0] ?? null) as Row | null;
+/** gridView1_FocusedRowChanged → Proxy.GetTsQMInfo(tsId)
+ *  焦点行以 row-clicked 维护（勾选改用 multiRow row-selection 后，selected[0] 不再等价焦点行） */
+async function onMainRowClick(e: RowClickedEvent) {
+  const row = (e.data as Row | null) ?? null;
+  if (row === curRow.value) return; /* 焦点未变不重取（原 FocusedRowChanged 语义） */
   curRow.value = row;
   if (!row) {
     tsqmRows.value = [];
@@ -262,7 +264,7 @@ async function onCancelKR() {
 /** btnIntrusion_Click → CheckTSInStationByList → 倒罐弹窗（FrmMS2010_TS_Intrusion 二级弹窗占位）→ 重查 */
 async function onIntrusion() {
   if (!rows.value.length) return;
-  const sel = rows.value.filter((r) => r.selected);
+  const sel = (mainApi.value?.getSelectedRows() ?? []) as Row[];
   if (!sel.length) {
     toast("请选择要进行倒罐的铁水数据！", 2500, "warn");
     return;
@@ -385,9 +387,9 @@ function onOkPick() {
             :row-data="rows"
             :pagination="false"
             :loading="querying"
-            :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
+            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
             @grid-ready="onMainReady"
-            @selection-changed="onMainSelection"
+            @row-clicked="onMainRowClick"
             @first-data-rendered="autoSizeOnFirstData"
           />
         </div>

@@ -71,7 +71,7 @@ function buildQuery(): QueryTqlCFCollectDto {
 
 /* TqlCfCollect：47 可见 + CRemark 隐藏；元素列头英文 */
 const colDefs = ref<ColDef[]>([
-  { field: "selected", headerName: "选择", width: 56, minWidth: 56, cellRenderer: "agCheckboxCellRenderer", editable: true, sortable: false },
+  { field: "selected", headerName: "选择", hide: true },
   { field: "creator", headerName: "创建人", width: 90 },
   { field: "createTime", headerName: "创建时间", width: 140 },
   { field: "cSampNo", headerName: "样号", width: 110 },

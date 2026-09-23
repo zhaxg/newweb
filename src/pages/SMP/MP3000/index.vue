@@ -5,7 +5,7 @@
  *  布局：查询条件区 + h-9 查询工具栏；上下 Splitter（原 splitContainerControl1 Horizontal=false,
  *        SplitterPosition 590/1015≈58%）→ 上=主表(gridControl1)、下=GroupControl「轧钢产出实绩」(gridControl3)
  *  查询条件：原 stackPanel1 —— 下发时间 DateStart~DateEnd、产线 comCLineCode、订单号、钢种、执行标准、入库标识
- *  列：主表 32 可见（含 Selected/NStatus）+ 69 hide；子表 60 可见 + 27 hide（列序列头对齐 Designer） */
+ *  列：主表 32 可见（含 Selected/NStatus；Selected 勾选列改 hide 保留，勾选由 row-selection 呈现）+ 69 hide；子表 60 可见 + 27 hide（列序列头对齐 Designer） */
 
 import { onMounted, ref } from "vue";
 import Button from "primevue/button";
@@ -64,7 +64,7 @@ const subApi = ref<GridApi | null>(null);
 
 /* 主表列（gridControl1 / gridView1，绑定实体 Tmp2010Dto）：32 可见 + 69 hide */
 const rawMainCols: ColDef[] = [
-      { field: "selected", headerName: "选择", width: 149 },
+      { field: "selected", headerName: "选择", width: 149, hide: true },
       { field: "cLineCode", headerName: "产线代码", width: 149 },
       { field: "cOrderNo", headerName: "订单号", width: 149 },
       { field: "nStatus", headerName: "订单状态", width: 149 },
@@ -166,12 +166,8 @@ const rawMainCols: ColDef[] = [
       { field: "cSlabSize", headerName: "坯料规格", width: 149, hide: true },
       { field: "cStNo", headerName: "炼钢工艺卡", width: 149, hide: true },
 ];
-/** Selected（选择）列 = 原勾选列（AllowSyncRowStateToCheckboxSelection），做成勾选单元格列 */
-const colDefs = ref<ColDef[]>(rawMainCols.map((c) =>
-  c.field === "selected"
-    ? { ...c, cellRenderer: "agCheckboxCellRenderer", editable: true, sortable: false, filter: false, minWidth: 40 }
-    : c,
-));
+/** Selected（选择）列 = 原勾选列：改由 AG Grid row-selection 复选框呈现，原列以 hide:true 保留在列面板（ui-rules §7） */
+const colDefs = ref<ColDef[]>(rawMainCols);
 
 /* 子表列（groupControl1「轧钢产出实绩」内 gridControl3 / gridView3，绑定实体 Thr4000）：60 可见 + 27 hide */
 const subColDefs = ref<ColDef[]>([
@@ -369,6 +365,7 @@ onMounted(() => { void loadLines(); });
         <div class="min-h-0 flex-1 overflow-hidden">
           <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
             :pagination="false" :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows"
+            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
             :loading="querying" @grid-ready="onGridReady" @cell-focused="onCellFocused"
             @first-data-rendered="autoSizeOnFirstData" />
         </div>

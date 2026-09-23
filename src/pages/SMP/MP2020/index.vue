@@ -72,7 +72,7 @@ const reviewOptions = [
 ];
 
 const colDefs1: ColDef[] = [
-        { field: "selected", headerName: "选择", width: 56, minWidth: 56, cellRenderer: "agCheckboxCellRenderer", editable: true, sortable: false, filter: false },
+      { field: "selected", headerName: "选择", hide: true },
       { field: "cLineCode", headerName: "产线代码", width: 150 },
       { field: "nOrder", headerName: "生产顺序", width: 150 },
       { field: "cPlanTime", headerName: "计划日期", width: 150 },
@@ -159,7 +159,7 @@ const colDefs1: ColDef[] = [
       { field: "nStatus", headerName: "订单状态", width: 100, hide: true },
 ];
 const colDefs2: ColDef[] = [
-        { field: "selected", headerName: "选择", width: 56, minWidth: 56, cellRenderer: "agCheckboxCellRenderer", editable: true, sortable: false, filter: false },
+      { field: "selected", headerName: "选择", hide: true },
       { field: "cLineCode", headerName: "产线代码", width: 150 },
       { field: "cPlanTime", headerName: "计划日期", width: 150 },
       { field: "cCool", headerName: "是否冷坯计划", width: 150 },
@@ -253,10 +253,8 @@ function onGrid2Ready(e: GridReadyEvent) {
   grid2Api.value = e.api;
 }
 
-function selectedOf(api: GridApi | null, all: ZgPlanDto[]): ZgPlanDto[] {
-  const byGrid = (api?.getSelectedRows() ?? []) as ZgPlanDto[];
-  const byCheck = all.filter((x) => x.selected);
-  return Array.from(new Set([...byGrid, ...byCheck]));
+function selectedOf(api: GridApi | null): ZgPlanDto[] {
+  return (api?.getSelectedRows() ?? []) as ZgPlanDto[];
 }
 function idsOf(list: ZgPlanDto[]): string[] {
   return list.map((x) => x.id ?? "").filter(Boolean);
@@ -276,7 +274,11 @@ async function queryTop() {
       cLineCode: menuQs || null,
     };
     rows1.value = (await tmp2020Api.queryOrder(input)) ?? [];
-    requestAnimationFrame(() => grid1Api.value?.autoSizeAllColumns());
+    /* 原勾选列 Selected 字段：查询回填后按数据字段回灌行选择勾选态 */
+    requestAnimationFrame(() => {
+      grid1Api.value?.forEachNode((node) => node.setSelected(!!(node.data as ZgPlanDto).selected));
+      grid1Api.value?.autoSizeAllColumns();
+    });
   } catch {
     /* 拦截层已 toast */
   } finally {
@@ -295,7 +297,10 @@ async function queryBottom() {
         nStatus: 0,
         cLineCode: menuQs || null,
       })) ?? [];
-    requestAnimationFrame(() => grid2Api.value?.autoSizeAllColumns());
+    requestAnimationFrame(() => {
+      grid2Api.value?.forEachNode((node) => node.setSelected(!!(node.data as ZgPlanDto).selected));
+      grid2Api.value?.autoSizeAllColumns();
+    });
   } catch {
     /* 拦截层已 toast */
   } finally {
@@ -316,7 +321,7 @@ function onQuery() {
 /* btnSave 生成 → AddTmp2020s */
 async function onGenerate() {
   if (!rows1.value.length) return;
-  const listOrder = selectedOf(grid1Api.value, rows1.value).map((x) => ({
+  const listOrder = selectedOf(grid1Api.value).map((x) => ({
     cId: x.id ?? undefined,
     nOrder: x.nOrder ?? undefined,
   }));
@@ -340,7 +345,7 @@ async function onGenerate() {
 /* btnDelete 删除 → DeleteTmp2020s */
 async function onDelete() {
   if (!rows2.value.length) return;
-  const ids = idsOf(selectedOf(grid2Api.value, rows2.value));
+  const ids = idsOf(selectedOf(grid2Api.value));
   if (!ids.length) {
     toast("请勾选轧制计划！", 2000, "warn");
     return;

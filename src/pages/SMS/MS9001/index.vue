@@ -70,9 +70,9 @@ function num(v: unknown): number {
 function str(v: unknown): string {
   return v == null ? "" : String(v);
 }
-/** 勾选（原 Selected；后端 JSON camelCase，行内回写 selected） */
-function picked(r: Row): boolean {
-  return Boolean(r.selected ?? r.Selected);
+/** 勾选行（ui-rules §7：row-selection 复选框，替代原 Selected 手写勾选列） */
+function pickedStorages(): Row[] {
+  return (storageApi.value?.getSelectedRows() ?? []) as Row[];
 }
 
 /* ===== 计划表 gvPlan（绑定 Tms9000PlanItemDto，25 可见 + 5 隐藏；列头=实体 LDisplay） ===== */
@@ -117,7 +117,7 @@ const planRowClassRules = {
 
 /* ===== 坯料表 gvStorage（绑定 Tms9000StorageItemDto，29 可见 + 16 隐藏；列头=实体 LDisplay） ===== */
 const storageCols = ref<ColDef[]>([
-  { field: "selected", headerName: "选择", width: 64, minWidth: 64, cellRenderer: "agCheckboxCellRenderer", editable: true, sortable: false },
+  { field: "selected", headerName: "选择", hide: true },
   { field: "mathStatus", headerName: "匹配状态", width: W("匹配状态") },
   { field: "cPieceNo", headerName: "铸坯号", width: 54 },
   { field: "dProTime", headerName: "产出时间", width: 74 },
@@ -350,7 +350,7 @@ async function loadStorage() {
 
 /** 原 Match(isAllow)——btnMatch / btnMatchAllow 共用；规则库校验未迁（交后端 mathPlanAndZp） */
 async function match(isAllow: boolean) {
-  const stor = storageRows.value.filter((w) => picked(w) && !str(w.cOrderNo ?? w.COrderNo));
+  const stor = pickedStorages().filter((w) => !str(w.cOrderNo ?? w.COrderNo));
   if (!stor.length) {
     toast("请选择未匹配的材料", 2500, "warn");
     return;
@@ -382,7 +382,7 @@ async function match(isAllow: boolean) {
 
 /** 原 btnCancelMatch_Click：勾选已匹配材料 → 投料拦截 → 取消原因 prompt → cancelMathPlanAndZp */
 async function onCancelMatch() {
-  const stor = storageRows.value.filter((w) => picked(w) && str(w.cOrderNo ?? w.COrderNo));
+  const stor = pickedStorages().filter((w) => str(w.cOrderNo ?? w.COrderNo));
   if (!stor.length) {
     toast("请选择已匹配的材料", 2500, "warn");
     return;
@@ -466,7 +466,7 @@ function onAdd() {
 
 /** 原 btnDeleteSJ_Click（删除坯料）：勾选/投料/已匹配三重拦截 + 确认照抄 → delSjByPieceNo */
 async function onDeleteSJ() {
-  const stor = storageRows.value.filter((w) => picked(w));
+  const stor = pickedStorages();
   if (!stor.length) {
     toast("请勾选要删除的材料", 2000, "warn");
     return;
@@ -488,7 +488,7 @@ async function onDeleteSJ() {
 
 /** 原 btnSetYCP_Click（标记异常坯）：三重拦截照抄；setException/异常类型字典弹窗未生成 → 校验后占位 */
 function onSetYCP() {
-  const stor = storageRows.value.filter((w) => picked(w));
+  const stor = pickedStorages();
   if (!stor.length) {
     toast("请选择后再操作", 2000, "warn");
     return;
@@ -508,7 +508,7 @@ function onSetYCP() {
 
 /** 原 btnCancelYCP_Click（取消异常坯）：四重拦截 +「确认取消？」照抄；cancelException 接口未生成 → 占位 */
 function onCancelYCP() {
-  const stor = storageRows.value.filter((w) => picked(w));
+  const stor = pickedStorages();
   if (!stor.length) {
     toast("请选择后再操作", 2000, "warn");
     return;
@@ -677,7 +677,7 @@ onMounted(() => {
               <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onCancelYCP">取消异常坯</Button>
               <span class="ml-auto shrink-0 text-xs font-medium text-muted-foreground">坯料信息</span>
             </div>
-            <!-- 坯料表（gridControl2 / gvStorage，Selected 勾选列 + 焦点行操作） -->
+            <!-- 坯料表（gridControl2 / gvStorage，Selected 勾选由 row-selection 呈现，原列 hide:true + 焦点行操作） -->
             <div class="min-h-0 flex-1 overflow-hidden">
               <AgGridVue
                 class="hmx-ag-grid h-full w-full"
@@ -688,6 +688,7 @@ onMounted(() => {
                 :row-data="storageRows"
                 :pagination="false"
                 :loading="storageLoading"
+                :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
                 @grid-ready="readyStorage"
                 @row-clicked="onStorageRowClicked"
                 @first-data-rendered="autoSizeOnFirstData"

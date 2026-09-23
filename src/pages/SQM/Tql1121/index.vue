@@ -20,7 +20,6 @@ const gridApi = ref<GridApi | null>(null);
 const keyword = ref("");
 
 const colDefs = ref<ColDef[]>([
-  { headerCheckboxSelection: true, checkboxSelection: true, width: 50, pinned: "left" as const },
   { field: "CTypeId", headerName: "类型代码", width: 112 },
   { field: "CDescCode", headerName: "缺陷代码", width: 112 },
   { field: "CDescName", headerName: "缺陷名称", width: 112 },
@@ -62,7 +61,8 @@ function onDel() { /* TODO: 接入业务逻辑 */ }
     <div class="min-h-0 flex-1 overflow-hidden">
       <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
         :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows"
-        row-selection="multiple" @grid-ready="onGridReady" />
+        :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
+        @grid-ready="onGridReady" />
     </div>
   </div>
 </template>

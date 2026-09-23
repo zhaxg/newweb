@@ -47,18 +47,8 @@ const kvLabel = (code?: string | null) => kvProdCode.value.find((o) => o.value =
 
 /* 主表：按 Designer VisibleIndex 0~8；Id/原钢种代码/生效标记/版次/归档标记 未排入 → hide */
 const colDefs = computed<ColDef[]>(() => [
-  {
-    colId: "selected",
-    field: "selected",
-    headerName: "选择",
-    width: 70,
-    minWidth: 70,
-    cellRenderer: "agCheckboxCellRenderer",
-    editable: true,
-    sortable: false,
-    filter: false,
-    checkboxSelection: false,
-  },
+  /* 原 Selected 勾选列：ui-rules §7 不手写勾选列，行选择由 row-selection 复选框承担，本列隐藏保留在列面板 */
+  { colId: "selected", field: "selected", headerName: "选择", hide: true },
   { field: "cSgCode", headerName: "钢种", width: 130 },
   { field: "cSgSign", headerName: "牌号", width: 130 },
   {
@@ -179,7 +169,7 @@ onMounted(() => {
     <div class="min-h-0 flex-1 overflow-hidden">
       <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
         :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="trackList" :get-row-id="getRowId"
-        :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
+        :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
         :suppress-column-virtualisation="true"
         :pagination="false" :animate-rows="false" :loading="querying || saving"
         @grid-ready="onGridReady" @first-data-rendered="autoSizeOnFirstData" />

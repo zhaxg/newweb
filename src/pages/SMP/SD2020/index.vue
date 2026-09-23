@@ -30,7 +30,8 @@ import {
  *        查询标签全页统一 w-16（原「订单号(模糊)」7字含半角括号≈74px 装不下 w-16/w-18，按 ui-rules 阶梯顺位4
  *        改为「订单号」+ placeholder「支持模糊」，与同名的精确匹配框靠提示词区分）
  *        工具栏(10 按钮) → 上下 Splitter：主表 Fill ｜ 日志表 Bottom
- *  产线为 HiddenItems；查询 CLineCode 取菜单 cQueryString（原 C# BindData）；列集按 extract（主表57+隐藏13 / 日志4+隐藏5） */
+ *  产线为 HiddenItems；查询 CLineCode 取菜单 cQueryString（原 C# BindData）；列集按 extract（主表57+隐藏13 / 日志4+隐藏5）；
+ *  原 Selected 勾选列由 AG Grid row-selection 复选框呈现（ui-rules §7），原列以 hide:true 保留在列面板 */
 
 const { toast } = useToast();
 const { raw: menuQs } = useMenuQuery();
@@ -82,7 +83,7 @@ const flagOptions = [
 ];
 
 const colDefs: ColDef[] = [
-        { field: "selected", headerName: "选择", width: 56, minWidth: 56, cellRenderer: "agCheckboxCellRenderer", editable: true, sortable: false, filter: false },
+        { field: "selected", headerName: "选择", hide: true },
       { field: "cOrderNo", headerName: "订单号", width: 150 },
       { field: "nStatus", headerName: "订单状态", width: 150 },
       { field: "nFlag", headerName: "计划类型", width: 150 },
@@ -173,9 +174,7 @@ function onLogReady(e: GridReadyEvent) {
 }
 
 function selectedRows(): Row2000[] {
-  const byGrid = (gridApi.value?.getSelectedRows() ?? []) as Row2000[];
-  const byCheck = rows.value.filter((x) => x.selected);
-  return Array.from(new Set([...byGrid, ...byCheck]));
+  return (gridApi.value?.getSelectedRows() ?? []) as Row2000[];
 }
 function selectedOrderNos(): string[] {
   return selectedRows()

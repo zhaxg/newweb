@@ -133,7 +133,7 @@ const mainColDefs = ref<ColDef[]>([
 ]);
 /* 材料明细列（ucStorage1 / UCStorage gridView1，绑定实体 Tyd2000Dto）：127 可见 + 1 hide */
 const rawStorageCols: ColDef[] = [
-      { field: "selected", headerName: "选择", width: 149 },
+      { field: "selected", headerName: "选择", width: 149, hide: true },
       { field: "id", headerName: "主键", width: 149 },
       { field: "cStove", headerName: "炉号", width: 149 },
       { field: "cPieceNo", headerName: "件次号", width: 149 },
@@ -262,12 +262,8 @@ const rawStorageCols: ColDef[] = [
       { field: "nTransferNo", headerName: "吊号", width: 150 },
       { field: "cStackNum", headerName: "层号", width: 149, hide: true },
 ];
-/** ucStorage1.Selected（选择）列 = 原勾选列（AllowSyncRowStateToCheckboxSelection） */
-const storageColDefs = ref<ColDef[]>(rawStorageCols.map((c) =>
-  c.field === "selected"
-    ? { ...c, cellRenderer: "agCheckboxCellRenderer", editable: true, sortable: false, filter: false, minWidth: 40 }
-    : c,
-));
+/** ucStorage1.Selected（选择）列 = 原勾选列：改 hide 保留在列面板，勾选由 row-selection 呈现（ui-rules §7） */
+const storageColDefs = ref<ColDef[]>(rawStorageCols);
 
 /* ---------- 页签2：浇次产出坯料跟踪 ---------- */
 // 查询条件（原 stackPanel2）
@@ -464,6 +460,7 @@ async function onQuery2() {
               <div class="min-h-0 flex-1 overflow-hidden">
                 <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
                   :pagination="false" :default-col-def="hmxDefaultColDef" :column-defs="storageColDefs" :row-data="storageRows"
+                  :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
                   @grid-ready="onStorageReady" @first-data-rendered="autoSizeOnFirstData" />
               </div>
             </SplitterPanel>

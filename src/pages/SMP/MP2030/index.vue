@@ -89,17 +89,22 @@ function ready(key: "plan" | "stove" | "order") {
     else stoveOrderApi.value = e.api;
   };
 }
-/** 勾选 = 原 Selected 转移标记列（agCheckboxCellRenderer，行选择由该列承担） */
+/** 勾选 = AG Grid row-selection 复选框（原 Selected 转移勾选列已改隐藏列，ui-rules §7）；
+ *  计划表 Selected 字段随 selection-changed 回写（addLc 提交整行需保持字段同步） */
 function selectedStoves(): Tmp2040Dto[] {
-  return stoveRows.value.filter((x) => x.selected);
+  return (stoveApi.value?.getSelectedRows() ?? []) as Tmp2040Dto[];
 }
 function selectedPlans(): SlabPcDto[] {
-  return planRows.value.filter((x) => x.selected);
+  return (planApi.value?.getSelectedRows() ?? []) as SlabPcDto[];
+}
+function syncPlanSelectedField() {
+  const sel = new Set((planApi.value?.getSelectedRows() ?? []) as SlabPcDto[]);
+  planRows.value.forEach((r) => (r.selected = sel.has(r)));
 }
 
 /* ---------- 列（按 extract：camelCase 绑定 / colId=原 FieldName） ---------- */
 const planColDefs = ref<ColDef[]>([
-  { colId: "Selected", field: "selected", headerName: "选择", width: 60, minWidth: 60, cellRenderer: "agCheckboxCellRenderer", editable: true, sortable: false, filter: false },
+  { colId: "Selected", field: "selected", headerName: "选择", hide: true },
   { colId: "NOrder", field: "nOrder", headerName: "生产顺序", width: 90 },
   { colId: "CPlanTime", field: "cPlanTime", headerName: "计划日期", width: 110 },
   { colId: "COrderNo", field: "cOrderNo", headerName: "订单号", width: 130 },
@@ -126,7 +131,7 @@ const planColDefs = ref<ColDef[]>([
 
 const stoveColDefs = ref<ColDef[]>([
   { colId: "CPono", field: "cPono", headerName: "制造命令号", width: 110 },
-  { colId: "Selected", field: "selected", headerName: "选择", width: 60, minWidth: 60, cellRenderer: "agCheckboxCellRenderer", editable: true, sortable: false, filter: false },
+  { colId: "Selected", field: "selected", headerName: "选择", hide: true },
   { colId: "CPlanTime", field: "cPlanTime", headerName: "计划日期", width: 110 },
   { colId: "NStatus", field: "nStatus", headerName: "状态", width: 80 },
   { colId: "CCcCode", field: "cCcCode", headerName: "连铸代码", width: 95 },
@@ -272,7 +277,11 @@ async function queryPlan() {
       lgPlanStatus: (icboPlan.value ?? null) as LgProdStatusEnum | null,
     };
     planRows.value = (await castStoveApi.getSlabOrderList(input)) ?? [];
-    autofit(planApi.value);
+    /* 原 Selected 列语义：查询回填后按数据字段回灌行选择勾选态 */
+    requestAnimationFrame(() => {
+      planApi.value?.forEachNode((node) => node.setSelected(!!(node.data as SlabPcDto).selected));
+      planApi.value?.autoSizeAllColumns();
+    });
   } catch {
     /* 拦截层已 toast */
   } finally {
@@ -290,7 +299,10 @@ async function queryLc() {
       cCcmCode: icboMachineQuery.value ?? null,
     };
     stoveRows.value = (await castStoveApi.getLcList(input)) ?? [];
-    autofit(stoveApi.value);
+    requestAnimationFrame(() => {
+      stoveApi.value?.forEachNode((node) => node.setSelected(!!(node.data as Tmp2040Dto).selected));
+      stoveApi.value?.autoSizeAllColumns();
+    });
     /* 焦点行变化联动：第一行的订单（原 FocusedRowObjectChanged） */
     await loadLcOrders(stoveRows.value[0]?.id ?? null);
   } catch {
@@ -460,7 +472,9 @@ onMounted(() => {
         <div class="min-h-0 flex-1 overflow-hidden">
           <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
             :default-col-def="hmxDefaultColDef" :column-defs="planColDefs" :row-data="planRows" :pagination="false"
-            :loading="querying" @grid-ready="ready('plan')" @first-data-rendered="autoSizeOnFirstData" />
+            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
+            :loading="querying" @grid-ready="ready('plan')" @selection-changed="syncPlanSelectedField"
+            @first-data-rendered="autoSizeOnFirstData" />
         </div>
       </SplitterPanel>
 
@@ -502,6 +516,7 @@ onMounted(() => {
             <div class="min-h-0 flex-1 overflow-hidden">
               <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
                 :default-col-def="hmxDefaultColDef" :column-defs="stoveColDefs" :row-data="stoveRows"
+                :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
                 :pagination="false" :loading="querying" :master-detail="true" :detail-grid-options="stoveDetailOptions"
                 :get-detail-row-data="getStoveDetailRows" @grid-ready="ready('stove')"
                 @first-data-rendered="autoSizeOnFirstData" @row-clicked="onStoveRowClicked" />

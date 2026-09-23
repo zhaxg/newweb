@@ -118,7 +118,7 @@ function buildQuery(): QueryOrdersForDesignInputParameter {
 
 /* ---------- 主表列（提取摘要：49 可见 + 14 hide） ---------- */
 const colDefs = ref<ColDef[]>([
-  { field: "selected", headerName: "选择", width: 70 },
+  { field: "selected", headerName: "选择", hide: true },
   { field: "cOrderNo", headerName: "订单号", width: 140 },
   { field: "nStatus", headerName: "订单状态", width: 100 },
   { field: "cOrderCustCname", headerName: "订货客户中文名称", width: 160 },

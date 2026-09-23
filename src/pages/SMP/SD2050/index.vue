@@ -15,7 +15,8 @@ import { tmp2000Api, type InputTmp2000Dto, type QueryCptTmp2010Dto, type Tmp2000
  *  已接入：tmp2000Api.getTmp2010Len（查询，Load 即查）/ getTmp2000Log(CSwlx="changeLen")（行聚焦加载变更日志）/
  *          insertOrderLenPlan（提交申请）
  *  布局：工具栏(查询/提交申请，原 stackPanel1) → 上下 Splitter：主表(gridView2 Fill) ｜ 日志(gridView3 Bottom)；原无查询条件区
- *  列集按 extract（主表35+隐藏1 / 日志4+隐藏5） */
+ *  列集按 extract（主表35+隐藏1 / 日志4+隐藏5）；
+ *  原 Selected 勾选列由 AG Grid row-selection 复选框呈现（ui-rules §7），原列以 hide:true 保留在列面板 */
 
 const { toast } = useToast();
 const theme = makeHmxGridTheme();
@@ -26,7 +27,7 @@ const gridApi = ref<GridApi | null>(null);
 const logApi = ref<GridApi | null>(null);
 
 const colDefs: ColDef[] = [
-        { field: "selected", headerName: "选择", width: 56, minWidth: 56, cellRenderer: "agCheckboxCellRenderer", editable: true, sortable: false, filter: false },
+        { field: "selected", headerName: "选择", hide: true },
       { field: "cOrderCustCname", headerName: "客户", width: 150 },
       { field: "cOrderNo", headerName: "编号", width: 150 },
       { field: "cSteelType", headerName: "品名", width: 150 },
@@ -83,9 +84,7 @@ function onLogReady(e: GridReadyEvent) {
 }
 
 function selectedRows(): QueryCptTmp2010Dto[] {
-  const byGrid = (gridApi.value?.getSelectedRows() ?? []) as QueryCptTmp2010Dto[];
-  const byCheck = rows.value.filter((x) => x.selected);
-  return Array.from(new Set([...byGrid, ...byCheck]));
+  return (gridApi.value?.getSelectedRows() ?? []) as QueryCptTmp2010Dto[];
 }
 
 /* simpleButton1 查询 → BindData（原 GetTmp2010Len 空条件） */

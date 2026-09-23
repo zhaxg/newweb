@@ -5,8 +5,9 @@
  *            CptSlabNoDto（NWgt=0 时取 NCalWgt）→ XtraReportPrinter.PrintPreview 模板
  *            9f46e69a0606466793a2e811fea41930，报表打印未在 web 侧接入，选中校验后 toast 占位）
  *  cQueryString：无（种子为空）
- *  列集：9 列全可见 / 0 隐藏（extract QueryCptSlabNoDto；Selected 选择列为打印勾选，VisibleIndex=0，
- *    原 AllowSyncRowStateToCheckboxSelection 由该勾选列承担选行）；txtDs/txtDe 为 Designer 声明但未挂载的
+ *  列集：9 列全可见 / 0 隐藏（extract QueryCptSlabNoDto；Selected 选择列为打印勾选，原
+ *    AllowSyncRowStateToCheckboxSelection 勾选语义改由 AG Grid row-selection 复选框承担，原列 hide 保留）；
+ *    txtDs/txtDe 为 Designer 声明但未挂载的
  *    孤儿字段（原窗体不可见），按 extract 输入基线保留隐藏渲染
  *  字段桥接：extract PascalCase → 后端 camelCase（bridge 双写） */
 import { nextTick, onMounted, ref } from "vue";
@@ -49,8 +50,8 @@ function bridge(cols: ColDef[]): ColDef[] {
 
 const colDefs = ref<ColDef[]>(
   bridge([
-    // 原 VisibleIndex=0 的 Selected 打印勾选列（AllowSyncRowStateToCheckboxSelection）
-    { colId: "Selected", field: "Selected", headerName: "选择", width: 70, minWidth: 60, cellRenderer: "agCheckboxCellRenderer", editable: true, sortable: false, filter: false },
+    // 原 VisibleIndex=0 的 Selected 打印勾选列：改 hide 保留在列面板，勾选由 row-selection 呈现（ui-rules §7）
+    { colId: "Selected", field: "Selected", headerName: "选择", hide: true },
     { field: "DWeighTime", headerName: "称重时间", width: 170 },
     { field: "CSlabNo", headerName: "铸坯号", width: 150 },
     { field: "NWgt", headerName: "炉前称重", width: 130 },
@@ -93,7 +94,13 @@ async function query() {
       (await tmp2000Api.getCptSlabNo({ cSgCode: sgCode.value || null, dBegin: dtS.value, dEnd: dtE.value })) ?? [];
     rows.value = Array.isArray(list) ? list : [];
     await nextTick();
-    requestAnimationFrame(() => gridApi.value?.autoSizeAllColumns());
+    /* 原勾选列 Selected 字段：查询回填后按数据字段回灌行选择勾选态 */
+    requestAnimationFrame(() => {
+      gridApi.value?.forEachNode((node) =>
+        node.setSelected(Boolean(gv(node.data as Record<string, unknown>, "Selected"))),
+      );
+      gridApi.value?.autoSizeAllColumns();
+    });
   } catch {
     /* 拦截层已 toast */
   } finally {
@@ -108,7 +115,7 @@ function gv(r: Record<string, unknown>, f: string) {
 
 /** btnPrint_Click：勾选校验文案照抄；选中行组装（NWgt=0 → NCalWgt）后报表打印占位 */
 function onPrint() {
-  const selected = (rows.value as Array<Record<string, unknown>>).filter((x) => Boolean(gv(x, "Selected")));
+  const selected = (gridApi.value?.getSelectedRows() ?? []) as Array<Record<string, unknown>>;
   if (selected.length <= 0) {
     toast("请勾选打印的数据！", 2500, "warn");
     return;
@@ -152,6 +159,7 @@ onMounted(() => {
     <div class="min-h-0 flex-1 overflow-hidden">
       <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
         :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows" :pagination="false"
+        :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
         :loading="querying" @grid-ready="onGridReady" @first-data-rendered="autoSizeOnFirstData" />
     </div>
   </div>

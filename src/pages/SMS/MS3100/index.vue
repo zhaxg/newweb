@@ -7,7 +7,7 @@
  *  待接入：机台下拉候选——原 UCMachine.RefreshData → ITpa1000AppService.QueryMachine 未生成（同 MP2030/MP2050），Select 暂空候选
  *  结构：stackPanel1（产线|机台|时间范围|取值间隔(S)|查询点位|刷新曲线图）→ 左右 Splitter（SplitterPosition=598≈50%）：
  *       Panel1 groupControl1「点位信息」网格 / Panel2 groupControl2「曲线图」；取值间隔候选 1/10/30/60/120 默认 60（原 comValueJG.Items）
- *  列集：点位表 extract 4 可见（Selected 选择列→勾选格，对应原 AllowSyncRowStateToCheckboxSelection）+ 31 隐藏（hide:true）
+ *  列集：点位表 extract 4 可见（Selected 选择列→row-selection 复选框，原列 hide:true 保留，对应原 AllowSyncRowStateToCheckboxSelection）+ 31 隐藏（hide:true）
  *  偏差：原 DevExpress ChartControl 折线图 → 「曲线图」面板内数据表（时间/点位/数值，按批约可表格化）；
  *        qs 解析失败文案按 FrmTagQueryStringDto 照抄（无「MES程序版本」句，与 MS22xx/MS3000 文案本就不同）
  *  字段桥接：后端 JSON camelCase → 回填 toPascal 首字母还原 */
@@ -56,7 +56,7 @@ type Row = Record<string, unknown>;
 const tagRows = shallowRef<Row[]>([]);
 const chartRows = shallowRef<Row[]>([]);
 
-const tagCols = ref<ColDef[]>([      { field: "Selected", headerName: "选择", width: 112 },
+const tagCols = ref<ColDef[]>([      { field: "Selected", headerName: "选择", hide: true },
       { field: "CTagNm", headerName: "点位描述", width: 112 },
       { field: "CMachineName", headerName: "机台名称", width: 112 },
       { field: "CSmnsTag", headerName: "自动化点位", width: 125 },
@@ -91,15 +91,8 @@ const tagCols = ref<ColDef[]>([      { field: "Selected", headerName: "选择", 
       { field: "CSw04", headerName: "备用字段4", width: 125, hide: true },
       { field: "CSw05", headerName: "备用字段5", width: 125, hide: true },
       { field: "CSw06", headerName: "备用字段6", width: 125, hide: true }]);
-// Selected = 勾选标记列（原 CheckEdit + AllowSyncRowStateToCheckboxSelection），曲线查询读勾选行
-const selCol = tagCols.value.find((c) => c.field === "Selected");
-if (selCol) {
-  selCol.width = 64;
-  selCol.minWidth = 64;
-  selCol.sortable = false;
-  selCol.cellRenderer = "agCheckboxCellRenderer";
-  selCol.editable = () => true;
-}
+// Selected = 勾选标记列（原 CheckEdit + AllowSyncRowStateToCheckboxSelection）：
+// ui-rules §7——原列 hide:true 保留，勾选由 row-selection 复选框呈现，曲线查询读勾选行
 
 // 曲线数据表（批约：曲线图可表格化；列=时间/点位/数值，数据来自 MS3100Dto.Title+ValueList）
 const chartCols: ColDef[] = [
@@ -130,7 +123,11 @@ async function onQueryTags() {
         MachineName: machineCode.value ?? "",
       })) ?? [];
     tagRows.value = toPascalRows(list);
-    requestAnimationFrame(() => tagApi.value?.autoSizeAllColumns());
+    /* 原 AllowSyncRowStateToCheckboxSelection=true：勾选态由 Selected 字段回灌 */
+    requestAnimationFrame(() => {
+      tagApi.value?.forEachNode((node) => node.setSelected(!!(node.data as Row).Selected));
+      tagApi.value?.autoSizeAllColumns();
+    });
   } catch {
     /* 拦截层已 toast */
   } finally {
@@ -158,7 +155,8 @@ async function onQueryChart() {
     toast("取值间隔必须大于0！", 2000, "warn");
     return;
   }
-  const points = tagRows.value.filter((r) => r.Selected).map((r) => String(r.CSmnsTag ?? ""));
+  const points = (tagApi.value?.getSelectedRows() ?? [])
+    .map((r) => String((r as Row).CSmnsTag ?? ""));
   if (!points.length) {
     toast("请选择PLC点位进行操作！", 2000, "warn");
     return;
@@ -233,6 +231,7 @@ onMounted(() => {
         <div class="min-h-0 flex-1 overflow-hidden">
           <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
             :default-col-def="hmxDefaultColDef" :column-defs="tagCols" :row-data="tagRows" :pagination="false"
+            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
             :loading="queryTagsLoading" @grid-ready="onTagReady" @first-data-rendered="autoSizeOnFirstData" />
         </div>
       </SplitterPanel>

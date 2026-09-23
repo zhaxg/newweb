@@ -2,7 +2,7 @@
 /** 对应 FrmQZ5000（中厚板检验委托判定 / 菜单 QL5000，qs=ZG01）：DDH.Winforms.LIMS.Forms.FrmQZ5000
  *  布局：查询区（原 dataLayout 10 项：产线代码/委托单号/炉号/批号/委托单状态/钢种/订单号/执行标准/复验标记/委托时间 UCTimeRange）
  *       + stackPanel1（查询 + 判定备注 label/txtRemark + 判放行/判合格/判不合/实验室复验/质检复验/自动判定/重组样，右=ViewCaption「委托单信息」）
- *       → 上下 Splitter 45%（原 171/377）：委托单信息 UCTestJob（多选 Selected 列照原）| 页签（PrimeVue Tabs）：
+ *       → 上下 Splitter 45%（原 171/377）：委托单信息 UCTestJob（multiRow 行选择复刻原 Selected 勾选，ui-rules §7）| 页签（PrimeVue Tabs）：
  *         委托检验结果 UCTestResultViewer→UCTestItemResult（试样信息|检验结果）
  *         熔炼成分 UCCfView→UCCfResult（炉次成分试样|炉次成分信息）
  *         成品成分 gridControl1（ElementValue；原 PageVisible=false，queryCpcf 非空才显示）
@@ -159,9 +159,9 @@ const sampleJudgeFmt = (p: ValueFormatterParams) =>
   (({ 0: "待判", 1: "不需判", 2: "合格", 3: "不合格" }) as Record<string, string>)[String(p.value)] ?? (p.value == null ? "" : String(p.value));
 const lineFmt = (p: ValueFormatterParams) => lineOptions.value.find((l) => l.value === p.value)?.label ?? (p.value ?? "");
 
-/* ---------- UCTestJob 委托单信息（共享 UC 设计器：Selected 可见 + 判定着色 + 加急黄底） ---------- */
+/* ---------- UCTestJob 委托单信息（共享 UC 设计器：原 Selected 勾选列→行选择、列隐藏保留 + 判定着色 + 加急黄底） ---------- */
 const jobColDefs = ref<ColDef[]>([
-  { colId: "selected", field: "selected", headerName: " ", width: 52, minWidth: 52, cellRenderer: "agCheckboxCellRenderer", editable: true, sortable: false, filter: false, pinned: "left" },
+  { colId: "selected", field: "selected", headerName: "选择", hide: true },
   { field: "cStove", headerName: "炉号", width: 100 },
   { field: "cBatch", headerName: "批号", width: 100 },
   { field: "cInternalNo", headerName: "内部编号", width: 110 },
@@ -430,7 +430,7 @@ const cpcfColDefs = ref<ColDef[]>([
 
 /* ---------- UCSampleRequires（实验室复验选择弹窗；ColCJudgeResult 照 .cs 提到第2列） ---------- */
 const labColDefs = ref<ColDef[]>([
-  { colId: "selected", field: "selected", headerName: " ", width: 52, minWidth: 52, cellRenderer: "agCheckboxCellRenderer", editable: true, sortable: false, filter: false, pinned: "left" },
+  { colId: "selected", field: "selected", headerName: "选择", hide: true },
   { field: "cJudgeResult", headerName: "判定结果", width: 90, valueFormatter: sampleJudgeFmt, cellClass: (p) => (Number(p.value) === SampleJudgeResult.Qualified ? "judge-ok" : Number(p.value) === SampleJudgeResult.Unqualified ? "judge-ng" : "") },
   { field: "cTestItemTypeDesc", headerName: "试验项目种类描述", width: 150 },
   { field: "cTestItemName", headerName: "试验项目名称", width: 140 },
@@ -722,10 +722,18 @@ async function onLabRecheck() {
     /* 拦截层已 toast */
   }
 }
+/** 勾选态回写 data.selected（labRecheck 按实体整行下发，保持后端契约，ui-rules §7 规则4） */
+function onLabSelectionChanged(e: SelectionChangedEvent) {
+  const ids = new Set((e.api.getSelectedRows() as SampleRequires[]).map((x) => x.id));
+  e.api.forEachNode((n) => {
+    const d = n.data as SampleRequires | undefined;
+    if (d) d.selected = ids.has(d.id);
+  });
+}
 async function onLabOk() {
   const row = focusJob.value;
   if (!row) return;
-  const selected = labRows.value.filter((x) => x.selected);
+  const selected = (labApi.value?.getSelectedRows() ?? []) as SampleRequires[];
   if (!selected.length) {
     toast("请选择要复验的项目", 2000, "warn");
     return;
@@ -822,9 +830,9 @@ async function onQmOk() {
   }
 }
 
-/* ---------- 自动判定（原 btnAutoJudge_Click：SelectedRows → BatchAutoJudge） ---------- */
+/* ---------- 自动判定（原 btnAutoJudge_Click：SelectedRows → BatchAutoJudge；ui-rules §7 改 getSelectedRows） ---------- */
 function onAutoJudge() {
-  const selected = jobRows.value.filter((r) => r.selected);
+  const selected = (jobApi.value?.getSelectedRows() ?? []) as TestJob[];
   if (!selected.length) {
     toast("请选择要自动判定的委托", 2000, "warn");
     return;
@@ -958,11 +966,11 @@ onMounted(() => {
     <!-- splitContainerControl1：上下 45%（原 171/377） -->
     <Splitter class="min-h-0 flex-1" layout="vertical">
       <SplitterPanel :size="45" :minSize="25" class="flex min-h-0 flex-col overflow-hidden">
-        <!-- UCTestJob 委托单信息（Selected 列勾选 = 原 SelectedRows） -->
+        <!-- UCTestJob 委托单信息（行选择 multiRow = 原 SelectedRows 勾选，ui-rules §7） -->
         <div class="min-h-0 flex-1 overflow-hidden">
           <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
             :default-col-def="hmxDefaultColDef" :column-defs="jobColDefs" :row-data="jobRows"
-            :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
+            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
             :get-row-class="jobRowClass" :suppress-column-virtualisation="true" :pagination="false" :animate-rows="false"
             :loading="querying" @grid-ready="onJobGridReady" @selection-changed="onJobSelectionChanged"
             @cell-double-clicked="onJobCellDoubleClicked" @first-data-rendered="autoSizeOnFirstData" />
@@ -1068,8 +1076,10 @@ onMounted(() => {
       <div class="h-[60vh] min-h-0 overflow-hidden">
         <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
           :default-col-def="hmxDefaultColDef" :column-defs="labColDefs" :row-data="labRows"
+          :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
           :suppress-column-virtualisation="true" :pagination="false" :animate-rows="false"
-          @grid-ready="onLabGridReady" @first-data-rendered="autoSizeOnFirstData" />
+          @grid-ready="onLabGridReady" @selection-changed="onLabSelectionChanged"
+          @first-data-rendered="autoSizeOnFirstData" />
       </div>
       <template #footer>
         <Button label="取消" variant="outlined" @click="labOpen = false" />

@@ -80,7 +80,7 @@ const nStatusFmt = (p: ValueFormatterParams) =>
 
 /* ---------- 列（Designer VisibleIndex；化学元素列头英文；camelCase 对齐 swagger） ---------- */
 const colDefs = ref<ColDef[]>([
-  { colId: "selected", field: "selected", headerName: "选择", width: 52, minWidth: 52, pinned: "left", cellRenderer: "agCheckboxCellRenderer", editable: true, sortable: false, filter: false },
+  { colId: "selected", field: "selected", headerName: "选择", hide: true },
   { field: "cSampNo", headerName: "样号", width: 90 },
   { field: "cMeltingNo", headerName: "熔炼号", width: 100 },
   { field: "cStove", headerName: "炉号", width: 90 },

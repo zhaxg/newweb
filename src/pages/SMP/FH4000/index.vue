@@ -97,10 +97,8 @@ function onDeleteRows() {
 }
 
 function selectedRows(): QueryTsd3000Dto[] {
-  const byGrid = (api.value?.getSelectedRows() ?? []) as QueryTsd3000Dto[];
-  if (byGrid.length) return byGrid;
-  // 兼容勾选列 Selected 字段
-  return trackList.value.filter((x) => x.selected);
+  // 勾选行统一取 row-selection 选中行（原「兼容勾选列 Selected 字段」回退已并入）
+  return (api.value?.getSelectedRows() ?? []) as QueryTsd3000Dto[];
 }
 
 /* btnOK 确认退货 → InsertTsd3000 */

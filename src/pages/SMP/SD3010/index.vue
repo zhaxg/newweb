@@ -19,7 +19,8 @@ import { tmp2000Api, type InputStockDto, type QueryTyd2000Dto } from "@/api/mes4
  *  布局：查询区(16 项：12 文本 + 厚/宽/长 数字区间 + 产出时间区间) → 工具栏(查询/取消订单匹配/转挂订单) → 单表 Fill
  *        厚/宽/长 是复合数字区间（RangeInput），占 1 列即可、不跨列；仅「产出时间」日期区间按 ui-rules 占 col-span-2
  *  库区号取菜单 cQueryString「ZG01-04」（原 _searchInput.CStoreCode = QueryString）；切边方式为 KV 字典下拉（选项运行时灌，先按文本输入）；
- *  转挂前校验按 C#：库存状态/质量封锁/已存在订单/钢种标准规格一致（SpecCalHelper 断面规则同源）；列集按 extract（可见34+隐藏2=36） */
+ *  转挂前校验按 C#：库存状态/质量封锁/已存在订单/钢种标准规格一致（SpecCalHelper 断面规则同源）；列集按 extract（可见34+隐藏2=36）；
+ *  原 Selected 勾选列由 AG Grid row-selection 复选框呈现（ui-rules §7），原列以 hide:true 保留在列面板 */
 
 const { toast } = useToast();
 const { raw: menuQs } = useMenuQuery();
@@ -56,7 +57,7 @@ const input = reactive({
 });
 
 const colDefs: ColDef[] = [
-        { field: "selected", headerName: "选择", width: 56, minWidth: 56, cellRenderer: "agCheckboxCellRenderer", editable: true, sortable: false, filter: false },
+        { field: "selected", headerName: "选择", hide: true },
       { field: "cOrderNo", headerName: "订单号", width: 100 },
       { field: "cInboundNo", headerName: "入库标识", width: 100 },
       { field: "cConsignee", headerName: "订货单位", width: 100 },
@@ -99,9 +100,7 @@ function onGridReady(e: GridReadyEvent) {
 }
 
 function selectedRows(): QueryTyd2000Dto[] {
-  const byGrid = (gridApi.value?.getSelectedRows() ?? []) as QueryTyd2000Dto[];
-  const byCheck = rows.value.filter((x) => x.selected);
-  return Array.from(new Set([...byGrid, ...byCheck]));
+  return (gridApi.value?.getSelectedRows() ?? []) as QueryTyd2000Dto[];
 }
 
 function numRange(min: number | null, max: number | null) {

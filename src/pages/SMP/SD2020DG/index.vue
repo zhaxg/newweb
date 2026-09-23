@@ -6,6 +6,7 @@
  *          + tmp2000Api.finishOrder("Y"/"N")（订单结案/取消结案，「操作成功{n}条！」）
  *          + tLZG02Api.getSlabCodeList（提料坯型下拉，原 SearchLookUpEdit DisplayMember=CName/ValueMember=CCode，NullText=请选择坯型）
  *  列集：gridView1 全列 28 可见（含 Selected 选择/NStatus 订单状态）+ 47 hide:true，按 extract 一一对应；
+ *        原 Selected 勾选列由 AG Grid row-selection 复选框呈现（ui-rules §7），原列以 hide:true 保留在列面板；
  *        searchLookUpEdit1View（提料坯型弹出视图，同 28+47 列）按 ui-rules LookUpEdit→Select 映射为下拉，不单独成表
  *  原 BindData 未读取状态下拉（绑定存在但查询不入参），web 照 .cs 不发送 orderStatus；状态/计划类型枚举下拉照 Designer 照抄
  *  字段桥接：extract 为 C# PascalCase，后端 JSON 为 camelCase —— valueGetter/valueSetter 双写（PLAN_* → pLAN_* 同后端契约）
@@ -57,7 +58,7 @@ type Row = QueryTmp2000Dto & { Selected?: boolean; COrderNo?: string; NFlag?: nu
 const rows = ref<Row[]>([]);
 
 const colDefs = ref<ColDef[]>(bridge([
-      { field: "Selected", headerName: "选择", width: 64, minWidth: 64, cellRenderer: "agCheckboxCellRenderer", editable: true, sortable: false },
+      { field: "Selected", headerName: "选择", hide: true },
       { field: "COrderNo", headerName: "订单号", width: 150 },
       { field: "NFlag", headerName: "计划类型", width: 150 },
       { field: "NStatus", headerName: "订单状态", width: 150 },
@@ -180,7 +181,7 @@ function onGridReady(e: GridReadyEvent) {
 }
 
 function pickedRows(): Row[] {
-  return rows.value.filter((r) => Boolean(r.selected ?? r.Selected));
+  return (gridApi.value?.getSelectedRows() ?? []) as Row[];
 }
 function orderNos(list: Row[]): string[] {
   return list.map((r) => r.cOrderNo ?? r.COrderNo ?? "").filter(Boolean);
@@ -351,6 +352,7 @@ onMounted(async () => {
         :default-col-def="hmxDefaultColDef"
         :column-defs="colDefs"
         :row-data="rows"
+        :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
         :pagination="false"
         :loading="querying"
         @grid-ready="onGridReady"

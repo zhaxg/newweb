@@ -95,7 +95,7 @@ function buildDto(): InputStockDto {
 
 // gridView1「成品库存」：36 可见列 + CPrintCode hide（QueryTyd2000Dto [LDisplay]，NWgt 为 Designer Caption）
 const colDefs: ColDef[] = [
-  { field: "selected", headerName: "选择", width: 70 },
+  { field: "selected", headerName: "选择", hide: true },
   { field: "cInboundNo", headerName: "入库标识", width: 120 },
   { field: "cComplexDecideCode", headerName: "综判结果", width: 100 },
   { field: "cStackNo", headerName: "垛位号", width: 90 },

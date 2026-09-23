@@ -158,7 +158,7 @@ const loadingChildren = ref(false);
 let focusToken = 0;
 
 const jobColDefs = ref<ColDef[]>([
-  { colId: "selected", field: "selected", headerName: " ", width: 44, minWidth: 44, pinned: "left", cellRenderer: "agCheckboxCellRenderer", editable: true, sortable: false, filter: false },
+  { colId: "selected", field: "selected", headerName: "选择", hide: true },
   { field: "cStove", headerName: "炉号", width: 110 },
   { field: "cBatch", headerName: "批号", width: 110 },
   { field: "cInternalNo", headerName: "内部编号", width: 110 },

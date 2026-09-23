@@ -118,13 +118,19 @@ function ready(key: "plan" | "left" | "right") {
 }
 /** 计划行（swagger SlabPcDto 未声明 cPlanTime，按运行时数据补型） */
 type PlanRow = FrmMS2033Dto_PlanInfo & { cPlanTime?: string | null };
-/** 焦点计划行（原 gvPlan.GetFocusedRow） */
+/** 焦点计划行（原 gvPlan.GetFocusedRow；勾选首行视作焦点） */
 function focusedPlan(): PlanRow | null {
   const rows = planApi.value?.getSelectedRows() ?? [];
   return (rows[0] as PlanRow | undefined) ?? null;
 }
+/** 勾选计划 = AG Grid row-selection 复选框（原 Selected 勾选列已改隐藏列，ui-rules §7） */
 function selectedPlans(): FrmMS2033Dto_PlanInfo[] {
-  return planRows.value.filter((x) => x.selected);
+  return (planApi.value?.getSelectedRows() ?? []) as FrmMS2033Dto_PlanInfo[];
+}
+/** _selList 整行提交：Selected 字段随 selection-changed 回写，保持原载荷语义 */
+function syncPlanSelectedField() {
+  const sel = new Set(selectedPlans());
+  planRows.value.forEach((r) => (r.selected = sel.has(r)));
 }
 function sortCut(list: FrmMS2033Dto_StoveCutInfo[]): FrmMS2033Dto_StoveCutInfo[] {
   return [...list].sort((a, b) => Number(a.nStrandNoSeqPlanTime ?? 0) - Number(b.nStrandNoSeqPlanTime ?? 0));
@@ -139,7 +145,7 @@ function replaceCut(data?: { dataSourceLeft?: FrmMS2033Dto_StoveCutInfo[] | null
 /* ---------- 列 ---------- */
 /** 计划 gvPlan：18 可见 + 4 隐藏（FrmMS2033Dto_PlanInfo = SlabPcDto） */
 const planColDefs = ref<ColDef[]>([
-  { colId: "Selected", field: "selected", headerName: "选择", width: 60, minWidth: 60, cellRenderer: "agCheckboxCellRenderer", editable: true, sortable: false, filter: false },
+  { colId: "Selected", field: "selected", headerName: "选择", hide: true },
   { colId: "NOrder", field: "nOrder", headerName: "消息排序号", width: 90 },
   { colId: "CPlanTime", field: "cPlanTime", headerName: "计划日期", width: 110 },
   { colId: "CreateTime", field: "createTime", headerName: "创建时间", width: 150 },
@@ -310,7 +316,11 @@ async function onQuery() {
   querying.value = true;
   try {
     planRows.value = (await frmMP2033Api.getSlabOrderList(param)) ?? [];
-    autofit(planApi.value);
+    /* 原 Selected 列语义：查询回填后按数据字段回灌行选择勾选态 */
+    requestAnimationFrame(() => {
+      planApi.value?.forEachNode((node) => node.setSelected(!!(node.data as FrmMS2033Dto_PlanInfo).selected));
+      planApi.value?.autoSizeAllColumns();
+    });
     /* 原 btnQuery_Click_Real 尾部 gvPlan_FocusedRowObjectChanged(null,null) */
     await loadCut(planRows.value[0] ?? null);
   } catch {
@@ -322,6 +332,7 @@ async function onQuery() {
 
 /** 计划行焦点变化（原 gvPlan_Click 回填坯料尺寸默认值 + FocusedRowObjectChanged 联动切割计划） */
 function onPlanSelectionChanged() {
+  syncPlanSelectedField();
   const row = focusedPlan();
   speNThick.value = row?.nSlabThick ?? 263;
   speNWth.value = row?.nSlabWidth ?? 2030;
@@ -649,7 +660,8 @@ onMounted(async () => {
         <div class="min-h-0 flex-1 overflow-hidden">
           <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
             :default-col-def="hmxDefaultColDef" :column-defs="planColDefs" :row-data="planRows" :pagination="false"
-            :loading="querying" :row-selection="{ mode: 'singleRow', enableClickSelection: true }"
+            :loading="querying"
+            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
             @grid-ready="ready('plan')" @first-data-rendered="autoSizeOnFirstData"
             @selection-changed="onPlanSelectionChanged" />
         </div>

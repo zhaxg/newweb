@@ -271,8 +271,8 @@ const pivotGridApi = ref<GridApi | null>(null);
 /* ---------- 列定义 ---------- */
 /** UCTestJob.gridView1（TestJob，可见45+隐藏16，列序/中文头与 QL3000 同源） */
 const jobColDefs = ref<ColDef[]>([
-  // 原 colSelected/colCStove/colCBatch 均 Fixed=Left
-  { colId: "selected", field: "selected", headerName: " ", width: 44, minWidth: 44, pinned: "left", cellRenderer: "agCheckboxCellRenderer", editable: true, sortable: false, filter: false },
+  // 原 colSelected 勾选列按 ui-rules §7 转隐藏列（行选择负责选中）；colCStove/colCBatch 仍 Fixed=Left
+  { colId: "selected", field: "selected", headerName: "选择", hide: true },
   { field: "cStove", headerName: "炉号", width: 110, pinned: "left" },
   { field: "cBatch", headerName: "批号", width: 110, pinned: "left" },
   { field: "cInternalNo", headerName: "内部编号", width: 110 },

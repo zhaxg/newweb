@@ -4,7 +4,8 @@
  *  查询条件（原 dataLayoutControl 11 个 LayoutControlItem）：销售合同 / 客户 / 组批号 / 板坯号 / 牌号 /
  *    计划号 / 班次(TiShiftNoEnum 早中夜) / 班组(甲乙丙=a b c) / 装炉时间(UCTimeRange) /
  *    订货厚(UCDecimalRange) / 订货宽(UCDecimalRange)
- *  列：75 可见（含 Selected 勾选列）+ CreateTime hide；列序列头对齐 Designer VisibleIndex
+ *  列：75 可见 + CreateTime hide；列序列头对齐 Designer VisibleIndex；
+ *    原 Selected 勾选列以 hide:true 保留，勾选由 AG Grid row-selection 复选框呈现（ui-rules §7）
  *  查询标签宽度全页统一 w-16（ui-rules §6 查询条件区）；原「销售合同号」「装炉时间范围」按整齐划一缩短为 4 字 */
 
 import { ref } from "vue";
@@ -143,11 +144,9 @@ const rawCols: ColDef[] = [
       { field: "dEvenHeatFaceTemp", headerName: "均热段入口板坯表面温度", width: 112 },
       { field: "createTime", headerName: "创建时间", width: 112, hide: true },
 ];
-/** Selected（选择）列 = 原勾选列（AllowSyncRowStateToCheckboxSelection），做成勾选单元格列 */
+/** Selected（选择）列 = 原勾选列（AllowSyncRowStateToCheckboxSelection）：ui-rules §7 以 hide:true 隐藏，勾选由 row-selection 复选框承担 */
 const colDefs = ref<ColDef[]>(rawCols.map((c) =>
-  c.field === "selected"
-    ? { ...c, cellRenderer: "agCheckboxCellRenderer", editable: true, sortable: false, filter: false, minWidth: 40 }
-    : c,
+  c.field === "selected" ? { ...c, hide: true } : c,
 ));
 
 function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
@@ -247,6 +246,7 @@ async function onQuery() {
     <div class="min-h-0 flex-1 overflow-hidden">
       <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
         :pagination="false" :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows"
+        :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
         :loading="querying" @grid-ready="onGridReady" @first-data-rendered="autoSizeOnFirstData" />
     </div>
   </div>

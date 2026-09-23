@@ -30,17 +30,8 @@ const input = ref({ stdCode: "", sgStd: "" });
 
 /* 主表：按 Designer VisibleIndex 0~7；Id/原标准代码1/生效标记/版次/归档标记 未排入 → hide */
 const colDefs: ColDef[] = [
-  {
-    colId: "selected",
-    field: "selected",
-    headerName: "选择",
-    width: 70,
-    minWidth: 70,
-    cellRenderer: "agCheckboxCellRenderer",
-    editable: true,
-    sortable: false,
-    filter: false,
-  },
+  /* 原 Selected 勾选列：ui-rules §7 不手写勾选列，行选择由 row-selection 复选框承担，本列隐藏保留在列面板 */
+  { colId: "selected", field: "selected", headerName: "选择", hide: true },
   { field: "cStdCode", headerName: "标准代码", width: 140 },
   { field: "cSgStd", headerName: "执行标准", width: 160 },
   { field: "cRemark", headerName: "备注", width: 180 },
@@ -138,7 +129,7 @@ async function onSave() {
     <div class="min-h-0 flex-1 overflow-hidden">
       <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
         :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="trackList" :get-row-id="getRowId"
-        :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
+        :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
         :suppress-column-virtualisation="true"
         :pagination="false" :animate-rows="false" :loading="querying || saving"
         @grid-ready="onGridReady" @first-data-rendered="autoSizeOnFirstData" />

@@ -33,7 +33,8 @@ type Row2000 = QueryTmp2000Dto & {
  *  待接入：backOrderPlan（.cs btnBack_Click 为孤儿处理器，Designer 无按钮，未发明控件）；
  *          Excel 批量导入（ImportDataHelper + FrmImportTmp2000）与 FrmSD2010 弹窗无 web 通路；mock 缺 delOrder/downOrderPlan/importByBx
  *  产线输入为 HiddenItems（原画面隐藏）；查询 CLineCode 取菜单 cQueryString、NFlag 固定试验料(SYL=4)（原 C# BindData）；
- *  ribbon barButtonItem1/barCheckItem1 按约定忽略；列集按 extract（可见49+隐藏17=66） */
+ *  ribbon barButtonItem1/barCheckItem1 按约定忽略；列集按 extract（可见49+隐藏17=66）；
+ *  原 Selected 勾选列由 AG Grid row-selection 复选框呈现（ui-rules §7），原列以 hide:true 保留在列面板 */
 
 const { toast } = useToast();
 const { raw: menuQs } = useMenuQuery();
@@ -79,7 +80,7 @@ const flagOptions = [
 ];
 
 const colDefs: ColDef[] = [
-        { field: "selected", headerName: "选择", width: 56, minWidth: 56, cellRenderer: "agCheckboxCellRenderer", editable: true, sortable: false, filter: false },
+        { field: "selected", headerName: "选择", hide: true },
       { field: "cOrderNo", headerName: "订单号", width: 100 },
       { field: "nStatus", headerName: "订单状态", width: 100 },
       { field: "cOrderCustNo", headerName: "客户编码", width: 100 },
@@ -161,9 +162,7 @@ function onGridReady(e: GridReadyEvent) {
 }
 
 function selectedRows(): Row2000[] {
-  const byGrid = (gridApi.value?.getSelectedRows() ?? []) as Row2000[];
-  const byCheck = rows.value.filter((x) => x.selected);
-  return Array.from(new Set([...byGrid, ...byCheck]));
+  return (gridApi.value?.getSelectedRows() ?? []) as Row2000[];
 }
 
 function buildInput(): InputTmp2000Dto {

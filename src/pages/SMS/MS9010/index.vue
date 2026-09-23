@@ -9,7 +9,8 @@
  *  cQueryString：原 .cs 按 JSON {OrderLine,CStoreCode,StorageLine} 解析（解析失败弹「无法解析输入参数」）；
  *                菜单种子为裸产线码 LG02/ZG01 —— 裸码同时作为 OrderLine/StorageLine，JSON 串则按字段取（兼容两种）
  *  分栏：原 splitContainerControl1 Horizontal=false SplitterPosition=243——上=订单表(gridControl2)，下=库存过滤+按钮+材料明细(UCStorage)
- *  列集：双表按 extract 全列——订单表 74 可见+98 隐藏 / 材料表(UCStorage) 127 可见+1 隐藏(层号 CStackNum)，含 Selected 选择列
+ *  列集：双表按 extract 全列——订单表 74 可见+98 隐藏 / 材料表(UCStorage) 127 可见+1 隐藏(层号 CStackNum)；
+ *        Selected 选择列由 row-selection 复选框呈现（ui-rules §7），原列 hide:true 保留在列面板
  *  待接入：取消原因字典下拉（原 QuerySysKvItemList(CANCEL_MATCH_REASON)→FrmConfirmValueDialog，swagger 未生成该方法，
  *          现以 window.prompt 复刻对话框，选项字典待补）；StorageMatchPlanRule 前端规则校验未迁（依赖 Hmx widget 规则库，交后端 mathPlan 校验）
  *  字段桥接：extract 为 C# PascalCase，后端 JSON 为 camelCase —— valueGetter/valueSetter 双写（PLAN_* 首字母小写即 pLAN_* 契约） */
@@ -85,7 +86,7 @@ const focusedPlan = ref<PlanRow | null>(null);
 
 /* ===== 订单表（原 gridControl2/gridView1：74 可见 + 98 隐藏） ===== */
 const orderCols = ref<ColDef[]>(bridge([
-      { field: "Selected", headerName: "选择", width: 64, minWidth: 64, cellRenderer: "agCheckboxCellRenderer", editable: true, sortable: false },
+      { field: "Selected", headerName: "选择", hide: true },
       { field: "COrderNo", headerName: "订单号", width: 130 },
       { field: "COrderCustCname", headerName: "订货客户中文名称", width: 130 },
       { field: "COrderNo1", headerName: "订单号1", width: 130 },
@@ -261,7 +262,7 @@ const orderCols = ref<ColDef[]>(bridge([
 
 /* ===== 材料明细表（原 UCStorage gridView1：127 可见 + 1 隐藏；PLAN_* → pLAN_* 契约由桥接自动完成） ===== */
 const storageCols = ref<ColDef[]>(bridge([
-      { field: "Selected", headerName: "选择", width: 64, minWidth: 64, cellRenderer: "agCheckboxCellRenderer", editable: true, sortable: false },
+      { field: "Selected", headerName: "选择", hide: true },
       { field: "Id", headerName: "主键", width: 149 },
       { field: "CStove", headerName: "炉号", width: 149 },
       { field: "CPieceNo", headerName: "件次号", width: 149 },
@@ -427,8 +428,9 @@ function onOrderReady(e: GridReadyEvent) {
 function onStorageReady(e: GridReadyEvent) {
   storageApi.value = e.api;
 }
-function isPicked(r: StorRow): boolean {
-  return Boolean(r.selected ?? r.Selected);
+/** 勾选材料行（ui-rules §7：row-selection 复选框，替代原 Selected 手写勾选列） */
+function pickedStorages(): StorRow[] {
+  return (storageApi.value?.getSelectedRows() ?? []) as StorRow[];
 }
 function planNo(r: PlanRow): string {
   return r.cOrderNo ?? r.COrderNo ?? "";
@@ -500,7 +502,7 @@ function queryByOrder() {
 
 /** 匹配：btnMatch_Click → Match(false)——勾选未匹配材料 + 焦点计划，超量拦截与确认文案照 .cs（描述=ToString 复刻） */
 async function onMatch() {
-  const stor = storageRows.value.filter((s) => isPicked(s) && !(s.cOrderNo ?? s.COrderNo));
+  const stor = pickedStorages().filter((s) => !(s.cOrderNo ?? s.COrderNo));
   if (!stor.length) {
     toast("请选择未匹配的材料", 2500, "warn");
     return;
@@ -536,7 +538,7 @@ async function onMatch() {
 
 /** 取消匹配：btnCancelMatch_Click → CancelMathPlan——取消原因对话框（原 KV 字典下拉，现 prompt 复刻，文案照 .cs） */
 async function onCancelMatch() {
-  const stor = storageRows.value.filter((s) => isPicked(s) && (s.cOrderNo ?? s.COrderNo));
+  const stor = pickedStorages().filter((s) => !!(s.cOrderNo ?? s.COrderNo));
   if (!stor.length) {
     toast("请选择已匹配的材料", 2500, "warn");
     return;
@@ -587,7 +589,7 @@ onMounted(() => {
           :default-col-def="hmxDefaultColDef"
           :column-defs="orderCols"
           :row-data="orderRows"
-          :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
+          :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
           :pagination="false"
           :loading="orderQuerying"
           @grid-ready="onOrderReady"
@@ -638,6 +640,7 @@ onMounted(() => {
             :default-col-def="hmxDefaultColDef"
             :column-defs="storageCols"
             :row-data="storageRows"
+            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
             :pagination="false"
             :loading="storageLoading"
             @grid-ready="onStorageReady"

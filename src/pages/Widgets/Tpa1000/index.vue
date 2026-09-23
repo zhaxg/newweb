@@ -162,7 +162,8 @@ function onGridSelectionChanged() {
 }
 
 const machineColDefs: ColDef[] = [
-  { colId: "selected", field: "selected", headerName: "选择", width: 56, cellRenderer: "agCheckboxCellRenderer" },
+  /* 原 Selected 勾选列：ui-rules §7 不手写勾选列，勾选由 row-selection 复选框承担，本列隐藏保留在列面板 */
+  { colId: "selected", field: "selected", headerName: "选择", hide: true },
   { colId: "cCode", field: "cCode", headerName: "代码", width: 100 },
   { colId: "cName", field: "cName", headerName: "名称", width: 120 },
   { colId: "cSimpName", field: "cSimpName", headerName: "简称", width: 100 },

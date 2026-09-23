@@ -5,7 +5,8 @@
  *          + tLZG02Api.cancleCheckedTlNew（取消审核 → 「取消审核{n}条！」）
  *          + tLZG02Api.delTl（删除 → 「删除{n}条！」）
  *          + tLApi.tlProdClose（已审提料生产关闭，整行提交、.cs 不回查 → 「执行成功{n}条！」）
- *  列集：gridView1 全列 26 可见（含 Selected 选择）+ 149 hide:true，按 extract 一一对应
+ *  列集：gridView1 全列 26 可见（含 Selected 选择）+ 149 hide:true，按 extract 一一对应；
+ *        原 Selected 勾选列由 AG Grid row-selection 复选框呈现（ui-rules §7），原列以 hide:true 保留在列面板
  *  原 Load 塞入状态下拉 OrderTlEnum（未提料/已提料/已审核）；钢种/订货客户控件绑定但 BindData 不入参，照 .cs 不发送
  *  原 Designer 另有 orphan 控件 simpleButton3（未加入任何容器），不渲染
  *  待接入：无；SimpleButton simpleButton3 为未挂载孤儿控件（Designer Controls.Add 缺席）
@@ -58,7 +59,7 @@ type Row = Tmp2005Dto & { Selected?: boolean; COrderNo?: string };
 const rows = ref<Row[]>([]);
 
 const colDefs = ref<ColDef[]>(bridge([
-      { field: "Selected", headerName: "选择", width: 64, minWidth: 64, cellRenderer: "agCheckboxCellRenderer", editable: true, sortable: false },
+      { field: "Selected", headerName: "选择", hide: true },
       { field: "CCool", headerName: "是否冷坯计划", width: 114 },
       { field: "NTlStatus", headerName: "提料状态", width: 100 },
       { field: "CPlanTime", headerName: "计划日期", width: 114 },
@@ -265,7 +266,7 @@ function onGridReady(e: GridReadyEvent) {
 }
 
 function pickedRows(): Row[] {
-  return rows.value.filter((r) => Boolean(r.selected ?? r.Selected));
+  return (gridApi.value?.getSelectedRows() ?? []) as Row[];
 }
 function orderNos(list: Row[]): string[] {
   return list.map((r) => r.cOrderNo ?? r.COrderNo ?? "").filter(Boolean);
@@ -400,6 +401,7 @@ onMounted(() => {
         :default-col-def="hmxDefaultColDef"
         :column-defs="colDefs"
         :row-data="rows"
+        :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
         :pagination="false"
         :loading="querying"
         @grid-ready="onGridReady"

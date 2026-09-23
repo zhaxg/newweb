@@ -25,7 +25,7 @@ import {
   IconArrowsSplit,
 } from "@tabler/icons-vue";
 import { AgGridVue } from "ag-grid-vue3";
-import type { ColDef, GridApi, GridReadyEvent, ValueFormatterParams } from "ag-grid-community";
+import type { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { hmxDefaultColDef, makeHmxGridTheme, autoSizeOnFirstData } from "@/lib/agGrid";
 import { GyljRepo, type Gylj, type Ylgy, type YlgyGx } from "./ylgy";
@@ -63,21 +63,8 @@ const routeCols: ColDef[] = [
   { field: "nSeq", headerName: "序号", width: 80, valueGetter: (p) => p.data?.data?.nSeq },
   { field: "cProc", headerName: "编码", width: 100, valueGetter: (p) => p.data?.data?.cProc },
   { field: "cProcName", headerName: "工序名称", width: 170, valueGetter: (p) => p.data?.data?.cProcName },
-  {
-    colId: "mergeSel",
-    headerName: "选择合并",
-    width: 90,
-    sortable: false,
-    valueGetter: (p) => !!p.data?.data?.selected,
-    valueSetter: (p) => {
-      const d = (p.data as YlgyGx | undefined)?.data;
-      if (!d) return false;
-      d.selected = !!p.newValue;
-      return true;
-    },
-    cellRenderer: "agCheckboxCellRenderer",
-    editable: true,
-  },
+  /* 原「选择合并」勾选列：ui-rules §7 不手写勾选列，勾选由 row-selection 复选框承担，本列隐藏保留在列面板 */
+  { colId: "mergeSel", headerName: "选择合并", hide: true },
   { field: "id", headerName: "主键", width: 150, hide: true, valueGetter: (p) => p.data?.data?.id },
   { field: "cTqmyl01Id", headerName: "冶炼工艺要点ID", width: 150, hide: true, valueGetter: (p) => p.data?.data?.cTqmyl01Id },
   { field: "cGyCode", headerName: "冶炼工艺要点编号", width: 140, hide: true, valueGetter: (p) => p.data?.data?.cGyCode },
@@ -164,6 +151,15 @@ function focusGx(gx: YlgyGx | null) {
   requestAnimationFrame(() => routeApi.value?.getRowNode(String(gx.data.id ?? ""))?.setSelected(true));
 }
 
+/** 原 gridControl2 的 Selected（选择合并）勾选态：由 row-selection 回写到 YlgyGx.data.selected，
+ *  保存 payload（toEntities → tqmyl03s）仍带该字段，保持后端契约不变 */
+function onRouteSelectionChanged() {
+  routeApi.value?.forEachNode((n) => {
+    const d = (n.data as YlgyGx | undefined)?.data;
+    if (d) d.selected = n.isSelected();
+  });
+}
+
 /** 原 btnUp_Click / btnDown_Click / btnUnmerge_Click / btnMerge_Click */
 function moveUp() {
   const m = props.model;
@@ -198,14 +194,15 @@ function unmerge() {
 function merge() {
   const m = props.model;
   if (!m) return;
-  const picked = m.gylj.filter((x) => x.data.selected);
+  const picked = (routeApi.value?.getSelectedRows() ?? []) as YlgyGx[];
   if (picked.length < 2) {
     toast("请先勾选要合并的工序", 2500, "warn");
     return;
   }
   try {
     m.merge(picked);
-    for (const x of picked) x.data.selected = false;
+    /* 合并后清空勾选（selection-changed 会回写 selected=false） */
+    routeApi.value?.deselectAll();
   } catch (e) {
     toast((e as Error).message, 3000, "error");
     return;
@@ -287,10 +284,10 @@ function onOk() {
                     <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
                       :default-col-def="hmxDefaultColDef" :column-defs="routeCols" :row-data="routeRows"
                       :get-row-id="routeRowId"
-                      :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
+                      :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
                       :suppress-column-virtualisation="true" :pagination="false" :animate-rows="false"
                       @grid-ready="onRouteReady" @first-data-rendered="autoSizeOnFirstData"
-                      @cell-value-changed="syncRoute" />
+                      @selection-changed="onRouteSelectionChanged" @cell-value-changed="syncRoute" />
                   </div>
                   <!-- 原 stackPanel2（Dock Right，TopDown；Text=" " + ToolTip 承载文案） -->
                   <div class="flex w-9 shrink-0 flex-col items-center gap-1 border-l border-border/60 py-1">

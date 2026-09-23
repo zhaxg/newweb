@@ -3,7 +3,7 @@
  *  布局：查询区（9 项 + 委托时间 + 登记时间；审核状态下拉）
  *       + stackPanel1（查询 / 审核报出 / 采集试验结果，右=标题「委托单信息」；左表无独立标题条）
  *       → 左右 Splitter 31%（委托单信息多选 | 右栏）
- *       → 右栏：上下 33%（试验项目 SampleRequires，Selected 勾选；
+ *       → 右栏：上下 33%（试验项目 SampleRequires，行选择勾选（原 Selected 列，ui-rules §7）；
  *              表头一行共用：左=审核报出/驳回/撤销报出（原 stackPanel2），右=标题「试验项目」）
  *              → UCTestItemResult 左右 57%（试样信息 | 检验结果；复制/粘贴/保存默认 AllowEdit=false 隐藏）
  *  已接入：testJobApi.queryTestJob（Statuses=已接收+已完成）、querySampleRequires、collectTestData /
@@ -242,12 +242,12 @@ function jobRowClass(p: RowClassParams) {
   return Number((p.data as any)?.cJiaJi) === 1 ? "row-jiaji" : undefined;
 }
 
-/* ---------- 中表：试验项目（SampleRequires，ViewCaption 试验项目；Selected 勾选） ---------- */
+/* ---------- 中表：试验项目（SampleRequires，ViewCaption 试验项目；原 Selected 勾选列改行选择，列隐藏保留） ---------- */
 const sampleRows = shallowRef<SampleRequires[]>([]);
 const sampleGridApi = ref<GridApi | null>(null);
 
 const sampleColDefs = ref<ColDef[]>([
-  { field: "selected", headerName: "选择", width: 56, minWidth: 56, cellRenderer: "agCheckboxCellRenderer", editable: true, sortable: false },
+  { colId: "selected", field: "selected", headerName: "选择", hide: true },
   { field: "cTestItemName", headerName: "试验项目名称", width: 130 },
   { field: "cJudgeResult", headerName: "判定结果", width: 90, valueFormatter: sampleJudgeFmt, cellClass: (p) => judgeCell(p) },
   { field: "cCompleteFlag", headerName: "确认完成标记", width: 120, valueFormatter: yesNoFmt },
@@ -439,6 +439,10 @@ async function onJobSelectionChanged(e: SelectionChangedEvent) {
     resultRows.value = [];
     sampleGridApi.value?.setGridOption("rowData", list);
     await waitForGridRows(sampleGridApi.value);
+    /* 原 Selected 列按数据字段渲染：回填后回灌勾选态（ui-rules §7，同 SS3040） */
+    requestAnimationFrame(() =>
+      sampleGridApi.value?.forEachNode((n) => n.setSelected(!!(n.data as SampleRequires | undefined)?.selected)),
+    );
   } catch {
     /* 拦截层已 toast */
   } finally {
@@ -492,19 +496,9 @@ function onTestSampleSelection(e: SelectionChangedEvent) {
   requestAnimationFrame(() => resultGridApi.value?.autoSizeAllColumns());
 }
 
-/** 中表 Selected 勾选集合（原 data.Where(x => x.Selected)） */
+/** 中表勾选集合（原 data.Where(x => x.Selected)；ui-rules §7 改行选择 getSelectedRows） */
 function checkedRequires(): SampleRequires[] {
-  const out: SampleRequires[] = [];
-  sampleGridApi.value?.forEachNode((n) => {
-    const d = n.data as SampleRequires;
-    if (d?.selected) out.push(d);
-  });
-  // 也接受行选择勾选同步
-  if (!out.length) {
-    const nodes = sampleGridApi.value?.getSelectedNodes() ?? [];
-    return nodes.map((n) => n.data as SampleRequires).filter(Boolean);
-  }
-  return out;
+  return (sampleGridApi.value?.getSelectedRows() ?? []) as SampleRequires[];
 }
 function selectedJobs(): any[] {
   const nodes = jobGridApi.value?.getSelectedNodes() ?? [];
@@ -630,12 +624,6 @@ function onResultGridReady(e: GridReadyEvent) {
   resultGridApi.value = e.api;
 }
 
-/** 勾选列写回 data.selected（原 Selected 字段） */
-function onSampleCellChanged() {
-  // AG Grid checkbox 已改 data.selected，无需额外处理；刷新以确保筛选一致
-  sampleGridApi.value?.refreshCells({ force: true });
-}
-
 onMounted(() => {
   void loadLines();
 });
@@ -746,10 +734,10 @@ onMounted(() => {
             <div class="min-h-0 flex-1 overflow-hidden">
               <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
                 :default-col-def="hmxDefaultColDef" :column-defs="sampleColDefs" :row-data="sampleRows"
-                :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
+                :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
                 :pagination="false" :animate-rows="false" :loading="loadingChild"
                 @grid-ready="onSampleGridReady" @selection-changed="onSampleRequiresSelection"
-                @cell-value-changed="onSampleCellChanged" @first-data-rendered="autoSizeOnFirstData" />
+                @first-data-rendered="autoSizeOnFirstData" />
             </div>
           </SplitterPanel>
 

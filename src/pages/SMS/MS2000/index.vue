@@ -16,7 +16,7 @@
  *  cQueryString：{FactoryCode,LineCode,AsReportShow,AllowQueryHistoryDatas,GanttCCMProcEditJCInfo}——
  *                AsReportShow=true 隐藏 stackPanel1 工具行、显示刷新甘特图2+历史查询区；LineCode=LG01(炼钢一厂) 隐藏添加/删除点位
  *  分栏（原 panelControl1(Fill)+splitterControl1(Right)+panelControl2(Right)）左右 65/35：左=甘特区骨架，右=炉次计划
- *  列集按 extract：计划表 23可见+66隐藏=89；Selected 转移勾选列
+ *  列集按 extract：计划表 23可见+66隐藏=89；Selected 转移勾选列（ui-rules §7：原列 hide:true 保留，勾选由 row-selection 呈现）
  *  【偏差】web 无 GantterSchedule.Gant 控件：甘特区以「资源条 + 点位表」时间轴骨架呈现（getGanttResourcesDatas/
  *          getFactoryLineAreaMachine_LG 资源 chips + getStoveRouteHistoryDatas1 点位行），点位选中即 _ganttCurrentPointInfo；
  *          复杂交互占位——计划行双击=原拖拽添加点位（getMsProcMachineMapping→use/trans 时间→getStoveRouteDatas 落点），
@@ -128,7 +128,7 @@ const dePlanDate = ref<Date | null>(today());
 
 /* 计划表（原 gridControl1/gridView1 ViewCaption=炉次计划：FrmMS2000ViewDtos_StovePlan 23 可见 + 66 隐藏） */
 const planCols = ref<ColDef[]>([
-        { field: "selected", headerName: "选择", width: 50, minWidth: 56, cellRenderer: "agCheckboxCellRenderer", editable: true, sortable: false },
+      { field: "selected", headerName: "选择", hide: true },
       { field: "cPlanTime", headerName: "计划日期", width: 112 },
       { field: "cCcCode", headerName: "连铸代码", width: 112 },
       { field: "cSgCode", headerName: "钢种", width: 86 },
@@ -264,7 +264,7 @@ async function queryPlans() {
   }
 }
 
-/** 计划行选中/点击（供上移下移取焦点行；Selected 勾选列由 checkbox 维护） */
+/** 计划行选中/点击（供上移下移取焦点行；勾选由 row-selection 复选框维护） */
 function onPlanClick(e: RowClickedEvent) {
   curPlan.value = (e.data as Row) ?? null;
 }
@@ -577,7 +577,8 @@ function onRouteStateChange() {
 }
 
 function selectedPlans(onlyDisabled = false): Row[] {
-  return plans.value.filter((r) => r.selected && (!onlyDisabled || r.cEnable === false));
+  const sel = (planApi.value?.getSelectedRows() ?? []) as Row[];
+  return sel.filter((r) => !onlyDisabled || r.cEnable === false);
 }
 
 /** btnUpLine/btnDownLine：焦点行与相邻行交换（原 CurrentRowMoveToPrevious/NextWithFilterOrSort，简化数组序，见来源注释） */
@@ -796,7 +797,7 @@ onBeforeUnmount(() => {
             :row-data="plans"
             :pagination="false"
             :loading="planLoading"
-            :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
+            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
             @grid-ready="onPlanReady"
             @row-clicked="onPlanClick"
             @row-double-clicked="onPlanDblClick"

@@ -4,7 +4,8 @@
  *          + tmp2000Api.downOrderPlan（下发排产，整行提交 → 「成功下发{n}条！」）
  *          + tmp2000Api.delGPOrder（删除，整行提交 → 「成功删除{n}条！」）
  *          + tmp2000Api.matchNkSgCode（质量设计 btnDesign，原 Designer Visible=false 隐藏保留 → 「成功匹配{n}条！」无确认，照 .cs）
- *  列集：gridView1 全列 32 可见（含 Selected 选择/NStatus 订单状态）+ 44 hide:true，按 extract 一一对应
+ *  列集：gridView1 全列 32 可见（含 Selected 选择/NStatus 订单状态）+ 44 hide:true，按 extract 一一对应；
+ *        原 Selected 勾选列由 AG Grid row-selection 复选框呈现（ui-rules §7），原列以 hide:true 保留在列面板
  *  待接入：批量导入订单（原 ImportDataHelper + 二级弹窗 FrmSD2000DGImport2，按 skill 弹窗占位）
  *  字段桥接：extract 为 C# PascalCase，后端 JSON 为 camelCase —— valueGetter/valueSetter 双写 */
 import { onMounted, reactive, ref } from "vue";
@@ -56,7 +57,7 @@ type Row = QueryTmp2000Dto & { Selected?: boolean; COrderNo?: string; NFlag?: nu
 const rows = ref<Row[]>([]);
 
 const colDefs = ref<ColDef[]>(bridge([
-      { field: "Selected", headerName: "选择", width: 64, minWidth: 64, cellRenderer: "agCheckboxCellRenderer", editable: true, sortable: false },
+      { field: "Selected", headerName: "选择", hide: true },
       { field: "COrderNo", headerName: "订单号", width: 150 },
       { field: "NFlag", headerName: "计划类型", width: 150 },
       { field: "NOrderProcFlag", headerName: "处理标志", width: 150 },
@@ -174,7 +175,7 @@ function onGridReady(e: GridReadyEvent) {
 }
 
 function pickedRows(): Row[] {
-  return rows.value.filter((r) => Boolean(r.selected ?? r.Selected));
+  return (gridApi.value?.getSelectedRows() ?? []) as Row[];
 }
 function orderNos(list: Row[]): string[] {
   return list.map((r) => r.cOrderNo ?? r.COrderNo ?? "").filter(Boolean);
@@ -317,6 +318,7 @@ onMounted(() => {
         :default-col-def="hmxDefaultColDef"
         :column-defs="colDefs"
         :row-data="rows"
+        :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
         :pagination="false"
         :loading="querying"
         @grid-ready="onGridReady"

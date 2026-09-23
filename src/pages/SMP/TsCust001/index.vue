@@ -50,7 +50,7 @@ const statusOptions = [
 
 // gvCust 列（Designer VisibleIndex 0-10，列头按 Designer Caption / TsCust001 实体）
 const colDefs: ColDef[] = [
-  { field: "selected", headerName: "选择", width: 70 },
+  { field: "selected", headerName: "选择", hide: true },
   { field: "cCustEname", headerName: "客户名称", width: 112 },
   { field: "cCustNo", headerName: "客户编码", width: 112 },
   { field: "cInboundNo", headerName: "入库标识", width: 112 },
@@ -102,10 +102,10 @@ function onCustChange() {
   if (hit) info.cCustNo = hit.code;
 }
 
-/** 原 btnDel_Click：Selected 勾选 → 确认 → DeleteCustAsync → 重查 */
+/** 原 btnDel_Click：Selected 勾选 → 确认 → DeleteCustAsync → 重查（勾选行取 row-selection） */
 async function onDel() {
   if (!rows.value.length) return;
-  const selected = rows.value.filter((x) => x.selected);
+  const selected = (gridApi.value?.getSelectedRows() ?? []) as TsCust001[];
   if (selected.length <= 0) {
     toast("请选择项！", 2000, "warn");
     return;

@@ -62,7 +62,7 @@ const reviewOptions = [
 ];
 
 const colDefs: ColDef[] = [
-        { field: "selected", headerName: "选择", width: 56, minWidth: 56, cellRenderer: "agCheckboxCellRenderer", editable: true, sortable: false, filter: false },
+      { field: "selected", headerName: "选择", hide: true },
       { field: "cLineCode", headerName: "产线代码", width: 150 },
       { field: "cPlanTime", headerName: "计划日期", width: 150 },
       { field: "cCool", headerName: "是否冷坯计划", width: 150 },
@@ -155,9 +155,7 @@ function onGridReady(e: GridReadyEvent) {
 }
 
 function selectedIds(): string[] {
-  const byGrid = (gridApi.value?.getSelectedRows() ?? []) as ZgPlanDto[];
-  const byCheck = rows.value.filter((x) => x.selected);
-  const list = Array.from(new Set([...byGrid, ...byCheck]));
+  const list = (gridApi.value?.getSelectedRows() ?? []) as ZgPlanDto[];
   return list
     .map((x) => x.id ?? "")
     .filter(Boolean);
@@ -186,7 +184,11 @@ async function onQuery() {
         cSgStd: q.cSgStd || null,
         nStatus: q.nStatus ?? null,
       })) ?? [];
-    requestAnimationFrame(() => gridApi.value?.autoSizeAllColumns());
+    /* 原勾选列 Selected 字段：查询回填后按数据字段回灌行选择勾选态 */
+    requestAnimationFrame(() => {
+      gridApi.value?.forEachNode((node) => node.setSelected(!!(node.data as ZgPlanDto).selected));
+      gridApi.value?.autoSizeAllColumns();
+    });
   } catch {
     /* 拦截层已 toast */
   } finally {

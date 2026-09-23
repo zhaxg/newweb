@@ -82,7 +82,7 @@ const api = ref<GridApi | null>(null);
 const focusMatNo = ref<string | null>(null);
 
 const colDefs = ref<ColDef[]>([
-  { field: "selected", headerName: "选择", width: 56, minWidth: 56, cellRenderer: "agCheckboxCellRenderer", editable: true, sortable: false },
+  { field: "selected", headerName: "选择", hide: true },
   { field: "cMatchId", headerName: "物流号", width: 150 },
   { field: "cOrderCustCname", headerName: "订货客户名称", width: 150 },
   { field: "cVehicleNo", headerName: "车号", width: 120 },
@@ -163,7 +163,11 @@ async function onQuery() {
     zbsRows.value = [];
     focusMatNo.value = null;
     api.value?.setGridOption("rowData", list);
-    requestAnimationFrame(() => api.value?.autoSizeAllColumns());
+    /* 原勾选列 Selected 字段：查询回填后按数据字段回灌行选择勾选态 */
+    requestAnimationFrame(() => {
+      api.value?.forEachNode((node) => node.setSelected(!!(node.data as QueryMatOutDto).selected));
+      api.value?.autoSizeAllColumns();
+    });
     if (!list.length) toast("无符合条件的数据", 2000, "info");
   } catch {
     /* 拦截层已 toast */
@@ -194,14 +198,9 @@ async function onSelectionChanged() {
   }
 }
 
-/* 原 btnPrint_Click → FrmZbsView（占位） */
+/* 原 btnPrint_Click → FrmZbsView（占位）；勾选行 = row-selection 选中行（原「Selected 字段优先」逻辑并入） */
 function onPrint() {
-  const selected = (api.value?.getSelectedRows() ?? []) as QueryMatOutDto[];
-  const checked = selected.filter((x) => x.selected);
-  const list = checked.length ? checked : selected.filter((x) => (api.value?.getSelectedNodes() ?? []).some((n) => n.data === x));
-  // 勾选列 Selected 字段优先；无则用行选择
-  const mats = (rows.value.filter((x) => x.selected) ?? []) as QueryMatOutDto[];
-  const use = mats.length ? mats : checked;
+  const use = (api.value?.getSelectedRows() ?? []) as QueryMatOutDto[];
   if (!use.length) {
     toast("请选择材料号!", 2000, "warn");
     return;

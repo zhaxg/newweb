@@ -59,7 +59,7 @@ const reviewOptions = [
 ];
 
 const colDefs: ColDef[] = [
-        { field: "selected", headerName: "选择", width: 56, minWidth: 56, cellRenderer: "agCheckboxCellRenderer", editable: true, sortable: false, filter: false },
+      { field: "selected", headerName: "选择", hide: true },
       { field: "nSfpj", headerName: "评审状态", width: 150 },
       { field: "cPlanTime", headerName: "计划日期", width: 150 },
       { field: "cCool", headerName: "是否冷坯计划", width: 150 },
@@ -240,9 +240,7 @@ function onGridReady(e: GridReadyEvent) {
 }
 
 function selectedRows(): Tmp2010Dto[] {
-  const byGrid = (gridApi.value?.getSelectedRows() ?? []) as Tmp2010Dto[];
-  const byCheck = rows.value.filter((x) => x.selected);
-  return Array.from(new Set([...byGrid, ...byCheck]));
+  return (gridApi.value?.getSelectedRows() ?? []) as Tmp2010Dto[];
 }
 function selectedIds(): string[] {
   return selectedRows()
@@ -269,7 +267,11 @@ async function onQuery() {
   querying.value = true;
   try {
     rows.value = (await tmp2010Api.queryOrder(buildInput())) ?? [];
-    requestAnimationFrame(() => gridApi.value?.autoSizeAllColumns());
+    /* 原勾选列 Selected 字段：查询回填后按数据字段回灌行选择勾选态 */
+    requestAnimationFrame(() => {
+      gridApi.value?.forEachNode((node) => node.setSelected(!!(node.data as Tmp2010Dto).selected));
+      gridApi.value?.autoSizeAllColumns();
+    });
   } catch {
     /* 拦截层已 toast */
   } finally {

@@ -55,9 +55,9 @@ function ready(key: "stove" | "jc" | "jcStove") {
     else jcStoveApi.value = e.api;
   };
 }
-/** 焦点行（原 GetFocusedRow）：勾选=Selected 标记列，焦点=单行选中 */
+/** 炉次勾选 = AG Grid row-selection 复选框（原 Selected 标记列已改隐藏列，ui-rules §7）；焦点=浇次表单行选中 */
 function selectedStoves(): Tmp2040Dto[] {
-  return stoveRows.value.filter((x) => x.selected);
+  return (stoveApi.value?.getSelectedRows() ?? []) as Tmp2040Dto[];
 }
 function focusedJc(): Tmp2030Dto | null {
   const rows = jcApi.value?.getSelectedRows() ?? [];
@@ -68,7 +68,7 @@ function focusedJc(): Tmp2030Dto | null {
 /** 炉次 gvStove：29 可见 + 16 隐藏（Tmp2040Dto） */
 const stoveColDefs = ref<ColDef[]>([
   { colId: "CPono", field: "cPono", headerName: "制造命令号", width: 110 },
-  { colId: "Selected", field: "selected", headerName: "选择", width: 60, minWidth: 60, cellRenderer: "agCheckboxCellRenderer", editable: true, sortable: false, filter: false },
+  { colId: "Selected", field: "selected", headerName: "选择", hide: true },
   { colId: "CPlanTime", field: "cPlanTime", headerName: "计划日期", width: 110 },
   { colId: "NStatus", field: "nStatus", headerName: "状态", width: 80 },
   { colId: "CCcCode", field: "cCcCode", headerName: "连铸代码", width: 95 },
@@ -271,7 +271,11 @@ async function onQuery() {
       cCcmCode: icboMachine.value ?? null,
     };
     stoveRows.value = (await castStoveApi.getLcList(lcInput)) ?? [];
-    autofit(stoveApi.value);
+    /* 原 Selected 列语义：查询回填后按数据字段回灌行选择勾选态 */
+    requestAnimationFrame(() => {
+      stoveApi.value?.forEachNode((node) => node.setSelected(!!(node.data as Tmp2040Dto).selected));
+      stoveApi.value?.autoSizeAllColumns();
+    });
 
     const jcInput: InputPlanDto = {
       jcStatus: 10 /* JcStatusEnum.NoDown 未下发 */,
@@ -372,6 +376,7 @@ async function onDeleteJc() {
         <div class="min-h-0 flex-1 overflow-hidden">
           <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
             :default-col-def="hmxDefaultColDef" :column-defs="stoveColDefs" :row-data="stoveRows" :pagination="false"
+            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
             :loading="querying" :master-detail="true" :detail-grid-options="stoveDetailOptions"
             :get-detail-row-data="getStoveDetailRows" @grid-ready="ready('stove')"
             @first-data-rendered="autoSizeOnFirstData" />
