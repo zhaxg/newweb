@@ -1,4 +1,5 @@
-import { ok, type RouteMap } from "../admin/core";
+import { getBody, ok, type RouteMap } from "../admin/core";
+import ganttSample from "./data/gantt_data.json";
 
 /** 占位：≤5 条随机演示行；写操作只回成功 —— 禁止实现业务 */
 function demoRows<T>(n: number, make: (i: number) => T): T[] {
@@ -6,18 +7,84 @@ function demoRows<T>(n: number, make: (i: number) => T): T[] {
   return Array.from({ length: count }, (_, i) => make(i));
 }
 
+/* ===== MS2000 甘特：生产环境导出真源 data/gantt_data.json（只读，勿编造字段）=====
+ * meta.endpoints 覆盖：getGanttResourcesDatas / getStoveRouteDatas / getMSConfig。
+ * tms2000 仅含 id/cPono/cStove/cSgCode/nSortJcActual/nJcActualBeg/nJcActualEnd；
+ * tms2010 仅含 id/cPono/cGsId/cProc/cProcIndex/cPlanMachineCode/cPlanMachineStationCode/
+ *         cStoveNo/nActualExist/dPlanBegtime/dPlanEndtime/dActualBegtime/dActualEndtime。
+ * 导出未覆盖的端点（queryStovePlan 全列、getFactoryLineAreaMachine_LG 等）按已有字段投影，不补假值。
+ *
+ * 时间偏移：导出时刻 meta.fetchedAt = 2026-09-22 15:35:04。出 mock 时把 tms2010 全部
+ * 时间戳平移到「当前时刻」，使 09-19~09-22 的生产快照在演示环境看起来仍是近期数据；
+ * 每次请求按 now 重算偏移，刷新后仍对齐。不改 JSON 文件本身。 */
+type GanttSample = typeof ganttSample;
+const gantt = ganttSample as GanttSample;
+const GANTT_EXPORT_AT = Date.parse("2026-09-22T15:35:04");
+
+function shiftIso(s: string | null | undefined): string | null | undefined {
+  if (!s) return s;
+  const t = Date.parse(s);
+  if (Number.isNaN(t)) return s;
+  const d = new Date(t + (Date.now() - GANTT_EXPORT_AT));
+  const p = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+}
+
+function ganttMachines() {
+  return gantt.machines;
+}
+/** 出口统一应用时间偏移（不改模块内 JSON 引用） */
+function ganttPoints() {
+  return gantt.points.map((p) => ({
+    ...p,
+    tms2010: {
+      ...p.tms2010,
+      dPlanBegtime: shiftIso(p.tms2010.dPlanBegtime),
+      dPlanEndtime: shiftIso(p.tms2010.dPlanEndtime),
+      dActualBegtime: shiftIso(p.tms2010.dActualBegtime),
+      dActualEndtime: shiftIso(p.tms2010.dActualEndtime),
+    },
+  }));
+}
+/** tms2000 按 id 去重 → 炉次计划表行（只保留导出真实字段；Selected 由 row-selection 呈现） */
+function ganttStovePlans(): Record<string, unknown>[] {
+  const seen = new Set<string>();
+  const rows: Record<string, unknown>[] = [];
+  for (const p of gantt.points) {
+    const t0 = p.tms2000;
+    if (!t0?.id || seen.has(t0.id)) continue;
+    seen.add(t0.id);
+    rows.push({ ...t0, selected: false });
+  }
+  return rows;
+}
+
 export const smsRoutes: RouteMap = {
   /* 炼钢作业迁移占位（2026-09-23）：按 sms.swagger 端点全量登记 */
+  /* 导出未含本端点：从 machines 投影机台名/工序（拖到新机台回写用），不编造行 */
   ["post /dDH.Service.SMS.Services.PublicInterface/publicFactoryLineAreaMachine/getFactoryLineAreaMachine_LG"]: (config) =>
     ok(
       config,
-      demoRows(3, (i) => ({
-        id: `D${i + 1}`,
-        cCode: `C0${i + 1}`,
-        cName: `演示${i + 1}`,
-        createTime: "2026-09-23 08:00:00",
-        nStatus: 1,
-      })),
+      gantt.machines.map((m) => {
+        const code = String(m.machineCode ?? "");
+        const routeProcValue = code.includes("#BOF")
+          ? "BOF"
+          : code.includes("#LF")
+            ? "LF"
+            : code.includes("#RH")
+              ? "RH"
+              : String(m.cProc ?? "");
+        return {
+          machineCode: m.machineCode,
+          machineName: m.machineDesc,
+          machineStationCode: m.machineStationCode,
+          machineStationName: m.machineStationDesc,
+          routeProcValue,
+          routeProcDesc: m.machineDesc,
+          machineDesc: m.machineDesc,
+          machineStationDesc: m.machineStationDesc,
+        };
+      }),
     ),
 
   ["post /dDH.Service.SMS.Services.PublicInterface/publicKV/getKvInfo"]: (config) =>
@@ -32,11 +99,13 @@ export const smsRoutes: RouteMap = {
       })),
     ),
 
+  /* 导出 config：Gantt_ResourceRowHeight 三键（HmxKv[] 形状） */
   ["post /dDH.Service.SMS.Services.PublicInterface/publicKV/getMSConfig"]: (config) =>
-    ok(
-      config,
-      demoRows(3, (i) => ({ id: `KV-${i + 1}`, cCode: `CFG${i + 1}`, cName: `配置${i + 1}`, cValue: String(80 + i * 10) })),
-    ),
+    ok(config, [
+      { id: "GRRH", cCode: "Gantt_ResourceRowHeight", cName: "甘特资源行高", cValue: String(gantt.config.resourceRowHeight) },
+      { id: "GRRHI", cCode: "Gantt_ResourceRowHeight_Inner", cName: "甘特资源行内条高", cValue: String(gantt.config.resourceRowHeightInner) },
+      { id: "GRRHIP", cCode: "Gantt_ResourceRowHeight_Inner_Percentage", cName: "甘特行内条高占比", cValue: String(gantt.config.resourceRowHeightInnerPercentage) },
+    ]),
 
   ["post /dDH.Service.SMS.Services.PublicInterface/publicKV/getMSLZLiu"]: (config) =>
     ok(
@@ -50,17 +119,8 @@ export const smsRoutes: RouteMap = {
       })),
     ),
 
-  ["post /dDH.Service.SMS.Services.PublicInterface/publicKV/getMsProcMachineMapping"]: (config) =>
-    ok(
-      config,
-      demoRows(3, (i) => ({
-        id: `D${i + 1}`,
-        cCode: `C0${i + 1}`,
-        cName: `演示${i + 1}`,
-        createTime: "2026-09-23 08:00:00",
-        nStatus: 1,
-      })),
-    ),
+  /* 导出未覆盖：不编造演示行，回空（计划双击落点链路仅取 mapping[0]，空则跳过机台预取） */
+  ["post /dDH.Service.SMS.Services.PublicInterface/publicKV/getMsProcMachineMapping"]: (config) => ok(config, []),
 
   ["post /dDH.Service.SMS.Services.PublicInterface/publicQMInfo/getGHGSQMInfo"]: (config) =>
     ok(
@@ -346,92 +406,37 @@ export const smsRoutes: RouteMap = {
   ["post /dDH.Service.SMS.Services/frmMS2000/clearRoutePlanByIds"]: (config) => ok(config, null),
 
   ["post /dDH.Service.SMS.Services/frmMS2000/getGanttResourcesDatas"]: (config) =>
-    ok(
-      config,
-      demoRows(3, (i) => ({
-        id: `D${i + 1}`,
-        cCode: `C0${i + 1}`,
-        cName: `演示${i + 1}`,
-        createTime: "2026-09-23 08:00:00",
-        nStatus: 1,
-      })),
-    ),
+    ok(config, ganttMachines()),
 
-  ["post /dDH.Service.SMS.Services/frmMS2000/getProcMachineUseTime"]: (config) =>
-    ok(
-      config,
-      demoRows(3, (i) => ({
-        id: `D${i + 1}`,
-        cCode: `C0${i + 1}`,
-        cName: `演示${i + 1}`,
-        createTime: "2026-09-23 08:00:00",
-        nStatus: 1,
-      })),
-    ),
+  /* 导出未覆盖：回空，不造演示行 */
+  ["post /dDH.Service.SMS.Services/frmMS2000/getProcMachineUseTime"]: (config) => ok(config, []),
 
-  ["post /dDH.Service.SMS.Services/frmMS2000/getProcTransTime"]: (config) =>
-    ok(
-      config,
-      demoRows(3, (i) => ({
-        id: `D${i + 1}`,
-        cCode: `C0${i + 1}`,
-        cName: `演示${i + 1}`,
-        createTime: "2026-09-23 08:00:00",
-        nStatus: 1,
-      })),
-    ),
+  ["post /dDH.Service.SMS.Services/frmMS2000/getProcTransTime"]: (config) => ok(config, []),
 
-  ["post /dDH.Service.SMS.Services/frmMS2000/getStovePlanInfoByGsIds"]: (config) =>
-    ok(
-      config,
-      demoRows(3, (i) => ({
-        id: `D${i + 1}`,
-        cCode: `C0${i + 1}`,
-        cName: `演示${i + 1}`,
-        createTime: "2026-09-23 08:00:00",
-        nStatus: 1,
-      })),
-    ),
+  ["post /dDH.Service.SMS.Services/frmMS2000/getStovePlanInfoByGsIds"]: (config) => {
+    const body = getBody<{ gsIds?: string[] }>(config) ?? {};
+    const ids = new Set(body.gsIds ?? []);
+    const byId = new Map(ganttStovePlans().map((r) => [r.id as string, r]));
+    return ok(config, [...ids].map((id) => byId.get(id)).filter(Boolean));
+  },
 
   ["post /dDH.Service.SMS.Services/frmMS2000/getStoveRouteDatas"]: (config) =>
-    ok(
-      config,
-      demoRows(3, (i) => ({
-        id: `D${i + 1}`,
-        cCode: `C0${i + 1}`,
-        cName: `演示${i + 1}`,
-        createTime: "2026-09-23 08:00:00",
-        nStatus: 1,
-      })),
-    ),
+    ok(config, ganttPoints()),
 
   ["post /dDH.Service.SMS.Services/frmMS2000/getStoveRouteHistoryDatas1"]: (config) =>
-    ok(
-      config,
-      demoRows(3, (i) => ({
-        id: `D${i + 1}`,
-        cCode: `C0${i + 1}`,
-        cName: `演示${i + 1}`,
-        createTime: "2026-09-23 08:00:00",
-        nStatus: 1,
-      })),
-    ),
+    ok(config, {
+      ganttDataDto_StoveRoutePlans: ganttPoints(),
+      stoveIsExist: true,
+      stoveIsVirtual: false,
+      tms2000Virtual: null,
+    }),
 
   ["post /dDH.Service.SMS.Services/frmMS2000/planInvalid"]: (config) => ok(config, null),
 
   ["post /dDH.Service.SMS.Services/frmMS2000/planInvalidCancel"]: (config) => ok(config, null),
 
   ["post /dDH.Service.SMS.Services/frmMS2000/queryStovePlan"]: (config) =>
-    ok(
-      config,
-      demoRows(3, (i) => ({
-        id: `D${i + 1}`,
-        cCode: `C0${i + 1}`,
-        cName: `演示${i + 1}`,
-        createTime: "2026-09-23 08:00:00",
-        nStatus: 1,
-      })),
-    ),
+    ok(config, ganttStovePlans()),
 
   ["post /dDH.Service.SMS.Services/frmMS2000/saveGanttDatas"]: (config) => ok(config, null),
 
