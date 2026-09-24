@@ -4,7 +4,8 @@ import type { Result } from "@/api/_core/types";
 
 /**
  * mock「服务端」核心：信封/响应包装、路由表类型与请求解析助手。
- * 各业务域在 src/mock/<业务域>/*.ts 里导出 RouteMap，由 mockAdapter.ts 合并为一张路由表。
+ * 各业务域在 src/mock/<业务域>/*.ts 里导出 RouteMap，演示/种子数据在 src/mock/<业务域>/data/，
+ * 由 mockAdapter.ts 合并为一张路由表（见 README「Mock 目录规范」）。
  */
 
 export const API_BASE = "/hmx.Service.Admin.Services";

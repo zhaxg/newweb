@@ -1,4 +1,4 @@
-import { ok, type RouteMap } from "./admin/core";
+import { ok, type RouteMap } from "../admin/core";
 
 /** 占位：≤5 条随机演示行；写操作只回成功 —— 禁止实现业务 */
 function demoRows<T>(n: number, make: (i: number) => T): T[] {

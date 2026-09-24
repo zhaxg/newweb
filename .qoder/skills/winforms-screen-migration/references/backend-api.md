@@ -160,21 +160,22 @@ async function onSave() {
 | 键 = swagger 路径（去请求层 `/api` 前缀），`post /dDH.Service.../xxx/yyy` | 手拼另一套 URL |
 | 查询类：`ok(config, demoRows)`，**1~5 条**随机演示行 | 读 C# `I*AppService` 实现去还原过滤/分页 |
 | 新增/修改/保存/删除/发送等：`ok(config, null)` 或空串，表示成功 | localStorage 持久化、按 `dataTypeName` 分表、diff 落库 |
-| 与 swagger 返回类型形状大致兼容（数组 / 对象 / string） | 照 `src/mock/lims.ts` / `admin/users.ts` 写完整域 mock |
+| 与 swagger 返回类型形状大致兼容（数组 / 对象 / string） | 照 `src/mock/mes4ddh/lims.ts` / `admin/users.ts` 写完整域 mock |
 | 一批页面可汇总后一次登记 | 在 `index.vue` 里塞页内 `mockRows` 绕开接口 |
 
 已存在的 **admin / 登录菜单 / lims 完整 mock 不动**；迁移只补缺的业务占位。
 
 ### 5.2 落点
 
-- 新域或已有的 MES 业务占位：在 `src/mock/` 下按域建/扩文件（如 `src/mock/shr.ts`），导出 `RouteMap`；
+- **目录规范（README「Mock 目录规范」）**：域路由放 `src/mock/<域>/`（如 `src/mock/mes4ddh/shr.ts`），演示/种子数据放 `src/mock/<域>/data/`，禁止平铺在 `src/mock/` 根下；
+- 新域或已有的 MES 业务占位：在 `src/mock/mes4ddh/` 下建/扩域文件，导出 `RouteMap`；
 - 在 `src/mock/mockAdapter.ts` 的 `routes` 里 `...shrRoutes` 合并；
 - 演示行生成可复用小函数，字段按 swagger 类型给合理假值（id、单号、日期、状态），**不要**为了编数据去翻后端实体校验。
 
 ### 5.3 模板（直接抄形状）
 
 ```ts
-import { ok, type RouteMap } from "./admin/core";
+import { ok, type RouteMap } from "../admin/core";
 
 /** 占位：≤5 条随机演示行；写操作只回成功 —— 禁止实现业务 */
 function demoRows<T>(n: number, make: (i: number) => T): T[] {

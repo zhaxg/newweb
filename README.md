@@ -116,6 +116,10 @@ src/
 ├── layouts/                # 壳层布局（Header + Sidebar + TabBar + 内容区）
 ├── lib/                    # 工具库（AG Grid 配置、PrimeVue 主题、字体等）
 ├── mock/                   # Mock 数据与适配器
+│   ├── admin/              # 系统管理域：*.ts 路由 + data/ 种子（一表一文件）
+│   ├── mes4ddh/            # MES4DDH 业务域（lims/shr/smp/sms/sqm/syd.ts）
+│   │   └── data/           # 该域演示/种子数据（如 lims.ts、gantt_data.json）
+│   └── mockAdapter.ts      # 各域 RouteMap 合并为一张路由表
 ├── pages/                  # 页面视图
 │   ├── _core/              # 登录、首页、403 等核心页面
 │   └── admin/              # 系统管理各子页面
@@ -123,6 +127,23 @@ src/
 ├── stores/                 # Pinia 状态（auth、permission、settings、tabs）
 └── styles/                 # 全局样式与组件覆盖
 ```
+
+## Mock 目录规范
+
+**域路由与演示数据分目录放置**，与 `admin/` 同构：
+
+| 放什么 | 位置 | 例 |
+|---|---|---|
+| 业务域 mock 路由（导出 `*Routes: RouteMap`） | `src/mock/<域>/` | `src/mock/mes4ddh/lims.ts`、`src/mock/admin/users.ts` |
+| 该域演示/种子数据（数组、JSON，一域/一表一文件） | `src/mock/<域>/data/` | `src/mock/mes4ddh/data/lims.ts`、`src/mock/admin/data/users.ts` |
+| 适配器（合并各域路由表、401/404 门） | `src/mock/mockAdapter.ts` | 不放业务数据 |
+
+规则：
+
+1. **禁止**把业务域 mock 平铺在 `src/mock/` 根下；根下只允许 `mockAdapter.ts` 与域目录。
+2. **演示数据不内联进路由文件**：种子数组、抓取的 JSON 等放 `<域>/data/`，路由侧经 `loadJson(key, seed)` 或直接 import 引用；域内共享的小工具（如 `stamp()`）随数据文件走。
+3. MES4DDH 六域（lims/shr/smp/sms/sqm/syd）统一在 `src/mock/mes4ddh/`；新增业务域照此建 `src/mock/<新域>/` + `data/`。
+4. 占位路由里 ≤5 行的 `demoRows` 工厂可留在路由文件；成规模的静态演示行必须下沉 `data/`。
 
 ## 字号与密度纪律
 
