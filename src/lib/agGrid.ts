@@ -71,6 +71,8 @@ export const hmxAgGridPlugin: Plugin = {
     LicenseManager.setLicenseKey("[v3][RELEASE][0102]_NDg2Njc4MzY3MDgzNw==16d78ca762fb5d2ff740aed081e2af7b");
     provideGlobalGridOptions({
       cellSelection: true,
+      /* 自绘 10px 滚动条（agGrid.css ::-webkit-scrollbar），告知 grid 按 10px 预留布局 */
+      scrollbarWidth: 10,
       rowNumbers: { width: 32, minWidth: 32, maxWidth: 64 },
       getContextMenuItems: hmxGetContextMenuItems,
       // 右键「导出」子菜单只保留 Excel，隐藏「导出为PDF」（页面级 gridOptions 可覆盖）

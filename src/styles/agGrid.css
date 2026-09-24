@@ -49,3 +49,72 @@
   font-variant-numeric: tabular-nums;
   color: var(--foreground);
 }
+
+/* Univer preset 会在加载 Sheet 后全局重置滚动条属性，
+   因此为 ag-grid 重新声明自己的滚动条，避免样式被 Sheet 影响。 */
+.hmx-ag-grid,
+.hmx-ag-grid * {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(128, 128, 128, 0.28) transparent;
+}
+
+.dark .hmx-ag-grid,
+.dark .hmx-ag-grid * {
+  scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
+}
+
+/* 表格主滚动条：10px 实体滚动条（grid 侧 scrollbarWidth:10 已按此预留布局）。
+   Chrome 121+ 规定元素带非 auto 的 scrollbar-width/color 时忽略 ::-webkit-scrollbar，
+   故 viewport 上先还原 auto，再走 webkit 自绘。 */
+.hmx-ag-grid .ag-body-horizontal-scroll-viewport,
+.hmx-ag-grid .ag-body-vertical-scroll-viewport {
+  scrollbar-width: auto;
+  scrollbar-color: auto;
+  /* ag-grid 核心样式给 viewport 铺了数据区底色，滚动条槽区域会显示成实心色带，改透明 */
+  background-color: transparent;
+}
+
+.hmx-ag-grid .ag-body-vertical-scroll-viewport::-webkit-scrollbar {
+  width: 10px;
+}
+
+.hmx-ag-grid .ag-body-horizontal-scroll-viewport::-webkit-scrollbar {
+  height: 10px;
+}
+
+.hmx-ag-grid .ag-body-horizontal-scroll-viewport::-webkit-scrollbar-track,
+.hmx-ag-grid .ag-body-vertical-scroll-viewport::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* 横竖滚动条交汇的右下角默认实心灰，置透明 */
+.hmx-ag-grid .ag-body-horizontal-scroll-viewport::-webkit-scrollbar-corner,
+.hmx-ag-grid .ag-body-vertical-scroll-viewport::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* 滚动条常态 20% 透明可见，悬停升到 90%；thumb 最短 40px（webkit 支持 min-height/width） */
+.hmx-ag-grid .ag-body-horizontal-scroll-viewport::-webkit-scrollbar-thumb,
+.hmx-ag-grid .ag-body-vertical-scroll-viewport::-webkit-scrollbar-thumb {
+  background: rgba(128, 128, 128, 0.2);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  border-radius: 5px;
+  min-height: 40px;
+  min-width: 40px;
+}
+
+.hmx-ag-grid .ag-body-horizontal-scroll-viewport::-webkit-scrollbar-thumb:hover,
+.hmx-ag-grid .ag-body-vertical-scroll-viewport::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(128, 128, 128, 0.9);
+}
+
+.dark .hmx-ag-grid .ag-body-horizontal-scroll-viewport::-webkit-scrollbar-thumb,
+.dark .hmx-ag-grid .ag-body-vertical-scroll-viewport::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.dark .hmx-ag-grid .ag-body-horizontal-scroll-viewport::-webkit-scrollbar-thumb:hover,
+.dark .hmx-ag-grid .ag-body-vertical-scroll-viewport::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.9);
+}

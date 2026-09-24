@@ -9,6 +9,7 @@ import PlaceholderPage from "@/pages/_core/PlaceholderPage.vue";
 import ForbiddenPage from "@/pages/_core/ForbiddenPage.vue";
 import IframePage from "@/pages/_core/IframePage.vue";
 import PrintDesignPage from "@/pages/Widgets/XtraReportTemplateManager/PrintDesignPage.vue";
+import MapDesignPage from "@/pages/SYD/YD1010Map/MapDesignPage.vue";
 import type { HmxMenuNode } from "@/api/common/menuApi";
 import { useAuthStore } from "@/stores/authStore";
 import { usePermissionStore } from "@/stores/permissionStore";
@@ -86,6 +87,13 @@ const routes: RouteRecordRaw[] = [
         name: "print-designer",
         component: PrintDesignPage,
         meta: { layout: "blank", title: "打印模板设计", loading: false },
+      },
+      /* 库位图设计：YD1010Map 新窗；Univer 按需加载 */
+      {
+        path: "map-designer",
+        name: "map-designer",
+        component: MapDesignPage,
+        meta: { layout: "blank", title: "库位图设计", loading: false },
       },
     ],
   },
