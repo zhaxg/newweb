@@ -17,6 +17,7 @@ import { sqmRoutes } from "./mes4ddh/sqm";
 import { smpRoutes } from "./mes4ddh/smp";
 import { sydRoutes } from "./mes4ddh/syd";
 import { smsRoutes } from "./mes4ddh/sms";
+import { printReportRoutes } from "./widgets/printReport";
 
 /**
  * 进程内 mock axios adapter：拦截 `${API_BASE}/**`，读写现有 localStorage 数据源，
@@ -43,6 +44,7 @@ const routes: RouteMap = {
   ...smpRoutes,
   ...sydRoutes,
   ...smsRoutes,
+  ...printReportRoutes,
 };
 
 /** 登录前/登出接口：真实后端同样不校验 Authorization 头，豁免 mock 的 401 门 */

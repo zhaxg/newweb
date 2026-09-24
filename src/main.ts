@@ -8,6 +8,7 @@ import { applyEffectsPreference } from "./lib/effectsPerf";
 import "./styles/globals.css";
 import "./styles/agGrid.css";
 import "./styles/prime-overrides.css";
+/* vue-print-designer 按需加载：见 src/lib/loadPrintDesigner.ts（设计器页/样例打印时再 import） */
 
 /* 特效降级探测（软件渲染 → html.hmx-effects-off），一次即可，不阻塞挂载 */
 applyEffectsPreference();

@@ -3,10 +3,12 @@ import { createRouter, createWebHistory } from "vue-router";
 import type { RouteRecordRaw } from "vue-router";
 import LoginPage from "@/pages/_core/login/LoginPage.vue";
 import MainLayout from "@/layouts/MainLayout.vue";
+import BlankLayout from "@/layouts/BlankLayout.vue";
 import HomePage from "@/pages/_core/home/HomePage.vue";
 import PlaceholderPage from "@/pages/_core/PlaceholderPage.vue";
 import ForbiddenPage from "@/pages/_core/ForbiddenPage.vue";
 import IframePage from "@/pages/_core/IframePage.vue";
+import PrintDesignPage from "@/pages/Widgets/XtraReportTemplateManager/PrintDesignPage.vue";
 import type { HmxMenuNode } from "@/api/common/menuApi";
 import { useAuthStore } from "@/stores/authStore";
 import { usePermissionStore } from "@/stores/permissionStore";
@@ -26,7 +28,17 @@ declare module "vue-router" {
     loading?: boolean;
     /** 菜单资源的 cQueryString（共用窗体按它区分行为，如 "ZG01,1" / "FUR" / JSON 串），页面经 useMenuQuery 读取 */
     qs?: string;
+    /**
+     * 布局：缺省 = MainLayout（壳层）；"blank" = BlankLayout 整屏空布局。
+     * 静态种子 / 显式注册时写入；动态菜单叶子可后续扩展。
+     */
+    layout?: "blank";
   }
+}
+
+/** 按 meta.layout 选父路由名：blank → 空布局，否则壳层 */
+function layoutParent(meta: { layout?: "blank" } | undefined): string {
+  return meta?.layout === "blank" ? "blank" : "shell";
 }
 
 /**
@@ -50,6 +62,7 @@ function resolvePageComponent(src: string | undefined, title: string) {
 
 const routes: RouteRecordRaw[] = [
   { path: "/login", name: "login", component: LoginPage, meta: { public: true } },
+  /* 壳层：默认业务页（Header + Sidebar + Tab） */
   {
     path: "/",
     name: "shell",
@@ -60,7 +73,23 @@ const routes: RouteRecordRaw[] = [
       { path: "forbidden", name: "forbidden", component: ForbiddenPage, meta: { title: "无访问权限" } },
     ],
   },
-  // 兜底：守卫会把已登录的未匹配路径重定向到 /forbidden（组件仅在守卫放行时才会真正渲染，故复用 403 页）
+  /* 空布局：meta.layout === "blank" 的页面挂这里（整屏、无壳层） */
+  {
+    path: "/",
+    name: "blank",
+    component: BlankLayout,
+    meta: { requiresAuth: true, layout: "blank" },
+    children: [
+      /* 打印模板设计器：列表页新窗打开；无 pageId → 不进 TabBar */
+      {
+        path: "print-designer",
+        name: "print-designer",
+        component: PrintDesignPage,
+        meta: { layout: "blank", title: "打印模板设计", loading: false },
+      },
+    ],
+  },
+  // 兜底：守卫会把已登录的未匹配路径重定向到 /forbidden
   { path: "/:pathMatch(.*)*", name: "not-found", component: ForbiddenPage },
 ];
 
@@ -68,13 +97,20 @@ export const router = createRouter({ history: createWebHistory(), routes });
 
 /* ---------- 静态路由（src/router/staticRoutes.ts 声明，建 router 即注册） ---------- */
 
-/* 不受权限管控、不随登出移除；hidden 种子只注册路由不进菜单，菜单拼接见 permissionStore */
+/* 不受权限管控、不随登出移除；hidden 种子只注册路由不进菜单，菜单拼接见 permissionStore。
+   meta.layout === "blank" → 挂 BlankLayout，否则挂壳层 shell。 */
 for (const seed of staticRouteSeeds) {
-  router.addRoute("shell", {
+  router.addRoute(layoutParent(seed), {
     path: seed.path,
     name: `page:${seed.path}`,
     component: seed.iframe ? IframePage : resolvePageComponent(seed.src, seed.title),
-    meta: { pageId: seed.path, title: seed.title, url: seed.iframe, loading: seed.loading },
+    meta: {
+      pageId: seed.path,
+      title: seed.title,
+      url: seed.iframe,
+      loading: seed.loading,
+      layout: seed.layout,
+    },
   });
 }
 

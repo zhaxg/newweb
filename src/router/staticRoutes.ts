@@ -21,6 +21,8 @@ export interface StaticRouteSeed {
   anchor?: string;
   /** 刷新白屏过渡遮罩开关：false = 该路由不启用 */
   loading?: boolean;
+  /** "blank" → 挂 BlankLayout（整屏空布局）；缺省挂 MainLayout 壳层 */
+  layout?: "blank";
 }
 
 export const staticRouteSeeds: StaticRouteSeed[] = [

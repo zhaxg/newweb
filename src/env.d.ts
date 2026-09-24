@@ -1,4 +1,6 @@
 /// <reference types="vite/client" />
+/* vue-print-designer：加载 print-designer 自定义元素全局类型 */
+/// <reference types="vue-print-designer" />
 
 interface ImportMetaEnv {
   /** "false" 时请求层走真实后端（vite proxy），默认进程内 mock */

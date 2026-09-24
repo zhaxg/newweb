@@ -7,7 +7,16 @@ import path from "node:path";
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd());
   return {
-    plugins: [vue({ template: { compilerOptions: { isCustomElement: (tag) => tag === "hmx-chrome-tabs" } } }), tailwindcss()],
+    plugins: [
+      vue({
+        template: {
+          compilerOptions: {
+            isCustomElement: (tag) => tag === "hmx-chrome-tabs" || tag === "print-designer",
+          },
+        },
+      }),
+      tailwindcss(),
+    ],
     server: {
       host: "0.0.0.0",
       // 仅 VITE_USE_MOCK=false 的真实后端模式生效；全站接口约定 /api/[area]/[controller]/[action]
