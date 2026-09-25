@@ -17,7 +17,8 @@ import "./styles/globals.css";
 import "./styles/scrollbar.css";
 import "./styles/prime-overrides.css";
 /* agGrid.css 随 @/lib/agGrid（首个表格页）加载，见该文件注册段 */
-/* vue-print-designer 按需加载：见 src/lib/loadPrintDesigner.ts（设计器页/样例打印时再 import） */
+/* vue-print-designer 按需加载：见 pages/Widgets/XtraReportTemplateManager/loadPrintDesigner.ts
+   的 ensurePrintDesigner()（设计器页 / 样例打印时再 import，避免 Web Component 进首屏链） */
 
 /* 特效降级探测（软件渲染 → html.hmx-effects-off），一次即可，不阻塞挂载 */
 applyEffectsPreference();

@@ -22,7 +22,7 @@
 | HTTP 客户端 | [Axios](https://axios-http.com/) |
 | RPC | [Hprose 3](https://hprose.com/)（`@hprose/io` 序列化） |
 | 图标 | [Tabler Icons](https://tabler.io/icons) |
-| 代码检查 / 格式化 | [oxlint](https://oxc.rs/) · [oxfmt](https://oxc.rs/)（已安装，**配置尚未接线**，见「代码检查」） |
+| 代码检查 / 格式化 | [oxlint](https://oxc.rs/) `^1.85` · [oxfmt](https://oxc.rs/) `^0.70`（已接线，**取代原 vue-tsc 静态门槛**） |
 
 ## 功能模块
 
@@ -38,17 +38,21 @@
 | `SHR` / `SMP` / `SMS` / `SQM` / `SYD` / `LIMS` / `DDH` | 各生产业务域（按 WinForms 画面迁移，规模见下） |
 | `Widgets` | 通用控件型页面（报表模板、表结构、接口配置等） |
 
-> 待迁规模（按菜单资源去重统计）：SHR 110 · SMP 41 · SMS 37 · SQM 29 · SYD 19 · LIMS 18 · Widgets 14 · DDH 2，合计约 280 个窗体 / 400+ 菜单。
+> 已落地画面数（各域 `*/index.vue` 计数）：SHR 110 · SMP 42 · SMS 37 · SQM 29 · SYD 19 · LIMS 18 · Widgets 16 · DDH 2，合计 **273**。
+> 后端资源种子表（`src/mock/admin/data/rescs.ts`）共 **809** 条：517 条菜单/目录 + 288 条按钮级 + 4 条其它，全部 `cNsCode=TDWEB`。
 
 ### 基础架构（平台能力）
 - 登录/登出、验证码（MathPow 工作量证明）、"记住我"历史
 - **后端资源表 → 路由记录动态注册**；菜单由路由表投影（`meta.hidden` 是不进菜单的唯一开关）
-- 多标签页（Chrome Tabs 风格）导航 + KeepAlive 缓存（关签即世代 +1 使缓存失效）
+- 多标签页（Chrome Tabs 风格，原生 Custom Element）导航 + KeepAlive 缓存
+  （`:max="25"` LRU 兜底；关签即该页代号世代 +1 使缓存键失效，重开 = 全新挂载）
 - 常驻 iframe 池承载外嵌链接（切页签只显隐不卸载，规避 Chromium 反挂载重载）
-- 浅色/深色主题、运行时主题色、中英文字体自定义、字号三档缩放
-- 四档字阶 + `audit:ui` 机检；PrimeVue 紧凑预设 `HmxCompact`
+- 浅色/深色主题、运行时主题色、中英文字体自定义、字号三档缩放（`standard/large/xlarge` = 1/1.15/1.3）
+- 四档字阶 + `audit:ui` 机检；PrimeVue 紧凑预设 `HmxCompact`；每个 `<Dialog>` 强制标 `autofocus` 初始焦点
 - Mock 模式与真实后端模式走同一条前端链路
-- 刷新白屏过渡动画、新版本检测、全局错误兜底
+- 刷新白屏过渡动画（路由守卫驱动）、新版本检测、全局错误兜底、全局点击连击闸（500ms 吞同一按钮第二击）
+- 网络层并发保护只做 **401 单飞闸**（并发 401 仅第一个执行登出）；**刻意无重试 / 无全局取消 / 无请求合并**
+- 生产构建产 `.gz` 静态预压缩文件（`vite.config.ts` 的 `hmxGzipAssets`，level 9、仅 ≥10KB）
 
 ## 快速开始
 
@@ -85,106 +89,153 @@ npm run dev
 ### 构建
 
 ```bash
-npm run build      # 生产构建
+npm run build      # 生产构建（vite build）
 npm run preview    # 预览产物
 ```
 
 环境文件按 Vite mode 覆盖：`.env` → `.env.[mode]`。**`.env.production` 已钉死 `VITE_USE_MOCK=false`**，
 生产构建不会带 Mock 适配器与演示数据；`.env.develop` 为 `true`。
 
-> `npm run build` **不包含类型检查**，发布前请手动跑「代码检查」那一步。
+构建同时产出 `.gz` 静态预压缩文件（`hmxGzipAssets` 插件，level 9，仅 ≥10KB 的 js/css/html/svg），
+配合 nginx `gzip_static` / IIS 静态压缩，避免服务器实时压缩 6000+ chunk 烧 CPU。
+**原文件保留**——服务器未配预压缩时退化为不压缩，不会 404。
+
+> `npm run build` **只跑 `vite build`，不含任何静态检查**（类型门槛已随 vue-tsc 退役，见下节）。
+> 发布前请手动跑「代码检查」的四道命令。
 
 ## 代码检查
 
-```bash
-# ① 类型检查 —— 真门槛
-npx vue-tsc --noEmit --ignoreDeprecations 6.0
-
-# ② 字阶 / 密度纪律
-npm run audit:ui
-
-# ③ Lint
-npx oxlint src
-```
-
-### ⚠️ `npm run typecheck` 当前是假绿
-
-`tsconfig.json` 的 `baseUrl`（TypeScript 6 已 deprecated）触发 **TS5101**，
-`vue-tsc` 因此**跳过全部文件级诊断**、只报这一条就非零退出——**一个文件都没检查**。
+四道门禁，**全部靠人工执行**（仓库**没有 CI、没有测试框架、没有 husky**）：
 
 ```bash
-npm run typecheck                          # ❌ 只报 TS5101，不检查任何文件
-npx vue-tsc --noEmit --ignoreDeprecations 6.0   # ✅ 真检查
+npm run lint          # ① oxlint —— 静态门槛（取代原 vue-tsc 的位置）
+npm run format:check  # ② oxfmt —— 格式（不改动时秒级通过）
+npm run audit:ui      # ③ 字阶 / 密度纪律（node scripts/audit-ui.mjs，零依赖）
+npm run build         # ④ 能否构建
 ```
 
-**根治**：删掉 `tsconfig.json` 的 `baseUrl`（`paths` 已足够解析 `@/*`）。
-修完之后 `npm run typecheck` 即可信，本节可整段删除。当前实测带 flag 有 15 个错，全部在业务示例目录里。
+提交前的完整自检清单见 [`AGENTS.md` §7](./AGENTS.md)。
 
-### Lint / 格式化（已安装，尚未接线）
+### 为什么没有类型门槛：vue-tsc 已退役
 
-`oxlint` / `oxfmt` 已进 devDependencies，但**没有配置文件、没有 npm script**：
+`tsconfig.json` 的 `baseUrl`（TypeScript 6 已 deprecated）触发 **TS5101**，`vue-tsc` 因此
+**跳过全部文件级诊断**、只报这一条就非零退出——**一个文件都没检查**（假绿）。
 
-- `npx oxlint src` 可直接用，但**当前 exit 1**：全仓 255 条（13 error + 242 warning），
-  框架层 48 条（4 error + 44 warning），4 个 error 全部在 `src/lib/primeLcmgr.ts`（许可证桩的未用参数）。
-  业务示例目录占绝大多数 —— **直接挂进 `build` 会红**。
-- **`npx oxfmt` 不要直接 `--write`**：无配置时按默认规则重排（实测 `src/lib` 11 个文件里 9 个会变，长行按默认宽度断行）。
-  要接入先 `oxfmt --init`，把 `printWidth` 调到与现有代码一致（本仓长行普遍到 ~120），再分批跑。
-- 行尾注意：本机 `core.autocrlf=true`，工作区 CRLF、git index LF，仓库无 `.gitattributes`。
+仓库已**直接删除 `tsconfig.json`**，**类型级门槛暂停**，代之以 `oxlint`。
 
-### 接入建议
+要恢复类型门槛时：补一份**无 `baseUrl`** 的精简 `tsconfig.json`（仅 IDE / 类型用，
+`paths` 已足够解析 `@/*`）再评估 `vue-tsc`。
 
-```jsonc
-// package.json scripts 建议补齐
-"typecheck": "vue-tsc --noEmit --ignoreDeprecations 6.0",
-"lint": "oxlint src",
-"fmt:check": "oxfmt --check src",
-"build": "vue-tsc --noEmit --ignoreDeprecations 6.0 && vite build"
-```
+### ① oxlint（`npm run lint`；`typecheck` 为其别名）
 
-**顺序注意**：`lint` 目前 exit 1，接入前要先清零或改成"只拦 error 且分目录豁免业务示例"，
-否则会把 `build` 一起拖红。`audit:ui` 同理（当前 174 处违规、exit 1）。
+配置 `.oxlintrc.json`：
 
-仓库目前**没有 CI、没有测试框架、没有 husky** —— 上述三道门禁目前都只靠人工执行。
+- 分级：`correctness=error`（挂 CI 阻断）· `suspicious=warn`；`pedantic/style/restriction/nursery` 全关。
+- `unicorn/no-useless-spread`、`unicorn/no-useless-fallback-in-spread`、
+  `unicorn/no-single-promise-in-promise-methods`、`unicorn/prefer-string-starts-ends-with` 降为 warn。
+- `src/lib/primeLcmgr.ts` 单独豁免 `no-unused-vars`（许可证桩文件：`vite.config.ts` 把
+  `@primeui/license-manager` alias 到它并恒返回 valid。**动许可相关文件前先确认授权状态**，
+  见 [`AGENTS.md` §6](./AGENTS.md)）。
+- `ignorePatterns`：`dist` `temp` `shots` `node_modules` `.qoder` `*.md`。
+
+当前实测（exit 1）：
+
+| 范围 | error | warning |
+|---|---|---|
+| 全仓 | **1** | **234** |
+| 框架层 | **0** | 31 |
+
+唯一 error 在业务示例 `src/pages/SYD/YD2020/index.vue:189` 的自赋值 no-op（`no-self-assign`）。
+框架层 31 条 warning 分布：`src/mock/admin` 10 · `src/components/gantt` 8 · `src/api/common` 6 ·
+`src/mock/mes4ddh` 4 · `src/pages/admin` 3；规则上集中在 `no-array-sort`（`Array#sort` 改 `toSorted`）、
+`no-underscore-dangle`（`__trackId` 等）、`consistent-function-scoping`。
+
+> **框架层 0 error** —— 若把 CI 配成"只拦 error"，现在就是绿的。
+
+### ② oxfmt（`npm run format` / `format:check`）
+
+`oxfmt` 是**格式化真源**：写完代码 `npm run format`，验收 `npm run format:check`
+（当前**全绿**：458 个文件，~6.5s）。
+
+配置 `.oxfmtrc.json`：`printWidth: 120` · `tabWidth: 2` · `endOfLine: lf` · `trailingComma: all` ·
+双引号 · `*.md` 不参与。
+
+行尾：`.gitattributes` 已建立（`* text=auto eol=lf`），工作区统一 LF，与 `endOfLine=lf` 配套——
+保证 `format:check` 在所有机器上结果一致。
+
+### ③ `audit:ui` 现状
+
+**174 处违规、exit 1**，分布：
+
+| 规则 | 条数 |
+|---|---|
+| R2 `size="small"` | 89 |
+| R5 Dialog 未标初始焦点 | 67 |
+| R4 裸 label 未声明辅助档 | 15 |
+| R3 越档字号 | 2 |
+| R1 arbitrary 字号 | 1 |
+
+其中 **框架层 9 处**（`src/pages/_core` 5 · `src/layouts/pages` 2 · `src/components/common` 2），
+其余在业务示例目录（SHR 85 · Widgets 34 · SQM 25 · LIMS 14 占大头）。
+
+### 接入 `build` 前注意
+
+`lint`（1 error）与 `audit:ui`（174 处）**目前都 exit 1**，直接挂进 `build` 会把构建一起拖红。
+要接入先清零，或改成"只拦 error 且分目录豁免业务示例"。
 
 ## 项目结构
 
 ```
 src/
+├── App.vue                 # 根组件（全局禁用右键等全局行为）
+├── main.ts                 # 应用装配：Pinia → settings 即时实例化 → router → 三个插件 → 挂载
+├── env.d.ts                # ImportMetaEnv 声明（新增 VITE_ 变量必须同步补这里）
 ├── api/
-│   ├── _core/              # 请求封装（axios 实例、token 注入、信封解包、401、mock 开关）
-│   ├── admin/              # 系统管理接口（auth/user/role/resc/kv/job/settings/codegen）
-│   ├── common/             # 通用 CRUD、菜单资源树、权限树、验证码、TrackableList
-│   └── mes4ddh/            # 各业务域 swagger 生成接口（*.swagger.ts，勿手改）
-├── assets/                 # 静态资源（登录背景、favicon）
+│   ├── _core/              # 请求封装：request.ts（axios 实例、token 注入、信封解包、401 单飞闸、mock 开关）
+│   │                       #            types.ts
+│   ├── admin/              # 系统管理接口（enums / request / types.d.ts）
+│   ├── common/             # crudAppService · menuRescTree(资源树) · permissionTree · mathPowCaptcha · trackableList
+│   └── mes4ddh/            # 各业务域 swagger 生成接口（ddh/lims/shr/smp/sms/sqm/syd .swagger.ts + printReport.ts，勿手改）
+├── assets/                 # favicon.svg · world.svg · login/(HG-A..F.jpg 登录背景)
 ├── components/
-│   ├── chromeTabs/         # Chrome 风格标签栏（原生 Custom Element）
+│   ├── chromeTabs/         # Chrome 风格标签栏（原生 Custom Element：hmxChromeTabs.ts + .css）
 │   ├── common/             # Captcha / CheckUpdates / ErrorBoundary / RangeInput / ThemeToggle
-│   ├── gantt/              # 自研 canvas 甘特引擎（chart/geometry/renderer + GanttChart）
-│   └── loading/            # 刷新白屏全屏遮罩（路由守卫驱动）
-├── composables/            # useAppTheme / usePermission(v-hp) / useFrameKeepAlive / useToast / useCaptcha …
+│   ├── gantt/              # 自研 canvas 甘特引擎（engine/：chart · geometry · model · renderer · rules · style）+ GanttChart.vue
+│   └── loading/            # 刷新白屏全屏遮罩（loading.ts 路由守卫驱动 + loading.html）
+├── composables/            # useAppTheme · usePermission(v-hp) · useFrameKeepAlive · useTabs · useToast
+│                           # useCaptcha · useUniverTheme
 ├── layouts/
-│   ├── MainLayout.vue      # 壳层：Header + Sidebar + TabBar + 内容区 + iframe 池
+│   ├── MainLayout.vue      # 壳层：Header + Sidebar + TabBar + 内容区(KeepAlive :max=25) + 常驻 iframe 池
 │   ├── BlankLayout.vue     # 整屏布局（设计器类页面）
 │   ├── components/         # HmxHeader / HmxSidebar / HmxTabBar / HmxIframeHost / SettingsDialog
 │   ├── composables/        # layouts.ts 布局注册表 · menuFromRoutes.ts 菜单投影
-│   └── pages/              # 框架自带页（403 / 占位 / 外链 iframe 承载）
+│   └── pages/              # 框架自带页（ForbiddenPage 403 / PlaceholderPage 占位 / IframePage 外链承载）
 ├── lib/                    # agGrid · primeTheme(HmxCompact) · themeSettings · encryptedStorage
-│                           # tablerIcons · fontSettings · globalError · effectsPerf · yitIdHelper
+│                           # clickGuard(连击闸) · globalError · effectsPerf · fontSettings
+│                           # tablerIcons · menuQuery · yitIdHelper · primeLcmgr(许可桩)
 ├── mock/
-│   ├── admin/              # 系统管理域：*.ts 路由 + data/ 种子（一表一文件）
-│   ├── mes4ddh/            # MES4DDH 六域（lims/shr/smp/sms/sqm/syd）+ data/
+│   ├── admin/              # 系统管理域：*.ts 路由（auth/crud/users/roles/resc/kv/jobs/department/settings/codegen/store）
+│   │   └── data/           #   种子（一表一文件：depts · kvs · rescs · roles · users）
+│   ├── mes4ddh/            # MES4DDH 六域（lims/shr/smp/sms/sqm/syd + printReport）+ data/
 │   └── mockAdapter.ts      # 各域 RouteMap 合并 + 401/404 门
 ├── pages/
-│   ├── _core/              # 登录、首页、个人中心（平台自有）
-│   ├── admin/              # 系统管理各子页（平台自有）
+│   ├── _core/              # 登录(LoginPage/LoginCard/FlowBg)、首页(HomePage)、个人中心(ModifyPasswd)（平台自有）
+│   ├── admin/              # 系统管理各子页（dept/user/role/resc/kvs/jobs/gen/settings）（平台自有）
 │   └── DDH|LIMS|SHR|SMP|SMS|SQM|SYD|Widgets/   # 业务组模块（示例，迁移中）
-├── router/                 # index 三阶段装配 · builtin 骨架 · business 业务静态路由
+├── router/                 # index 三阶段装配 · builtin 骨架页 · business 业务静态路由
 │                           # fromMenu 后端资源→路由编译 · guard 守卫
+│                           # dynamicRoutes 动态路由清理(叶模块) · bridge router 实例桥(叶模块)
 ├── stores/                 # auth · permission · tabs · settings
 └── styles/                 # tokens(设计 token) · globals(字阶 @theme) · prime-overrides · agGrid · scrollbar
 
 根目录
 ├── AGENTS.md               # 给 agent / 新人的最小必要说明
+├── README.md               # 本文件
+├── .oxlintrc.json          # oxlint 配置（correctness=error / suspicious=warn）
+├── .oxfmtrc.json           # oxfmt 配置（printWidth 120 / LF）—— 格式化真源
+├── .gitattributes          # 统一 LF（* text=auto eol=lf），与 oxfmt endOfLine=lf 配套
+├── vite.config.ts          # 代理 /api · alias(@、@primeui/license-manager→primeLcmgr) · hmxGzipAssets 预压缩
+├── index.html              # 页面标题硬编码处
 ├── scripts/audit-ui.mjs    # 字阶纪律机检（零依赖）
 └── .qoder/skills/          # WinForms 画面迁移规则与脚本
 ```
@@ -208,6 +259,15 @@ RouteRecordRaw
 `meta.hidden` 是不进菜单的唯一开关；`meta.layout` 决定归入哪个布局父记录（注册表见 `layouts/composables/layouts.ts`）。
 
 路由三阶段（`router/index.ts`）：**静态骨架 → 登录后动态注册 → 退出整体移除**，守卫在 `router/guard.ts`。
+
+- **加布局**：只往 `layouts/composables/layouts.ts` 的注册表加一条，不动 `router/index`。
+- **加业务页**：写 `src/router/business.ts`；会进菜单的页走后端资源下发，不写这里。
+- **循环依赖边界**：MainLayout / request / usePermission 等消费方只准 import 叶模块
+  `router/dynamicRoutes.ts`（动态路由清理）与 `router/bridge.ts`（router 实例桥）；
+  反向 import `@/router`（index）会成环。
+- **懒加载边界**：只有 `router/builtin.ts` 的骨架页（登录/首页/403）和 `layouts.ts` 的布局父记录
+  允许静态 import；业务页一律走 `fromMenu.ts` 的 `import.meta.glob` 懒加载。重型依赖
+  （Univer、vue-print-designer）必须 `defineAsyncComponent` / 动态 `import()`。
 
 ## 敏感键加密
 
@@ -271,7 +331,7 @@ npm run audit:ui     # node scripts/audit-ui.mjs，零依赖
 | Designer/事件代码提取器能还原什么、丢什么、怎么自检 | `references/extractor.md` |
 | 可执行脚本 | `scripts/extract-screen.mjs`（骨架 + 后端调用台账）。`scripts/verify-page.mjs` **迁移默认不用**——静态校验后由用户自行打开浏览器验收，AI 不跑无头截图 |
 
-一句话契约：**一个窗体一次迁完**——画面 + 事件逻辑 + 后端接口 + 增删改保存，不做「先只迁画面、逻辑留空」的两阶段迁移。**布局最重元素齐全 + 结构关系**（包含/上下左右/Splitter），不抄 `Location` 像素坐标。**AI 侧止于静态校验**（`vue-tsc` + `audit:ui`）；不跑浏览器实测/截图，画面由你自行打开检查。
+一句话契约：**一个窗体一次迁完**——画面 + 事件逻辑 + 后端接口 + 增删改保存，不做「先只迁画面、逻辑留空」的两阶段迁移。**布局最重元素齐全 + 结构关系**（包含/上下左右/Splitter），不抄 `Location` 像素坐标。**AI 侧止于静态校验**（`npm run lint` + `npm run audit:ui`；类型门槛已随 vue-tsc 退役，见「代码检查」）；不跑浏览器实测/截图，画面由你自行打开检查。
 
 C# 源码副本在 `temp/ddh_rmes`（已 gitignore）。
 
@@ -285,38 +345,41 @@ C# 源码副本在 `temp/ddh_rmes`（已 gitignore）。
 | `.env.develop` | 开发模式覆盖 | `true` |
 | `.env.production` | **生产构建覆盖** | **`false`** |
 
-**实际被代码消费的**（已核对引用点）：
+**实际被代码消费的**（已核对引用点，行号对应当前 HEAD）：
 
 | 变量 | 默认值 | 消费点 | 说明 |
 |---|---|---|---|
-| `VITE_USE_MOCK` | `true` | `api/_core/request.ts:11` | 是否启用 Mock；**仅精确 `false` 关闭** |
-| `VITE_API_TARGET` | `http://10.11.5.49:9525` | `vite.config.ts:26` | Vite dev proxy target（未设则回退 `http://localhost:8080`） |
+| `VITE_USE_MOCK` | `true` | `api/_core/request.ts:14` | 是否启用 Mock；**仅精确 `false` 关闭** |
+| `VITE_API_TARGET` | `http://10.11.5.49:9525` | `vite.config.ts:52`（经 `loadEnv`，非 `import.meta.env`） | Vite dev proxy target（未设则回退 `http://localhost:8080`）；`.env.production` 里是 `/` |
 | `VITE_APP_STORE_SECURE_KEY` | `5432167890` | `lib/encryptedStorage.ts:17` | localStorage 加密密钥（**会内联进 bundle，属混淆非安全**），留空 = 明文 |
-| `VITE_ROUTER_NAMESPACE` | `TDWEB` | `api/common/menuRescTree.ts:45` | 后端资源拉取的 `groupId`，决定本端可见的菜单资源域 |
+| `VITE_ROUTER_NAMESPACE` | `TDWEB` | `api/common/menuRescTree.ts:45` · `pages/admin/role/RolePermissionDialog.vue:26` · `pages/admin/resc/index.vue:53` | 后端资源拉取的 `groupId`，决定本端可见的菜单资源域 |
 | `VITE_HELP_URL` | `https://hmx.rv.com.cn` | `layouts/components/HmxHeader.vue:77` | 帮助文档基地址；用户下拉「帮助文档」新标签打开它并追加 `pageid`/`code`，未配置则 toast 提示 |
 
 **已定义但当前无任何代码消费**（改了不生效，属待接线或历史遗留）：
 
 `VITE_MOBILE_ROUTER_NAMESPACE` · `VITE_APP_NAMESPACE` · `VITE_BASE_URL` · `VITE_API_URL_PREFIX`
-（接口前缀实际硬编码在 `request.ts:58` 的 `withApiPrefix`）
+（接口前缀实际硬编码在 `request.ts:76` 的 `withApiPrefix`）
 · `VITE_APP_NAME` · `VITE_CUSTOMER` · `VITE_COPYRIGHT`
-（页面标题硬编码在 `index.html`，登录页文案在组件里）
+（页面标题硬编码在 `index.html` 的 `<title>`，登录页文案在组件里）
 
 > 新增 `VITE_` 变量时，请同步补 `src/env.d.ts` 的声明并在代码里真正读取，否则 `.env` 里只是死配置。
 
 ## 开发指令
 
 ```bash
-npm run dev          # 启动开发服务器（默认 Mock 模式）
-npm run build        # 生产构建（不跑类型检查）
-npm run preview      # 预览构建产物
+npm run dev            # 启动开发服务器（默认 Mock 模式）
+npm run build          # 生产构建（只跑 vite build，不含静态检查）
+npm run preview        # 预览构建产物
 
-npx vue-tsc --noEmit --ignoreDeprecations 6.0   # 类型检查（真门槛）
-npm run audit:ui     # 字阶/密度纪律审计
-npx oxlint src       # lint
+npm run lint           # oxlint 静态门槛（typecheck 为其别名）
+npm run lint:fix       # oxlint --fix
+npm run format         # oxfmt 写入格式化（格式化真源）
+npm run format:check   # oxfmt 校验（CI / 提交前）
+npm run audit:ui       # 字阶 / 密度纪律审计
 ```
 
-提交前的完整自检清单见 [`AGENTS.md` §7](./AGENTS.md)。
+提交前的完整自检清单见 [`AGENTS.md` §7](./AGENTS.md)；
+**已知坑（刻意行为 vs 真缺陷）见 [`AGENTS.md` §6](./AGENTS.md)** —— 改框架层前先扫一遍，避免把设计意图当 bug 修掉。
 
 ## License
 

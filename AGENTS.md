@@ -37,8 +37,8 @@ src/pages/  DDH  LIMS  SHR  SMP  SMS  SQM  SYD  Widgets   ← 业务组的【未
 |---|---|---|
 | 开发服务器（mock） | `npm run dev` | ✅ |
 | 生产构建 | `npm run build` | ✅ `.env.production` 已设 `VITE_USE_MOCK=false` |
-| **静态检查门槛（替代原 vue-tsc）** | `npm run lint`（`typecheck` 为其别名） | ⚠️ 全仓 1 error + 250 warning：唯一 error 在业务示例 `SYD/YD2020/index.vue` 的自赋值 no-op（`no-self-assign`）；**框架层 0 error** |
-| 字阶纪律审计 | `npm run audit:ui` | ⚠️ 当前 174 处违规、exit 1，多数在业务示例里（含 R5 存量 67 个未标 `autofocus` 的 Dialog；**框架层 0**） |
+| **静态检查门槛（替代原 vue-tsc）** | `npm run lint`（`typecheck` 为其别名） | ⚠️ 全仓 1 error + 234 warning：唯一 error 在业务示例 `SYD/YD2020/index.vue:189` 的自赋值 no-op（`no-self-assign`）；**框架层 0 error / 31 warning** |
+| 字阶纪律审计 | `npm run audit:ui` | ⚠️ 当前 174 处违规、exit 1（R2 89 · R5 67 · R4 15 · R3 2 · R1 1），多数在业务示例里；**框架层 9 处**：`pages/_core` 5 · `layouts/pages` 2 · `components/common` 2 |
 | 格式化 | `npm run format` / `npm run format:check` | ✅ 已接入 oxfmt（`.oxfmtrc.json`：printWidth 120、LF、忽略 `*.md`），全仓已格式化一遍 |
 
 ### 静态检查分工（vue-tsc 已退役）
@@ -133,7 +133,7 @@ RouteRecordRaw
 ## 6. 已知坑（别踩、也别当成新发现）
 
 - **`oxlint` / `oxfmt` 已接入**（`.oxlintrc.json` + `.oxfmtrc.json` + npm scripts）。现状：
-  框架层 0 error / 47 warning，全仓唯一 error 是业务示例 `SYD/YD2020` 的 `no-self-assign`。
+  框架层 0 error / 31 warning，全仓唯一 error 是业务示例 `SYD/YD2020` 的 `no-self-assign`。
   oxfmt 是**格式化真源**：写完代码 `npm run format`，验收 `npm run format:check`；`*.md` 不参与。
   lint 分级：correctness=error（挂 CI 阻断），suspicious=warn；`unicorn/no-useless-*` 等风格规则降为 warn，
   `primeLcmgr.ts` 单独豁免 `no-unused-vars`（许可桩文件，见下方许可坑）。`.qoder/` 不扫描。
