@@ -18,7 +18,7 @@
 | 电子表格 / 打印 | [Univer](https://univer.ai/) · [vue-print-designer](https://github.com/1080418/vue-print-designer) |
 | 甘特图 | 自研 canvas 引擎（`src/components/gantt`，由 WinForms 版迁移） |
 | 状态管理 | [Pinia 3](https://pinia.vuejs.org/) |
-| 路由 | [Vue Router 4](https://router.vuejs.org/) |
+| 路由 | [Vue Router 5](https://router.vuejs.org/)（v5 已并入文件式路由，本平台**不使用**——路由由后端运行时下发，见「架构速览」） |
 | HTTP 客户端 | [Axios](https://axios-http.com/) |
 | RPC | [Hprose 3](https://hprose.com/)（`@hprose/io` 序列化） |
 | 图标 | [Tabler Icons](https://tabler.io/icons) |
