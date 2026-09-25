@@ -33,6 +33,20 @@
     top: 50%;
     transform: translate(-50%, -50%);
   }
+
+  /* 系统级「减少动态效果」：停掉 3 条无限滑动渐变。
+     品牌 logo 是静态 SVG，不受影响——观感保留，只是不再动。 */
+  @media (prefers-reduced-motion: reduce) {
+    .mud-wasm {
+      animation: none;
+    }
+  }
+
+  /* 软件渲染降级（类由 lib/effectsPerf 打在 <html> 上）：全屏渐变每帧重绘在软渲下代价很高，
+     同样只留静态底与 logo。 */
+  html.hmx-effects-off .mud-wasm {
+    animation: none;
+  }
 </style>
 <div id="app-loading">
   <div style="height: 100%; width: 100%; margin: 0; position: fixed; opacity: 0.2">

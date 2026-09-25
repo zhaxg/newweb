@@ -210,15 +210,24 @@ CryptoJS.AES.encrypt(JSON.stringify({ userId: "admin", userName: "系统管理�
 ### 8.2 免等遮罩：`HMX_DISABLE_LOADING`
 
 全局置 `true` 时刷新遮罩**完全不创建**（`src/components/loading/loading.ts`）。实测每次页面加载
-可省约 **1.9s**（就是那 2s 淡出）：
+可省约 **0.75s**（遮罩退场已由 2s 降到 1s）：
 
 | | 页面就绪 | 遮罩消失 |
 |---|---|---|
-| 默认 | 1437ms | 3377ms |
-| 置 `true` | 1359ms | **1559ms** |
+| 默认 | 1327ms | 2199ms |
+| 置 `true` | 1419ms | **1445ms** |
 
 它只影响这个纯视觉过渡——遮罩不承载任何权限/数据语义，跳过不改变业务行为。**未挂 `import.meta.env.DEV`**：
 那样就没法对生产构建产物做同样的提速验证，而代价只是首次导航时一次属性读取；生产无人设置即行为不变。
+
+**两个会让测量失真的环境因素**（都踩过）：
+
+- **headless Chrome 默认就报 `prefers-reduced-motion: reduce`**，而遮罩对 reduced-motion 是
+  **无淡出直接移除**，于是你量到的「淡出」只有几十毫秒。要测真实淡出，必须显式
+  `page.emulateMedia({ reducedMotion: "no-preference" })`。
+- **无 GPU 环境（CI/容器）会命中 `hmx-effects-off`**（`lib/effectsPerf` 探测到 SwiftShader/llvmpipe
+  等软件渲染器即打到 `<html>`），遮罩里的 3 条滑动渐变会自动停——`animationName` 量到 `none` 是
+  **正确行为**，不是样式被破坏。
 
 ### 8.3 推荐配方
 
