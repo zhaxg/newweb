@@ -6,7 +6,13 @@ import { useRoute } from "vue-router";
  */
 export function useMenuQuery(): { raw: string; parts: string[]; json: Record<string, unknown> } {
   const raw = String(useRoute().meta.qs ?? "");
-  const parts = raw && !raw.startsWith("{") ? raw.split(",").map((s) => s.trim()).filter(Boolean) : [];
+  const parts =
+    raw && !raw.startsWith("{")
+      ? raw
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean)
+      : [];
   let json: Record<string, unknown> = {};
   if (raw.startsWith("{")) {
     try {

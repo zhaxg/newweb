@@ -66,7 +66,9 @@ const rows1 = ref<Thr3040[]>([]);
 const loading1 = ref(false);
 const grid1Api = ref<GridApi | null>(null);
 const current1 = ref<Thr3040 | null>(null);
-function onGrid1Ready(e: GridReadyEvent) { grid1Api.value = e.api; }
+function onGrid1Ready(e: GridReadyEvent) {
+  grid1Api.value = e.api;
+}
 function onGrid1SelectionChanged() {
   const row = (grid1Api.value?.getSelectedRows()[0] as Thr3040 | undefined) ?? null;
   current1.value = row;
@@ -77,7 +79,9 @@ function onGrid1SelectionChanged() {
 const rows2 = ref<Thr3030[]>([]);
 const loading2 = ref(false);
 const grid2Api = ref<GridApi | null>(null);
-function onGrid2Ready(e: GridReadyEvent) { grid2Api.value = e.api; }
+function onGrid2Ready(e: GridReadyEvent) {
+  grid2Api.value = e.api;
+}
 
 const colDefs1: ColDef[] = [
   { colId: "cBatchOrder", field: "cBatchOrder", headerName: "组批号", width: 112 },
@@ -128,11 +132,12 @@ async function dataBind3030(thr3040: Thr3040 | null) {
   }
   loading2.value = true;
   try {
-    const list = (await hR3000Api.queryThr3030s({
-      c3040Id: thr3040.id,
-      cChange: thr3040.cChange,
-      cMxId: thr3040.cMxId,
-    })) ?? [];
+    const list =
+      (await hR3000Api.queryThr3030s({
+        c3040Id: thr3040.id,
+        cChange: thr3040.cChange,
+        cMxId: thr3040.cMxId,
+      })) ?? [];
     rows2.value = list;
     requestAnimationFrame(() => grid2Api.value?.autoSizeAllColumns());
   } catch {
@@ -145,18 +150,19 @@ async function dataBind3030(thr3040: Thr3040 | null) {
 async function onQuery() {
   loading1.value = true;
   try {
-    const list = (await hR3400Api.queryList({
-      cLineCode,
-      cOrderNo: input.cOrderNo.trim() || undefined,
-      cBatchNo: input.cBatchNo.trim() || undefined,
-      cStove: input.cStove.trim() || undefined,
-      cSgCode: input.cSgCode.trim() || undefined,
-      cSgStd: input.cSgStd.trim() || undefined,
-      cSpec: input.cSpec.trim() || undefined,
-      plateNo: input.plateNo.trim() || undefined,
-      nJqStatus: Thr3010JqStatusEnum.Wait,
-      dCreateTimeRange: toTimeRange(input.dates),
-    })) ?? [];
+    const list =
+      (await hR3400Api.queryList({
+        cLineCode,
+        cOrderNo: input.cOrderNo.trim() || undefined,
+        cBatchNo: input.cBatchNo.trim() || undefined,
+        cStove: input.cStove.trim() || undefined,
+        cSgCode: input.cSgCode.trim() || undefined,
+        cSgStd: input.cSgStd.trim() || undefined,
+        cSpec: input.cSpec.trim() || undefined,
+        plateNo: input.plateNo.trim() || undefined,
+        nJqStatus: Thr3010JqStatusEnum.Wait,
+        dCreateTimeRange: toTimeRange(input.dates),
+      })) ?? [];
     rows1.value = list;
     current1.value = null;
     rows2.value = [];
@@ -210,8 +216,17 @@ function onAdd() {
       </div>
       <div class="col-span-2 flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">创建时间</label>
-        <DatePicker v-model="input.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-          show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+        <DatePicker
+          v-model="input.dates"
+          selection-mode="range"
+          :manual-input="false"
+          date-format="yy-mm-dd"
+          show-time
+          hour-format="24"
+          show-icon
+          placeholder="开始 至 结束"
+          class="min-w-0 flex-1"
+        />
       </div>
     </div>
     <!-- 工具栏（原 stackPanel1：查询/切边） -->
@@ -229,12 +244,21 @@ function onAdd() {
           <span class="text-xs font-medium text-muted-foreground">计划材料明细</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="colDefs1" :row-data="rows1"
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="colDefs1"
+            :row-data="rows1"
             :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
-            :pagination="false" :animate-rows="false" :loading="loading1"
-            @grid-ready="onGrid1Ready" @selection-changed="onGrid1SelectionChanged"
-            @first-data-rendered="autoSizeOnFirstData" />
+            :pagination="false"
+            :animate-rows="false"
+            :loading="loading1"
+            @grid-ready="onGrid1Ready"
+            @selection-changed="onGrid1SelectionChanged"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
       <SplitterPanel :minSize="20" class="flex flex-col overflow-hidden">
@@ -242,10 +266,19 @@ function onAdd() {
           <span class="text-xs font-medium text-muted-foreground">剪切计划</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="colDefs2" :row-data="rows2"
-            :pagination="false" :animate-rows="false" :loading="loading2"
-            @grid-ready="onGrid2Ready" @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="colDefs2"
+            :row-data="rows2"
+            :pagination="false"
+            :animate-rows="false"
+            :loading="loading2"
+            @grid-ready="onGrid2Ready"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
     </Splitter>

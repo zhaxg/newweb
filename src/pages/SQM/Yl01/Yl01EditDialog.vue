@@ -18,12 +18,7 @@ import Textarea from "primevue/textarea";
 import Splitter from "primevue/splitter";
 import SplitterPanel from "primevue/splitterpanel";
 import Dialog from "primevue/dialog";
-import {
-  IconArrowDown,
-  IconArrowUp,
-  IconArrowsJoin,
-  IconArrowsSplit,
-} from "@tabler/icons-vue";
+import { IconArrowDown, IconArrowUp, IconArrowsJoin, IconArrowsSplit } from "@tabler/icons-vue";
 import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
@@ -44,34 +39,72 @@ const codeReadOnly = ref(false);
 
 const candApi = ref<GridApi | null>(null);
 const routeApi = ref<GridApi | null>(null);
-function onCandReady(e: GridReadyEvent) { candApi.value = e.api; }
-function onRouteReady(e: GridReadyEvent) { routeApi.value = e.api; }
+function onCandReady(e: GridReadyEvent) {
+  candApi.value = e.api;
+}
+function onRouteReady(e: GridReadyEvent) {
+  routeApi.value = e.api;
+}
 
 /* ---------- 工艺路径候选（原 gridControl1 → Gylj，Enabled=false） ---------- */
 const gyljRows = ref<Gylj[]>([]);
 const candCols: ColDef[] = [
   { field: "code", headerName: "编码", width: 110 },
   { field: "name", headerName: "名称", width: 170 },
-  { colId: "xfer-in", headerName: ">>", width: 52, minWidth: 52, sortable: false, resizable: false, filter: false, cellRenderer: () => ">>" },
+  {
+    colId: "xfer-in",
+    headerName: ">>",
+    width: 52,
+    minWidth: 52,
+    sortable: false,
+    resizable: false,
+    filter: false,
+    cellRenderer: () => ">>",
+  },
   { field: "id", headerName: "主键", width: 150, hide: true },
 ];
 
 /* ---------- 已选工艺路径（原 gridControl2 → ObservableCollection<YlgyGx>，
      原 FieldName 为 Data.Xxx 的绑定路径，web 侧拍平到 YlgyGx.data 上再取值） ---------- */
 const routeCols: ColDef[] = [
-  { colId: "xfer-out", headerName: "<<", width: 52, minWidth: 52, sortable: false, resizable: false, filter: false, cellRenderer: () => "<<" },
+  {
+    colId: "xfer-out",
+    headerName: "<<",
+    width: 52,
+    minWidth: 52,
+    sortable: false,
+    resizable: false,
+    filter: false,
+    cellRenderer: () => "<<",
+  },
   { field: "nSeq", headerName: "序号", width: 80, valueGetter: (p) => p.data?.data?.nSeq },
   { field: "cProc", headerName: "编码", width: 100, valueGetter: (p) => p.data?.data?.cProc },
   { field: "cProcName", headerName: "工序名称", width: 170, valueGetter: (p) => p.data?.data?.cProcName },
   /* 原「选择合并」勾选列：ui-rules §7 不手写勾选列，勾选由 row-selection 复选框承担，本列隐藏保留在列面板 */
   { colId: "mergeSel", headerName: "选择合并", hide: true },
   { field: "id", headerName: "主键", width: 150, hide: true, valueGetter: (p) => p.data?.data?.id },
-  { field: "cTqmyl01Id", headerName: "冶炼工艺要点ID", width: 150, hide: true, valueGetter: (p) => p.data?.data?.cTqmyl01Id },
-  { field: "cGyCode", headerName: "冶炼工艺要点编号", width: 140, hide: true, valueGetter: (p) => p.data?.data?.cGyCode },
+  {
+    field: "cTqmyl01Id",
+    headerName: "冶炼工艺要点ID",
+    width: 150,
+    hide: true,
+    valueGetter: (p) => p.data?.data?.cTqmyl01Id,
+  },
+  {
+    field: "cGyCode",
+    headerName: "冶炼工艺要点编号",
+    width: 140,
+    hide: true,
+    valueGetter: (p) => p.data?.data?.cGyCode,
+  },
 ];
 
-function candRowId(p: { data: Gylj }) { return String(p.data.id ?? p.data.code ?? ""); }
-function routeRowId(p: { data: YlgyGx }) { return String(p.data.data.id ?? ""); }
+function candRowId(p: { data: Gylj }) {
+  return String(p.data.id ?? p.data.code ?? "");
+}
+function routeRowId(p: { data: YlgyGx }) {
+  return String(p.data.data.id ?? "");
+}
 
 const routeRows = computed(() => props.model?.gylj ?? []);
 function syncRoute() {
@@ -227,9 +260,13 @@ function onOk() {
 </script>
 
 <template>
-  <Dialog :visible="props.visible" modal header="炼钢工艺要点"
+  <Dialog
+    :visible="props.visible"
+    modal
+    header="炼钢工艺要点"
     :style="{ width: 'min(86rem, calc(100vw - 2rem))', height: 'min(48rem, calc(100vh - 2rem))' }"
-    @update:visible="emit('update:visible', $event)">
+    @update:visible="emit('update:visible', $event)"
+  >
     <div class="flex h-full min-h-0 flex-col">
       <!-- 原 splitContainerControl1 上下 251/708≈35% -->
       <Splitter class="min-h-0 flex-[35] shrink" layout="vertical">
@@ -241,8 +278,12 @@ function onOk() {
             <div class="flex min-h-0 flex-col gap-1.5 overflow-auto pr-1">
               <div class="flex min-w-0 items-center gap-1.5">
                 <label class="w-24 shrink-0 text-xs text-muted-foreground">编码</label>
-                <InputText :model-value="form.cCode" :readonly="codeReadOnly" class="min-w-0 flex-1"
-                  @update:model-value="onCodeInput" />
+                <InputText
+                  :model-value="form.cCode"
+                  :readonly="codeReadOnly"
+                  class="min-w-0 flex-1"
+                  @update:model-value="onCodeInput"
+                />
               </div>
               <div class="flex min-w-0 items-center gap-1.5">
                 <label class="w-24 shrink-0 text-xs text-muted-foreground">名称</label>
@@ -269,25 +310,56 @@ function onOk() {
                 <!-- 原 gridControl1：Gylj 候选 -->
                 <SplitterPanel :size="39" :minSize="20" class="flex flex-col overflow-hidden">
                   <div class="min-h-0 flex-1 overflow-hidden">
-                    <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                      :default-col-def="hmxDefaultColDef" :column-defs="candCols" :row-data="gyljRows"
+                    <AgGridVue
+                      class="hmx-ag-grid h-full w-full"
+                      :theme="theme"
+                      :locale-text="AG_GRID_LOCALE_CN"
+                      :default-col-def="hmxDefaultColDef"
+                      :column-defs="candCols"
+                      :row-data="gyljRows"
                       :get-row-id="candRowId"
-                      :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-                      :suppress-column-virtualisation="true" :pagination="false" :animate-rows="false"
-                      @grid-ready="onCandReady" @first-data-rendered="autoSizeOnFirstData"
-                      @cell-double-clicked="transferIn" />
+                      :row-selection="{
+                        mode: 'multiRow',
+                        checkboxes: true,
+                        headerCheckbox: true,
+                        enableClickSelection: true,
+                        enableSelectionWithoutKeys: true,
+                      }"
+                      :suppress-column-virtualisation="true"
+                      :pagination="false"
+                      :animate-rows="false"
+                      @grid-ready="onCandReady"
+                      @first-data-rendered="autoSizeOnFirstData"
+                      @cell-double-clicked="transferIn"
+                    />
                   </div>
                 </SplitterPanel>
                 <!-- 原 gridControl2(Dock Fill) + stackPanel2(Dock Right, TopDown) -->
                 <SplitterPanel :minSize="30" class="flex min-h-0 overflow-hidden">
                   <div class="min-h-0 min-w-0 flex-1 overflow-hidden">
-                    <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                      :default-col-def="hmxDefaultColDef" :column-defs="routeCols" :row-data="routeRows"
+                    <AgGridVue
+                      class="hmx-ag-grid h-full w-full"
+                      :theme="theme"
+                      :locale-text="AG_GRID_LOCALE_CN"
+                      :default-col-def="hmxDefaultColDef"
+                      :column-defs="routeCols"
+                      :row-data="routeRows"
                       :get-row-id="routeRowId"
-                      :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-                      :suppress-column-virtualisation="true" :pagination="false" :animate-rows="false"
-                      @grid-ready="onRouteReady" @first-data-rendered="autoSizeOnFirstData"
-                      @selection-changed="onRouteSelectionChanged" @cell-value-changed="syncRoute" />
+                      :row-selection="{
+                        mode: 'multiRow',
+                        checkboxes: true,
+                        headerCheckbox: true,
+                        enableClickSelection: true,
+                        enableSelectionWithoutKeys: true,
+                      }"
+                      :suppress-column-virtualisation="true"
+                      :pagination="false"
+                      :animate-rows="false"
+                      @grid-ready="onRouteReady"
+                      @first-data-rendered="autoSizeOnFirstData"
+                      @selection-changed="onRouteSelectionChanged"
+                      @cell-value-changed="syncRoute"
+                    />
                   </div>
                   <!-- 原 stackPanel2（Dock Right，TopDown；Text=" " + ToolTip 承载文案） -->
                   <div class="flex w-9 shrink-0 flex-col items-center gap-1 border-l border-border/60 py-1">

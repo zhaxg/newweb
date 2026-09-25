@@ -334,7 +334,8 @@ async function onDesign() {
   try {
     const res: QualityDesignOutput[] = [];
     for (const order of selected) {
-      const output = (await qualityDesignApi.designZHB({ orderNo: order.cOrderNo ?? "" })) ?? ({} as QualityDesignOutput);
+      const output =
+        (await qualityDesignApi.designZHB({ orderNo: order.cOrderNo ?? "" })) ?? ({} as QualityDesignOutput);
       order.nOrderProcFlag = output.success ? 8 : -1;
       order.cDesignDesc = output.message ?? null;
       res.push(output);
@@ -502,7 +503,13 @@ onMounted(() => {
         :default-col-def="hmxDefaultColDef"
         :column-defs="colDefs"
         :row-data="rows"
-        :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
+        :row-selection="{
+          mode: 'multiRow',
+          checkboxes: true,
+          headerCheckbox: true,
+          enableClickSelection: true,
+          enableSelectionWithoutKeys: true,
+        }"
         :suppress-column-virtualisation="true"
         :pagination="false"
         :animate-rows="false"

@@ -4,11 +4,7 @@
  * 不经 axios/mockAdapter；这里用 fetcher 在进程内实现，读写与 printReport 相同的
  * localStorage（hmx.print_templates.v1），列表项附带 ext.availableVariables 供设计器字段树。
  */
-import {
-  PRINT_SCHEMAS,
-  buildAvailableVariables,
-  findPrintSchema,
-} from "./printSchemas";
+import { PRINT_SCHEMAS, buildAvailableVariables, findPrintSchema } from "./printSchemas";
 import { ensureSeedPrintTemplates } from "./printSeedTemplates";
 import type { PrintTemplateRow } from "@/api/mes4ddh/printReport";
 
@@ -68,8 +64,7 @@ function toDesignerTemplate(row: PrintTemplateRow, includeData: boolean): Record
   const schema = findPrintSchema(row.cDataType);
   const data = parseJson<Record<string, any> | null>(row.cTemplateData, null);
   const tree = schema ? buildAvailableVariables(schema) : [];
-  const prevExt =
-    data && typeof data === "object" && data.ext && typeof data.ext === "object" ? data.ext : {};
+  const prevExt = data && typeof data === "object" && data.ext && typeof data.ext === "object" ? data.ext : {};
   const ext = { ...prevExt, availableVariables: tree };
   const updatedAt = Date.parse(String(row.lastModifyTime ?? "").replace(" ", "T")) || Date.now();
   const base: Record<string, unknown> = {
@@ -96,12 +91,8 @@ function jsonResponse(data: unknown, status = 200): Response {
 }
 
 /** 供 setCrudEndpoints({ fetcher }) 使用 */
-export async function printDesignerCloudFetch(
-  input: RequestInfo | URL,
-  init?: RequestInit,
-): Promise<Response> {
-  const rawUrl =
-    typeof input === "string" ? input : input instanceof URL ? input.href : String(input);
+export async function printDesignerCloudFetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
+  const rawUrl = typeof input === "string" ? input : input instanceof URL ? input.href : String(input);
   const path = rawUrl.replace(/^https?:\/\/[^/]+/i, "").split("?")[0] || rawUrl;
   const method = String(init?.method ?? "GET").toUpperCase();
   let body: Record<string, any> | null = null;

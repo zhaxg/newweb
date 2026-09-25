@@ -80,7 +80,9 @@ const zpRows = ref<Thr3000[]>([]);
 const zpLoading = ref(false);
 const zpApi = ref<GridApi | null>(null);
 const zpCurrent = ref<Thr3000 | null>(null);
-function onZpReady(e: GridReadyEvent) { zpApi.value = e.api; }
+function onZpReady(e: GridReadyEvent) {
+  zpApi.value = e.api;
+}
 function onZpSelectionChanged() {
   const row = (zpApi.value?.getSelectedRows()[0] as Thr3000 | undefined) ?? null;
   zpCurrent.value = row;
@@ -92,7 +94,9 @@ const mxRows = ref<Thr3010[]>([]);
 const mxLoading = ref(false);
 const mxApi = ref<GridApi | null>(null);
 const mxCurrent = ref<Thr3010 | null>(null);
-function onMxReady(e: GridReadyEvent) { mxApi.value = e.api; }
+function onMxReady(e: GridReadyEvent) {
+  mxApi.value = e.api;
+}
 function onMxSelectionChanged() {
   mxCurrent.value = (mxApi.value?.getSelectedRows()[0] as Thr3010 | undefined) ?? null;
 }
@@ -102,7 +106,9 @@ const trackList = shallowRef<TrackableList<Thr4000>>(new TrackableList<Thr4000>(
 const sjLoading = ref(false);
 const sjApi = ref<GridApi | null>(null);
 const sjCurrent = ref<Thr4000 | null>(null);
-function onSjReady(e: GridReadyEvent) { sjApi.value = e.api; }
+function onSjReady(e: GridReadyEvent) {
+  sjApi.value = e.api;
+}
 function onSjSelectionChanged() {
   sjCurrent.value = (sjApi.value?.getSelectedRows()[0] as Thr4000 | undefined) ?? null;
 }
@@ -140,11 +146,35 @@ const l2StatusFmt = (p: ValueFormatterParams) => {
   return m[String(p.value)] ?? "";
 };
 const furStatusFmt = (p: ValueFormatterParams) =>
-  (({ [String(Thr3010FurStatusEnum.Batch)]: "已组批", [String(Thr3010FurStatusEnum.Wait)]: "待入炉", [String(Thr3010FurStatusEnum.RefuseBefore)]: "炉前拒收", [String(Thr3010FurStatusEnum.EnterFur)]: "入炉", [String(Thr3010FurStatusEnum.Eliminate)]: "剔炉", [String(Thr3010FurStatusEnum.ExitFur)]: "出炉", [String(Thr3010FurStatusEnum.RefuseAfter)]: "炉后拒收" }) as Record<string, string>)[String(p.value)] ?? "";
+  (
+    ({
+      [String(Thr3010FurStatusEnum.Batch)]: "已组批",
+      [String(Thr3010FurStatusEnum.Wait)]: "待入炉",
+      [String(Thr3010FurStatusEnum.RefuseBefore)]: "炉前拒收",
+      [String(Thr3010FurStatusEnum.EnterFur)]: "入炉",
+      [String(Thr3010FurStatusEnum.Eliminate)]: "剔炉",
+      [String(Thr3010FurStatusEnum.ExitFur)]: "出炉",
+      [String(Thr3010FurStatusEnum.RefuseAfter)]: "炉后拒收",
+    }) as Record<string, string>
+  )[String(p.value)] ?? "";
 const rollStatusFmt = (p: ValueFormatterParams) =>
-  (({ [String(Thr3010RollStatusEnum.Batch)]: "已组批", [String(Thr3010RollStatusEnum.Wait)]: "待入轧", [String(Thr3010RollStatusEnum.FinishRoll)]: "轧制完成", [String(Thr3010RollStatusEnum.Cut)]: "切断", [String(Thr3010RollStatusEnum.Waste)]: "轧废" }) as Record<string, string>)[String(p.value)] ?? "";
+  (
+    ({
+      [String(Thr3010RollStatusEnum.Batch)]: "已组批",
+      [String(Thr3010RollStatusEnum.Wait)]: "待入轧",
+      [String(Thr3010RollStatusEnum.FinishRoll)]: "轧制完成",
+      [String(Thr3010RollStatusEnum.Cut)]: "切断",
+      [String(Thr3010RollStatusEnum.Waste)]: "轧废",
+    }) as Record<string, string>
+  )[String(p.value)] ?? "";
 const jqStatusFmt = (p: ValueFormatterParams) =>
-  (({ [String(Thr3010JqStatusEnum.Batch)]: "已组批", [String(Thr3010JqStatusEnum.Wait)]: "待剪切", [String(Thr3010JqStatusEnum.Finish)]: "剪切完成" }) as Record<string, string>)[String(p.value)] ?? "";
+  (
+    ({
+      [String(Thr3010JqStatusEnum.Batch)]: "已组批",
+      [String(Thr3010JqStatusEnum.Wait)]: "待剪切",
+      [String(Thr3010JqStatusEnum.Finish)]: "剪切完成",
+    }) as Record<string, string>
+  )[String(p.value)] ?? "";
 
 const zpColDefs: ColDef[] = [
   { colId: "selected", field: "selected", headerName: "选择", width: 112, hide: true },
@@ -277,7 +307,13 @@ const sjColDefs: ColDef[] = [
   { colId: "cSpecReqText", field: "cSpecReqText", headerName: "客户特殊要求", width: 138, hide: true },
   { colId: "cConNo", field: "cConNo", headerName: "合同号", width: 112, hide: true },
   { colId: "cOrderCustCname", field: "cOrderCustCname", headerName: "订货客户中文名称", width: 164, hide: true },
-  { colId: "cConsigneeCustCname", field: "cConsigneeCustCname", headerName: "收货客户中文名称", width: 164, hide: true },
+  {
+    colId: "cConsigneeCustCname",
+    field: "cConsigneeCustCname",
+    headerName: "收货客户中文名称",
+    width: 164,
+    hide: true,
+  },
   { colId: "cPieceNoSlab", field: "cPieceNoSlab", headerName: "坯料件次号", width: 125, hide: true },
   { colId: "cSgCodeSlab", field: "cSgCodeSlab", headerName: "坯料钢种", width: 112, hide: true },
   { colId: "cSgStdSlab", field: "cSgStdSlab", headerName: "坯料执行标准", width: 138, hide: true },
@@ -321,15 +357,16 @@ const sjColDefs: ColDef[] = [
 async function queryZp() {
   zpLoading.value = true;
   try {
-    const list = (await hR3000Api.queryThr3000s({
-      cLineCode: lineCode.value || undefined,
-      cBatchNo: input.cBatchNo.trim() || undefined,
-      cStove: input.cStove.trim() || undefined,
-      cOrderNo: input.cOrderNo.trim() || undefined,
-      cSgCode: input.cSgCode.trim() || undefined,
-      slabNo: input.slabNo.trim() || undefined,
-      dCreateTimeRange: toTimeRange(input.dates),
-    })) ?? [];
+    const list =
+      (await hR3000Api.queryThr3000s({
+        cLineCode: lineCode.value || undefined,
+        cBatchNo: input.cBatchNo.trim() || undefined,
+        cStove: input.cStove.trim() || undefined,
+        cOrderNo: input.cOrderNo.trim() || undefined,
+        cSgCode: input.cSgCode.trim() || undefined,
+        slabNo: input.slabNo.trim() || undefined,
+        dCreateTimeRange: toTimeRange(input.dates),
+      })) ?? [];
     zpRows.value = list;
     zpCurrent.value = null;
     mxRows.value = [];
@@ -498,13 +535,27 @@ onMounted(async () => {
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">产线代码</label>
-        <Select v-model="lineCode" :options="lineOptions" option-label="label" option-value="value"
-          class="min-w-0 flex-1" />
+        <Select
+          v-model="lineCode"
+          :options="lineOptions"
+          option-label="label"
+          option-value="value"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="col-span-2 flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">组批时间</label>
-        <DatePicker v-model="input.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-          show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+        <DatePicker
+          v-model="input.dates"
+          selection-mode="range"
+          :manual-input="false"
+          date-format="yy-mm-dd"
+          show-time
+          hour-format="24"
+          show-icon
+          placeholder="开始 至 结束"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="col-span-3 flex min-w-0 items-center gap-1">
         <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="zpLoading" @click="queryZp">
@@ -522,12 +573,21 @@ onMounted(async () => {
               <span class="text-xs font-medium text-muted-foreground">组批计划</span>
             </div>
             <div class="min-h-0 flex-1 overflow-hidden">
-              <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                :default-col-def="hmxDefaultColDef" :column-defs="zpColDefs" :row-data="zpRows"
+              <AgGridVue
+                class="hmx-ag-grid h-full w-full"
+                :theme="theme"
+                :locale-text="AG_GRID_LOCALE_CN"
+                :default-col-def="hmxDefaultColDef"
+                :column-defs="zpColDefs"
+                :row-data="zpRows"
                 :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
-                :pagination="false" :animate-rows="false" :loading="zpLoading"
-                @grid-ready="onZpReady" @selection-changed="onZpSelectionChanged"
-                @first-data-rendered="autoSizeOnFirstData" />
+                :pagination="false"
+                :animate-rows="false"
+                :loading="zpLoading"
+                @grid-ready="onZpReady"
+                @selection-changed="onZpSelectionChanged"
+                @first-data-rendered="autoSizeOnFirstData"
+              />
             </div>
           </SplitterPanel>
           <SplitterPanel :minSize="20" class="flex flex-col overflow-hidden">
@@ -535,12 +595,21 @@ onMounted(async () => {
               <span class="text-xs font-medium text-muted-foreground">计划材料明细</span>
             </div>
             <div class="min-h-0 flex-1 overflow-hidden">
-              <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                :default-col-def="hmxDefaultColDef" :column-defs="mxColDefs" :row-data="mxRows"
+              <AgGridVue
+                class="hmx-ag-grid h-full w-full"
+                :theme="theme"
+                :locale-text="AG_GRID_LOCALE_CN"
+                :default-col-def="hmxDefaultColDef"
+                :column-defs="mxColDefs"
+                :row-data="mxRows"
                 :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
-                :pagination="false" :animate-rows="false" :loading="mxLoading"
-                @grid-ready="onMxReady" @selection-changed="onMxSelectionChanged"
-                @first-data-rendered="autoSizeOnFirstData" />
+                :pagination="false"
+                :animate-rows="false"
+                :loading="mxLoading"
+                @grid-ready="onMxReady"
+                @selection-changed="onMxSelectionChanged"
+                @first-data-rendered="autoSizeOnFirstData"
+              />
             </div>
           </SplitterPanel>
         </Splitter>
@@ -555,8 +624,14 @@ onMounted(async () => {
           <Checkbox v-model="isBcp" binary inputId="checkBcp" />
           <label for="checkBcp" class="text-xs text-muted-foreground">半成品</label>
           <label class="ml-2 shrink-0 text-xs text-muted-foreground">件数</label>
-          <InputNumber v-model="nQua" :min="0" :max="99999" :show-buttons="true" :use-grouping="false"
-            class="w-28 shrink-0" />
+          <InputNumber
+            v-model="nQua"
+            :min="0"
+            :max="99999"
+            :show-buttons="true"
+            :use-grouping="false"
+            class="w-28 shrink-0"
+          />
           <label class="shrink-0 text-xs text-muted-foreground">备注</label>
           <InputText v-model="sjRemark" class="w-40 shrink-0" />
           <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="btnAdd">
@@ -571,18 +646,33 @@ onMounted(async () => {
           </Button>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="sjColDefs" :row-data="trackList"
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="sjColDefs"
+            :row-data="trackList"
             :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
-            :pagination="false" :animate-rows="false" :loading="sjLoading"
-            @grid-ready="onSjReady" @selection-changed="onSjSelectionChanged"
-            @cell-value-changed="onSjCellValueChanged" @first-data-rendered="autoSizeOnFirstData" />
+            :pagination="false"
+            :animate-rows="false"
+            :loading="sjLoading"
+            @grid-ready="onSjReady"
+            @selection-changed="onSjSelectionChanged"
+            @cell-value-changed="onSjCellValueChanged"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
     </Splitter>
 
-    <Dialog :visible="confirmOpen" modal header="确认" :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
-      @update:visible="confirmOpen = $event">
+    <Dialog
+      :visible="confirmOpen"
+      modal
+      header="确认"
+      :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
+      @update:visible="confirmOpen = $event"
+    >
       <p class="text-xs">{{ confirmMsg }}</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />

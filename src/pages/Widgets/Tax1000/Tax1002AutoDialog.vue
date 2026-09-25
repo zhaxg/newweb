@@ -11,7 +11,15 @@ const props = defineProps<{ open: boolean }>();
 
 const emit = defineEmits<{
   "update:open": [value: boolean];
-  submit: [input: { cfg: string; startDate: Date | null; firstShiftIndex: string; firstGroupIndex: string; stopDate: Date | null }];
+  submit: [
+    input: {
+      cfg: string;
+      startDate: Date | null;
+      firstShiftIndex: string;
+      firstGroupIndex: string;
+      stopDate: Date | null;
+    },
+  ];
 }>();
 
 const form = reactive({
@@ -36,8 +44,13 @@ function onSubmit() {
 </script>
 
 <template>
-  <Dialog :visible="open" modal header="自动排班" :style="{ width: 'min(28rem, calc(100vw - 2rem))' }"
-    @update:visible="emit('update:open', $event)">
+  <Dialog
+    :visible="open"
+    modal
+    header="自动排班"
+    :style="{ width: 'min(28rem, calc(100vw - 2rem))' }"
+    @update:visible="emit('update:open', $event)"
+  >
     <div class="min-w-0 space-y-3 py-1">
       <div class="grid grid-cols-1 gap-x-4 gap-y-3">
         <div class="min-w-0 space-y-1">
@@ -46,8 +59,14 @@ function onSubmit() {
         </div>
         <div class="min-w-0 space-y-1">
           <label class="text-xs font-medium text-muted-foreground">排班开始时间</label>
-          <DatePicker v-model="form.startDate" show-time hour-format="24" date-format="yy-mm-dd"
-            class="w-full min-w-0" input-class="w-full" />
+          <DatePicker
+            v-model="form.startDate"
+            show-time
+            hour-format="24"
+            date-format="yy-mm-dd"
+            class="w-full min-w-0"
+            input-class="w-full"
+          />
         </div>
         <div class="min-w-0 space-y-1">
           <label class="text-xs font-medium text-muted-foreground">排班开始班次</label>
@@ -59,8 +78,14 @@ function onSubmit() {
         </div>
         <div class="min-w-0 space-y-1">
           <label class="text-xs font-medium text-muted-foreground">排班结束时间</label>
-          <DatePicker v-model="form.stopDate" show-time hour-format="24" date-format="yy-mm-dd"
-            class="w-full min-w-0" input-class="w-full" />
+          <DatePicker
+            v-model="form.stopDate"
+            show-time
+            hour-format="24"
+            date-format="yy-mm-dd"
+            class="w-full min-w-0"
+            input-class="w-full"
+          />
         </div>
       </div>
     </div>

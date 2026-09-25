@@ -110,12 +110,15 @@ export class HmxChromeTabsElement extends HTMLElement {
       this.#updateScrollControls();
       this.#repositionTabPopover();
     });
-    this.#viewport.addEventListener("wheel", (event) => {
-      if (this.#viewport.scrollWidth <= this.#viewport.clientWidth) return;
-      event.preventDefault();
-      this.#viewport.scrollLeft +=
-        Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
-    }, { passive: false });
+    this.#viewport.addEventListener(
+      "wheel",
+      (event) => {
+        if (this.#viewport.scrollWidth <= this.#viewport.clientWidth) return;
+        event.preventDefault();
+        this.#viewport.scrollLeft += Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY;
+      },
+      { passive: false },
+    );
     for (const button of [this.#scrollLeftButton, this.#scrollRightButton]) {
       const direction = button === this.#scrollLeftButton ? "left" : "right";
       button.setAttribute("aria-haspopup", "menu");
@@ -246,16 +249,17 @@ export class HmxChromeTabsElement extends HTMLElement {
       element.draggable = !tab.pinned;
       if (this.#enteringTabIds.has(tab.id)) {
         element.toggleAttribute("data-entering", true);
-        element.addEventListener("animationend", () => {
-          this.#enteringTabIds.delete(tab.id);
-          element.removeAttribute("data-entering");
-        }, { once: true });
+        element.addEventListener(
+          "animationend",
+          () => {
+            this.#enteringTabIds.delete(tab.id);
+            element.removeAttribute("data-entering");
+          },
+          { once: true },
+        );
       }
       if (active) {
-        element.style.setProperty(
-          "--tab-background",
-          tab.backgroundColor ?? "var(--chrome-tab-active-background)",
-        );
+        element.style.setProperty("--tab-background", tab.backgroundColor ?? "var(--chrome-tab-active-background)");
       }
       element.addEventListener("click", () => {
         this.#contextMenu.hidden = true;
@@ -286,9 +290,7 @@ export class HmxChromeTabsElement extends HTMLElement {
         event.preventDefault();
         if (event.dataTransfer) event.dataTransfer.dropEffect = "move";
         const position =
-          event.clientX < element.getBoundingClientRect().left + element.offsetWidth / 2
-            ? "before"
-            : "after";
+          event.clientX < element.getBoundingClientRect().left + element.offsetWidth / 2 ? "before" : "after";
         this.#clearDropIndicators();
         element.dataset.dropPosition = position;
       });
@@ -322,8 +324,8 @@ export class HmxChromeTabsElement extends HTMLElement {
       title.textContent = tab.title;
       element.addEventListener("pointerenter", () => {
         const shouldShow =
-          this.#tabTooltipMode === "always"
-          || (this.#tabTooltipMode === "truncated" && title.scrollWidth > title.clientWidth);
+          this.#tabTooltipMode === "always" ||
+          (this.#tabTooltipMode === "truncated" && title.scrollWidth > title.clientWidth);
         if (shouldShow) {
           this.#showTabTooltip(tab.title, element);
         } else {
@@ -362,19 +364,14 @@ export class HmxChromeTabsElement extends HTMLElement {
     if (!active) return;
     const left = active.offsetLeft;
     const right = left + active.offsetWidth;
-    const radius = Number.parseFloat(
-      getComputedStyle(this).getPropertyValue("--chrome-tab-radius"),
-    );
+    const radius = Number.parseFloat(getComputedStyle(this).getPropertyValue("--chrome-tab-radius"));
     const cornerSpace = Number.isFinite(radius) ? radius + 2 : 10;
     const leftControlSpace = this.#scrollLeftButton.hidden ? 0 : this.#scrollLeftButton.offsetWidth;
     const rightControlSpace = this.#scrollRightButton.hidden ? 0 : this.#scrollRightButton.offsetWidth;
     if (left - cornerSpace < this.#viewport.scrollLeft + leftControlSpace) {
       this.#viewport.scrollLeft = Math.max(0, left - cornerSpace - leftControlSpace);
-    } else if (
-      right + cornerSpace > this.#viewport.scrollLeft + this.#viewport.clientWidth - rightControlSpace
-    ) {
-      this.#viewport.scrollLeft =
-        right + cornerSpace + rightControlSpace - this.#viewport.clientWidth;
+    } else if (right + cornerSpace > this.#viewport.scrollLeft + this.#viewport.clientWidth - rightControlSpace) {
+      this.#viewport.scrollLeft = right + cornerSpace + rightControlSpace - this.#viewport.clientWidth;
     }
   }
 
@@ -390,14 +387,17 @@ export class HmxChromeTabsElement extends HTMLElement {
   #showOverflowTabs(anchor: HTMLButtonElement, direction: "left" | "right") {
     this.#cancelPopoverClose();
     const elements = new Map(
-      [...this.#content.querySelectorAll<HTMLElement>(".chrome-tab")]
-        .map((element) => [element.dataset.tabId, element]),
+      [...this.#content.querySelectorAll<HTMLElement>(".chrome-tab")].map((element) => [
+        element.dataset.tabId,
+        element,
+      ]),
     );
     const visibleLeft =
       this.#viewport.scrollLeft + (this.#scrollLeftButton.hidden ? 0 : this.#scrollLeftButton.offsetWidth);
     const visibleRight =
-      this.#viewport.scrollLeft + this.#viewport.clientWidth
-      - (this.#scrollRightButton.hidden ? 0 : this.#scrollRightButton.offsetWidth);
+      this.#viewport.scrollLeft +
+      this.#viewport.clientWidth -
+      (this.#scrollRightButton.hidden ? 0 : this.#scrollRightButton.offsetWidth);
     const hiddenTabs = this.#tabs.filter((tab) => {
       const element = elements.get(tab.id);
       if (!element) return false;
@@ -439,16 +439,9 @@ export class HmxChromeTabsElement extends HTMLElement {
     this.#openTabPopover(anchor, body, "tooltip");
   }
 
-  #openTabPopover(
-    anchor: HTMLElement,
-    content: Node,
-    kind: "overflow" | "tooltip",
-    alignRight = false,
-  ) {
+  #openTabPopover(anchor: HTMLElement, content: Node, kind: "overflow" | "tooltip", alignRight = false) {
     const animatePosition =
-      !this.#tabPopover.hidden
-      && this.#tabPopover.dataset.kind === "tooltip"
-      && kind === "tooltip";
+      !this.#tabPopover.hidden && this.#tabPopover.dataset.kind === "tooltip" && kind === "tooltip";
     this.#tabPopover.removeAttribute("data-moving");
     if (this.#popoverAnchor instanceof HTMLButtonElement) {
       this.#popoverAnchor.setAttribute("aria-expanded", "false");
@@ -477,11 +470,9 @@ export class HmxChromeTabsElement extends HTMLElement {
     const width = this.#tabPopover.offsetWidth;
     const height = this.#tabPopover.offsetHeight;
     const left = this.#popoverAlignRight ? anchorRect.right - width : anchorRect.left;
-    this.#tabPopover.style.left =
-      `${Math.max(8, Math.min(left, window.innerWidth - width - 8))}px`;
+    this.#tabPopover.style.left = `${Math.max(8, Math.min(left, window.innerWidth - width - 8))}px`;
     const below = anchorRect.bottom + 6;
-    this.#tabPopover.style.top =
-      `${below + height <= window.innerHeight - 8 ? below : Math.max(8, anchorRect.top - height - 6)}px`;
+    this.#tabPopover.style.top = `${below + height <= window.innerHeight - 8 ? below : Math.max(8, anchorRect.top - height - 6)}px`;
   }
 
   #schedulePopoverClose() {

@@ -47,83 +47,85 @@ const dateRange = ref<Date[] | null>([startOfDay(new Date()), new Date(startOfDa
 
 const trackList = shallowRef<TrackableList<Record<string, unknown>>>(new TrackableList<Record<string, unknown>>());
 
-const colDefs = ref<ColDef[]>([      { field: "CPono", headerName: "PONO", width: 112 },
-      { field: "Index", headerName: "序号", width: 86 },
-      { field: "CStoveNo", headerName: "炉号", width: 86 },
-      { field: "Date", headerName: "日期", width: 86 },
-      { field: "CActualMachineDesc", headerName: "实际工序机台名称", width: 164 },
-      { field: "CActualMachineStationCode", headerName: "实际机台工位编码", width: 164 },
-      { field: "GroupCode", headerName: "班组(01:甲；02:乙；03:丙；04:丁)", width: 300 },
-      { field: "ShiftCode", headerName: "班次(0:夜；1:白；2:中)", width: 255 },
-      { field: "CSgCode", headerName: "钢种", width: 86 },
-      { field: "CPotNo", headerName: "罐号", width: 86 },
-      { field: "CPotState", headerName: "钢包包况 包况", width: 151 },
-      { field: "CZbh1", headerName: "中包号1", width: 112 },
-      { field: "NThick", headerName: "厚度", width: 86 },
-      { field: "NWidth", headerName: "宽度", width: 86 },
-      { field: "CCMIndex", headerName: "包次序号", width: 112 },
-      { field: "Wgt_Remaining", headerName: "浇余（吨）", width: 125 },
-      { field: "Temp_Get", headerName: "温度（℃）索要温度", width: 177 },
-      { field: "CDbdtwd", headerName: "温度（℃）上台温度", width: 177 },
-      { field: "Time_ZhenJing", headerName: "过程时间（min)镇静时间", width: 229 },
-      { field: "Time_Leave_LF", headerName: "过程时间（min)精炼出站时间", width: 255 },
-      { field: "CTimekjsj", headerName: "过程时间（min)开浇", width: 203 },
-      { field: "CTimetjsj", headerName: "过程时间（min)停浇", width: 203 },
-      { field: "CDbzk1", headerName: "是否自开", width: 112 },
-      { field: "Temp_ZJB_1", headerName: "中包温度（℃）1", width: 164 },
-      { field: "Temp_ZJB_2", headerName: "中包温度（℃）2", width: 164 },
-      { field: "Temp_ZJB_3", headerName: "中包温度（℃）3", width: 164 },
-      { field: "Temp_ZJB_4", headerName: "中包温度（℃）4", width: 164 },
-      { field: "N1Lasu1", headerName: "一流拉速/m.min 1", width: 216 },
-      { field: "N1Lasu2", headerName: "一流拉速/m.min 2", width: 216 },
-      { field: "N1Lasu3", headerName: "一流拉速/m.min 3", width: 216 },
-      { field: "N1Lasu4", headerName: "一流拉速/m.min 4", width: 216 },
-      { field: "N2Lasu1", headerName: "二流拉速/m.min 1", width: 216 },
-      { field: "N2Lasu2", headerName: "二流拉速/m.min 2", width: 216 },
-      { field: "N2Lasu3", headerName: "二流拉速/m.min 3", width: 216 },
-      { field: "N2Lasu4", headerName: "二流拉速/m.min 4", width: 216 },
-      { field: "GSCF_ShangGang_N", headerName: "上钢成分 N（上钢）", width: 190 },
-      { field: "GSCF_ShangGang_Als", headerName: "上钢成分 Als（上钢", width: 203 },
-      { field: "GSCF_CP_C", headerName: "成品成分（%）C", width: 164 },
-      { field: "GSCF_CP_Si", headerName: "成品成分（%）Si", width: 177 },
-      { field: "GSCF_CP_Mn", headerName: "成品成分（%）Mn", width: 177 },
-      { field: "GSCF_CP_P", headerName: "成品成分（%）P", width: 164 },
-      { field: "GSCF_CP_S", headerName: "成品成分（%）S", width: 164 },
-      { field: "GSCF_CP_Als", headerName: "成品成分（%）Als", width: 190 },
-      { field: "GSCF_CP_Ca", headerName: "成品成分（%）Ca", width: 177 },
-      { field: "GSCF_CP_Ti", headerName: "成品成分（%）Ti", width: 177 },
-      { field: "GSCF_CP_N", headerName: "成品成分（%）N", width: 164 },
-      { field: "GSCF_CP_Cu", headerName: "成品成分（%）Cu", width: 177 },
-      { field: "GSCF_CP_Cr", headerName: "成品成分（%）Cr", width: 177 },
-      { field: "GSCF_CP_Ni", headerName: "成品成分（%）Ni", width: 177 },
-      { field: "GSCF_CP_Nb", headerName: "成品成分（%）Nb", width: 177 },
-      { field: "Wgt_GaiLvBi", headerName: "钙铝比", width: 99 },
-      { field: "BaoHuZha_Liu1", headerName: "一流保护渣", width: 125 },
-      { field: "BaoHuZha_Liu2", headerName: "二流保护渣", width: 125 },
-      { field: "DaBaoFuGaiJi", headerName: "大包覆盖剂", width: 125 },
-      { field: "ShuiBiaoHao", headerName: "水表号", width: 99 },
-      { field: "BaoHuZha", headerName: "保护渣", width: 99 },
-      { field: "FuGaiJi", headerName: "覆盖剂", width: 99 },
-      { field: "BangSai", headerName: "塞棒", width: 86 },
-      { field: "ShuiKou_Shang", headerName: "上水口", width: 99 },
-      { field: "ShuiKou_JinRuShi", headerName: "浸入式水口", width: 125 },
-      { field: "ShuiKou_Chang", headerName: "长水口", width: 99 },
-      { field: "BackUp", headerName: "备注", width: 86 },
-      { field: "CuiHuo", headerName: "是否投用淬火", width: 138 },
-      { field: "Wgt_GS_MZ", headerName: "钢水量 毛重", width: 138 },
-      { field: "Wgt_GS_PZ", headerName: "钢水量 皮重", width: 138 },
-      { field: "Wgt_GS", headerName: "钢水量 净重", width: 138 },
-      { field: "CUserIdLuzhang", headerName: "炉长id", width: 112 },
-      { field: "CUserIdYiCaoShou", headerName: "一操手Id", width: 125 },
-      { field: "GSCF_CP_Al", headerName: "成品成分（%）Al", width: 177 },
-      { field: "Selected", headerName: "选择", hide: true },
-      { field: "CUserNameLuzhang", headerName: "炉长姓名", width: 112, hide: true },
-      { field: "Creator", headerName: "创建人", width: 99, hide: true },
-      { field: "Tms2010Id", headerName: "Tms2010Id", width: 177, hide: true },
-      { field: "CUserNameYiCaoShou", headerName: "一操手姓名", width: 125, hide: true },
-      { field: "IsEnableEditAndSaveDatas", headerName: "IsEnableEditAndSaveDatas", width: 300, hide: true },
-      { field: "Tms2000Id", headerName: "Tms2000Id", width: 177, hide: true },
-      { field: "Tms2014CcmId", headerName: "Tms2014CcmId", width: 216, hide: true }]);
+const colDefs = ref<ColDef[]>([
+  { field: "CPono", headerName: "PONO", width: 112 },
+  { field: "Index", headerName: "序号", width: 86 },
+  { field: "CStoveNo", headerName: "炉号", width: 86 },
+  { field: "Date", headerName: "日期", width: 86 },
+  { field: "CActualMachineDesc", headerName: "实际工序机台名称", width: 164 },
+  { field: "CActualMachineStationCode", headerName: "实际机台工位编码", width: 164 },
+  { field: "GroupCode", headerName: "班组(01:甲；02:乙；03:丙；04:丁)", width: 300 },
+  { field: "ShiftCode", headerName: "班次(0:夜；1:白；2:中)", width: 255 },
+  { field: "CSgCode", headerName: "钢种", width: 86 },
+  { field: "CPotNo", headerName: "罐号", width: 86 },
+  { field: "CPotState", headerName: "钢包包况 包况", width: 151 },
+  { field: "CZbh1", headerName: "中包号1", width: 112 },
+  { field: "NThick", headerName: "厚度", width: 86 },
+  { field: "NWidth", headerName: "宽度", width: 86 },
+  { field: "CCMIndex", headerName: "包次序号", width: 112 },
+  { field: "Wgt_Remaining", headerName: "浇余（吨）", width: 125 },
+  { field: "Temp_Get", headerName: "温度（℃）索要温度", width: 177 },
+  { field: "CDbdtwd", headerName: "温度（℃）上台温度", width: 177 },
+  { field: "Time_ZhenJing", headerName: "过程时间（min)镇静时间", width: 229 },
+  { field: "Time_Leave_LF", headerName: "过程时间（min)精炼出站时间", width: 255 },
+  { field: "CTimekjsj", headerName: "过程时间（min)开浇", width: 203 },
+  { field: "CTimetjsj", headerName: "过程时间（min)停浇", width: 203 },
+  { field: "CDbzk1", headerName: "是否自开", width: 112 },
+  { field: "Temp_ZJB_1", headerName: "中包温度（℃）1", width: 164 },
+  { field: "Temp_ZJB_2", headerName: "中包温度（℃）2", width: 164 },
+  { field: "Temp_ZJB_3", headerName: "中包温度（℃）3", width: 164 },
+  { field: "Temp_ZJB_4", headerName: "中包温度（℃）4", width: 164 },
+  { field: "N1Lasu1", headerName: "一流拉速/m.min 1", width: 216 },
+  { field: "N1Lasu2", headerName: "一流拉速/m.min 2", width: 216 },
+  { field: "N1Lasu3", headerName: "一流拉速/m.min 3", width: 216 },
+  { field: "N1Lasu4", headerName: "一流拉速/m.min 4", width: 216 },
+  { field: "N2Lasu1", headerName: "二流拉速/m.min 1", width: 216 },
+  { field: "N2Lasu2", headerName: "二流拉速/m.min 2", width: 216 },
+  { field: "N2Lasu3", headerName: "二流拉速/m.min 3", width: 216 },
+  { field: "N2Lasu4", headerName: "二流拉速/m.min 4", width: 216 },
+  { field: "GSCF_ShangGang_N", headerName: "上钢成分 N（上钢）", width: 190 },
+  { field: "GSCF_ShangGang_Als", headerName: "上钢成分 Als（上钢", width: 203 },
+  { field: "GSCF_CP_C", headerName: "成品成分（%）C", width: 164 },
+  { field: "GSCF_CP_Si", headerName: "成品成分（%）Si", width: 177 },
+  { field: "GSCF_CP_Mn", headerName: "成品成分（%）Mn", width: 177 },
+  { field: "GSCF_CP_P", headerName: "成品成分（%）P", width: 164 },
+  { field: "GSCF_CP_S", headerName: "成品成分（%）S", width: 164 },
+  { field: "GSCF_CP_Als", headerName: "成品成分（%）Als", width: 190 },
+  { field: "GSCF_CP_Ca", headerName: "成品成分（%）Ca", width: 177 },
+  { field: "GSCF_CP_Ti", headerName: "成品成分（%）Ti", width: 177 },
+  { field: "GSCF_CP_N", headerName: "成品成分（%）N", width: 164 },
+  { field: "GSCF_CP_Cu", headerName: "成品成分（%）Cu", width: 177 },
+  { field: "GSCF_CP_Cr", headerName: "成品成分（%）Cr", width: 177 },
+  { field: "GSCF_CP_Ni", headerName: "成品成分（%）Ni", width: 177 },
+  { field: "GSCF_CP_Nb", headerName: "成品成分（%）Nb", width: 177 },
+  { field: "Wgt_GaiLvBi", headerName: "钙铝比", width: 99 },
+  { field: "BaoHuZha_Liu1", headerName: "一流保护渣", width: 125 },
+  { field: "BaoHuZha_Liu2", headerName: "二流保护渣", width: 125 },
+  { field: "DaBaoFuGaiJi", headerName: "大包覆盖剂", width: 125 },
+  { field: "ShuiBiaoHao", headerName: "水表号", width: 99 },
+  { field: "BaoHuZha", headerName: "保护渣", width: 99 },
+  { field: "FuGaiJi", headerName: "覆盖剂", width: 99 },
+  { field: "BangSai", headerName: "塞棒", width: 86 },
+  { field: "ShuiKou_Shang", headerName: "上水口", width: 99 },
+  { field: "ShuiKou_JinRuShi", headerName: "浸入式水口", width: 125 },
+  { field: "ShuiKou_Chang", headerName: "长水口", width: 99 },
+  { field: "BackUp", headerName: "备注", width: 86 },
+  { field: "CuiHuo", headerName: "是否投用淬火", width: 138 },
+  { field: "Wgt_GS_MZ", headerName: "钢水量 毛重", width: 138 },
+  { field: "Wgt_GS_PZ", headerName: "钢水量 皮重", width: 138 },
+  { field: "Wgt_GS", headerName: "钢水量 净重", width: 138 },
+  { field: "CUserIdLuzhang", headerName: "炉长id", width: 112 },
+  { field: "CUserIdYiCaoShou", headerName: "一操手Id", width: 125 },
+  { field: "GSCF_CP_Al", headerName: "成品成分（%）Al", width: 177 },
+  { field: "Selected", headerName: "选择", hide: true },
+  { field: "CUserNameLuzhang", headerName: "炉长姓名", width: 112, hide: true },
+  { field: "Creator", headerName: "创建人", width: 99, hide: true },
+  { field: "Tms2010Id", headerName: "Tms2010Id", width: 177, hide: true },
+  { field: "CUserNameYiCaoShou", headerName: "一操手姓名", width: 125, hide: true },
+  { field: "IsEnableEditAndSaveDatas", headerName: "IsEnableEditAndSaveDatas", width: 300, hide: true },
+  { field: "Tms2000Id", headerName: "Tms2000Id", width: 177, hide: true },
+  { field: "Tms2014CcmId", headerName: "Tms2014CcmId", width: 216, hide: true },
+]);
 
 // 可编辑门控（原 Editable = check）；系统/内键列只读；班次/班组列下拉照列头文案
 const RO = new Set(["Id", "Creator", "CreateTime", "LastModifier", "LastModifyTime"]);
@@ -261,8 +263,16 @@ onMounted(() => {
       <label class="shrink-0 text-xs text-muted-foreground">机台</label>
       <InputText :model-value="machineCode" disabled class="w-28 shrink-0" />
       <label class="shrink-0 text-xs text-muted-foreground">日期</label>
-      <DatePicker v-model="dateRange" selection-mode="range" :manual-input="false" date-format="yy-mm-dd" show-time
-        hour-format="24" show-icon class="shrink-0" />
+      <DatePicker
+        v-model="dateRange"
+        selection-mode="range"
+        :manual-input="false"
+        date-format="yy-mm-dd"
+        show-time
+        hour-format="24"
+        show-icon
+        class="shrink-0"
+      />
       <label class="shrink-0 text-xs text-muted-foreground">炉次号</label>
       <InputText v-model="stoveNo" class="w-32 shrink-0" />
       <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="querying" @click="onQuery">
@@ -274,11 +284,27 @@ onMounted(() => {
       <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onShowChart">查看曲线图</Button>
     </div>
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="trackList" :pagination="false"
-        :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-        :loading="querying" @grid-ready="onGridReady" @first-data-rendered="autoSizeOnFirstData"
-        @selection-changed="syncSelectedToData" @cell-value-changed="onCellValueChanged" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="trackList"
+        :pagination="false"
+        :row-selection="{
+          mode: 'multiRow',
+          checkboxes: true,
+          headerCheckbox: true,
+          enableClickSelection: true,
+          enableSelectionWithoutKeys: true,
+        }"
+        :loading="querying"
+        @grid-ready="onGridReady"
+        @first-data-rendered="autoSizeOnFirstData"
+        @selection-changed="syncSelectedToData"
+        @cell-value-changed="onCellValueChanged"
+      />
     </div>
   </div>
 </template>

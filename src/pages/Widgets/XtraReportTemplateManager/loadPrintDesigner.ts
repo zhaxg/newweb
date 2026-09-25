@@ -7,10 +7,7 @@ let loading: Promise<void> | null = null;
 
 export function ensurePrintDesigner(): Promise<void> {
   if (!loading) {
-    loading = Promise.all([
-      import("vue-print-designer"),
-      import("vue-print-designer/style.css"),
-    ]).then(() => undefined);
+    loading = Promise.all([import("vue-print-designer"), import("vue-print-designer/style.css")]).then(() => undefined);
   }
   return loading;
 }

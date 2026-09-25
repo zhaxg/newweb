@@ -56,47 +56,57 @@ type Row = Record<string, unknown>;
 const tagRows = shallowRef<Row[]>([]);
 const chartRows = shallowRef<Row[]>([]);
 
-const tagCols = ref<ColDef[]>([      { field: "Selected", headerName: "选择", hide: true },
-      { field: "CTagNm", headerName: "点位描述", width: 112 },
-      { field: "CMachineName", headerName: "机台名称", width: 112 },
-      { field: "CSmnsTag", headerName: "自动化点位", width: 125 },
-      { field: "Id", headerName: "主键", width: 86, hide: true },
-      { field: "CFactoryCode", headerName: "工厂", width: 86, hide: true },
-      { field: "CFactoryName", headerName: "工厂名称", width: 112, hide: true },
-      { field: "CLineCode", headerName: "产线", width: 86, hide: true },
-      { field: "CLineName", headerName: "产线名称", width: 112, hide: true },
-      { field: "CMachineCode", headerName: "机台编码", width: 112, hide: true },
-      { field: "CStationNo", headerName: "站点编码", width: 112, hide: true },
-      { field: "CStationDesc", headerName: "站点描述", width: 112, hide: true },
-      { field: "CMesTag", headerName: "MES点位", width: 125, hide: true },
-      { field: "CTagType", headerName: "点位类型", width: 112, hide: true },
-      { field: "CTagUsage", headerName: "点位用途", width: 112, hide: true },
-      { field: "CValueStyle", headerName: "数据类型", width: 112, hide: true },
-      { field: "CFunction", headerName: "点位功能", width: 112, hide: true },
-      { field: "CTableField", headerName: "存储位置", width: 112, hide: true },
-      { field: "NEnable", headerName: "是否启用", width: 112, hide: true },
-      { field: "CUnit", headerName: "单片钢坯", width: 112, hide: true },
-      { field: "NCovMom", headerName: "倍率", width: 86, hide: true },
-      { field: "NDecimals", headerName: "修约", width: 86, hide: true },
-      { field: "NAddRecord", headerName: "是否记录日志", width: 138, hide: true },
-      { field: "CBackup", headerName: "备注", width: 86, hide: true },
-      { field: "CTimestamp", headerName: "时间戳", width: 99, hide: true },
-      { field: "Creator", headerName: "创建人", width: 99, hide: true },
-      { field: "CreateTime", headerName: "创建时间", width: 112, hide: true },
-      { field: "LastModifier", headerName: "最后修改人", width: 125, hide: true },
-      { field: "LastModifyTime", headerName: "最后修改时间", width: 138, hide: true },
-      { field: "CSw01", headerName: "备用字段1", width: 125, hide: true },
-      { field: "CSw02", headerName: "备用字段2", width: 125, hide: true },
-      { field: "CSw03", headerName: "备用字段3", width: 125, hide: true },
-      { field: "CSw04", headerName: "备用字段4", width: 125, hide: true },
-      { field: "CSw05", headerName: "备用字段5", width: 125, hide: true },
-      { field: "CSw06", headerName: "备用字段6", width: 125, hide: true }]);
+const tagCols = ref<ColDef[]>([
+  { field: "Selected", headerName: "选择", hide: true },
+  { field: "CTagNm", headerName: "点位描述", width: 112 },
+  { field: "CMachineName", headerName: "机台名称", width: 112 },
+  { field: "CSmnsTag", headerName: "自动化点位", width: 125 },
+  { field: "Id", headerName: "主键", width: 86, hide: true },
+  { field: "CFactoryCode", headerName: "工厂", width: 86, hide: true },
+  { field: "CFactoryName", headerName: "工厂名称", width: 112, hide: true },
+  { field: "CLineCode", headerName: "产线", width: 86, hide: true },
+  { field: "CLineName", headerName: "产线名称", width: 112, hide: true },
+  { field: "CMachineCode", headerName: "机台编码", width: 112, hide: true },
+  { field: "CStationNo", headerName: "站点编码", width: 112, hide: true },
+  { field: "CStationDesc", headerName: "站点描述", width: 112, hide: true },
+  { field: "CMesTag", headerName: "MES点位", width: 125, hide: true },
+  { field: "CTagType", headerName: "点位类型", width: 112, hide: true },
+  { field: "CTagUsage", headerName: "点位用途", width: 112, hide: true },
+  { field: "CValueStyle", headerName: "数据类型", width: 112, hide: true },
+  { field: "CFunction", headerName: "点位功能", width: 112, hide: true },
+  { field: "CTableField", headerName: "存储位置", width: 112, hide: true },
+  { field: "NEnable", headerName: "是否启用", width: 112, hide: true },
+  { field: "CUnit", headerName: "单片钢坯", width: 112, hide: true },
+  { field: "NCovMom", headerName: "倍率", width: 86, hide: true },
+  { field: "NDecimals", headerName: "修约", width: 86, hide: true },
+  { field: "NAddRecord", headerName: "是否记录日志", width: 138, hide: true },
+  { field: "CBackup", headerName: "备注", width: 86, hide: true },
+  { field: "CTimestamp", headerName: "时间戳", width: 99, hide: true },
+  { field: "Creator", headerName: "创建人", width: 99, hide: true },
+  { field: "CreateTime", headerName: "创建时间", width: 112, hide: true },
+  { field: "LastModifier", headerName: "最后修改人", width: 125, hide: true },
+  { field: "LastModifyTime", headerName: "最后修改时间", width: 138, hide: true },
+  { field: "CSw01", headerName: "备用字段1", width: 125, hide: true },
+  { field: "CSw02", headerName: "备用字段2", width: 125, hide: true },
+  { field: "CSw03", headerName: "备用字段3", width: 125, hide: true },
+  { field: "CSw04", headerName: "备用字段4", width: 125, hide: true },
+  { field: "CSw05", headerName: "备用字段5", width: 125, hide: true },
+  { field: "CSw06", headerName: "备用字段6", width: 125, hide: true },
+]);
 // Selected = 勾选标记列（原 CheckEdit + AllowSyncRowStateToCheckboxSelection）：
 // ui-rules §7——原列 hide:true 保留，勾选由 row-selection 复选框呈现，曲线查询读勾选行
 
 // 曲线数据表（批约：曲线图可表格化；列=时间/点位/数值，数据来自 MS3100Dto.Title+ValueList）
 const chartCols: ColDef[] = [
-  { field: "Time", headerName: "时间", width: 180, valueFormatter: (p: ValueFormatterParams) => String(p.value ?? "").replace("T", " ").slice(0, 19) },
+  {
+    field: "Time",
+    headerName: "时间",
+    width: 180,
+    valueFormatter: (p: ValueFormatterParams) =>
+      String(p.value ?? "")
+        .replace("T", " ")
+        .slice(0, 19),
+  },
   { field: "Title", headerName: "点位", width: 220 },
   { field: "Value", headerName: "数值", width: 120 },
 ];
@@ -155,8 +165,7 @@ async function onQueryChart() {
     toast("取值间隔必须大于0！", 2000, "warn");
     return;
   }
-  const points = (tagApi.value?.getSelectedRows() ?? [])
-    .map((r) => String((r as Row).CSmnsTag ?? ""));
+  const points = (tagApi.value?.getSelectedRows() ?? []).map((r) => String((r as Row).CSmnsTag ?? ""));
   if (!points.length) {
     toast("请选择PLC点位进行操作！", 2000, "warn");
     return;
@@ -165,7 +174,13 @@ async function onQueryChart() {
   try {
     const list =
       (await frmMS3100Api.queryLineChartDatas([
-        { TimeRange: { Min: min, Max: max }, Points: points, TimeInterval: ti, IsPopup: false, MachineCode: machineCode.value ?? "" },
+        {
+          TimeRange: { Min: min, Max: max },
+          Points: points,
+          TimeInterval: ti,
+          IsPopup: false,
+          MachineCode: machineCode.value ?? "",
+        },
       ])) ?? [];
     // 原 chartControl1.Series：每个 MS3100Dto.Title 一条折线 → 表格化为 时间/点位/数值 行
     const rows: Row[] = [];
@@ -206,14 +221,34 @@ onMounted(() => {
       <label class="shrink-0 text-xs text-muted-foreground">产线</label>
       <InputText :model-value="lineCode" disabled class="w-24 shrink-0" />
       <label class="shrink-0 text-xs text-muted-foreground">机台</label>
-      <Select v-model="machineCode" :options="machineOptions" option-label="label" option-value="value" show-clear
-        placeholder="请选择" class="w-36 shrink-0" />
+      <Select
+        v-model="machineCode"
+        :options="machineOptions"
+        option-label="label"
+        option-value="value"
+        show-clear
+        placeholder="请选择"
+        class="w-36 shrink-0"
+      />
       <label class="shrink-0 text-xs text-muted-foreground">时间范围</label>
-      <DatePicker v-model="timeRange" selection-mode="range" :manual-input="false" date-format="yy-mm-dd" show-time
-        hour-format="24" show-icon class="shrink-0" />
+      <DatePicker
+        v-model="timeRange"
+        selection-mode="range"
+        :manual-input="false"
+        date-format="yy-mm-dd"
+        show-time
+        hour-format="24"
+        show-icon
+        class="shrink-0"
+      />
       <label class="shrink-0 text-xs text-muted-foreground">取值间隔(S)</label>
-      <Select v-model="interval" :options="intervalOptions" option-label="label" option-value="value"
-        class="w-24 shrink-0" />
+      <Select
+        v-model="interval"
+        :options="intervalOptions"
+        option-label="label"
+        option-value="value"
+        class="w-24 shrink-0"
+      />
       <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="queryTagsLoading" @click="onQueryTags">
         <IconSearch class="h-3 w-3" />查询点位
       </Button>
@@ -229,10 +264,25 @@ onMounted(() => {
           <span class="text-xs font-medium text-muted-foreground">点位信息</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="tagCols" :row-data="tagRows" :pagination="false"
-            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-            :loading="queryTagsLoading" @grid-ready="onTagReady" @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="tagCols"
+            :row-data="tagRows"
+            :pagination="false"
+            :row-selection="{
+              mode: 'multiRow',
+              checkboxes: true,
+              headerCheckbox: true,
+              enableClickSelection: true,
+              enableSelectionWithoutKeys: true,
+            }"
+            :loading="queryTagsLoading"
+            @grid-ready="onTagReady"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
       <SplitterPanel :size="50" :minSize="15" class="flex flex-col overflow-hidden">
@@ -240,9 +290,18 @@ onMounted(() => {
           <span class="ml-auto text-xs font-medium text-muted-foreground">曲线图（数据表）</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="chartCols" :row-data="chartRows" :pagination="false"
-            :loading="queryChartLoading" @grid-ready="onChartReady" @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="chartCols"
+            :row-data="chartRows"
+            :pagination="false"
+            :loading="queryChartLoading"
+            @grid-ready="onChartReady"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
     </Splitter>

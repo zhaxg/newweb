@@ -124,7 +124,9 @@ function onPreviewDblClick() {
 }
 
 onMounted(() => {
-  void loadRooms().then(() => loadMap()).then(() => onQuery());
+  void loadRooms()
+    .then(() => loadMap())
+    .then(() => onQuery());
 });
 </script>
 
@@ -134,8 +136,15 @@ onMounted(() => {
     <div class="grid shrink-0 grid-cols-6 items-center gap-x-3 gap-y-1.5 border-b border-border/60 px-3 py-2">
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">库房</label>
-        <Select v-model="q.roomId" :options="roomOptions" option-label="label" option-value="value" show-clear
-          placeholder="选择库房" class="min-w-0 flex-1" />
+        <Select
+          v-model="q.roomId"
+          :options="roomOptions"
+          option-label="label"
+          option-value="value"
+          show-clear
+          placeholder="选择库房"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">炉号</label>
@@ -159,43 +168,43 @@ onMounted(() => {
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">厚</label>
-          <RangeInput
-            v-model:min="q.thickMin"
-            v-model:max="q.thickMax"
-            :min-fraction-digits="0"
-            :max-fraction-digits="2"
-            class="min-w-0 flex-1"
-          />
+        <RangeInput
+          v-model:min="q.thickMin"
+          v-model:max="q.thickMax"
+          :min-fraction-digits="0"
+          :max-fraction-digits="2"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">宽</label>
-          <RangeInput
-            v-model:min="q.wthMin"
-            v-model:max="q.wthMax"
-            :min-fraction-digits="0"
-            :max-fraction-digits="2"
-            class="min-w-0 flex-1"
-          />
+        <RangeInput
+          v-model:min="q.wthMin"
+          v-model:max="q.wthMax"
+          :min-fraction-digits="0"
+          :max-fraction-digits="2"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">长</label>
-          <RangeInput
-            v-model:min="q.lenMin"
-            v-model:max="q.lenMax"
-            :min-fraction-digits="0"
-            :max-fraction-digits="2"
-            class="min-w-0 flex-1"
-          />
+        <RangeInput
+          v-model:min="q.lenMin"
+          v-model:max="q.lenMax"
+          :min-fraction-digits="0"
+          :max-fraction-digits="2"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">轧制厚</label>
-          <RangeInput
-            v-model:min="q.zzThickMin"
-            v-model:max="q.zzThickMax"
-            :min-fraction-digits="0"
-            :max-fraction-digits="2"
-            class="min-w-0 flex-1"
-          />
+        <RangeInput
+          v-model:min="q.zzThickMin"
+          v-model:max="q.zzThickMax"
+          :min-fraction-digits="0"
+          :max-fraction-digits="2"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">垛位</label>
@@ -221,14 +230,19 @@ onMounted(() => {
 
     <!-- 预览区（原 SpreadsheetControl Dock.Fill，xlsx 模板渲染 → 占位） -->
     <div class="min-h-0 flex-1 overflow-auto bg-muted/30 p-4" @dblclick="onPreviewDblClick">
-      <div class="mx-auto max-w-3xl text-center" :style="{ transform: `scale(${zoom})`, transformOrigin: 'top center' }">
+      <div
+        class="mx-auto max-w-3xl text-center"
+        :style="{ transform: `scale(${zoom})`, transformOrigin: 'top center' }"
+      >
         <IconLayoutGrid class="mx-auto h-10 w-10 text-muted-foreground/60" />
         <p class="mt-3 text-sm text-muted-foreground">库位图预览待接入</p>
         <p class="mt-2 text-xs text-muted-foreground">
-          原窗体以内嵌 SpreadsheetControl 加载库位图 xlsx 模板（TemplateByte）并对垛位单元格着色/加批注；
-          web 侧暂无等价表格渲染设施。双击垛位明细弹窗（FrmYD1010MapViewDetail）同样待接入。
+          原窗体以内嵌 SpreadsheetControl 加载库位图 xlsx 模板（TemplateByte）并对垛位单元格着色/加批注； web
+          侧暂无等价表格渲染设施。双击垛位明细弹窗（FrmYD1010MapViewDetail）同样待接入。
         </p>
-        <p class="mt-4 text-xs text-muted-foreground">当前命中库存 {{ data.length }} 条（接口已接，随模板渲染接入一并展示）</p>
+        <p class="mt-4 text-xs text-muted-foreground">
+          当前命中库存 {{ data.length }} 条（接口已接，随模板渲染接入一并展示）
+        </p>
       </div>
     </div>
   </div>

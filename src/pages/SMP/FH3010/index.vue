@@ -112,8 +112,17 @@ onMounted(() => {
       </div>
       <div class="col-span-2 flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">开始时间</label>
-        <DatePicker v-model="q.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-          show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+        <DatePicker
+          v-model="q.dates"
+          selection-mode="range"
+          :manual-input="false"
+          date-format="yy-mm-dd"
+          show-time
+          hour-format="24"
+          show-icon
+          placeholder="开始 至 结束"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="flex items-center">
         <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="querying" @click="onQuery">
@@ -124,10 +133,19 @@ onMounted(() => {
 
     <!-- 单表（原 gridControl1 Dock.Fill） -->
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="colDefs"
-        :default-col-def="hmxDefaultColDef" :row-data="rows" :locale-text="AG_GRID_LOCALE_CN"
-        :pagination="false" :animate-rows="false" :loading="querying"
-        @grid-ready="onReady" @first-data-rendered="autoSizeOnFirstData" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :column-defs="colDefs"
+        :default-col-def="hmxDefaultColDef"
+        :row-data="rows"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :pagination="false"
+        :animate-rows="false"
+        :loading="querying"
+        @grid-ready="onReady"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
   </div>
 </template>

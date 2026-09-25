@@ -15,14 +15,7 @@ import Checkbox from "primevue/checkbox";
 import InputText from "primevue/inputtext";
 import Splitter from "primevue/splitter";
 import SplitterPanel from "primevue/splitterpanel";
-import {
-  IconDeviceFloppy,
-  IconLocation,
-  IconRefresh,
-  IconTrash,
-  IconWand,
-  IconX,
-} from "@tabler/icons-vue";
+import { IconDeviceFloppy, IconLocation, IconRefresh, IconTrash, IconWand, IconX } from "@tabler/icons-vue";
 import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, GetRowIdParams, GridApi, GridReadyEvent, RowClickedEvent } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
@@ -544,7 +537,13 @@ onBeforeUnmount(disposeUniver);
         <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onBeautify">美化</Button>
 
         <!-- 原 checkEdit1 网格线 / checkEdit2 列头 -->
-        <Checkbox v-model="showGridlines" binary inputId="mapShowGrid" class="ml-2" @update:model-value="onToggleGridlines" />
+        <Checkbox
+          v-model="showGridlines"
+          binary
+          inputId="mapShowGrid"
+          class="ml-2"
+          @update:model-value="onToggleGridlines"
+        />
         <label for="mapShowGrid" class="shrink-0 text-xs text-muted-foreground">网格线</label>
         <Checkbox v-model="showHeadings" binary inputId="mapShowHead" @update:model-value="onToggleHeadings" />
         <label for="mapShowHead" class="shrink-0 text-xs text-muted-foreground">标题</label>
@@ -579,7 +578,13 @@ onBeforeUnmount(disposeUniver);
             :default-col-def="hmxDefaultColDef"
             :row-data="positions"
             :get-row-id="getPosRowId"
-            :row-selection="{ mode: 'multiRow', checkboxes: false, headerCheckbox: false, enableClickSelection: true, enableSelectionWithoutKeys: true }"
+            :row-selection="{
+              mode: 'multiRow',
+              checkboxes: false,
+              headerCheckbox: false,
+              enableClickSelection: true,
+              enableSelectionWithoutKeys: true,
+            }"
             :pagination="false"
             :animate-rows="false"
             :locale-text="AG_GRID_LOCALE_CN"

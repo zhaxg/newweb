@@ -25,13 +25,7 @@ import TabList from "primevue/tablist";
 import TabPanel from "primevue/tabpanel";
 import TabPanels from "primevue/tabpanels";
 import Tabs from "primevue/tabs";
-import {
-  IconCopy,
-  IconRefresh,
-  IconSearch,
-  IconSend,
-  IconSettings,
-} from "@tabler/icons-vue";
+import { IconCopy, IconRefresh, IconSearch, IconSend, IconSettings } from "@tabler/icons-vue";
 import { AgGridVue } from "ag-grid-vue3";
 import type {
   AutoGroupColumnDef,
@@ -44,11 +38,7 @@ import type {
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
 import { NextStrId } from "@/lib/yitIdHelper";
-import {
-  tmp2000Api,
-  type QueryOrdersForDesignInputParameter,
-  type Tmp2000,
-} from "@/api/mes4ddh/smp.swagger";
+import { tmp2000Api, type QueryOrdersForDesignInputParameter, type Tmp2000 } from "@/api/mes4ddh/smp.swagger";
 import {
   qualityDesignApi,
   type JggyEntities,
@@ -305,7 +295,15 @@ const mainTab = ref("jggy");
 const tdTab = ref("comp");
 /* 成分（UCTqmtd13EditView gridView2：17 可见 + 11 hide，<< 因 Editable=false 收着） */
 const td13ColDefs = ref<ColDef[]>([
-  { colId: "xfer-out", headerName: "<<", width: 52, minWidth: 52, hide: true, sortable: false, cellRenderer: xferRenderer },
+  {
+    colId: "xfer-out",
+    headerName: "<<",
+    width: 52,
+    minWidth: 52,
+    hide: true,
+    sortable: false,
+    cellRenderer: xferRenderer,
+  },
   { field: "cItem", headerName: "元素代码", width: 110 },
   { field: "cItemName", headerName: "元素名称", width: 110 },
   { field: "cUnit", headerName: "单位", width: 80 },
@@ -337,7 +335,15 @@ const td13ColDefs = ref<ColDef[]>([
 
 /* 性能（UCTqmtd11EditView gridView2：23 可见 + 12 hide） */
 const td11ColDefs = ref<ColDef[]>([
-  { colId: "xfer-out", headerName: "<<", width: 52, minWidth: 52, hide: true, sortable: false, cellRenderer: xferRenderer },
+  {
+    colId: "xfer-out",
+    headerName: "<<",
+    width: 52,
+    minWidth: 52,
+    hide: true,
+    sortable: false,
+    cellRenderer: xferRenderer,
+  },
   { field: "cTestSubItemName", headerName: "试验子项目名称", width: 150 },
   { field: "cUnit", headerName: "单位", width: 80 },
   { field: "cCtrlMode", headerName: "管控模式", width: 100 },
@@ -376,7 +382,15 @@ const td11ColDefs = ref<ColDef[]>([
 
 /* 取样（UCTqmtd12EditView gridView2：13 可见 + 6 hide） */
 const td12ColDefs = ref<ColDef[]>([
-  { colId: "xfer-out", headerName: "<<", width: 52, minWidth: 52, hide: true, sortable: false, cellRenderer: xferRenderer },
+  {
+    colId: "xfer-out",
+    headerName: "<<",
+    width: 52,
+    minWidth: 52,
+    hide: true,
+    sortable: false,
+    cellRenderer: xferRenderer,
+  },
   { field: "cTestItemName", headerName: "试验项目名称", width: 150 },
   { field: "cSmpThick", headerName: "取样规格", width: 110 },
   { field: "cSmpLength", headerName: "取样长度", width: 110 },
@@ -472,10 +486,7 @@ function applyProcNode(node: ProcNode | null) {
     return;
   }
   const idxes = allIdx.value.filter(
-    (x) =>
-      x.proc === node.proc &&
-      x.line === line &&
-      (node.grp == null || x.idxGrp === node.grp),
+    (x) => x.proc === node.proc && x.line === line && (node.grp == null || x.idxGrp === node.grp),
   );
   idxRows.value = idxes;
   idxApi.value?.setGridOption("rowData", idxes);
@@ -494,9 +505,7 @@ function applyProcNode(node: ProcNode | null) {
 }
 
 function buildTree() {
-  const t3s = (jggy.value?.tqmjg03s ?? [])
-    .slice()
-    .sort((a, b) => (a.nSeq ?? 0) - (b.nSeq ?? 0));
+  const t3s = (jggy.value?.tqmjg03s ?? []).slice().sort((a, b) => (a.nSeq ?? 0) - (b.nSeq ?? 0));
   const line = jggy.value?.tqmjg01?.cLineCode ?? "";
   const out: ProcNode[] = [];
   const seen = new Set<string>();
@@ -877,7 +886,13 @@ onMounted(async () => {
             :default-col-def="hmxDefaultColDef"
             :column-defs="colDefs"
             :row-data="rows"
-            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
+            :row-selection="{
+              mode: 'multiRow',
+              checkboxes: true,
+              headerCheckbox: true,
+              enableClickSelection: true,
+              enableSelectionWithoutKeys: true,
+            }"
             :suppress-column-virtualisation="true"
             :pagination="false"
             :animate-rows="false"
@@ -949,7 +964,13 @@ onMounted(async () => {
                           :default-col-def="hmxDefaultColDef"
                           :column-defs="idxColDefs"
                           :row-data="idxRows"
-                          :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
+                          :row-selection="{
+                            mode: 'multiRow',
+                            checkboxes: true,
+                            headerCheckbox: true,
+                            enableClickSelection: true,
+                            enableSelectionWithoutKeys: true,
+                          }"
                           :suppress-column-virtualisation="true"
                           :pagination="false"
                           :animate-rows="false"
@@ -968,7 +989,13 @@ onMounted(async () => {
                           :default-col-def="hmxDefaultColDef"
                           :column-defs="valColDefs"
                           :row-data="valRows"
-                          :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
+                          :row-selection="{
+                            mode: 'multiRow',
+                            checkboxes: true,
+                            headerCheckbox: true,
+                            enableClickSelection: true,
+                            enableSelectionWithoutKeys: true,
+                          }"
                           :suppress-column-virtualisation="true"
                           :pagination="false"
                           :animate-rows="false"
@@ -1004,7 +1031,13 @@ onMounted(async () => {
                         :default-col-def="hmxDefaultColDef"
                         :column-defs="td13ColDefs"
                         :row-data="td13Rows"
-                        :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
+                        :row-selection="{
+                          mode: 'multiRow',
+                          checkboxes: true,
+                          headerCheckbox: true,
+                          enableClickSelection: true,
+                          enableSelectionWithoutKeys: true,
+                        }"
                         :suppress-column-virtualisation="true"
                         :pagination="false"
                         :animate-rows="false"
@@ -1022,7 +1055,13 @@ onMounted(async () => {
                         :default-col-def="hmxDefaultColDef"
                         :column-defs="td11ColDefs"
                         :row-data="td11Rows"
-                        :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
+                        :row-selection="{
+                          mode: 'multiRow',
+                          checkboxes: true,
+                          headerCheckbox: true,
+                          enableClickSelection: true,
+                          enableSelectionWithoutKeys: true,
+                        }"
                         :suppress-column-virtualisation="true"
                         :pagination="false"
                         :animate-rows="false"
@@ -1040,7 +1079,13 @@ onMounted(async () => {
                         :default-col-def="hmxDefaultColDef"
                         :column-defs="td12ColDefs"
                         :row-data="td12Rows"
-                        :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
+                        :row-selection="{
+                          mode: 'multiRow',
+                          checkboxes: true,
+                          headerCheckbox: true,
+                          enableClickSelection: true,
+                          enableSelectionWithoutKeys: true,
+                        }"
                         :suppress-column-virtualisation="true"
                         :pagination="false"
                         :animate-rows="false"

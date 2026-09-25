@@ -6,12 +6,7 @@
  */
 import { computed, nextTick, ref, watch } from "vue";
 import Dialog from "primevue/dialog";
-import {
-  PRINT_SCHEMAS,
-  buildAvailableVariables,
-  buildSamplePayload,
-  findPrintSchema,
-} from "./printSchemas";
+import { PRINT_SCHEMAS, buildAvailableVariables, buildSamplePayload, findPrintSchema } from "./printSchemas";
 import type { PrintTemplateRow } from "@/api/mes4ddh/printReport";
 import { printDesignerCloudFetch, setPrintDesignerActiveSchema } from "./printDesignerCloudMock";
 import { ensurePrintDesigner } from "./loadPrintDesigner";
@@ -54,9 +49,13 @@ async function bootstrap() {
   await applyTemplateToDesigner();
 }
 
-watch(active, async (on) => {
-  if (on) await bootstrap();
-}, { immediate: true });
+watch(
+  active,
+  async (on) => {
+    if (on) await bootstrap();
+  },
+  { immediate: true },
+);
 
 watch(
   () => [props.template?.id, props.initialSchema, props.template?.cDataType] as const,
@@ -208,10 +207,7 @@ async function customizeFloatingPanel(el: any): Promise<void> {
 
   const variablesTab = [...root.querySelectorAll("button")].find((b) => {
     const text = b.textContent ?? "";
-    return (
-      b.classList.contains("flex-1") &&
-      (text.includes("可用变量") || /Available Variables/i.test(text))
-    );
+    return b.classList.contains("flex-1") && (text.includes("可用变量") || /Available Variables/i.test(text));
   });
   if (variablesTab instanceof HTMLElement) variablesTab.click();
 
@@ -228,11 +224,7 @@ function onClose() {
   <!-- 裸设计器：无自定义顶栏、无右侧字段树 -->
   <div v-if="inline" class="relative h-full w-full overflow-hidden">
     <!-- @vue-ignore print-designer 为 Web Component -->
-    <print-designer
-      id="print-template-designer"
-      ref="designerRef"
-      class="absolute inset-0 block h-full w-full"
-    />
+    <print-designer id="print-template-designer" ref="designerRef" class="absolute inset-0 block h-full w-full" />
   </div>
 
   <Dialog
@@ -247,11 +239,7 @@ function onClose() {
   >
     <div class="relative h-full w-full overflow-hidden">
       <!-- @vue-ignore print-designer 为 Web Component -->
-      <print-designer
-        id="print-template-designer"
-        ref="designerRef"
-        class="absolute inset-0 block h-full w-full"
-      />
+      <print-designer id="print-template-designer" ref="designerRef" class="absolute inset-0 block h-full w-full" />
     </div>
   </Dialog>
 </template>

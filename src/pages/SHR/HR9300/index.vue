@@ -58,7 +58,9 @@ const input = reactive({
 const rows = shallowRef<QueryHR9300Dto[]>([]);
 const loading = ref(false);
 const mainApi = ref<GridApi | null>(null);
-function onMainReady(e: GridReadyEvent) { mainApi.value = e.api; }
+function onMainReady(e: GridReadyEvent) {
+  mainApi.value = e.api;
+}
 
 const mainColDefs: ColDef[] = [
   /*  { colId: "cBatchOrder", field: "cBatchOrder", headerName: "组批号", width: 172 },
@@ -138,7 +140,12 @@ function onRowDblClick() {
 }
 
 /* ---------- 汇总配置：外层 5 页签 × 内层页签 ---------- */
-type HzItem = { label: string; fn?: (d?: QueryHR9300Dto[]) => Promise<QueryHR9300HzDto[]>; cols: ColDef[]; src: number };
+type HzItem = {
+  label: string;
+  fn?: (d?: QueryHR9300Dto[]) => Promise<QueryHR9300HzDto[]>;
+  cols: ColDef[];
+  src: number;
+};
 const hzCols: ColDef[][] = [
   /*[
   { colId: "nQua", field: "nQua", headerName: "块数", width: 112 },
@@ -356,7 +363,9 @@ const hzCols: ColDef[][] = [
 ];
 const hzRows = ref<unknown[][]>(hzCols.map(() => []));
 const hzApis = ref<(GridApi | null)[]>(hzCols.map(() => null));
-function onHzReady(src: number, e: GridReadyEvent) { hzApis.value[src] = e.api; }
+function onHzReady(src: number, e: GridReadyEvent) {
+  hzApis.value[src] = e.api;
+}
 
 const outerTabs: { label: string; items: HzItem[] }[] = [
   {
@@ -474,8 +483,17 @@ function onInnerChange(oi: number, v: string | number) {
       </div>
       <div class="col-span-2 flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">作业时间</label>
-        <DatePicker v-model="input.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-          show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+        <DatePicker
+          v-model="input.dates"
+          selection-mode="range"
+          :manual-input="false"
+          date-format="yy-mm-dd"
+          show-time
+          hour-format="24"
+          show-icon
+          placeholder="开始 至 结束"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="col-span-3 flex min-w-0 items-center gap-1">
         <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="loading" @click="query">
@@ -490,10 +508,20 @@ function onInnerChange(oi: number, v: string | number) {
         <span class="text-xs font-medium text-muted-foreground">工艺判定明细</span>
       </div>
       <div class="min-h-0 flex-1 overflow-hidden">
-        <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-          :default-col-def="hmxDefaultColDef" :column-defs="mainColDefs" :row-data="rows" :pagination="false"
-          :animate-rows="false" :loading="loading" @grid-ready="onMainReady"
-          @row-double-clicked="onRowDblClick" @first-data-rendered="autoSizeOnFirstData" />
+        <AgGridVue
+          class="hmx-ag-grid h-full w-full"
+          :theme="theme"
+          :locale-text="AG_GRID_LOCALE_CN"
+          :default-col-def="hmxDefaultColDef"
+          :column-defs="mainColDefs"
+          :row-data="rows"
+          :pagination="false"
+          :animate-rows="false"
+          :loading="loading"
+          @grid-ready="onMainReady"
+          @row-double-clicked="onRowDblClick"
+          @first-data-rendered="autoSizeOnFirstData"
+        />
       </div>
     </div>
 
@@ -514,11 +542,19 @@ function onInnerChange(oi: number, v: string | number) {
               </TabList>
               <TabPanels class="min-h-0 flex-1">
                 <TabPanel v-for="(it, ii) in o.items" :key="ii" :value="ii" class="h-full p-0">
-                  <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                    :default-col-def="hmxDefaultColDef" :column-defs="it.cols" :row-data="hzRows[it.src]"
-                    :pagination="false" :animate-rows="false" :loading="hzLoading"
+                  <AgGridVue
+                    class="hmx-ag-grid h-full w-full"
+                    :theme="theme"
+                    :locale-text="AG_GRID_LOCALE_CN"
+                    :default-col-def="hmxDefaultColDef"
+                    :column-defs="it.cols"
+                    :row-data="hzRows[it.src]"
+                    :pagination="false"
+                    :animate-rows="false"
+                    :loading="hzLoading"
                     @grid-ready="(e: GridReadyEvent) => onHzReady(it.src, e)"
-                    @first-data-rendered="autoSizeOnFirstData" />
+                    @first-data-rendered="autoSizeOnFirstData"
+                  />
                 </TabPanel>
               </TabPanels>
             </Tabs>

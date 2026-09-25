@@ -156,11 +156,27 @@ async function onConfirm() {
 
     <!-- 单表（原 gridControl1 Dock.Fill） -->
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="colDefs"
-        :default-col-def="hmxDefaultColDef" :row-data="trackList" :locale-text="AG_GRID_LOCALE_CN"
-        :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-        :pagination="false" :animate-rows="false" :loading="querying"
-        @grid-ready="onReady" @first-data-rendered="autoSizeOnFirstData" @cell-value-changed="refresh" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :column-defs="colDefs"
+        :default-col-def="hmxDefaultColDef"
+        :row-data="trackList"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :row-selection="{
+          mode: 'multiRow',
+          checkboxes: true,
+          headerCheckbox: true,
+          enableClickSelection: true,
+          enableSelectionWithoutKeys: true,
+        }"
+        :pagination="false"
+        :animate-rows="false"
+        :loading="querying"
+        @grid-ready="onReady"
+        @first-data-rendered="autoSizeOnFirstData"
+        @cell-value-changed="refresh"
+      />
     </div>
   </div>
 </template>

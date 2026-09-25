@@ -138,11 +138,25 @@ onMounted(() => {
     <!-- stackPanel1：时间 起 ~ 止 / 钢种 + 查询/打印（顺序照 Controls.Add） -->
     <div class="flex h-9 shrink-0 items-center gap-1 overflow-x-auto border-b border-border/60 px-2">
       <label class="shrink-0 text-xs text-muted-foreground">时间</label>
-      <DatePicker v-model="dtS" :manual-input="false" date-format="yy-mm-dd HH:mm:ss" show-time hour-format="24"
-        show-icon class="shrink-0" />
+      <DatePicker
+        v-model="dtS"
+        :manual-input="false"
+        date-format="yy-mm-dd HH:mm:ss"
+        show-time
+        hour-format="24"
+        show-icon
+        class="shrink-0"
+      />
       <label class="shrink-0 text-xs text-muted-foreground">~</label>
-      <DatePicker v-model="dtE" :manual-input="false" date-format="yy-mm-dd HH:mm:ss" show-time hour-format="24"
-        show-icon class="shrink-0" />
+      <DatePicker
+        v-model="dtE"
+        :manual-input="false"
+        date-format="yy-mm-dd HH:mm:ss"
+        show-time
+        hour-format="24"
+        show-icon
+        class="shrink-0"
+      />
       <label class="shrink-0 text-xs text-muted-foreground">钢种</label>
       <InputText v-model="sgCode" placeholder="钢种" class="w-32 shrink-0" />
       <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="querying" @click="query">
@@ -157,10 +171,25 @@ onMounted(() => {
     </div>
 
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows" :pagination="false"
-        :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-        :loading="querying" @grid-ready="onGridReady" @first-data-rendered="autoSizeOnFirstData" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="rows"
+        :pagination="false"
+        :row-selection="{
+          mode: 'multiRow',
+          checkboxes: true,
+          headerCheckbox: true,
+          enableClickSelection: true,
+          enableSelectionWithoutKeys: true,
+        }"
+        :loading="querying"
+        @grid-ready="onGridReady"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
   </div>
 </template>

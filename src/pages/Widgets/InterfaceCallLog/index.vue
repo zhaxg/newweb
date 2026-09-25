@@ -48,7 +48,9 @@ const colDefs: ColDef[] = [
   { field: "MessageId", headerName: "消息ID", width: 89 },
 ];
 
-function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
+function onGridReady(e: GridReadyEvent) {
+  gridApi.value = e.api;
+}
 
 function onSelectionChanged(e: SelectionChangedEvent) {
   selected.value = e.api.getSelectedRows()[0] ?? null;
@@ -56,10 +58,18 @@ function onSelectionChanged(e: SelectionChangedEvent) {
 
 async function onQuery() {
   querying.value = true;
-  try { rows.value = []; } finally { querying.value = false; }
+  try {
+    rows.value = [];
+  } finally {
+    querying.value = false;
+  }
 }
-function onReCall() { /* TODO */ }
-function onSetting() { /* TODO */ }
+function onReCall() {
+  /* TODO */
+}
+function onSetting() {
+  /* TODO */
+}
 </script>
 
 <template>
@@ -69,14 +79,28 @@ function onSetting() { /* TODO */ }
       <div class="grid grid-cols-6 items-center gap-x-3 gap-y-1.5">
         <div class="col-span-2 flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">调用时间</label>
-          <DatePicker v-model="query.dates" selection-mode="range" :manual-input="false"
-            date-format="yy-mm-dd" show-time hour-format="24" show-icon placeholder="开始 至 结束"
-            class="min-w-0 flex-1" />
+          <DatePicker
+            v-model="query.dates"
+            selection-mode="range"
+            :manual-input="false"
+            date-format="yy-mm-dd"
+            show-time
+            hour-format="24"
+            show-icon
+            placeholder="开始 至 结束"
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="col-span-2 flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">接口名称</label>
-          <Select v-model="query.interfaceName" :options="interfaceNames" filter show-clear
-            placeholder="请选择" class="min-w-0 flex-1" />
+          <Select
+            v-model="query.interfaceName"
+            :options="interfaceNames"
+            filter
+            show-clear
+            placeholder="请选择"
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="col-span-2 flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">关键字</label>
@@ -93,20 +117,26 @@ function onSetting() { /* TODO */ }
       <Button text class="shrink-0 whitespace-nowrap" @click="onReCall">
         <IconRefresh class="h-3 w-3" />重试接口
       </Button>
-      <Button text class="shrink-0 whitespace-nowrap" @click="onSetting">
-        <IconSettings class="h-3 w-3" />配置
-      </Button>
+      <Button text class="shrink-0 whitespace-nowrap" @click="onSetting"> <IconSettings class="h-3 w-3" />配置 </Button>
     </div>
 
     <!-- 主体（对应 splitContainerControl1）：左=日志表格，右=输入/输出/异常 3 页签（MemoEdit 只读） -->
     <Splitter class="min-h-0 flex-1">
       <SplitterPanel :size="56" :minSize="30" class="flex flex-col overflow-hidden">
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows"
-            row-selection="single" :loading="querying"
-            @grid-ready="onGridReady" @selection-changed="onSelectionChanged"
-            @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="colDefs"
+            :row-data="rows"
+            row-selection="single"
+            :loading="querying"
+            @grid-ready="onGridReady"
+            @selection-changed="onSelectionChanged"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
       <SplitterPanel :size="44" :minSize="20" class="flex flex-col overflow-hidden">
@@ -120,13 +150,19 @@ function onSetting() { /* TODO */ }
           </div>
           <TabPanels class="min-h-0 flex-1 overflow-hidden !p-0">
             <TabPanel value="input" class="h-full overflow-auto">
-              <pre class="m-0 whitespace-pre-wrap break-all p-3 font-mono text-xs leading-5">{{ selected?.InputJson ?? "" }}</pre>
+              <pre class="m-0 whitespace-pre-wrap break-all p-3 font-mono text-xs leading-5">{{
+                selected?.InputJson ?? ""
+              }}</pre>
             </TabPanel>
             <TabPanel value="out" class="h-full overflow-auto">
-              <pre class="m-0 whitespace-pre-wrap break-all p-3 font-mono text-xs leading-5">{{ selected?.OutJson ?? "" }}</pre>
+              <pre class="m-0 whitespace-pre-wrap break-all p-3 font-mono text-xs leading-5">{{
+                selected?.OutJson ?? ""
+              }}</pre>
             </TabPanel>
             <TabPanel value="error" class="h-full overflow-auto">
-              <pre class="m-0 whitespace-pre-wrap break-all p-3 font-mono text-xs leading-5">{{ selected?.ErrorMsg ?? "" }}</pre>
+              <pre class="m-0 whitespace-pre-wrap break-all p-3 font-mono text-xs leading-5">{{
+                selected?.ErrorMsg ?? ""
+              }}</pre>
             </TabPanel>
           </TabPanels>
         </Tabs>

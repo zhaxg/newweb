@@ -27,7 +27,10 @@ const loaded = ref<Record<string, boolean>>({});
         sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-downloads"
         @load="loaded[frame.meta.pageId as string] = true"
       />
-      <div v-if="!loaded[frame.meta.pageId as string]" class="pointer-events-none absolute inset-0 flex items-center justify-center">
+      <div
+        v-if="!loaded[frame.meta.pageId as string]"
+        class="pointer-events-none absolute inset-0 flex items-center justify-center"
+      >
         <IconLoader class="h-5 w-5 animate-spin text-muted-foreground" />
       </div>
     </div>

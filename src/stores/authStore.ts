@@ -45,16 +45,9 @@ export const useAuthStore = defineStore("auth", () => {
   const session = ref<AuthSession | null>(loadSession());
   const history = ref<LoginHistory>(loadHistory());
 
-  watch(
-    session,
-    (value) => writeJson(SESSION_KEY, value ?? undefined),
-  );
+  watch(session, (value) => writeJson(SESSION_KEY, value ?? undefined));
 
-  watch(
-    history,
-    (value) => writeJson(HISTORY_KEY, value),
-    { deep: true },
-  );
+  watch(history, (value) => writeJson(HISTORY_KEY, value), { deep: true });
 
   function findHistoryEntry(userId: string): LoginUserEntry | undefined {
     return history.value.users.find((u) => u.userId === userId);

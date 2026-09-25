@@ -25,7 +25,10 @@ const kebab = (name: string) => name.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLo
 
 /** kebab → Pascal：chart-pie → ChartPie */
 function pascalize(name: string) {
-  return name.split("-").map((s) => s.charAt(0).toUpperCase() + s.slice(1)).join("");
+  return name
+    .split("-")
+    .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+    .join("");
 }
 
 /** 兼容三种写法：Pascal("ChartPie") / kebab("chart-pie") / iconify 类名("icon-[tabler--chart-pie]")，含带 Icon 前缀 */

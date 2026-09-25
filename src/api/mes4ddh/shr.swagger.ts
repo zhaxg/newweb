@@ -169,10 +169,7 @@ export enum YesNo {
 
 /* ---------- 类型 ---------- */
 
-
-export interface BooleanStringValueTuple {
-
-}
+export interface BooleanStringValueTuple {}
 export interface ChyThickItemDto {
   pos?: number;
   valueMin?: number | null;
@@ -3791,9 +3788,6 @@ export interface ZzwdItemDto {
 
 /* ---------- 请求 ---------- */
 
-
-
-
 /** 修磨作业查询入参（原 DtoQueryThr3800SlabInfo，FrmHR3800） */
 export interface DtoQueryThr3800SlabInfo {
   dProTime?: TimeRange;
@@ -3857,1718 +3851,1202 @@ export interface Thr3800 {
 
 export const bxApi = {
   addP48j03(data?: DtoP48J03[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.Interface.Services.BX/bx/addP48j03",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.Interface.Services.BX/bx/addP48j03", {
+      method: "post",
+      data,
+    });
   },
   test() {
-    return requestClient.request<any>(
-      "/dDH.Service.Interface.Services.BX/bx/test",
-      {
-        method: "post",
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.Interface.Services.BX/bx/test", {
+      method: "post",
+    });
   },
   getUnHandleHRLog() {
-    return requestClient.request<ThrLog[]>(
-      "/dDH.Service.Interface.Services.BX/bx/getUnHandleHRLog",
-      {
-        method: "post",
-      },
-    );
+    return requestClient.request<ThrLog[]>("/dDH.Service.Interface.Services.BX/bx/getUnHandleHRLog", {
+      method: "post",
+    });
   },
   handleHRLog(data?: ThrLog) {
-    return requestClient.request<any>(
-      "/dDH.Service.Interface.Services.BX/bx/handleHRLog",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.Interface.Services.BX/bx/handleHRLog", {
+      method: "post",
+      data,
+    });
   },
   receiveL2ME02Mtrl(data?: TiL2me02) {
-    return requestClient.request<BooleanStringValueTuple>(
-      "/dDH.Service.Interface.Services.BX/bx/receiveL2ME02Mtrl",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<BooleanStringValueTuple>("/dDH.Service.Interface.Services.BX/bx/receiveL2ME02Mtrl", {
+      method: "post",
+      data,
+    });
   },
 };
 
 export const dM1000Api = {
   queryBear(data?: DtoQueryTdm1000) {
-    return requestClient.request<Tdm1000[]>(
-      "/dDH.Service.SHR.Services.WorkPiece/dM1000/queryBear",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Tdm1000[]>("/dDH.Service.SHR.Services.WorkPiece/dM1000/queryBear", {
+      method: "post",
+      data,
+    });
   },
   queryBearBox(data?: DtoQueryTdm1000) {
-    return requestClient.request<Tdm1010[]>(
-      "/dDH.Service.SHR.Services.WorkPiece/dM1000/queryBearBox",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Tdm1010[]>("/dDH.Service.SHR.Services.WorkPiece/dM1000/queryBearBox", {
+      method: "post",
+      data,
+    });
   },
   tmd1000Add(data?: Tdm1000) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services.WorkPiece/dM1000/tmd1000Add",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services.WorkPiece/dM1000/tmd1000Add", {
+      method: "post",
+      data,
+    });
   },
   tmd1010Add(data?: Tdm1010) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services.WorkPiece/dM1000/tmd1010Add",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services.WorkPiece/dM1000/tmd1010Add", {
+      method: "post",
+      data,
+    });
   },
   tdm1000Del(data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services.WorkPiece/dM1000/tdm1000Del",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services.WorkPiece/dM1000/tdm1000Del", {
+      method: "post",
+      data,
+    });
   },
   tdm1010Del(data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services.WorkPiece/dM1000/tdm1010Del",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services.WorkPiece/dM1000/tdm1010Del", {
+      method: "post",
+      data,
+    });
   },
   tdm1000Repair(data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services.WorkPiece/dM1000/tdm1000Repair",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services.WorkPiece/dM1000/tdm1000Repair", {
+      method: "post",
+      data,
+    });
   },
   tdm1010Repair(data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services.WorkPiece/dM1000/tdm1010Repair",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services.WorkPiece/dM1000/tdm1010Repair", {
+      method: "post",
+      data,
+    });
   },
   tdm1000Finish(data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services.WorkPiece/dM1000/tdm1000Finish",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services.WorkPiece/dM1000/tdm1000Finish", {
+      method: "post",
+      data,
+    });
   },
   tdm1010Finish(data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services.WorkPiece/dM1000/tdm1010Finish",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services.WorkPiece/dM1000/tdm1010Finish", {
+      method: "post",
+      data,
+    });
   },
   tdm1000Scrap(data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services.WorkPiece/dM1000/tdm1000Scrap",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services.WorkPiece/dM1000/tdm1000Scrap", {
+      method: "post",
+      data,
+    });
   },
   tdm1010Scrap(data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services.WorkPiece/dM1000/tdm1010Scrap",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services.WorkPiece/dM1000/tdm1010Scrap", {
+      method: "post",
+      data,
+    });
   },
   installBear(bearNo?: string, bearBoxNo?: string) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services.WorkPiece/dM1000/installBear",
-      {
-        method: "post",
-        params: { bearNo, bearBoxNo },
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services.WorkPiece/dM1000/installBear", {
+      method: "post",
+      params: { bearNo, bearBoxNo },
+    });
   },
   outBear(data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services.WorkPiece/dM1000/outBear",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services.WorkPiece/dM1000/outBear", {
+      method: "post",
+      data,
+    });
   },
 };
 
 export const dM1020Api = {
   queryTdm1020s(data?: DtoQueryTdm1020) {
-    return requestClient.request<Tdm1020[]>(
-      "/dDH.Service.SHR.Services.WorkPiece/dM1020/queryTdm1020s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Tdm1020[]>("/dDH.Service.SHR.Services.WorkPiece/dM1020/queryTdm1020s", {
+      method: "post",
+      data,
+    });
   },
   addTdm1020(data?: Tdm1020) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services.WorkPiece/dM1020/addTdm1020",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services.WorkPiece/dM1020/addTdm1020", {
+      method: "post",
+      data,
+    });
   },
   delTdm1020(data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services.WorkPiece/dM1020/delTdm1020",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services.WorkPiece/dM1020/delTdm1020", {
+      method: "post",
+      data,
+    });
   },
   resetTdm1020(data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services.WorkPiece/dM1020/resetTdm1020",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services.WorkPiece/dM1020/resetTdm1020", {
+      method: "post",
+      data,
+    });
   },
   scrapTdm1020(data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services.WorkPiece/dM1020/scrapTdm1020",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services.WorkPiece/dM1020/scrapTdm1020", {
+      method: "post",
+      data,
+    });
   },
   installRoller(data?: DtoTdm1020InstallRoller) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services.WorkPiece/dM1020/installRoller",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services.WorkPiece/dM1020/installRoller", {
+      method: "post",
+      data,
+    });
   },
   outBear(cId?: string) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services.WorkPiece/dM1020/outBear",
-      {
-        method: "post",
-        params: { cId },
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services.WorkPiece/dM1020/outBear", {
+      method: "post",
+      params: { cId },
+    });
   },
   queryBearBox(cId?: string) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services.WorkPiece/dM1020/queryBearBox",
-      {
-        method: "post",
-        params: { cId },
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services.WorkPiece/dM1020/queryBearBox", {
+      method: "post",
+      params: { cId },
+    });
   },
   queryWorkBox(UpOrDown?: string) {
-    return requestClient.request<Tdm1010[]>(
-      "/dDH.Service.SHR.Services.WorkPiece/dM1020/queryWorkBox",
-      {
-        method: "post",
-        params: { UpOrDown },
-      },
-    );
+    return requestClient.request<Tdm1010[]>("/dDH.Service.SHR.Services.WorkPiece/dM1020/queryWorkBox", {
+      method: "post",
+      params: { UpOrDown },
+    });
   },
   queryTranBox(UpOrDown?: string) {
-    return requestClient.request<Tdm1010[]>(
-      "/dDH.Service.SHR.Services.WorkPiece/dM1020/queryTranBox",
-      {
-        method: "post",
-        params: { UpOrDown },
-      },
-    );
+    return requestClient.request<Tdm1010[]>("/dDH.Service.SHR.Services.WorkPiece/dM1020/queryTranBox", {
+      method: "post",
+      params: { UpOrDown },
+    });
   },
   sendBx(cId?: string) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services.WorkPiece/dM1020/sendBx",
-      {
-        method: "post",
-        params: { cId },
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services.WorkPiece/dM1020/sendBx", {
+      method: "post",
+      params: { cId },
+    });
   },
 };
 
 export const dM1030Api = {
   queryTdm1030(data?: DtoQueryTdm1030) {
-    return requestClient.request<Tdm1030[]>(
-      "/dDH.Service.SHR.Services.WorkPiece/dM1030/queryTdm1030",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Tdm1030[]>("/dDH.Service.SHR.Services.WorkPiece/dM1030/queryTdm1030", {
+      method: "post",
+      data,
+    });
   },
   saveTdm1030Changes(data?: Tdm1030SaveChangesData) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services.WorkPiece/dM1030/saveTdm1030Changes",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services.WorkPiece/dM1030/saveTdm1030Changes", {
+      method: "post",
+      data,
+    });
   },
 };
 
 export const dM1040Api = {
   queryTdm1040s(data?: DtoQueryTdm1030) {
-    return requestClient.request<Tdm1040[]>(
-      "/dDH.Service.SHR.Services.WorkPiece/dM1040/queryTdm1040s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Tdm1040[]>("/dDH.Service.SHR.Services.WorkPiece/dM1040/queryTdm1040s", {
+      method: "post",
+      data,
+    });
   },
   updateTdm1040(data?: Tdm1040SaveChangesData) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services.WorkPiece/dM1040/updateTdm1040",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services.WorkPiece/dM1040/updateTdm1040", {
+      method: "post",
+      data,
+    });
   },
 };
 
 export const hR1000Api = {
   queryList(key?: string) {
-    return requestClient.request<Thr1000[]>(
-      "/dDH.Service.SHR.Services/hR1000/queryList",
-      {
-        method: "post",
-        params: { key },
-      },
-    );
+    return requestClient.request<Thr1000[]>("/dDH.Service.SHR.Services/hR1000/queryList", {
+      method: "post",
+      params: { key },
+    });
   },
   saveChange(data?: Thr1000SaveChangesData) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR1000/saveChange",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR1000/saveChange", {
+      method: "post",
+      data,
+    });
   },
   getWgt(data?: QueryThr1000Dto) {
-    return requestClient.request<number>(
-      "/dDH.Service.SHR.Services/hR1000/getWgt",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<number>("/dDH.Service.SHR.Services/hR1000/getWgt", {
+      method: "post",
+      data,
+    });
   },
 };
 
 export const hR2000Api = {
   queryTmp2020s(data?: DtoQueryThr2000) {
-    return requestClient.request<Tmp2020[]>(
-      "/dDH.Service.SHR.Services/hR2000/queryTmp2020s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Tmp2020[]>("/dDH.Service.SHR.Services/hR2000/queryTmp2020s", {
+      method: "post",
+      data,
+    });
   },
   queryThr2000s(data?: DtoQueryThr2000) {
-    return requestClient.request<Thr2000[]>(
-      "/dDH.Service.SHR.Services/hR2000/queryThr2000s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Thr2000[]>("/dDH.Service.SHR.Services/hR2000/queryThr2000s", {
+      method: "post",
+      data,
+    });
   },
   closeThr2000s(cRemark?: string, data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR2000/closeThr2000s",
-      {
-        method: "post",
-        params: { cRemark },
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR2000/closeThr2000s", {
+      method: "post",
+      params: { cRemark },
+      data,
+    });
   },
   addPlans(cLineCode?: string, cRemark?: string, data?: DtoAddPlans[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR2000/addPlans",
-      {
-        method: "post",
-        params: { cLineCode, cRemark },
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR2000/addPlans", {
+      method: "post",
+      params: { cLineCode, cRemark },
+      data,
+    });
   },
   generatePlanNo(cLineCode?: string) {
-    return requestClient.request<string>(
-      "/dDH.Service.SHR.Services/hR2000/generatePlanNo",
-      {
-        method: "post",
-        params: { cLineCode },
-      },
-    );
+    return requestClient.request<string>("/dDH.Service.SHR.Services/hR2000/generatePlanNo", {
+      method: "post",
+      params: { cLineCode },
+    });
   },
   queryThr2000Dtos(data?: DtoQueryThr2000) {
-    return requestClient.request<Thr2000Dto[]>(
-      "/dDH.Service.SHR.Services/hR2000/queryThr2000Dtos",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Thr2000Dto[]>("/dDH.Service.SHR.Services/hR2000/queryThr2000Dtos", {
+      method: "post",
+      data,
+    });
   },
   updateThr2000(cId?: string) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR2000/updateThr2000",
-      {
-        method: "post",
-        params: { cId },
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR2000/updateThr2000", {
+      method: "post",
+      params: { cId },
+    });
   },
   importHR2000(data?: ImportHR2000Dto[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR2000/importHR2000",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR2000/importHR2000", {
+      method: "post",
+      data,
+    });
   },
 };
 
 export const hR3000Api = {
   queryThr3000s(data?: DtoQueryThr3000) {
-    return requestClient.request<Thr3000[]>(
-      "/dDH.Service.SHR.Services/hR3000/queryThr3000s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Thr3000[]>("/dDH.Service.SHR.Services/hR3000/queryThr3000s", {
+      method: "post",
+      data,
+    });
   },
   queryThr3010s(cZpId?: string) {
-    return requestClient.request<Thr3010[]>(
-      "/dDH.Service.SHR.Services/hR3000/queryThr3010s",
-      {
-        method: "post",
-        params: { cZpId },
-      },
-    );
+    return requestClient.request<Thr3010[]>("/dDH.Service.SHR.Services/hR3000/queryThr3010s", {
+      method: "post",
+      params: { cZpId },
+    });
   },
   queryThr3020s(cZpId?: string) {
-    return requestClient.request<Thr3020[]>(
-      "/dDH.Service.SHR.Services/hR3000/queryThr3020s",
-      {
-        method: "post",
-        params: { cZpId },
-      },
-    );
+    return requestClient.request<Thr3020[]>("/dDH.Service.SHR.Services/hR3000/queryThr3020s", {
+      method: "post",
+      params: { cZpId },
+    });
   },
   queryThr3030s(data?: Query3030Dto) {
-    return requestClient.request<Thr3030[]>(
-      "/dDH.Service.SHR.Services/hR3000/queryThr3030s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Thr3030[]>("/dDH.Service.SHR.Services/hR3000/queryThr3030s", {
+      method: "post",
+      data,
+    });
   },
   getSlabs(data?: DtoQuerySlabs) {
-    return requestClient.request<Tyd2000[]>(
-      "/dDH.Service.SHR.Services/hR3000/getSlabs",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Tyd2000[]>("/dDH.Service.SHR.Services/hR3000/getSlabs", {
+      method: "post",
+      data,
+    });
   },
   saveZp(data?: DtoSaveZp) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR3000/saveZp",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR3000/saveZp", {
+      method: "post",
+      data,
+    });
   },
   addZp(data?: DtoAddZp) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR3000/addZp",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR3000/addZp", {
+      method: "post",
+      data,
+    });
   },
   cancelZp(data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR3000/cancelZp",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR3000/cancelZp", {
+      method: "post",
+      data,
+    });
   },
   ensureZps(data?: DtoEnsure) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR3000/ensureZps",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR3000/ensureZps", {
+      method: "post",
+      data,
+    });
   },
   issueZps(data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR3000/issueZps",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR3000/issueZps", {
+      method: "post",
+      data,
+    });
   },
   generateBacthNo(cLineCode?: string) {
-    return requestClient.request<string>(
-      "/dDH.Service.SHR.Services/hR3000/generateBacthNo",
-      {
-        method: "post",
-        params: { cLineCode },
-      },
-    );
+    return requestClient.request<string>("/dDH.Service.SHR.Services/hR3000/generateBacthNo", {
+      method: "post",
+      params: { cLineCode },
+    });
   },
   autoSaveZp(data?: DtoAutoZp) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR3000/autoSaveZp",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR3000/autoSaveZp", {
+      method: "post",
+      data,
+    });
   },
   autoSaveZpNew(cOrderNo?: string) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR3000/autoSaveZpNew",
-      {
-        method: "post",
-        params: { cOrderNo },
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR3000/autoSaveZpNew", {
+      method: "post",
+      params: { cOrderNo },
+    });
   },
   moveThr3000(data?: DtoMoveThr3000) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR3000/moveThr3000",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR3000/moveThr3000", {
+      method: "post",
+      data,
+    });
   },
   updateThr2000(COrderId?: string) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR3000/updateThr2000",
-      {
-        method: "post",
-        params: { COrderId },
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR3000/updateThr2000", {
+      method: "post",
+      params: { COrderId },
+    });
   },
   queryThr3000Dtos(data?: DtoQueryThr3000) {
-    return requestClient.request<Thr3000Dto[]>(
-      "/dDH.Service.SHR.Services/hR3000/queryThr3000Dtos",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Thr3000Dto[]>("/dDH.Service.SHR.Services/hR3000/queryThr3000Dtos", {
+      method: "post",
+      data,
+    });
   },
   changePlan(cOrderId?: string, data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR3000/changePlan",
-      {
-        method: "post",
-        params: { cOrderId },
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR3000/changePlan", {
+      method: "post",
+      params: { cOrderId },
+      data,
+    });
   },
   changeJQPlan(cOrderId?: string, data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR3000/changeJQPlan",
-      {
-        method: "post",
-        params: { cOrderId },
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR3000/changeJQPlan", {
+      method: "post",
+      params: { cOrderId },
+      data,
+    });
   },
   /** 生成代表样（system 用户） */
   buildPlateQy(batchNo?: string) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR3000/buildPlateQy",
-      { method: "post", params: { batchNo } },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR3000/buildPlateQy", {
+      method: "post",
+      params: { batchNo },
+    });
   },
   /** 校验是否需取样（system 用户） */
   testIsNeedQY(batchNo?: string, plateSeq?: number, pieceNo?: string) {
-    return requestClient.request<boolean>(
-      "/dDH.Service.SHR.Services/hR3000/testIsNeedQY",
-      { method: "post", params: { batchNo, plateSeq, pieceNo } },
-    );
+    return requestClient.request<boolean>("/dDH.Service.SHR.Services/hR3000/testIsNeedQY", {
+      method: "post",
+      params: { batchNo, plateSeq, pieceNo },
+    });
   },
 };
 
 export const hR3010Api = {
   enterFur(data?: DtoZgWork) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR3010/enterFur",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR3010/enterFur", {
+      method: "post",
+      data,
+    });
   },
   cancelEnter(data?: DtoZgWork) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR3010/cancelEnter",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR3010/cancelEnter", {
+      method: "post",
+      data,
+    });
   },
   exitFur(data?: DtoZgWork) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR3010/exitFur",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR3010/exitFur", {
+      method: "post",
+      data,
+    });
   },
   elimFur(data?: DtoZgWork) {
-    return requestClient.request<string>(
-      "/dDH.Service.SHR.Services/hR3010/elimFur",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<string>("/dDH.Service.SHR.Services/hR3010/elimFur", {
+      method: "post",
+      data,
+    });
   },
   cancelExit(data?: DtoZgWork) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR3010/cancelExit",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR3010/cancelExit", {
+      method: "post",
+      data,
+    });
   },
   finishRoll(data?: DtoZgWork) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR3010/finishRoll",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR3010/finishRoll", {
+      method: "post",
+      data,
+    });
   },
   waste(data?: DtoZgWork) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR3010/waste",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR3010/waste", {
+      method: "post",
+      data,
+    });
   },
   cancelFinish(data?: DtoZgWork) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR3010/cancelFinish",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR3010/cancelFinish", {
+      method: "post",
+      data,
+    });
   },
   querySlabs(data?: DtoQueryThr3000) {
-    return requestClient.request<DtoThr3010[]>(
-      "/dDH.Service.SHR.Services/hR3010/querySlabs",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<DtoThr3010[]>("/dDH.Service.SHR.Services/hR3010/querySlabs", {
+      method: "post",
+      data,
+    });
   },
   queryTiL2me021s(data?: DtoQueryL2) {
-    return requestClient.request<TiL2me021[]>(
-      "/dDH.Service.SHR.Services/hR3010/queryTiL2me021s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<TiL2me021[]>("/dDH.Service.SHR.Services/hR3010/queryTiL2me021s", {
+      method: "post",
+      data,
+    });
   },
   enter(data?: DtoFurWork) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR3010/enter",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR3010/enter", {
+      method: "post",
+      data,
+    });
   },
   exit(data?: DtoFurWork) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR3010/exit",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR3010/exit", {
+      method: "post",
+      data,
+    });
   },
   /** 查询待入炉材料 */
   queryNotInSlabs(data?: DtoQueryThr3000) {
-    return requestClient.request<DtoThr3010[]>(
-      "/dDH.Service.SHR.Services/hR3010/queryNotInSlabs",
-      { method: "post", data },
-    );
+    return requestClient.request<DtoThr3010[]>("/dDH.Service.SHR.Services/hR3010/queryNotInSlabs", {
+      method: "post",
+      data,
+    });
   },
   /** 生产顺序导入（Excel 行集） */
   importOrder(data?: ImportHROrder[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR3010/importOrder",
-      { method: "post", data },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR3010/importOrder", { method: "post", data });
   },
 };
 
 export const hR3400Api = {
   queryList(data?: DtoQueryThr3000) {
-    return requestClient.request<Thr3040[]>(
-      "/dDH.Service.SHR.Services/hR3400/queryList",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Thr3040[]>("/dDH.Service.SHR.Services/hR3400/queryList", {
+      method: "post",
+      data,
+    });
   },
   saveQt(data?: TiP48j01) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR3400/saveQt",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR3400/saveQt", {
+      method: "post",
+      data,
+    });
   },
   saveQb(data?: TiP48j02) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR3400/saveQb",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR3400/saveQb", {
+      method: "post",
+      data,
+    });
   },
   saveDc(data?: TiP48j031) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR3400/saveDc",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR3400/saveDc", {
+      method: "post",
+      data,
+    });
   },
   saveJq(data?: SaveJqDto) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR3400/saveJq",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR3400/saveJq", {
+      method: "post",
+      data,
+    });
   },
 };
 
 export const hR3600Api = {
   querySlabs(data?: DtoQuerySlabs) {
-    return requestClient.request<Tyd2000[]>(
-      "/dDH.Service.SHR.Services/hR3600/querySlabs",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Tyd2000[]>("/dDH.Service.SHR.Services/hR3600/querySlabs", {
+      method: "post",
+      data,
+    });
   },
   queryHls(data?: DtoQuerySlabs) {
-    return requestClient.request<Thr3010Hl[]>(
-      "/dDH.Service.SHR.Services/hR3600/queryHls",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Thr3010Hl[]>("/dDH.Service.SHR.Services/hR3600/queryHls", {
+      method: "post",
+      data,
+    });
   },
   startHl(data?: HlDto) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR3600/startHl",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR3600/startHl", {
+      method: "post",
+      data,
+    });
   },
   endHl(data?: HlDto) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR3600/endHl",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR3600/endHl", {
+      method: "post",
+      data,
+    });
   },
 };
 
 export const hR3700Api = {
   queryJQPlans(cOrderNo?: string) {
-    return requestClient.request<Tmp2016[]>(
-      "/dDH.Service.SHR.Services/hR3700/queryJQPlans",
-      {
-        method: "post",
-        params: { cOrderNo },
-      },
-    );
+    return requestClient.request<Tmp2016[]>("/dDH.Service.SHR.Services/hR3700/queryJQPlans", {
+      method: "post",
+      params: { cOrderNo },
+    });
   },
   createSjByPlan(cSlabId?: string) {
-    return requestClient.request<Thr4000[]>(
-      "/dDH.Service.SHR.Services/hR3700/createSjByPlan",
-      {
-        method: "post",
-        params: { cSlabId },
-      },
-    );
+    return requestClient.request<Thr4000[]>("/dDH.Service.SHR.Services/hR3700/createSjByPlan", {
+      method: "post",
+      params: { cSlabId },
+    });
   },
   /** 查询火切材料 */
   getHqSlabs(data?: DtoQuerySlabs) {
-    return requestClient.request<HqDto[]>(
-      "/dDH.Service.SHR.Services/hR3700/getHqSlabs",
-      { method: "post", data },
-    );
+    return requestClient.request<HqDto[]>("/dDH.Service.SHR.Services/hR3700/getHqSlabs", { method: "post", data });
   },
   /** 检查试坯是否已取样 */
   checkIsQy(cPieceNo?: string) {
-    return requestClient.request<string>(
-      "/dDH.Service.SHR.Services/hR3700/checkIsQy",
-      { method: "post", params: { cPieceNo } },
-    );
+    return requestClient.request<string>("/dDH.Service.SHR.Services/hR3700/checkIsQy", {
+      method: "post",
+      params: { cPieceNo },
+    });
   },
   /** 保存火切剪切实绩 */
   saveJq(data?: SaveTyd2000JqDto) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR3700/saveJq",
-      { method: "post", data },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR3700/saveJq", { method: "post", data });
   },
   /** 查询库存材料（剪切） */
   getSlabs(data?: DtoQuerySlabs) {
-    return requestClient.request<import("./syd.swagger").Tyd2000[]>(
-      "/dDH.Service.SHR.Services/hR3700/getSlabs",
-      { method: "post", data },
-    );
+    return requestClient.request<import("./syd.swagger").Tyd2000[]>("/dDH.Service.SHR.Services/hR3700/getSlabs", {
+      method: "post",
+      data,
+    });
   },
 };
 
 export const hR4000Api = {
   queryThr4000s(data?: DtoQuerySlabs) {
-    return requestClient.request<Thr4000[]>(
-      "/dDH.Service.SHR.Services/hR4000/queryThr4000s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Thr4000[]>("/dDH.Service.SHR.Services/hR4000/queryThr4000s", {
+      method: "post",
+      data,
+    });
   },
   queryPrintSjs(data?: DtoQuerySlabs) {
-    return requestClient.request<Thr4000Dto[]>(
-      "/dDH.Service.SHR.Services/hR4000/queryPrintSjs",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Thr4000Dto[]>("/dDH.Service.SHR.Services/hR4000/queryPrintSjs", {
+      method: "post",
+      data,
+    });
   },
   addSjs(data?: DtoP48J03[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR4000/addSjs",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR4000/addSjs", {
+      method: "post",
+      data,
+    });
   },
   deleteSjs(data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR4000/deleteSjs",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR4000/deleteSjs", {
+      method: "post",
+      data,
+    });
   },
   queryPrints(cLineCode?: string, cSlCode?: string) {
-    return requestClient.request<DtoThr4000[]>(
-      "/dDH.Service.SHR.Services/hR4000/queryPrints",
-      {
-        method: "post",
-        params: { cLineCode, cSlCode },
-      },
-    );
+    return requestClient.request<DtoThr4000[]>("/dDH.Service.SHR.Services/hR4000/queryPrints", {
+      method: "post",
+      params: { cLineCode, cSlCode },
+    });
   },
   queryPrintsByInput(data?: QueryPrintInputDto) {
-    return requestClient.request<DtoThr4000[]>(
-      "/dDH.Service.SHR.Services/hR4000/queryPrintsByInput",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<DtoThr4000[]>("/dDH.Service.SHR.Services/hR4000/queryPrintsByInput", {
+      method: "post",
+      data,
+    });
   },
   addSjsByPiece(data?: DtoAddSj) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR4000/addSjsByPiece",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR4000/addSjsByPiece", {
+      method: "post",
+      data,
+    });
   },
   insertTyd2000s(data?: Thr4000[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR4000/insertTyd2000s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR4000/insertTyd2000s", {
+      method: "post",
+      data,
+    });
   },
   deleteTyd2000s(data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR4000/deleteTyd2000s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR4000/deleteTyd2000s", {
+      method: "post",
+      data,
+    });
   },
   getPieceNo(cBatchNo?: string) {
-    return requestClient.request<string>(
-      "/dDH.Service.SHR.Services/hR4000/getPieceNo",
-      {
-        method: "post",
-        params: { cBatchNo },
-      },
-    );
+    return requestClient.request<string>("/dDH.Service.SHR.Services/hR4000/getPieceNo", {
+      method: "post",
+      params: { cBatchNo },
+    });
   },
   deleteSjsByPiece(cPieceNo?: string) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR4000/deleteSjsByPiece",
-      {
-        method: "post",
-        params: { cPieceNo },
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR4000/deleteSjsByPiece", {
+      method: "post",
+      params: { cPieceNo },
+    });
   },
   saveChange(data?: Thr4000SaveChangesData) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR4000/saveChange",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR4000/saveChange", {
+      method: "post",
+      data,
+    });
   },
   addPrintLog(data?: DtoThr4000[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR4000/addPrintLog",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR4000/addPrintLog", {
+      method: "post",
+      data,
+    });
   },
   cancelZc(data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR4000/cancelZc",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR4000/cancelZc", {
+      method: "post",
+      data,
+    });
   },
   cptk(data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR4000/cptk",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR4000/cptk", {
+      method: "post",
+      data,
+    });
   },
   editSj(data?: Thr4000Edit) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR4000/editSj",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR4000/editSj", {
+      method: "post",
+      data,
+    });
   },
   addSj(data?: TiP48j031) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR4000/addSj",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR4000/addSj", {
+      method: "post",
+      data,
+    });
   },
   addSjByPlan(cZpId?: string) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR4000/addSjByPlan",
-      {
-        method: "post",
-        params: { cZpId },
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR4000/addSjByPlan", {
+      method: "post",
+      params: { cZpId },
+    });
   },
   /** 轧制计划完成确认 */
   confirm(cZpId?: string) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR4000/confirm",
-      { method: "post", params: { cZpId } },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR4000/confirm", {
+      method: "post",
+      params: { cZpId },
+    });
   },
   /** 取消完成确认 */
   cancelConfirm(cZpId?: string) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR4000/cancelConfirm",
-      { method: "post", params: { cZpId } },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR4000/cancelConfirm", {
+      method: "post",
+      params: { cZpId },
+    });
   },
   /** 查询钢种标准列表（钢种下拉） */
   querySg() {
-    return requestClient.request<Tqmtpa6[]>(
-      "/dDH.Service.SHR.Services/hR4000/querySg",
-      { method: "post" },
-    );
+    return requestClient.request<Tqmtpa6[]>("/dDH.Service.SHR.Services/hR4000/querySg", { method: "post" });
   },
   /** 手动收料（原手动同步） */
   sdsl() {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR4000/sdsl",
-      { method: "post" },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR4000/sdsl", { method: "post" });
   },
   /** 手动添加实绩（原 FrmHR4000New 保存） */
   addSjByManual(data?: Thr4000) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR4000/addSjByManual",
-      { method: "post", data },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR4000/addSjByManual", { method: "post", data });
   },
   /** 遗留台账查询（HR4010） */
   queryYl(data?: DtoQuerySlabs) {
-    return requestClient.request<QueryYcDto>(
-      "/dDH.Service.SHR.Services/hR4000/queryYl",
-      { method: "post", data },
-    );
+    return requestClient.request<QueryYcDto>("/dDH.Service.SHR.Services/hR4000/queryYl", { method: "post", data });
   },
   /** 遗留台账保存（HR4010） */
   saveYc(data?: SaveYcDto) {
-    return requestClient.request<void>(
-      "/dDH.Service.SHR.Services/hR4000/saveYc",
-      { method: "post", data },
-    );
+    return requestClient.request<void>("/dDH.Service.SHR.Services/hR4000/saveYc", { method: "post", data });
   },
 };
 
 export const hR4200Api = {
   queryTiL2me01s(data?: DtoQueryL2) {
-    return requestClient.request<TiL2me01[]>(
-      "/dDH.Service.SHR.Services/hR4200/queryTiL2me01s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<TiL2me01[]>("/dDH.Service.SHR.Services/hR4200/queryTiL2me01s", {
+      method: "post",
+      data,
+    });
   },
   queryTiL2me02s(data?: DtoQueryL2) {
-    return requestClient.request<TiL2me02[]>(
-      "/dDH.Service.SHR.Services/hR4200/queryTiL2me02s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<TiL2me02[]>("/dDH.Service.SHR.Services/hR4200/queryTiL2me02s", {
+      method: "post",
+      data,
+    });
   },
   queryTiL2me021s(data?: DtoQueryL2) {
-    return requestClient.request<TiL2me021[]>(
-      "/dDH.Service.SHR.Services/hR4200/queryTiL2me021s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<TiL2me021[]>("/dDH.Service.SHR.Services/hR4200/queryTiL2me021s", {
+      method: "post",
+      data,
+    });
   },
   queryTiL2me03s(data?: DtoQueryL2) {
-    return requestClient.request<TiL2me03[]>(
-      "/dDH.Service.SHR.Services/hR4200/queryTiL2me03s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<TiL2me03[]>("/dDH.Service.SHR.Services/hR4200/queryTiL2me03s", {
+      method: "post",
+      data,
+    });
   },
   queryTiL2me04s(data?: DtoQueryL2) {
-    return requestClient.request<TiL2me04[]>(
-      "/dDH.Service.SHR.Services/hR4200/queryTiL2me04s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<TiL2me04[]>("/dDH.Service.SHR.Services/hR4200/queryTiL2me04s", {
+      method: "post",
+      data,
+    });
   },
   queryTiL2me05s(data?: DtoQueryL2) {
-    return requestClient.request<TiL2ME05ItemDto[]>(
-      "/dDH.Service.SHR.Services/hR4200/queryTiL2me05s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<TiL2ME05ItemDto[]>("/dDH.Service.SHR.Services/hR4200/queryTiL2me05s", {
+      method: "post",
+      data,
+    });
   },
   queryTiL2me06s(data?: DtoQueryL2) {
-    return requestClient.request<TiL2ME06ItemDto[]>(
-      "/dDH.Service.SHR.Services/hR4200/queryTiL2me06s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<TiL2ME06ItemDto[]>("/dDH.Service.SHR.Services/hR4200/queryTiL2me06s", {
+      method: "post",
+      data,
+    });
   },
   queryTiL2me08s(data?: DtoQueryL2) {
-    return requestClient.request<TiL2me08[]>(
-      "/dDH.Service.SHR.Services/hR4200/queryTiL2me08s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<TiL2me08[]>("/dDH.Service.SHR.Services/hR4200/queryTiL2me08s", {
+      method: "post",
+      data,
+    });
   },
   queryTiL2me09s(data?: DtoQueryL2) {
-    return requestClient.request<TiL2me09[]>(
-      "/dDH.Service.SHR.Services/hR4200/queryTiL2me09s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<TiL2me09[]>("/dDH.Service.SHR.Services/hR4200/queryTiL2me09s", {
+      method: "post",
+      data,
+    });
   },
   queryTiL2me11s(data?: DtoQueryL2) {
-    return requestClient.request<TiL2me11[]>(
-      "/dDH.Service.SHR.Services/hR4200/queryTiL2me11s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<TiL2me11[]>("/dDH.Service.SHR.Services/hR4200/queryTiL2me11s", {
+      method: "post",
+      data,
+    });
   },
   queryTiL2me12s(data?: DtoQueryL2) {
-    return requestClient.request<TiL2me12[]>(
-      "/dDH.Service.SHR.Services/hR4200/queryTiL2me12s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<TiL2me12[]>("/dDH.Service.SHR.Services/hR4200/queryTiL2me12s", {
+      method: "post",
+      data,
+    });
   },
   queryTiL2me14s(data?: DtoQueryL2) {
-    return requestClient.request<TiL2me14[]>(
-      "/dDH.Service.SHR.Services/hR4200/queryTiL2me14s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<TiL2me14[]>("/dDH.Service.SHR.Services/hR4200/queryTiL2me14s", {
+      method: "post",
+      data,
+    });
   },
   queryTiL2me15s(data?: DtoQueryL2) {
-    return requestClient.request<TiL2me15[]>(
-      "/dDH.Service.SHR.Services/hR4200/queryTiL2me15s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<TiL2me15[]>("/dDH.Service.SHR.Services/hR4200/queryTiL2me15s", {
+      method: "post",
+      data,
+    });
   },
   queryTiL2me16s(data?: DtoQueryL2) {
-    return requestClient.request<TiL2me16[]>(
-      "/dDH.Service.SHR.Services/hR4200/queryTiL2me16s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<TiL2me16[]>("/dDH.Service.SHR.Services/hR4200/queryTiL2me16s", {
+      method: "post",
+      data,
+    });
   },
   queryTiL2me17s(data?: DtoQueryL2) {
-    return requestClient.request<TiL2me17[]>(
-      "/dDH.Service.SHR.Services/hR4200/queryTiL2me17s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<TiL2me17[]>("/dDH.Service.SHR.Services/hR4200/queryTiL2me17s", {
+      method: "post",
+      data,
+    });
   },
   queryTiL2me18s(data?: DtoQueryL2) {
-    return requestClient.request<TiL2me18Dto[]>(
-      "/dDH.Service.SHR.Services/hR4200/queryTiL2me18s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<TiL2me18Dto[]>("/dDH.Service.SHR.Services/hR4200/queryTiL2me18s", {
+      method: "post",
+      data,
+    });
   },
   queryTiL2me19s(data?: DtoQueryL2) {
-    return requestClient.request<TiL2me19[]>(
-      "/dDH.Service.SHR.Services/hR4200/queryTiL2me19s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<TiL2me19[]>("/dDH.Service.SHR.Services/hR4200/queryTiL2me19s", {
+      method: "post",
+      data,
+    });
   },
   queryTiP48j01s(data?: DtoQueryL2) {
-    return requestClient.request<TiP48j01[]>(
-      "/dDH.Service.SHR.Services/hR4200/queryTiP48j01s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<TiP48j01[]>("/dDH.Service.SHR.Services/hR4200/queryTiP48j01s", {
+      method: "post",
+      data,
+    });
   },
   queryTiP48j02s(data?: DtoQueryL2) {
-    return requestClient.request<TiP48j02[]>(
-      "/dDH.Service.SHR.Services/hR4200/queryTiP48j02s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<TiP48j02[]>("/dDH.Service.SHR.Services/hR4200/queryTiP48j02s", {
+      method: "post",
+      data,
+    });
   },
   queryTiP48j031s(data?: DtoQueryL2) {
-    return requestClient.request<TiP48j031[]>(
-      "/dDH.Service.SHR.Services/hR4200/queryTiP48j031s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<TiP48j031[]>("/dDH.Service.SHR.Services/hR4200/queryTiP48j031s", {
+      method: "post",
+      data,
+    });
   },
   queryTiP48j04s(data?: DtoQueryL2) {
-    return requestClient.request<TiP48j04[]>(
-      "/dDH.Service.SHR.Services/hR4200/queryTiP48j04s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<TiP48j04[]>("/dDH.Service.SHR.Services/hR4200/queryTiP48j04s", {
+      method: "post",
+      data,
+    });
   },
   queryTiP48j05s(data?: DtoQueryL2) {
-    return requestClient.request<TiP48j05[]>(
-      "/dDH.Service.SHR.Services/hR4200/queryTiP48j05s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<TiP48j05[]>("/dDH.Service.SHR.Services/hR4200/queryTiP48j05s", {
+      method: "post",
+      data,
+    });
   },
   queryTiP48j06s(data?: DtoQueryL2) {
-    return requestClient.request<TiP48j06[]>(
-      "/dDH.Service.SHR.Services/hR4200/queryTiP48j06s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<TiP48j06[]>("/dDH.Service.SHR.Services/hR4200/queryTiP48j06s", {
+      method: "post",
+      data,
+    });
   },
   queryTiP48j07s(data?: DtoQueryL2) {
-    return requestClient.request<TiP48j07[]>(
-      "/dDH.Service.SHR.Services/hR4200/queryTiP48j07s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<TiP48j07[]>("/dDH.Service.SHR.Services/hR4200/queryTiP48j07s", {
+      method: "post",
+      data,
+    });
   },
   queryTiP48j09s(data?: DtoQueryL2) {
-    return requestClient.request<TiP48j09[]>(
-      "/dDH.Service.SHR.Services/hR4200/queryTiP48j09s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<TiP48j09[]>("/dDH.Service.SHR.Services/hR4200/queryTiP48j09s", {
+      method: "post",
+      data,
+    });
   },
   queryTiRollgrs(data?: DtoQueryL2) {
-    return requestClient.request<TiRollgr[]>(
-      "/dDH.Service.SHR.Services/hR4200/queryTiRollgrs",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<TiRollgr[]>("/dDH.Service.SHR.Services/hR4200/queryTiRollgrs", {
+      method: "post",
+      data,
+    });
   },
 };
 
 export const hR4300Api = {
   queryCc(data?: DtoQuerySlabs) {
-    return requestClient.request<PlanCcDto[]>(
-      "/dDH.Service.SHR.Services/hR4300/queryCc",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<PlanCcDto[]>("/dDH.Service.SHR.Services/hR4300/queryCc", {
+      method: "post",
+      data,
+    });
   },
 };
 
 export const hR4400Api = {
   queryZjps(data?: DtoQuerySlabs) {
-    return requestClient.request<Thr3040Dto[]>(
-      "/dDH.Service.SHR.Services/hR4400/queryZjps",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Thr3040Dto[]>("/dDH.Service.SHR.Services/hR4400/queryZjps", {
+      method: "post",
+      data,
+    });
   },
 };
 
 export const hR9000Api = {
   queryThickHz(data?: DtoQueryL2) {
-    return requestClient.request<ChyThickItemDto[]>(
-      "/dDH.Service.SHR.Services/hR9000/queryThickHz",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<ChyThickItemDto[]>("/dDH.Service.SHR.Services/hR9000/queryThickHz", {
+      method: "post",
+      data,
+    });
   },
   queryWidthHz(data?: DtoQueryL2) {
-    return requestClient.request<ChyWidthItemDto[]>(
-      "/dDH.Service.SHR.Services/hR9000/queryWidthHz",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<ChyWidthItemDto[]>("/dDH.Service.SHR.Services/hR9000/queryWidthHz", {
+      method: "post",
+      data,
+    });
   },
   queryFhHz(data?: DtoQueryL2) {
-    return requestClient.request<FhwdItemDto[]>(
-      "/dDH.Service.SHR.Services/hR9000/queryFhHz",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<FhwdItemDto[]>("/dDH.Service.SHR.Services/hR9000/queryFhHz", {
+      method: "post",
+      data,
+    });
   },
   queryZzHz(data?: DtoQueryL2) {
-    return requestClient.request<ZzwdItemDto[]>(
-      "/dDH.Service.SHR.Services/hR9000/queryZzHz",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<ZzwdItemDto[]>("/dDH.Service.SHR.Services/hR9000/queryZzHz", {
+      method: "post",
+      data,
+    });
   },
   queryTiL2me021s(data?: DtoQueryL2) {
-    return requestClient.request<QueryRollDetail[]>(
-      "/dDH.Service.SHR.Services/hR9000/queryTiL2me021s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<QueryRollDetail[]>("/dDH.Service.SHR.Services/hR9000/queryTiL2me021s", {
+      method: "post",
+      data,
+    });
   },
   /** 查询板坯实绩（HR9070） */
   querySlabs(data?: DtoQueryThr3000) {
-    return requestClient.request<Thr3010Dto[]>(
-      "/dDH.Service.SHR.Services/hR9000/querySlabs",
-      { method: "post", data },
-    );
+    return requestClient.request<Thr3010Dto[]>("/dDH.Service.SHR.Services/hR9000/querySlabs", { method: "post", data });
   },
   /** 加热实绩电文 */
   queryTiL2me11s(data?: DtoQueryL2) {
-    return requestClient.request<TiL2me11Dto[]>(
-      "/dDH.Service.SHR.Services/hR9000/queryTiL2me11s",
-      { method: "post", data },
-    );
+    return requestClient.request<TiL2me11Dto[]>("/dDH.Service.SHR.Services/hR9000/queryTiL2me11s", {
+      method: "post",
+      data,
+    });
   },
   /** 超快冷实绩 */
   queryTiL2me14s(data?: DtoQueryL2) {
-    return requestClient.request<TiL2me14Dto[]>(
-      "/dDH.Service.SHR.Services/hR9000/queryTiL2me14s",
-      { method: "post", data },
-    );
+    return requestClient.request<TiL2me14Dto[]>("/dDH.Service.SHR.Services/hR9000/queryTiL2me14s", {
+      method: "post",
+      data,
+    });
   },
   /** 预矫直实绩 */
   queryTiL2me08s(data?: DtoQueryL2) {
-    return requestClient.request<TiL2me08Dto[]>(
-      "/dDH.Service.SHR.Services/hR9000/queryTiL2me08s",
-      { method: "post", data },
-    );
+    return requestClient.request<TiL2me08Dto[]>("/dDH.Service.SHR.Services/hR9000/queryTiL2me08s", {
+      method: "post",
+      data,
+    });
   },
   /** 热矫直实绩 */
   queryTiL2me09s(data?: DtoQueryL2) {
-    return requestClient.request<TiL2me09Dto[]>(
-      "/dDH.Service.SHR.Services/hR9000/queryTiL2me09s",
-      { method: "post", data },
-    );
+    return requestClient.request<TiL2me09Dto[]>("/dDH.Service.SHR.Services/hR9000/queryTiL2me09s", {
+      method: "post",
+      data,
+    });
   },
   /** 轧制计划板坯（HR9200 主表） */
   queryZpSlabs(data?: DtoQueryThr3000) {
-    return requestClient.request<DtoThr3010[]>(
-      "/dDH.Service.SHR.Services/hR9000/queryZpSlabs",
-      { method: "post", data },
-    );
+    return requestClient.request<DtoThr3010[]>("/dDH.Service.SHR.Services/hR9000/queryZpSlabs", {
+      method: "post",
+      data,
+    });
   },
   /** 轧制计划异常实绩 */
   queryTiL2me01s(data?: DtoQueryL2) {
-    return requestClient.request<TiL2me01Dto[]>(
-      "/dDH.Service.SHR.Services/hR9000/queryTiL2me01s",
-      { method: "post", data },
-    );
+    return requestClient.request<TiL2me01Dto[]>("/dDH.Service.SHR.Services/hR9000/queryTiL2me01s", {
+      method: "post",
+      data,
+    });
   },
   /** 超快冷实绩-组汇总 */
   queryTiL2me14sGroupHz(data?: TiL2me14Dto[]) {
-    return requestClient.request<QueryHR9060HzDto[]>(
-      "/dDH.Service.SHR.Services/hR9000/queryTiL2me14sGroupHz",
-      { method: "post", data },
-    );
+    return requestClient.request<QueryHR9060HzDto[]>("/dDH.Service.SHR.Services/hR9000/queryTiL2me14sGroupHz", {
+      method: "post",
+      data,
+    });
   },
   /** 超快冷实绩-责任者汇总 */
   queryTiL2me14sAuthorHz(data?: TiL2me14Dto[]) {
-    return requestClient.request<QueryHR9060HzDto[]>(
-      "/dDH.Service.SHR.Services/hR9000/queryTiL2me14sAuthorHz",
-      { method: "post", data },
-    );
+    return requestClient.request<QueryHR9060HzDto[]>("/dDH.Service.SHR.Services/hR9000/queryTiL2me14sAuthorHz", {
+      method: "post",
+      data,
+    });
   },
   /** 船板钢生产工艺报表（HR9071） */
   query9071s(data?: DtoQueryThr3000) {
-    return requestClient.request<Thr3010Dto[]>(
-      "/dDH.Service.SHR.Services/hR9000/query9071s",
-      { method: "post", data },
-    );
+    return requestClient.request<Thr3010Dto[]>("/dDH.Service.SHR.Services/hR9000/query9071s", { method: "post", data });
   },
   /** 取样记录查询（HR9072） */
   query9072s(data?: DtoQueryThr3000) {
-    return requestClient.request<Thr3010Dto[]>(
-      "/dDH.Service.SHR.Services/hR9000/query9072s",
-      { method: "post", data },
-    );
+    return requestClient.request<Thr3010Dto[]>("/dDH.Service.SHR.Services/hR9000/query9072s", { method: "post", data });
   },
 };
 
 export const hRLogApi = {
   insertLog(data?: DtoInsertLog) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hRLog/insertLog",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hRLog/insertLog", {
+      method: "post",
+      data,
+    });
   },
   insertLogs(data?: DtoInsertLogs) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hRLog/insertLogs",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hRLog/insertLogs", {
+      method: "post",
+      data,
+    });
   },
   updateThr3000(cZpId?: string) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hRLog/updateThr3000",
-      {
-        method: "post",
-        params: { cZpId },
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hRLog/updateThr3000", {
+      method: "post",
+      params: { cZpId },
+    });
   },
   queryLogs(data?: DtoQueryLog) {
-    return requestClient.request<ThrLog[]>(
-      "/dDH.Service.SHR.Services/hRLog/queryLogs",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<ThrLog[]>("/dDH.Service.SHR.Services/hRLog/queryLogs", {
+      method: "post",
+      data,
+    });
   },
 };
 
 export const influxdbReportApi = {
   exportZB037ToInfluxdb(startDate?: string, endDate?: string) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/influxdbReport/exportZB037ToInfluxdb",
-      {
-        method: "post",
-        params: { startDate, endDate },
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/influxdbReport/exportZB037ToInfluxdb", {
+      method: "post",
+      params: { startDate, endDate },
+    });
   },
   exportZB232ToInfluxdb(startDate?: string, endDate?: string) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/influxdbReport/exportZB232ToInfluxdb",
-      {
-        method: "post",
-        params: { startDate, endDate },
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/influxdbReport/exportZB232ToInfluxdb", {
+      method: "post",
+      params: { startDate, endDate },
+    });
   },
   exportZB001ToInfluxdb(startDate?: string, endDate?: string) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/influxdbReport/exportZB001ToInfluxdb",
-      {
-        method: "post",
-        params: { startDate, endDate },
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/influxdbReport/exportZB001ToInfluxdb", {
+      method: "post",
+      params: { startDate, endDate },
+    });
   },
 };
 
 export const tI1000Api = {
   queryTiL2me01(data?: DtoTi1000Query) {
-    return requestClient.request<Ti1000Dto[]>(
-      "/dDH.Service.SHR.Services.InterInfoQuery/tI1000/queryTiL2me01",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Ti1000Dto[]>("/dDH.Service.SHR.Services.InterInfoQuery/tI1000/queryTiL2me01", {
+      method: "post",
+      data,
+    });
   },
   queryTiL2Me011s(CId?: string) {
-    return requestClient.request<Ti1000_1Dto[]>(
-      "/dDH.Service.SHR.Services.InterInfoQuery/tI1000/queryTiL2Me011s",
-      {
-        method: "post",
-        params: { CId },
-      },
-    );
+    return requestClient.request<Ti1000_1Dto[]>("/dDH.Service.SHR.Services.InterInfoQuery/tI1000/queryTiL2Me011s", {
+      method: "post",
+      params: { CId },
+    });
   },
 };
 
 export const tI1010Api = {
   queryTi1010(data?: DtoTi1010Query) {
-    return requestClient.request<Ti1010Dto[]>(
-      "/dDH.Service.SHR.Services.InterInfoQuery/tI1010/queryTi1010",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Ti1010Dto[]>("/dDH.Service.SHR.Services.InterInfoQuery/tI1010/queryTi1010", {
+      method: "post",
+      data,
+    });
   },
   getDate(str?: string) {
-    return requestClient.request<string>(
-      "/dDH.Service.SHR.Services.InterInfoQuery/tI1010/getDate",
-      {
-        method: "post",
-        params: { str },
-      },
-    );
+    return requestClient.request<string>("/dDH.Service.SHR.Services.InterInfoQuery/tI1010/getDate", {
+      method: "post",
+      params: { str },
+    });
   },
 };
 
 export const tI1020Api = {
   ti1020Query(data?: DtoTi1020Query) {
-    return requestClient.request<Ti1020Dto[]>(
-      "/dDH.Service.SHR.Services.InterInfoQuery/tI1020/ti1020Query",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Ti1020Dto[]>("/dDH.Service.SHR.Services.InterInfoQuery/tI1020/ti1020Query", {
+      method: "post",
+      data,
+    });
   },
   getDate(str?: string) {
-    return requestClient.request<string>(
-      "/dDH.Service.SHR.Services.InterInfoQuery/tI1020/getDate",
-      {
-        method: "post",
-        params: { str },
-      },
-    );
+    return requestClient.request<string>("/dDH.Service.SHR.Services.InterInfoQuery/tI1020/getDate", {
+      method: "post",
+      params: { str },
+    });
   },
   queryTi10201(CId?: string) {
-    return requestClient.request<Ti1020_1Dto[]>(
-      "/dDH.Service.SHR.Services.InterInfoQuery/tI1020/queryTi10201",
-      {
-        method: "post",
-        params: { CId },
-      },
-    );
+    return requestClient.request<Ti1020_1Dto[]>("/dDH.Service.SHR.Services.InterInfoQuery/tI1020/queryTi10201", {
+      method: "post",
+      params: { CId },
+    });
   },
 };
 
 export const tI1030Api = {
   ti1030Query(data?: DtoTi1030Query) {
-    return requestClient.request<Ti1030Dto[]>(
-      "/dDH.Service.SHR.Services.InterInfoQuery/tI1030/ti1030Query",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Ti1030Dto[]>("/dDH.Service.SHR.Services.InterInfoQuery/tI1030/ti1030Query", {
+      method: "post",
+      data,
+    });
   },
   getDate(str?: string) {
-    return requestClient.request<string>(
-      "/dDH.Service.SHR.Services.InterInfoQuery/tI1030/getDate",
-      {
-        method: "post",
-        params: { str },
-      },
-    );
+    return requestClient.request<string>("/dDH.Service.SHR.Services.InterInfoQuery/tI1030/getDate", {
+      method: "post",
+      params: { str },
+    });
   },
 };
 
 export const tI1040Api = {
   queryTi1040(data?: DtoTi1040Query) {
-    return requestClient.request<Ti1040Dto[]>(
-      "/dDH.Service.SHR.Services.InterInfoQuery/tI1040/queryTi1040",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Ti1040Dto[]>("/dDH.Service.SHR.Services.InterInfoQuery/tI1040/queryTi1040", {
+      method: "post",
+      data,
+    });
   },
   getDate(str?: string) {
-    return requestClient.request<string>(
-      "/dDH.Service.SHR.Services.InterInfoQuery/tI1040/getDate",
-      {
-        method: "post",
-        params: { str },
-      },
-    );
+    return requestClient.request<string>("/dDH.Service.SHR.Services.InterInfoQuery/tI1040/getDate", {
+      method: "post",
+      params: { str },
+    });
   },
 };
 
 export const tI1050Api = {
   queryTi1050(data?: DtoTi1050Query) {
-    return requestClient.request<Ti1050Dto[]>(
-      "/dDH.Service.SHR.Services.InterInfoQuery/tI1050/queryTi1050",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Ti1050Dto[]>("/dDH.Service.SHR.Services.InterInfoQuery/tI1050/queryTi1050", {
+      method: "post",
+      data,
+    });
   },
   getDate(str?: string) {
-    return requestClient.request<string>(
-      "/dDH.Service.SHR.Services.InterInfoQuery/tI1050/getDate",
-      {
-        method: "post",
-        params: { str },
-      },
-    );
+    return requestClient.request<string>("/dDH.Service.SHR.Services.InterInfoQuery/tI1050/getDate", {
+      method: "post",
+      params: { str },
+    });
   },
 };
 
 export const tI1060Api = {
   queryTi1060(data?: DtoTi1060Query) {
-    return requestClient.request<Ti1060Dto[]>(
-      "/dDH.Service.SHR.Services.InterInfoQuery/tI1060/queryTi1060",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Ti1060Dto[]>("/dDH.Service.SHR.Services.InterInfoQuery/tI1060/queryTi1060", {
+      method: "post",
+      data,
+    });
   },
 };
 
 export const tI1070Api = {
   queryDS(data?: DtoTi1070Query) {
-    return requestClient.request<Ti1070Dto[]>(
-      "/dDH.Service.SHR.Services.InterInfoQuery/tI1070/queryDS",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Ti1070Dto[]>("/dDH.Service.SHR.Services.InterInfoQuery/tI1070/queryDS", {
+      method: "post",
+      data,
+    });
   },
   queryDSS(data?: DtoTi1080Query) {
-    return requestClient.request<Ti1080Dto[]>(
-      "/dDH.Service.SHR.Services.InterInfoQuery/tI1070/queryDSS",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Ti1080Dto[]>("/dDH.Service.SHR.Services.InterInfoQuery/tI1070/queryDSS", {
+      method: "post",
+      data,
+    });
   },
 };
 
 export const tI1090Api = {
   queryInStove(data?: TimeRange) {
-    return requestClient.request<Ti1090_InStoveDto[]>(
-      "/dDH.Service.SHR.Services.InterInfoQuery/tI1090/queryInStove",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Ti1090_InStoveDto[]>("/dDH.Service.SHR.Services.InterInfoQuery/tI1090/queryInStove", {
+      method: "post",
+      data,
+    });
   },
   queryOutStove(data?: TimeRange) {
     return requestClient.request<Ti1090_OutStoveDto[]>(
@@ -5580,109 +5058,79 @@ export const tI1090Api = {
     );
   },
   getDate(str?: string) {
-    return requestClient.request<string>(
-      "/dDH.Service.SHR.Services.InterInfoQuery/tI1090/getDate",
-      {
-        method: "post",
-        params: { str },
-      },
-    );
+    return requestClient.request<string>("/dDH.Service.SHR.Services.InterInfoQuery/tI1090/getDate", {
+      method: "post",
+      params: { str },
+    });
   },
 };
 
 export const tI1200Api = {
   getL2me12s(data?: DtoTdaZb037Query) {
-    return requestClient.request<Ti1200Dto[]>(
-      "/dDH.Service.SHR.Services.InterInfoQuery/tI1200/getL2me12s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Ti1200Dto[]>("/dDH.Service.SHR.Services.InterInfoQuery/tI1200/getL2me12s", {
+      method: "post",
+      data,
+    });
   },
   getDate(str?: string) {
-    return requestClient.request<string>(
-      "/dDH.Service.SHR.Services.InterInfoQuery/tI1200/getDate",
-      {
-        method: "post",
-        params: { str },
-      },
-    );
+    return requestClient.request<string>("/dDH.Service.SHR.Services.InterInfoQuery/tI1200/getDate", {
+      method: "post",
+      params: { str },
+    });
   },
 };
 
 export const tI1210Api = {
   getTi1210Dtos(data?: DtoTi1210Query) {
-    return requestClient.request<Ti1210Dto[]>(
-      "/dDH.Service.SHR.Services.InterInfoQuery/tI1210/getTi1210Dtos",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Ti1210Dto[]>("/dDH.Service.SHR.Services.InterInfoQuery/tI1210/getTi1210Dtos", {
+      method: "post",
+      data,
+    });
   },
   getDate(str?: string) {
-    return requestClient.request<string>(
-      "/dDH.Service.SHR.Services.InterInfoQuery/tI1210/getDate",
-      {
-        method: "post",
-        params: { str },
-      },
-    );
+    return requestClient.request<string>("/dDH.Service.SHR.Services.InterInfoQuery/tI1210/getDate", {
+      method: "post",
+      params: { str },
+    });
   },
   getHitRate(thick?: number, thickSj?: number, thickMin?: number, thickMax?: number) {
-    return requestClient.request<string>(
-      "/dDH.Service.SHR.Services.InterInfoQuery/tI1210/getHitRate",
-      {
-        method: "post",
-        params: { thick, thickSj, thickMin, thickMax },
-      },
-    );
+    return requestClient.request<string>("/dDH.Service.SHR.Services.InterInfoQuery/tI1210/getHitRate", {
+      method: "post",
+      params: { thick, thickSj, thickMin, thickMax },
+    });
   },
   getTi1211Dtos(data?: DtoTi1210Query) {
-    return requestClient.request<Ti1211Dto[]>(
-      "/dDH.Service.SHR.Services.InterInfoQuery/tI1210/getTi1211Dtos",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Ti1211Dto[]>("/dDH.Service.SHR.Services.InterInfoQuery/tI1210/getTi1211Dtos", {
+      method: "post",
+      data,
+    });
   },
 };
 
 export const tdaZb001Api = {
   getTdaZb001s(data?: DtoTdaZb037Query) {
-    return requestClient.request<TdaZb001[]>(
-      "/dDH.Service.SHR.Services.InterInfoQuery/tdaZb001/getTdaZb001s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<TdaZb001[]>("/dDH.Service.SHR.Services.InterInfoQuery/tdaZb001/getTdaZb001s", {
+      method: "post",
+      data,
+    });
   },
 };
 
 export const tdaZb037Api = {
   queryTdaZb037(data?: DtoTdaZb037Query) {
-    return requestClient.request<TdaZb037[]>(
-      "/dDH.Service.SHR.Services.InterInfoQuery/tdaZb037/queryTdaZb037",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<TdaZb037[]>("/dDH.Service.SHR.Services.InterInfoQuery/tdaZb037/queryTdaZb037", {
+      method: "post",
+      data,
+    });
   },
 };
 
 export const tdaZb232Api = {
   getTdaZb232s(data?: DtoTdaZb037Query) {
-    return requestClient.request<TdaZb232[]>(
-      "/dDH.Service.SHR.Services.InterInfoQuery/tdaZb232/getTdaZb232s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<TdaZb232[]>("/dDH.Service.SHR.Services.InterInfoQuery/tdaZb232/getTdaZb232s", {
+      method: "post",
+      data,
+    });
   },
 };
 
@@ -5895,176 +5343,156 @@ export interface Tpa1000 {
 export const tPa1000Api = {
   /** 获取产线（原 ITpa1000AppService.QueryLines） */
   queryLines() {
-    return requestClient.request<Tpa1000[]>(
-      "/hmx.Service.Widgets.Services/tPa1000/queryLines",
-      { method: "post" },
-    );
+    return requestClient.request<Tpa1000[]>("/hmx.Service.Widgets.Services/tPa1000/queryLines", { method: "post" });
   },
 };
 
 export const hR5200JCTLApi = {
   /** 查询可剔炉数据 */
   getListAsync1(data?: Thr3010TlQueryDto) {
-    return requestClient.request<QueryHR5200_JCDto[]>(
-      "/dDH.Service.SHR.Services.ThrBar/hR5200JCTL/getListAsync1",
-      { method: "post", data },
-    );
+    return requestClient.request<QueryHR5200_JCDto[]>("/dDH.Service.SHR.Services.ThrBar/hR5200JCTL/getListAsync1", {
+      method: "post",
+      data,
+    });
   },
   /** 查询剔炉记录 */
   getListAsync2(data?: Thr3010TlQueryDto) {
-    return requestClient.request<Thr5200[]>(
-      "/dDH.Service.SHR.Services.ThrBar/hR5200JCTL/getListAsync2",
-      { method: "post", data },
-    );
+    return requestClient.request<Thr5200[]>("/dDH.Service.SHR.Services.ThrBar/hR5200JCTL/getListAsync2", {
+      method: "post",
+      data,
+    });
   },
   /** 执行剔炉 */
   furOutAsync(data?: Thr3010TlDto) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services.ThrBar/hR5200JCTL/furOutAsync",
-      { method: "post", data },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services.ThrBar/hR5200JCTL/furOutAsync", {
+      method: "post",
+      data,
+    });
   },
   /** 加热完成（出炉） */
   outFur(data?: Thr3010TlDto) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services.ThrBar/hR5200JCTL/outFur",
-      { method: "post", data },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services.ThrBar/hR5200JCTL/outFur", { method: "post", data });
   },
   /** 撤销加热完成（撤销出炉） */
   canleOutFur(data?: Thr3010TlDto) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services.ThrBar/hR5200JCTL/canleOutFur",
-      { method: "post", data },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services.ThrBar/hR5200JCTL/canleOutFur", {
+      method: "post",
+      data,
+    });
   },
   /** 撤销剔炉/轧废（标量枚举走 params，件次号数组走 data） */
   canleHR5200(thrLogJcEnum?: ThrLogJcEnum, data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services.ThrBar/hR5200JCTL/canleHR5200",
-      { method: "post", params: { thrLogJcEnum }, data },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services.ThrBar/hR5200JCTL/canleHR5200", {
+      method: "post",
+      params: { thrLogJcEnum },
+      data,
+    });
   },
 };
 
 export const hR5300JCZFApi = {
   /** 查询可轧废数据 */
   getListAsync1(data?: Thr3010ZFQueryDto) {
-    return requestClient.request<QueryHR5200_JCDto[]>(
-      "/dDH.Service.SHR.Services.ThrBar/hR5300JCZF/getListAsync1",
-      { method: "post", data },
-    );
+    return requestClient.request<QueryHR5200_JCDto[]>("/dDH.Service.SHR.Services.ThrBar/hR5300JCZF/getListAsync1", {
+      method: "post",
+      data,
+    });
   },
   /** 查询轧废记录 */
   getListAsync2(data?: Thr3010ZFQueryDto) {
-    return requestClient.request<Thr5200[]>(
-      "/dDH.Service.SHR.Services.ThrBar/hR5300JCZF/getListAsync2",
-      { method: "post", data },
-    );
+    return requestClient.request<Thr5200[]>("/dDH.Service.SHR.Services.ThrBar/hR5300JCZF/getListAsync2", {
+      method: "post",
+      data,
+    });
   },
   /** 执行轧废 */
   rollOutAsync(data?: Thr3010ZFDto) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services.ThrBar/hR5300JCZF/rollOutAsync",
-      { method: "post", data },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services.ThrBar/hR5300JCZF/rollOutAsync", {
+      method: "post",
+      data,
+    });
   },
   /** 轧制完成 */
   finishRoll(data?: Thr3010ZFDto) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services.ThrBar/hR5300JCZF/finishRoll",
-      { method: "post", data },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services.ThrBar/hR5300JCZF/finishRoll", {
+      method: "post",
+      data,
+    });
   },
   /** 撤销轧制完成 */
   canleFinishRoll(data?: Thr3010ZFDto) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services.ThrBar/hR5300JCZF/canleFinishRoll",
-      { method: "post", data },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services.ThrBar/hR5300JCZF/canleFinishRoll", {
+      method: "post",
+      data,
+    });
   },
 };
 
 export const hR5310JCApi = {
   /** 查询材料明细 */
   getThr3010s(data?: DtoHR5400JcQuery) {
-    return requestClient.request<QueryHR5310JCDto[]>(
-      "/dDH.Service.SHR.Services.ThrBar/hR5310JC/getThr3010s",
-      { method: "post", data },
-    );
+    return requestClient.request<QueryHR5310JCDto[]>("/dDH.Service.SHR.Services.ThrBar/hR5310JC/getThr3010s", {
+      method: "post",
+      data,
+    });
   },
   /** 生成组批信息 */
   addZpInfo(data?: DtoHR5400JcQuery) {
-    return requestClient.request<Thr3000>(
-      "/dDH.Service.SHR.Services.ThrBar/hR5310JC/addZpInfo",
-      { method: "post", data },
-    );
+    return requestClient.request<Thr3000>("/dDH.Service.SHR.Services.ThrBar/hR5310JC/addZpInfo", {
+      method: "post",
+      data,
+    });
   },
   /** 组批时添加建材收料实绩 */
   addZpJcSj(data?: DtoHR5310Jc) {
-    return requestClient.request<Thr4000[]>(
-      "/dDH.Service.SHR.Services.ThrBar/hR5310JC/addZpJcSj",
-      { method: "post", data },
-    );
+    return requestClient.request<Thr4000[]>("/dDH.Service.SHR.Services.ThrBar/hR5310JC/addZpJcSj", {
+      method: "post",
+      data,
+    });
   },
   /** 保存组批时添加的建材收料实绩 */
   saveZp(data?: DtoHR5310Jc) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services.ThrBar/hR5310JC/saveZp",
-      { method: "post", data },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services.ThrBar/hR5310JC/saveZp", { method: "post", data });
   },
 };
 
 export const hR5400JCApi = {
   /** 查询组批计划 */
   getThr3000s(data?: DtoHR5400JcQuery) {
-    return requestClient.request<Thr3000[]>(
-      "/dDH.Service.SHR.Services.ThrBar/hR5400JC/getThr3000s",
-      { method: "post", data },
-    );
+    return requestClient.request<Thr3000[]>("/dDH.Service.SHR.Services.ThrBar/hR5400JC/getThr3000s", {
+      method: "post",
+      data,
+    });
   },
   /** 查询材料明细 */
   getThr3010s(data?: DtoHR5400JcQuery) {
-    return requestClient.request<Thr3010[]>(
-      "/dDH.Service.SHR.Services.ThrBar/hR5400JC/getThr3010s",
-      { method: "post", data },
-    );
+    return requestClient.request<Thr3010[]>("/dDH.Service.SHR.Services.ThrBar/hR5400JC/getThr3010s", {
+      method: "post",
+      data,
+    });
   },
   /** 查询产出实绩 */
   getThr4000s(data?: DtoQueryThr3000) {
-    return requestClient.request<Thr4000[]>(
-      "/dDH.Service.SHR.Services.ThrBar/hR5400JC/getThr4000s",
-      { method: "post", data },
-    );
+    return requestClient.request<Thr4000[]>("/dDH.Service.SHR.Services.ThrBar/hR5400JC/getThr4000s", {
+      method: "post",
+      data,
+    });
   },
   /** 撤销组批 */
   canelZp(data?: DtoHR5400JcQuery) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services.ThrBar/hR5400JC/canelZp",
-      { method: "post", data },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services.ThrBar/hR5400JC/canelZp", { method: "post", data });
   },
   /** 补充组批 */
   addZp(data?: DtoHR5400JcQuery) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services.ThrBar/hR5400JC/addZp",
-      { method: "post", data },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services.ThrBar/hR5400JC/addZp", { method: "post", data });
   },
   /** 添加收料实绩 */
   addJcSj(data?: DtoAddThr4000) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services.ThrBar/hR5400JC/addJcSj",
-      { method: "post", data },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services.ThrBar/hR5400JC/addJcSj", { method: "post", data });
   },
   /** 保存产出实绩增删改 */
   saveChange(data?: Thr4000SaveChangesData) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services.ThrBar/hR5400JC/saveChange",
-      { method: "post", data },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services.ThrBar/hR5400JC/saveChange", { method: "post", data });
   },
 };
 
@@ -6139,37 +5567,34 @@ export interface ChangePlanDto {
 export const hR2200Api = {
   /** 查询库存材料（改切） */
   getSlabs(data?: DtoQuerySlabs) {
-    return requestClient.request<import("./syd.swagger").Tyd2000Dto[]>(
-      "/dDH.Service.SHR.Services/hR2200/getSlabs",
-      { method: "post", data },
-    );
+    return requestClient.request<import("./syd.swagger").Tyd2000Dto[]>("/dDH.Service.SHR.Services/hR2200/getSlabs", {
+      method: "post",
+      data,
+    });
   },
   /** 材料按提料计划生成改切计划 */
   saveJQPlan(cSlabId?: string, cOrderId?: string) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR2200/saveJQPlan",
-      { method: "post", params: { cSlabId, cOrderId } },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR2200/saveJQPlan", {
+      method: "post",
+      params: { cSlabId, cOrderId },
+    });
   },
 };
 
 export const hR3030Api = {
   /** 查询材料现剪切计划 */
   queryThr3030s(cPlateSlab?: string, cSlabNo?: string) {
-    return requestClient.request<Thr3030[]>(
-      "/dDH.Service.SHR.Services/hR3030/queryThr3030s",
-      { method: "post", params: { cPlateSlab, cSlabNo } },
-    );
+    return requestClient.request<Thr3030[]>("/dDH.Service.SHR.Services/hR3030/queryThr3030s", {
+      method: "post",
+      params: { cPlateSlab, cSlabNo },
+    });
   },
 };
 
 export const hR3130Api = {
   /** 作业计划改单（材料轧制计划订单号变更） */
   changePlans(data?: ChangePlanDto) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR3130/changePlans",
-      { method: "post", data },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR3130/changePlans", { method: "post", data });
   },
 };
 
@@ -6284,7 +5709,6 @@ export interface TiE1000 {
   /** 花纹板高度[%] */
   hwheight?: number;
 }
-
 
 /** TiE2000（DDH.Service.Interface.Entities.BKMSK） */
 export interface TiE2000 {
@@ -6467,7 +5891,6 @@ export interface TiE2000 {
   standby5?: string | null;
 }
 
-
 /** TiE2051（DDH.Service.Interface.Entities.BKMSK） */
 export interface TiE2051 {
   selected?: boolean;
@@ -6625,7 +6048,6 @@ export interface TiE2051 {
   readStatus?: any;
 }
 
-
 /** TiE3000（DDH.Service.Interface.Entities.BKMSK） */
 export interface TiE3000 {
   selected?: boolean;
@@ -6669,7 +6091,6 @@ export interface TiE3000 {
   checkTime?: string | null;
 }
 
-
 /** TiE3020（DDH.Service.Interface.Entities.BKMSK） */
 export interface TiE3020 {
   selected?: boolean;
@@ -6707,7 +6128,6 @@ export interface TiE3020 {
   fueRow?: number;
 }
 
-
 /** TiE3030（DDH.Service.Interface.Entities.BKMSK） */
 export interface TiE3030 {
   selected?: boolean;
@@ -6737,7 +6157,6 @@ export interface TiE3030 {
   deleteFlag?: number;
 }
 
-
 /** TiE3040（DDH.Service.Interface.Entities.BKMSK） */
 export interface TiE3040 {
   selected?: boolean;
@@ -6766,7 +6185,6 @@ export interface TiE3040 {
   /** 钢卷重量 */
   coilWeight?: number;
 }
-
 
 /** TiE4000（DDH.Service.Interface.Entities.BKMSK） */
 export interface TiE4000 {
@@ -6937,7 +6355,6 @@ export interface TiE4000 {
   fbIndf7?: number;
 }
 
-
 /** TiE5000（DDH.Service.Interface.Entities.BKMSK） */
 export interface TiE5000 {
   selected?: boolean;
@@ -6993,7 +6410,6 @@ export interface TiE5000 {
   readStatus?: number;
 }
 
-
 /** TiE5010（DDH.Service.Interface.Entities.BKMSK） */
 export interface TiE5010 {
   selected?: boolean;
@@ -7043,7 +6459,6 @@ export interface TiE5010 {
   readStatus?: number;
 }
 
-
 /** TiE8080（DDH.Service.Interface.Entities.BKMSK） */
 export interface TiE8080 {
   selected?: boolean;
@@ -7084,7 +6499,6 @@ export interface TiE8080 {
   /** 时间 */
   dHour?: string | null;
 }
-
 
 /** Tie3010Dto（DDH.Service.SMP.Dto） */
 export interface Tie3010Dto {
@@ -7148,101 +6562,100 @@ export interface Tie3010Dto {
   c_MACHINE?: string | null;
 }
 
-
 export const e1000Api = {
   /** 查询工艺列表（原 Svc<IE1000AppService>.Proxy.QueryList(key)） */
   queryList(key?: string) {
-    return requestClient.request<TiE1000[]>(
-      "/dDH.Service.SHR.Services/e1000/queryList",
-      { method: "post", params: { key } },
-    );
+    return requestClient.request<TiE1000[]>("/dDH.Service.SHR.Services/e1000/queryList", {
+      method: "post",
+      params: { key },
+    });
   },
   /** 查询轧制计划 */
   queryTiE2000List(data?: PlanQueryDto) {
-    return requestClient.request<TiE2000[]>(
-      "/dDH.Service.SHR.Services/e1000/queryTiE2000List",
-      { method: "post", data },
-    );
+    return requestClient.request<TiE2000[]>("/dDH.Service.SHR.Services/e1000/queryTiE2000List", {
+      method: "post",
+      data,
+    });
   },
   /** 查询板坯数据 */
   queryTiE2051List(data?: PlanQueryDto) {
-    return requestClient.request<TiE2051[]>(
-      "/dDH.Service.SHR.Services/e1000/queryTiE2051List",
-      { method: "post", data },
-    );
+    return requestClient.request<TiE2051[]>("/dDH.Service.SHR.Services/e1000/queryTiE2051List", {
+      method: "post",
+      data,
+    });
   },
   /** 查询板坯照合实绩 */
   queryTiE3000List(data?: PlanQueryDto) {
-    return requestClient.request<TiE3000[]>(
-      "/dDH.Service.SHR.Services/e1000/queryTiE3000List",
-      { method: "post", data },
-    );
+    return requestClient.request<TiE3000[]>("/dDH.Service.SHR.Services/e1000/queryTiE3000List", {
+      method: "post",
+      data,
+    });
   },
   /** 查询装炉实绩 */
   queryTiE3010List(data?: PlanQueryDto) {
-    return requestClient.request<Tie3010Dto[]>(
-      "/dDH.Service.SHR.Services/e1000/queryTiE3010List",
-      { method: "post", data },
-    );
+    return requestClient.request<Tie3010Dto[]>("/dDH.Service.SHR.Services/e1000/queryTiE3010List", {
+      method: "post",
+      data,
+    });
   },
   /** 查询出炉实绩 */
   queryTiE3020List(data?: PlanQueryDto) {
-    return requestClient.request<TiE3020[]>(
-      "/dDH.Service.SHR.Services/e1000/queryTiE3020List",
-      { method: "post", data },
-    );
+    return requestClient.request<TiE3020[]>("/dDH.Service.SHR.Services/e1000/queryTiE3020List", {
+      method: "post",
+      data,
+    });
   },
   /** 查询剔料实绩 */
   queryTiE3030List(data?: PlanQueryDto) {
-    return requestClient.request<TiE3030[]>(
-      "/dDH.Service.SHR.Services/e1000/queryTiE3030List",
-      { method: "post", data },
-    );
+    return requestClient.request<TiE3030[]>("/dDH.Service.SHR.Services/e1000/queryTiE3030List", {
+      method: "post",
+      data,
+    });
   },
   /** 查询钢卷称重实绩 */
   queryTiE3040List(data?: PlanQueryDto) {
-    return requestClient.request<TiE3040[]>(
-      "/dDH.Service.SHR.Services/e1000/queryTiE3040List",
-      { method: "post", data },
-    );
+    return requestClient.request<TiE3040[]>("/dDH.Service.SHR.Services/e1000/queryTiE3040List", {
+      method: "post",
+      data,
+    });
   },
   /** 查询钢卷生产实绩 */
   queryTiE4000List(data?: PlanQueryDto) {
-    return requestClient.request<TiE4000[]>(
-      "/dDH.Service.SHR.Services/e1000/queryTiE4000List",
-      { method: "post", data },
-    );
+    return requestClient.request<TiE4000[]>("/dDH.Service.SHR.Services/e1000/queryTiE4000List", {
+      method: "post",
+      data,
+    });
   },
   /** 查询轧辊实绩 */
   queryTiE5000List(data?: PlanQueryDto) {
-    return requestClient.request<TiE5000[]>(
-      "/dDH.Service.SHR.Services/e1000/queryTiE5000List",
-      { method: "post", data },
-    );
+    return requestClient.request<TiE5000[]>("/dDH.Service.SHR.Services/e1000/queryTiE5000List", {
+      method: "post",
+      data,
+    });
   },
   /** 查询备辊数据 */
   queryTiE5010List(data?: PlanQueryDto) {
-    return requestClient.request<TiE5010[]>(
-      "/dDH.Service.SHR.Services/e1000/queryTiE5010List",
-      { method: "post", data },
-    );
+    return requestClient.request<TiE5010[]>("/dDH.Service.SHR.Services/e1000/queryTiE5010List", {
+      method: "post",
+      data,
+    });
   },
   /** 查询称重（能耗）实绩 */
   queryTiE8080List(data?: PlanQueryDto) {
-    return requestClient.request<TiE8080[]>(
-      "/dDH.Service.SHR.Services/e1000/queryTiE8080List",
-      { method: "post", data },
-    );
+    return requestClient.request<TiE8080[]>("/dDH.Service.SHR.Services/e1000/queryTiE8080List", {
+      method: "post",
+      data,
+    });
   },
 };
 
 export const bkmskApi = {
   /** 处理产出实绩（原 Svc<IBkmskAppService>.Proxy.HandleSSLog） */
   handleSSLog(data?: TiE3040) {
-    return requestClient.request<any>(
-      "/dDH.Service.Interface.Services.BKMSK/bkmsk/handleSSLog",
-      { method: "post", data },
-    );
+    return requestClient.request<any>("/dDH.Service.Interface.Services.BKMSK/bkmsk/handleSSLog", {
+      method: "post",
+      data,
+    });
   },
 };
 
@@ -8080,7 +7493,6 @@ export interface TiL2ME05ItemDto {
   /** MES反馈 */ mesCallBack: string;
   /** L2反馈 */ l2CallBack: string;
 }
-
 
 /* ===================== 批次4 台账报表组 ===================== */
 
@@ -9097,314 +8509,298 @@ export interface FrmQL8100QueryInputDto {
   /** 检验时间 */ completeTime?: TimeRange;
 }
 
-
 /* ---------- 批次4 台账报表组：新服务 ---------- */
 
 export const hR4500Api = {
   /** 班次分组初始化（HR4500 Load） */
   createShiftGroup() {
-    return requestClient.request<void>(
-      "/dDH.Service.SHR.Services/hR4500/createShiftGroup",
-      { method: "post" },
-    );
+    return requestClient.request<void>("/dDH.Service.SHR.Services/hR4500/createShiftGroup", { method: "post" });
   },
   /** 日产量汇总 */
   queryDayCl(data?: TimeRange) {
-    return requestClient.request<ClHzDto[]>(
-      "/dDH.Service.SHR.Services/hR4500/queryDayCl",
-      { method: "post", data },
-    );
+    return requestClient.request<ClHzDto[]>("/dDH.Service.SHR.Services/hR4500/queryDayCl", { method: "post", data });
   },
   /** 日产量明细 */
   queryDayHz(data?: TimeRange) {
-    return requestClient.request<Hr4500HzDto[]>(
-      "/dDH.Service.SHR.Services/hR4500/queryDayHz",
-      { method: "post", data },
-    );
+    return requestClient.request<Hr4500HzDto[]>("/dDH.Service.SHR.Services/hR4500/queryDayHz", {
+      method: "post",
+      data,
+    });
   },
 };
 
 export const hR4600Api = {
   /** 炼钢热送统计 */
   queryRsl(data?: TimeRange) {
-    return requestClient.request<RslDto[]>(
-      "/dDH.Service.SHR.Services/hR4600/queryRsl",
-      { method: "post", data },
-    );
+    return requestClient.request<RslDto[]>("/dDH.Service.SHR.Services/hR4600/queryRsl", { method: "post", data });
   },
   /** 热装率统计 */
   queryRzl(data?: TimeRange) {
-    return requestClient.request<RzlDto[]>(
-      "/dDH.Service.SHR.Services/hR4600/queryRzl",
-      { method: "post", data },
-    );
+    return requestClient.request<RzlDto[]>("/dDH.Service.SHR.Services/hR4600/queryRzl", { method: "post", data });
   },
   /** 热送-按炉 */
   queryStoveRslDtos(data?: TimeRange) {
-    return requestClient.request<StoveRslDto[]>(
-      "/dDH.Service.SHR.Services/hR4600/queryStoveRslDtos",
-      { method: "post", data },
-    );
+    return requestClient.request<StoveRslDto[]>("/dDH.Service.SHR.Services/hR4600/queryStoveRslDtos", {
+      method: "post",
+      data,
+    });
   },
 };
 
 export const hR4700Api = {
   /** 厚不合台账（HR4700） */
   queryThickHz(data?: TimeRange) {
-    return requestClient.request<QueryThickHzDto[]>(
-      "/dDH.Service.SHR.Services/hR4700/queryThickHz",
-      { method: "post", data },
-    );
+    return requestClient.request<QueryThickHzDto[]>("/dDH.Service.SHR.Services/hR4700/queryThickHz", {
+      method: "post",
+      data,
+    });
   },
   /** 长不合台账（HR4710） */
   queryLenHz(data?: TimeRange) {
-    return requestClient.request<QueryLenHzDto[]>(
-      "/dDH.Service.SHR.Services/hR4700/queryLenHz",
-      { method: "post", data },
-    );
+    return requestClient.request<QueryLenHzDto[]>("/dDH.Service.SHR.Services/hR4700/queryLenHz", {
+      method: "post",
+      data,
+    });
   },
   /** 宽不合台账（HR4720） */
   queryWidthHz(data?: TimeRange) {
-    return requestClient.request<QueryWidthHzDto[]>(
-      "/dDH.Service.SHR.Services/hR4700/queryWidthHz",
-      { method: "post", data },
-    );
+    return requestClient.request<QueryWidthHzDto[]>("/dDH.Service.SHR.Services/hR4700/queryWidthHz", {
+      method: "post",
+      data,
+    });
   },
 };
 
 export const hR4800Api = {
   /** 理论成材率查询（HR4800） */
   queryLlCcl(data?: TimeRange) {
-    return requestClient.request<CclDto[]>(
-      "/dDH.Service.SHR.Services/hR4800/queryLlCcl",
-      { method: "post", data },
-    );
+    return requestClient.request<CclDto[]>("/dDH.Service.SHR.Services/hR4800/queryLlCcl", { method: "post", data });
   },
 };
 
 export const hR4810Api = {
   /** 实际成材率明细（HR4810） */
   get4810Dtos(data?: DtoQueryThr4810) {
-    return requestClient.request<Thr4810Dto[]>(
-      "/dDH.Service.SHR.Services/hR4810/get4810Dtos",
-      { method: "post", data },
-    );
+    return requestClient.request<Thr4810Dto[]>("/dDH.Service.SHR.Services/hR4810/get4810Dtos", {
+      method: "post",
+      data,
+    });
   },
   get4810CclHzDtos(data?: Thr4810Dto[]) {
-    return requestClient.request<Thr4810CclHzDto[]>(
-      "/dDH.Service.SHR.Services/hR4810/get4810CclHzDtos",
-      { method: "post", data },
-    );
+    return requestClient.request<Thr4810CclHzDto[]>("/dDH.Service.SHR.Services/hR4810/get4810CclHzDtos", {
+      method: "post",
+      data,
+    });
   },
   get4810CclSgCodeHzDtos(data?: Thr4810Dto[]) {
-    return requestClient.request<Thr4810CclHzDto[]>(
-      "/dDH.Service.SHR.Services/hR4810/get4810CclSgCodeHzDtos",
-      { method: "post", data },
-    );
+    return requestClient.request<Thr4810CclHzDto[]>("/dDH.Service.SHR.Services/hR4810/get4810CclSgCodeHzDtos", {
+      method: "post",
+      data,
+    });
   },
   get4810CclThickHzDtos(data?: Thr4810Dto[]) {
-    return requestClient.request<Thr4810CclHzDto[]>(
-      "/dDH.Service.SHR.Services/hR4810/get4810CclThickHzDtos",
-      { method: "post", data },
-    );
+    return requestClient.request<Thr4810CclHzDto[]>("/dDH.Service.SHR.Services/hR4810/get4810CclThickHzDtos", {
+      method: "post",
+      data,
+    });
   },
   get4810CclGroupHzDtos(data?: Thr4810Dto[]) {
-    return requestClient.request<Thr4810CclHzDto[]>(
-      "/dDH.Service.SHR.Services/hR4810/get4810CclGroupHzDtos",
-      { method: "post", data },
-    );
+    return requestClient.request<Thr4810CclHzDto[]>("/dDH.Service.SHR.Services/hR4810/get4810CclGroupHzDtos", {
+      method: "post",
+      data,
+    });
   },
   get4810CclDayHzDtos(data?: Thr4810Dto[]) {
-    return requestClient.request<Thr4810CclHzDto[]>(
-      "/dDH.Service.SHR.Services/hR4810/get4810CclDayHzDtos",
-      { method: "post", data },
-    );
+    return requestClient.request<Thr4810CclHzDto[]>("/dDH.Service.SHR.Services/hR4810/get4810CclDayHzDtos", {
+      method: "post",
+      data,
+    });
   },
 };
 
 export const hR4830Api = {
   /** 生产计划成材率统计汇总（HR4830） */
   queryHR4830Dtos(data?: TimeRange) {
-    return requestClient.request<QueryHR4830Dto[]>(
-      "/dDH.Service.SHR.Services/hR4830/queryHR4830Dtos",
-      { method: "post", data },
-    );
+    return requestClient.request<QueryHR4830Dto[]>("/dDH.Service.SHR.Services/hR4830/queryHR4830Dtos", {
+      method: "post",
+      data,
+    });
   },
 };
 
 export const hR4900Api = {
   /** 防瓢曲台账（HR4900） */
   get4900Dtos(data?: TimeRange) {
-    return requestClient.request<QueryHR4900Dto[]>(
-      "/dDH.Service.SHR.Services/hR4900/get4900Dtos",
-      { method: "post", data },
-    );
+    return requestClient.request<QueryHR4900Dto[]>("/dDH.Service.SHR.Services/hR4900/get4900Dtos", {
+      method: "post",
+      data,
+    });
   },
 };
 
 export const hR9300Api = {
   /** 工艺判定报表主查询（HR9300） */
   query9300(data?: DtoQueryThr3000) {
-    return requestClient.request<QueryHR9300Dto[]>(
-      "/dDH.Service.SHR.Services/hR9300/query9300",
-      { method: "post", data },
-    );
+    return requestClient.request<QueryHR9300Dto[]>("/dDH.Service.SHR.Services/hR9300/query9300", {
+      method: "post",
+      data,
+    });
   },
   get9300HzRm(data?: QueryHR9300Dto[]) {
-    return requestClient.request<QueryHR9300HzDto[]>(
-      "/dDH.Service.SHR.Services/hR9300/get9300HzRm",
-      { method: "post", data },
-    );
+    return requestClient.request<QueryHR9300HzDto[]>("/dDH.Service.SHR.Services/hR9300/get9300HzRm", {
+      method: "post",
+      data,
+    });
   },
   get9300HzFmStart(data?: QueryHR9300Dto[]) {
-    return requestClient.request<QueryHR9300HzDto[]>(
-      "/dDH.Service.SHR.Services/hR9300/get9300HzFmStart",
-      { method: "post", data },
-    );
+    return requestClient.request<QueryHR9300HzDto[]>("/dDH.Service.SHR.Services/hR9300/get9300HzFmStart", {
+      method: "post",
+      data,
+    });
   },
   get9300HzFmEnd(data?: QueryHR9300Dto[]) {
-    return requestClient.request<QueryHR9300HzDto[]>(
-      "/dDH.Service.SHR.Services/hR9300/get9300HzFmEnd",
-      { method: "post", data },
-    );
+    return requestClient.request<QueryHR9300HzDto[]>("/dDH.Service.SHR.Services/hR9300/get9300HzFmEnd", {
+      method: "post",
+      data,
+    });
   },
   get9300HzRmGroupHz(data?: QueryHR9300Dto[]) {
-    return requestClient.request<QueryHR9300HzDto[]>(
-      "/dDH.Service.SHR.Services/hR9300/get9300HzRmGroupHz",
-      { method: "post", data },
-    );
+    return requestClient.request<QueryHR9300HzDto[]>("/dDH.Service.SHR.Services/hR9300/get9300HzRmGroupHz", {
+      method: "post",
+      data,
+    });
   },
   get9300HzFmStGroupHz(data?: QueryHR9300Dto[]) {
-    return requestClient.request<QueryHR9300HzDto[]>(
-      "/dDH.Service.SHR.Services/hR9300/get9300HzFmStGroupHz",
-      { method: "post", data },
-    );
+    return requestClient.request<QueryHR9300HzDto[]>("/dDH.Service.SHR.Services/hR9300/get9300HzFmStGroupHz", {
+      method: "post",
+      data,
+    });
   },
   get9300HzFmEndGroupHz(data?: QueryHR9300Dto[]) {
-    return requestClient.request<QueryHR9300HzDto[]>(
-      "/dDH.Service.SHR.Services/hR9300/get9300HzFmEndGroupHz",
-      { method: "post", data },
-    );
+    return requestClient.request<QueryHR9300HzDto[]>("/dDH.Service.SHR.Services/hR9300/get9300HzFmEndGroupHz", {
+      method: "post",
+      data,
+    });
   },
   get9300HzInFurTimeGroupHz(data?: QueryHR9300Dto[]) {
-    return requestClient.request<QueryHR9300HzDto[]>(
-      "/dDH.Service.SHR.Services/hR9300/get9300HzInFurTimeGroupHz",
-      { method: "post", data },
-    );
+    return requestClient.request<QueryHR9300HzDto[]>("/dDH.Service.SHR.Services/hR9300/get9300HzInFurTimeGroupHz", {
+      method: "post",
+      data,
+    });
   },
   get9300HzOutFurTempGroupHz(data?: QueryHR9300Dto[]) {
-    return requestClient.request<QueryHR9300HzDto[]>(
-      "/dDH.Service.SHR.Services/hR9300/get9300HzOutFurTempGroupHz",
-      { method: "post", data },
-    );
+    return requestClient.request<QueryHR9300HzDto[]>("/dDH.Service.SHR.Services/hR9300/get9300HzOutFurTempGroupHz", {
+      method: "post",
+      data,
+    });
   },
   get9300HzFinishTempGroupHz(data?: QueryHR9300Dto[]) {
-    return requestClient.request<QueryHR9300HzDto[]>(
-      "/dDH.Service.SHR.Services/hR9300/get9300HzFinishTempGroupHz",
-      { method: "post", data },
-    );
+    return requestClient.request<QueryHR9300HzDto[]>("/dDH.Service.SHR.Services/hR9300/get9300HzFinishTempGroupHz", {
+      method: "post",
+      data,
+    });
   },
   get9300HzFinishTempAuthorHz(data?: QueryHR9300Dto[]) {
-    return requestClient.request<QueryHR9300HzDto[]>(
-      "/dDH.Service.SHR.Services/hR9300/get9300HzFinishTempAuthorHz",
-      { method: "post", data },
-    );
+    return requestClient.request<QueryHR9300HzDto[]>("/dDH.Service.SHR.Services/hR9300/get9300HzFinishTempAuthorHz", {
+      method: "post",
+      data,
+    });
   },
   get9300HzEntryTempGroupHz(data?: QueryHR9300Dto[]) {
-    return requestClient.request<QueryHR9300HzDto[]>(
-      "/dDH.Service.SHR.Services/hR9300/get9300HzEntryTempGroupHz",
-      { method: "post", data },
-    );
+    return requestClient.request<QueryHR9300HzDto[]>("/dDH.Service.SHR.Services/hR9300/get9300HzEntryTempGroupHz", {
+      method: "post",
+      data,
+    });
   },
   get9300HzEntryTempAuthorHz(data?: QueryHR9300Dto[]) {
-    return requestClient.request<QueryHR9300HzDto[]>(
-      "/dDH.Service.SHR.Services/hR9300/get9300HzEntryTempAuthorHz",
-      { method: "post", data },
-    );
+    return requestClient.request<QueryHR9300HzDto[]>("/dDH.Service.SHR.Services/hR9300/get9300HzEntryTempAuthorHz", {
+      method: "post",
+      data,
+    });
   },
   get9300HzFmTempAuthorHz(data?: QueryHR9300Dto[]) {
-    return requestClient.request<QueryHR9300HzDto[]>(
-      "/dDH.Service.SHR.Services/hR9300/get9300HzFmTempAuthorHz",
-      { method: "post", data },
-    );
+    return requestClient.request<QueryHR9300HzDto[]>("/dDH.Service.SHR.Services/hR9300/get9300HzFmTempAuthorHz", {
+      method: "post",
+      data,
+    });
   },
   get9300HzFmTempGroupHz(data?: QueryHR9300Dto[]) {
-    return requestClient.request<QueryHR9300HzDto[]>(
-      "/dDH.Service.SHR.Services/hR9300/get9300HzFmTempGroupHz",
-      { method: "post", data },
-    );
+    return requestClient.request<QueryHR9300HzDto[]>("/dDH.Service.SHR.Services/hR9300/get9300HzFmTempGroupHz", {
+      method: "post",
+      data,
+    });
   },
   get9300HzRollTempHz(data?: QueryHR9300Dto[]) {
-    return requestClient.request<QueryHR9300HzDto[]>(
-      "/dDH.Service.SHR.Services/hR9300/get9300HzRollTempHz",
-      { method: "post", data },
-    );
+    return requestClient.request<QueryHR9300HzDto[]>("/dDH.Service.SHR.Services/hR9300/get9300HzRollTempHz", {
+      method: "post",
+      data,
+    });
   },
   get9300HzACCTempGroupHz(data?: QueryHR9300Dto[]) {
-    return requestClient.request<QueryHR9300HzDto[]>(
-      "/dDH.Service.SHR.Services/hR9300/get9300HzACCTempGroupHz",
-      { method: "post", data },
-    );
+    return requestClient.request<QueryHR9300HzDto[]>("/dDH.Service.SHR.Services/hR9300/get9300HzACCTempGroupHz", {
+      method: "post",
+      data,
+    });
   },
   get9300HzACCTempAuthorHz(data?: QueryHR9300Dto[]) {
-    return requestClient.request<QueryHR9300HzDto[]>(
-      "/dDH.Service.SHR.Services/hR9300/get9300HzACCTempAuthorHz",
-      { method: "post", data },
-    );
+    return requestClient.request<QueryHR9300HzDto[]>("/dDH.Service.SHR.Services/hR9300/get9300HzACCTempAuthorHz", {
+      method: "post",
+      data,
+    });
   },
 };
 
 export const hR9320Api = {
   /** 性能台账（HR9320） */
   get9320Dtos(data?: FrmQL8100QueryInputDto) {
-    return requestClient.request<QueryHR9320Dto[]>(
-      "/dDH.Service.SHR.Services/hR9320/get9320Dtos",
-      { method: "post", data },
-    );
+    return requestClient.request<QueryHR9320Dto[]>("/dDH.Service.SHR.Services/hR9320/get9320Dtos", {
+      method: "post",
+      data,
+    });
   },
 };
 
 export const hR9400Api = {
   /** 中厚板轧制台账（HR9400） */
   getHR9400Dtos(data?: DtoQueryHR9400) {
-    return requestClient.request<HR9400Dto[]>(
-      "/dDH.Service.SHR.Services/hR9400/getHR9400Dtos",
-      { method: "post", data },
-    );
+    return requestClient.request<HR9400Dto[]>("/dDH.Service.SHR.Services/hR9400/getHR9400Dtos", {
+      method: "post",
+      data,
+    });
   },
   /** 性能判定台账（HR9410） */
   getHR9410Dtos(data?: DtoQueryHR9410) {
-    return requestClient.request<Thr9410Dto[]>(
-      "/dDH.Service.SHR.Services/hR9400/getHR9410Dtos",
-      { method: "post", data },
-    );
+    return requestClient.request<Thr9410Dto[]>("/dDH.Service.SHR.Services/hR9400/getHR9410Dtos", {
+      method: "post",
+      data,
+    });
   },
 };
 
 export const hR9420Api = {
   /** 中厚板火切台账（HR9420） */
   get9420Dtos(data?: TimeRange) {
-    return requestClient.request<QueryHR9420Dto[]>(
-      "/dDH.Service.SHR.Services/hR9420/get9420Dtos",
-      { method: "post", data },
-    );
+    return requestClient.request<QueryHR9420Dto[]>("/dDH.Service.SHR.Services/hR9420/get9420Dtos", {
+      method: "post",
+      data,
+    });
   },
 };
 
 export const hR9500Api = {
   /** 销售订单跟踪查询（HR9500） */
   queryOrderGz(data?: QueryOrderDto) {
-    return requestClient.request<Tmp2000HzDto[]>(
-      "/dDH.Service.SHR.Services/hR9500/queryOrderGz",
-      { method: "post", data },
-    );
+    return requestClient.request<Tmp2000HzDto[]>("/dDH.Service.SHR.Services/hR9500/queryOrderGz", {
+      method: "post",
+      data,
+    });
   },
   /** 订单库存查询（HR9500） */
   queryOrderKc(cOrderNo?: string) {
-    return requestClient.request<Tyd2000OrderDto[]>(
-      "/dDH.Service.SHR.Services/hR9500/queryOrderKc",
-      { method: "post", params: { cOrderNo } },
-    );
+    return requestClient.request<Tyd2000OrderDto[]>("/dDH.Service.SHR.Services/hR9500/queryOrderKc", {
+      method: "post",
+      params: { cOrderNo },
+    });
   },
 };
 
@@ -9425,36 +8821,26 @@ export interface TiL2me18Dto {
   /** 预留 */ spare2: number[];
 }
 
-
 export const hR3800Api = {
   /** 在制品材料查询（原 QuerySlab，FrmHR3800 DataBind） */
   querySlab(data?: DtoQueryThr3800SlabInfo) {
-    return requestClient.request<Tyd2000Dto[]>(
-      "/dDH.Service.SHR.Services/hR3800/querySlab",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Tyd2000Dto[]>("/dDH.Service.SHR.Services/hR3800/querySlab", {
+      method: "post",
+      data,
+    });
   },
   /** 修磨日志查询（原 QueryThr3800s，FrmHR3800 DataBindXM） */
   queryThr3800s(timeRange?: TimeRange) {
-    return requestClient.request<Thr3800[]>(
-      "/dDH.Service.SHR.Services/hR3800/queryThr3800s",
-      {
-        method: "post",
-        data: timeRange,
-      },
-    );
+    return requestClient.request<Thr3800[]>("/dDH.Service.SHR.Services/hR3800/queryThr3800s", {
+      method: "post",
+      data: timeRange,
+    });
   },
   /** 修磨提交（原 FrmHR3800_Add 内部保存） */
   addThr3800(data?: Thr3800Dto) {
-    return requestClient.request<any>(
-      "/dDH.Service.SHR.Services/hR3800/addThr3800",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR3800/addThr3800", {
+      method: "post",
+      data,
+    });
   },
 };

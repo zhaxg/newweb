@@ -30,7 +30,9 @@
   border-radius: 6px;
   border: 4.5px solid transparent;
   background-clip: content-box;
-  transition: background-color 0.2s, border-width 0.2s;
+  transition:
+    background-color 0.2s,
+    border-width 0.2s;
 }
 
 /* 悬停滑块：去掉透明 border，可视宽度回弹到 12px，颜色加深 → 圆角长条 */

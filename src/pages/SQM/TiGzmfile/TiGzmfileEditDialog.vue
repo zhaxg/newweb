@@ -82,7 +82,9 @@ watch(
         try {
           const lines = (await tPa1000Api.queryLines()) ?? [];
           lineOpts.value = lines.filter((x) => x.cCode).map((x) => ({ label: x.cName ?? "", value: x.cCode ?? "" }));
-        } catch { /* 拦截层已 toast */ }
+        } catch {
+          /* 拦截层已 toast */
+        }
       })(),
     ]);
     try {
@@ -157,8 +159,13 @@ function onConfirmOk() {
 
 <template>
   <!-- 确认（平级，不嵌在编辑 Dialog 内） -->
-  <Dialog :visible="confirmOpen" modal header="确认" :style="{ width: 'min(24rem, calc(100vw - 2rem))' }"
-    @update:visible="confirmOpen = $event">
+  <Dialog
+    :visible="confirmOpen"
+    modal
+    header="确认"
+    :style="{ width: 'min(24rem, calc(100vw - 2rem))' }"
+    @update:visible="confirmOpen = $event"
+  >
     <p class="text-xs">{{ confirmMsg }}</p>
     <template #footer>
       <Button label="取消" variant="outlined" @click="confirmOpen = false" />
@@ -166,41 +173,72 @@ function onConfirmOk() {
     </template>
   </Dialog>
 
-  <Dialog :visible="props.visible" modal header="修改标准/工艺文件"
-    :style="{ width: 'min(56rem, calc(100vw - 2rem))' }" @update:visible="emit('update:visible', $event)">
+  <Dialog
+    :visible="props.visible"
+    modal
+    header="修改标准/工艺文件"
+    :style="{ width: 'min(56rem, calc(100vw - 2rem))' }"
+    @update:visible="emit('update:visible', $event)"
+  >
     <!-- 原 DataLayoutControl：2 列（411）行主序 + 整行，Root 834×349 -->
     <div class="grid grid-cols-2 items-start gap-x-3 gap-y-2">
       <div class="min-w-0">
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-24 shrink-0 text-xs text-muted-foreground">使用单位</label>
-          <Select :model-value="form.useUnit ?? null" :options="kvUseUnit" :filter="true" show-clear
-            option-label="label" option-value="value" placeholder="使用单位" class="min-w-0 flex-1"
-            @update:model-value="(v: string | null) => (form.useUnit = v)" />
+          <Select
+            :model-value="form.useUnit ?? null"
+            :options="kvUseUnit"
+            :filter="true"
+            show-clear
+            option-label="label"
+            option-value="value"
+            placeholder="使用单位"
+            class="min-w-0 flex-1"
+            @update:model-value="(v: string | null) => (form.useUnit = v)"
+          />
         </div>
       </div>
       <div class="min-w-0">
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-24 shrink-0 text-xs text-muted-foreground">文件种类</label>
-          <Select :model-value="form.variety ?? null" :options="varietyOpts" show-clear
-            option-label="label" option-value="value" placeholder="文件种类" class="min-w-0 flex-1"
-            @update:model-value="(v: string | null) => (form.variety = v)" />
+          <Select
+            :model-value="form.variety ?? null"
+            :options="varietyOpts"
+            show-clear
+            option-label="label"
+            option-value="value"
+            placeholder="文件种类"
+            class="min-w-0 flex-1"
+            @update:model-value="(v: string | null) => (form.variety = v)"
+          />
         </div>
       </div>
 
       <div class="min-w-0">
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-24 shrink-0 text-xs text-muted-foreground">受控状态</label>
-          <Select :model-value="form.controlState == null ? null : String(form.controlState)" show-clear
-            :options="controlStateOpts" option-label="label" option-value="value" placeholder="受控状态"
+          <Select
+            :model-value="form.controlState == null ? null : String(form.controlState)"
+            show-clear
+            :options="controlStateOpts"
+            option-label="label"
+            option-value="value"
+            placeholder="受控状态"
             class="min-w-0 flex-1"
-            @update:model-value="(v: string | null) => (form.controlState = (v == null ? null : Number(v)) as GzmFileControlStateEnum)" />
+            @update:model-value="
+              (v: string | null) => (form.controlState = (v == null ? null : Number(v)) as GzmFileControlStateEnum)
+            "
+          />
         </div>
       </div>
       <div class="min-w-0">
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-24 shrink-0 text-xs text-muted-foreground">版本号</label>
-          <InputText :model-value="form.versionNo == null ? '' : String(form.versionNo)" class="min-w-0 flex-1"
-            @update:model-value="(v?: string) => (form.versionNo = !v ? null : Number(v))" />
+          <InputText
+            :model-value="form.versionNo == null ? '' : String(form.versionNo)"
+            class="min-w-0 flex-1"
+            @update:model-value="(v?: string) => (form.versionNo = !v ? null : Number(v))"
+          />
         </div>
       </div>
 
@@ -220,10 +258,23 @@ function onConfirmOk() {
       <div class="col-span-2 min-w-0">
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-24 shrink-0 text-xs text-muted-foreground">厂别区分</label>
-          <Select :model-value="form.matKind ?? null" :options="lineOpts" :filter="true" show-clear
-            option-label="label" option-value="value" placeholder="厂别区分" class="min-w-0 flex-1"
+          <Select
+            :model-value="form.matKind ?? null"
+            :options="lineOpts"
+            :filter="true"
+            show-clear
+            option-label="label"
+            option-value="value"
+            placeholder="厂别区分"
+            class="min-w-0 flex-1"
             :invalid="!!errors.matKind"
-            @update:model-value="(v: string | null) => { form.matKind = v; form.matKindName = lineOpts.find((o) => o.value === v)?.label ?? null; }" />
+            @update:model-value="
+              (v: string | null) => {
+                form.matKind = v;
+                form.matKindName = lineOpts.find((o) => o.value === v)?.label ?? null;
+              }
+            "
+          />
         </div>
         <p v-if="errors.matKind" class="mt-0.5 pl-[6.75rem] text-xs text-destructive">{{ errors.matKind }}</p>
       </div>
@@ -231,9 +282,18 @@ function onConfirmOk() {
       <div class="col-span-2 min-w-0">
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-24 shrink-0 text-xs text-muted-foreground">标准</label>
-          <Select :model-value="form.cSgStdCodes ?? null" :options="sgOptions" :filter="true" show-clear
-            option-label="label" option-value="value" placeholder="执行标准 牌号" class="min-w-0 flex-1"
-            :invalid="!!errors.sgStd" @update:model-value="onSgChange" />
+          <Select
+            :model-value="form.cSgStdCodes ?? null"
+            :options="sgOptions"
+            :filter="true"
+            show-clear
+            option-label="label"
+            option-value="value"
+            placeholder="执行标准 牌号"
+            class="min-w-0 flex-1"
+            :invalid="!!errors.sgStd"
+            @update:model-value="onSgChange"
+          />
         </div>
         <p v-if="errors.sgStd" class="mt-0.5 pl-[6.75rem] text-xs text-destructive">{{ errors.sgStd }}</p>
       </div>
@@ -258,8 +318,7 @@ function onConfirmOk() {
           <label class="w-24 shrink-0 text-xs text-muted-foreground">文件选择</label>
           <InputText v-model="form.cLocalName" readonly class="min-w-0 flex-1" placeholder="未选择文件" />
           <input ref="fileInput" type="file" accept=".pdf" class="hidden" @change="onPickFile" />
-          <Button label="选择文件" variant="outlined" class="shrink-0 whitespace-nowrap"
-            @click="fileInput?.click()" />
+          <Button label="选择文件" variant="outlined" class="shrink-0 whitespace-nowrap" @click="fileInput?.click()" />
         </div>
       </div>
 

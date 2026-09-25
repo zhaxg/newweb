@@ -48,7 +48,9 @@ const planRows = ref<Thr2000Dto[]>([]);
 const planLoading = ref(false);
 const planApi = ref<GridApi | null>(null);
 const planCurrent = ref<Thr2000Dto | null>(null);
-function onPlanReady(e: GridReadyEvent) { planApi.value = e.api; }
+function onPlanReady(e: GridReadyEvent) {
+  planApi.value = e.api;
+}
 function onPlanSelectionChanged() {
   planCurrent.value = (planApi.value?.getSelectedRows()[0] as Thr2000Dto | undefined) ?? null;
 }
@@ -57,7 +59,9 @@ function onPlanSelectionChanged() {
 const slabRows = ref<DtoThr3010[]>([]);
 const slabLoading = ref(false);
 const slabApi = ref<GridApi | null>(null);
-function onSlabReady(e: GridReadyEvent) { slabApi.value = e.api; }
+function onSlabReady(e: GridReadyEvent) {
+  slabApi.value = e.api;
+}
 function onSlabSelectionChanged() {
   const rows = slabApi.value?.getSelectedRows() as DtoThr3010[] | undefined;
   const row = rows?.[0] ?? null;
@@ -219,14 +223,15 @@ const slabColDefs: ColDef[] = [
 async function queryPlan() {
   planLoading.value = true;
   try {
-    const list = (await hR2000Api.queryThr2000Dtos({
-      cLineCode,
-      nStatus: Thr2000StatusEnum.Open,
-      cSgCodeTl: planInput.cSgCode.trim() || undefined,
-      nThick: planInput.nThick ?? undefined,
-      nWidth: planInput.nWidth ?? undefined,
-      cPieceNo: planInput.cPieceNo.trim() || undefined,
-    })) ?? [];
+    const list =
+      (await hR2000Api.queryThr2000Dtos({
+        cLineCode,
+        nStatus: Thr2000StatusEnum.Open,
+        cSgCodeTl: planInput.cSgCode.trim() || undefined,
+        nThick: planInput.nThick ?? undefined,
+        nWidth: planInput.nWidth ?? undefined,
+        cPieceNo: planInput.cPieceNo.trim() || undefined,
+      })) ?? [];
     planRows.value = list;
     planCurrent.value = null;
     requestAnimationFrame(() => planApi.value?.autoSizeAllColumns());
@@ -246,11 +251,12 @@ async function querySlab() {
   }
   slabLoading.value = true;
   try {
-    const list = (await hR3010Api.querySlabs({
-      cLineCode,
-      cBatchNo: cBatchNo || undefined,
-      slabNo: slabNo || undefined,
-    })) ?? [];
+    const list =
+      (await hR3010Api.querySlabs({
+        cLineCode,
+        cBatchNo: cBatchNo || undefined,
+        slabNo: slabNo || undefined,
+      })) ?? [];
     slabRows.value = list;
     requestAnimationFrame(() => slabApi.value?.autoSizeAllColumns());
   } catch {
@@ -336,12 +342,21 @@ function btnOk() {
           <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="btnOk">确认</Button>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="planColDefs" :row-data="planRows"
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="planColDefs"
+            :row-data="planRows"
             :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
-            :pagination="false" :animate-rows="false" :loading="planLoading"
-            @grid-ready="onPlanReady" @selection-changed="onPlanSelectionChanged"
-            @first-data-rendered="autoSizeOnFirstData" />
+            :pagination="false"
+            :animate-rows="false"
+            :loading="planLoading"
+            @grid-ready="onPlanReady"
+            @selection-changed="onPlanSelectionChanged"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
 
@@ -360,18 +375,38 @@ function btnOk() {
           </Button>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="slabColDefs" :row-data="slabRows"
-            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-            :pagination="false" :animate-rows="false" :loading="slabLoading"
-            @grid-ready="onSlabReady" @selection-changed="onSlabSelectionChanged"
-            @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="slabColDefs"
+            :row-data="slabRows"
+            :row-selection="{
+              mode: 'multiRow',
+              checkboxes: true,
+              headerCheckbox: true,
+              enableClickSelection: true,
+              enableSelectionWithoutKeys: true,
+            }"
+            :pagination="false"
+            :animate-rows="false"
+            :loading="slabLoading"
+            @grid-ready="onSlabReady"
+            @selection-changed="onSlabSelectionChanged"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
     </Splitter>
 
-    <Dialog :visible="confirmOpen" modal header="确认" :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
-      @update:visible="confirmOpen = $event">
+    <Dialog
+      :visible="confirmOpen"
+      modal
+      header="确认"
+      :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
+      @update:visible="confirmOpen = $event"
+    >
       <p class="text-xs">{{ confirmMsg }}</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />

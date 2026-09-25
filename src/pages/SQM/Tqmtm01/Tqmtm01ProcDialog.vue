@@ -48,15 +48,33 @@ function onOk() {
 </script>
 
 <template>
-  <Dialog :visible="props.visible" modal header="工序" :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
-    @update:visible="emit('update:visible', $event)">
+  <Dialog
+    :visible="props.visible"
+    modal
+    header="工序"
+    :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
+    @update:visible="emit('update:visible', $event)"
+  >
     <div class="grid grid-cols-1 items-start gap-y-2">
       <div class="min-w-0">
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-20 shrink-0 text-xs text-muted-foreground">工序</label>
-          <Select :model-value="form.procCd ?? null" :options="procOptions" :filter="true" show-clear
-            option-label="label" option-value="value" placeholder="工序" class="min-w-0 flex-1"
-            @update:model-value="(v: string | null) => { form.procCd = v; err = ''; }" />
+          <Select
+            :model-value="form.procCd ?? null"
+            :options="procOptions"
+            :filter="true"
+            show-clear
+            option-label="label"
+            option-value="value"
+            placeholder="工序"
+            class="min-w-0 flex-1"
+            @update:model-value="
+              (v: string | null) => {
+                form.procCd = v;
+                err = '';
+              }
+            "
+          />
         </div>
         <p v-if="err" class="mt-0.5 pl-[5.375rem] text-xs text-destructive">{{ err }}</p>
       </div>

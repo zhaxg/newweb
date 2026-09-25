@@ -71,7 +71,8 @@ async function reload() {
   const slots = [...idx.idxDetails.getTsTableVal()] as unknown as Record<string, unknown>[];
   if (isMac()) {
     // 成分表：强类型行转换为槽位形态一并只读展示（原走 UCTqmtmacEditView，未迁）
-    for (const r of idx.idxDetails.getMacRows()) slots.push(await macTypedToSlot(r) as unknown as Record<string, unknown>);
+    for (const r of idx.idxDetails.getMacRows())
+      slots.push((await macTypedToSlot(r)) as unknown as Record<string, unknown>);
     slots.push(...(idx.idxDetails.getMacSlots() as unknown as Record<string, unknown>[]));
   }
   rows.value = slots;
@@ -99,7 +100,8 @@ function onDelete() {
   void reload();
 }
 defineExpose({ reload });
-const placeholder = (name: string) => () => toast(`${name}待接入：模板选择/保存走 FrmSaveIdxData 系列弹窗`, 2500, "warn");
+const placeholder = (name: string) => () =>
+  toast(`${name}待接入：模板选择/保存走 FrmSaveIdxData 系列弹窗`, 2500, "warn");
 </script>
 
 <template>
@@ -122,12 +124,20 @@ const placeholder = (name: string) => () => toast(`${name}待接入：模板选�
       <span v-if="isMac()" class="ml-auto text-xs text-destructive">成分表专用编辑器未迁，只读展示</span>
     </div>
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows"
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="rows"
         :get-row-id="(p: any) => String(p.data.id)"
         :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
-        :pagination="false" :animate-rows="false"
-        @grid-ready="onGridReady" @first-data-rendered="autoSizeOnFirstData" />
+        :pagination="false"
+        :animate-rows="false"
+        @grid-ready="onGridReady"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
   </div>
 </template>

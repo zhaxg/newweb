@@ -89,7 +89,11 @@ async function query() {
   querying.value = true;
   try {
     const list =
-      (await frmTagRecordApi.getTagRecordInfo({ begTime: begTime.value, endTime: endTime.value, plcTag: plcPoint.value })) ?? [];
+      (await frmTagRecordApi.getTagRecordInfo({
+        begTime: begTime.value,
+        endTime: endTime.value,
+        plcTag: plcPoint.value,
+      })) ?? [];
     rows.value = Array.isArray(list) ? list : [];
     await nextTick();
     requestAnimationFrame(() => gridApi.value?.autoSizeAllColumns());
@@ -113,11 +117,25 @@ onMounted(() => {
   <div class="flex min-h-0 flex-1 flex-col">
     <!-- stackPanel1：时间 ≤采集时间≤ 时间 / 自动化点位 + 查询（顺序照 Controls.Add：deBegTime→≤采集时间≤→deEndTime→自动化点位→txt→btn） -->
     <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
-      <DatePicker v-model="begTime" :manual-input="false" date-format="yy-mm-dd HH:mm:ss" show-time hour-format="24"
-        show-icon class="shrink-0" />
+      <DatePicker
+        v-model="begTime"
+        :manual-input="false"
+        date-format="yy-mm-dd HH:mm:ss"
+        show-time
+        hour-format="24"
+        show-icon
+        class="shrink-0"
+      />
       <label class="shrink-0 text-xs text-muted-foreground">≤采集时间≤</label>
-      <DatePicker v-model="endTime" :manual-input="false" date-format="yy-mm-dd HH:mm:ss" show-time hour-format="24"
-        show-icon class="shrink-0" />
+      <DatePicker
+        v-model="endTime"
+        :manual-input="false"
+        date-format="yy-mm-dd HH:mm:ss"
+        show-time
+        hour-format="24"
+        show-icon
+        class="shrink-0"
+      />
       <label class="shrink-0 text-xs text-muted-foreground">自动化点位</label>
       <InputText v-model="plcPoint" placeholder="自动化点位" class="w-40 shrink-0" />
       <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="querying" @click="query">
@@ -126,9 +144,18 @@ onMounted(() => {
     </div>
 
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows" :pagination="false"
-        :loading="querying" @grid-ready="onGridReady" @first-data-rendered="autoSizeOnFirstData" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="rows"
+        :pagination="false"
+        :loading="querying"
+        @grid-ready="onGridReady"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
   </div>
 </template>

@@ -247,7 +247,13 @@ onMounted(() => {
             :default-col-def="hmxDefaultColDef"
             :column-defs="colDefs"
             :row-data="rows"
-            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
+            :row-selection="{
+              mode: 'multiRow',
+              checkboxes: true,
+              headerCheckbox: true,
+              enableClickSelection: true,
+              enableSelectionWithoutKeys: true,
+            }"
             :suppress-column-virtualisation="true"
             :pagination="false"
             :animate-rows="false"
@@ -271,7 +277,13 @@ onMounted(() => {
             :default-col-def="hmxDefaultColDef"
             :column-defs="logColDefs"
             :row-data="logRows"
-            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
+            :row-selection="{
+              mode: 'multiRow',
+              checkboxes: true,
+              headerCheckbox: true,
+              enableClickSelection: true,
+              enableSelectionWithoutKeys: true,
+            }"
             :suppress-column-virtualisation="true"
             :pagination="false"
             :animate-rows="false"

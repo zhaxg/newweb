@@ -209,7 +209,18 @@ function onZgOrder() {
   }
   const grpMatchKey = new Set(
     selected.map((x) =>
-      [x.cSgCode, x.cSgStd, x.cProdCode, x.nThick, x.nWth, x.cWgtToler, x.cCutFlag, x.cDetectDefectLevel, x.cSpecialMarkGy, x.cDelivyStatusCode].join("|"),
+      [
+        x.cSgCode,
+        x.cSgStd,
+        x.cProdCode,
+        x.nThick,
+        x.nWth,
+        x.cWgtToler,
+        x.cCutFlag,
+        x.cDetectDefectLevel,
+        x.cSpecialMarkGy,
+        x.cDelivyStatusCode,
+      ].join("|"),
     ),
   );
   if (grpMatchKey.size > 1) {
@@ -273,7 +284,10 @@ onMounted(async () => {
       tmp2000Api.getCustomer(),
       systemKeyValueApi.getSysKvListByGroup("010100:CUTFLAG"),
     ]);
-    settleCustOptions.value = (cust ?? []).map((x) => ({ label: x.cOrderCustCname ?? "", value: x.cOrderCustCname ?? "" }));
+    settleCustOptions.value = (cust ?? []).map((x) => ({
+      label: x.cOrderCustCname ?? "",
+      value: x.cOrderCustCname ?? "",
+    }));
     cutFlagOptions.value = (kv ?? []).map((x) => ({ label: x.cName ?? x.cCode ?? "", value: x.cCode ?? "" }));
   } catch {
     /* 拦截层已 toast */
@@ -313,13 +327,23 @@ onMounted(async () => {
 
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">厚度</label>
-          <RangeInput v-model:min="q.nThickMin" v-model:max="q.nThickMax" :min-fraction-digits="1"
-            :max-fraction-digits="2" class="min-w-0 flex-1" />
+          <RangeInput
+            v-model:min="q.nThickMin"
+            v-model:max="q.nThickMax"
+            :min-fraction-digits="1"
+            :max-fraction-digits="2"
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">宽度</label>
-          <RangeInput v-model:min="q.nWthMin" v-model:max="q.nWthMax" :min-fraction-digits="1"
-            :max-fraction-digits="1" class="min-w-0 flex-1" />
+          <RangeInput
+            v-model:min="q.nWthMin"
+            v-model:max="q.nWthMax"
+            :min-fraction-digits="1"
+            :max-fraction-digits="1"
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">执行标准</label>
@@ -327,13 +351,25 @@ onMounted(async () => {
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">切边方式</label>
-          <Select v-model="q.cCutFlag" :options="cutFlagOptions" option-label="label" option-value="value"
-            show-clear placeholder="请选择" class="min-w-0 flex-1" />
+          <Select
+            v-model="q.cCutFlag"
+            :options="cutFlagOptions"
+            option-label="label"
+            option-value="value"
+            show-clear
+            placeholder="请选择"
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">长度</label>
-          <RangeInput v-model:min="q.nLenMin" v-model:max="q.nLenMax" :min-fraction-digits="1"
-            :max-fraction-digits="1" class="min-w-0 flex-1" />
+          <RangeInput
+            v-model:min="q.nLenMin"
+            v-model:max="q.nLenMax"
+            :min-fraction-digits="1"
+            :max-fraction-digits="1"
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">公差</label>
@@ -342,8 +378,17 @@ onMounted(async () => {
 
         <div class="col-span-2 flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">产出时间</label>
-          <DatePicker v-model="q.dProTime" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-            show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+          <DatePicker
+            v-model="q.dProTime"
+            selection-mode="range"
+            :manual-input="false"
+            date-format="yy-mm-dd"
+            show-time
+            hour-format="24"
+            show-icon
+            placeholder="开始 至 结束"
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">入库标识</label>
@@ -366,8 +411,16 @@ onMounted(async () => {
         <IconSearch class="h-3 w-3" />查询
       </Button>
       <label class="shrink-0 text-xs text-muted-foreground">结算单位：</label>
-      <Select v-model="settleCust" :options="settleCustOptions" option-label="label" option-value="value"
-        filter show-clear placeholder="请选择" class="w-64 shrink-0" />
+      <Select
+        v-model="settleCust"
+        :options="settleCustOptions"
+        option-label="label"
+        option-value="value"
+        filter
+        show-clear
+        placeholder="请选择"
+        class="w-64 shrink-0"
+      />
       <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="acting" @click="onAllocation">
         <IconCheck class="h-3 w-3" />确认调配
       </Button>
@@ -395,7 +448,13 @@ onMounted(async () => {
         :default-col-def="hmxDefaultColDef"
         :column-defs="colDefs"
         :row-data="rows"
-        :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
+        :row-selection="{
+          mode: 'multiRow',
+          checkboxes: true,
+          headerCheckbox: true,
+          enableClickSelection: true,
+          enableSelectionWithoutKeys: true,
+        }"
         :suppress-column-virtualisation="true"
         :pagination="false"
         :animate-rows="false"

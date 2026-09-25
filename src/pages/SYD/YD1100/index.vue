@@ -79,10 +79,8 @@ async function loadStores() {
 async function onQuery() {
   querying.value = true;
   try {
-    const list = ((await tyd1100Api.tyd1100Query(
-      qCarNo.value.trim() || undefined,
-      qStoreCode.value ?? undefined,
-    )) ?? []) as Tyd1100[];
+    const list = ((await tyd1100Api.tyd1100Query(qCarNo.value.trim() || undefined, qStoreCode.value ?? undefined)) ??
+      []) as Tyd1100[];
     rows.value = list;
     api.value?.setGridOption("rowData", list);
     requestAnimationFrame(() => api.value?.autoSizeAllColumns());
@@ -181,8 +179,16 @@ onMounted(() => {
       <label class="shrink-0 text-xs text-muted-foreground">车号</label>
       <InputText v-model="qCarNo" class="w-44 shrink-0" @keydown.enter="onQuery" />
       <label class="ml-2 shrink-0 text-xs text-muted-foreground">库区号</label>
-      <Select v-model="qStoreCode" :options="storeOptions" option-label="label" option-value="value" show-clear
-        filter placeholder="全部库区" class="w-56 shrink-0" />
+      <Select
+        v-model="qStoreCode"
+        :options="storeOptions"
+        option-label="label"
+        option-value="value"
+        show-clear
+        filter
+        placeholder="全部库区"
+        class="w-56 shrink-0"
+      />
       <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="querying" @click="onQuery">
         <IconSearch class="h-3 w-3" />查询
       </Button>
@@ -198,12 +204,27 @@ onMounted(() => {
     <Splitter class="min-h-0 flex-1">
       <SplitterPanel :size="80" :minSize="80" class="flex flex-col overflow-hidden">
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="colDefs"
-            :default-col-def="hmxDefaultColDef" :row-data="rows" :locale-text="AG_GRID_LOCALE_CN"
-            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-            :pagination="false" :animate-rows="false" :loading="querying"
-            @grid-ready="onReady" @selection-changed="onSelectionChanged"
-            @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :column-defs="colDefs"
+            :default-col-def="hmxDefaultColDef"
+            :row-data="rows"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :row-selection="{
+              mode: 'multiRow',
+              checkboxes: true,
+              headerCheckbox: true,
+              enableClickSelection: true,
+              enableSelectionWithoutKeys: true,
+            }"
+            :pagination="false"
+            :animate-rows="false"
+            :loading="querying"
+            @grid-ready="onReady"
+            @selection-changed="onSelectionChanged"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
 
@@ -215,8 +236,16 @@ onMounted(() => {
         <div class="grid shrink-0 grid-cols-1 items-center gap-x-3 gap-y-1.5 px-3 py-3">
           <div class="flex min-w-0 items-center gap-1.5">
             <label class="w-16 shrink-0 text-xs text-muted-foreground">库区号</label>
-            <Select v-model="form.cStoreCode" :options="storeOptions" option-label="label" option-value="value"
-              show-clear filter placeholder="选择库区" class="min-w-0 flex-1" />
+            <Select
+              v-model="form.cStoreCode"
+              :options="storeOptions"
+              option-label="label"
+              option-value="value"
+              show-clear
+              filter
+              placeholder="选择库区"
+              class="min-w-0 flex-1"
+            />
           </div>
           <div class="flex min-w-0 items-center gap-1.5">
             <label class="w-16 shrink-0 text-xs text-muted-foreground">车号</label>

@@ -25,9 +25,9 @@ function isoLocal(d: Date): string {
 function defaultRange(): Date[] {
   const now = new Date();
   const begin = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  begin.setDate(begin.getDate() + (-1));
+  begin.setDate(begin.getDate() + -1);
   const end = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  end.setDate(end.getDate() + (1));
+  end.setDate(end.getDate() + 1);
   return [begin, end];
 }
 function toTimeRange(dates: Date[] | null): TimeRange | undefined {
@@ -39,7 +39,9 @@ const input = reactive({ dates: defaultRange() as Date[] | null });
 const rows = shallowRef<QueryThickHzDto[]>([]);
 const loading = ref(false);
 const api = ref<GridApi | null>(null);
-function onReady(e: GridReadyEvent) { api.value = e.api; }
+function onReady(e: GridReadyEvent) {
+  api.value = e.api;
+}
 
 const colDefs: ColDef[] = [
   /*  { colId: "cSlabNo", field: "cSlabNo", headerName: "板坯号", width: 150 },
@@ -74,7 +76,6 @@ async function query() {
   try {
     rows.value = (await hR4700Api.queryThickHz(toTimeRange(input.dates))) ?? [];
     requestAnimationFrame(() => api.value?.autoSizeAllColumns());
-
   } catch {
     /* 拦截层已 toast */
   } finally {
@@ -88,7 +89,6 @@ function onRowDblClick() {
   if (!r) return;
   toast(`厚不合明细窗体（FrmHR4701）待迁移：板坯 ${r.cSlabNo ?? ""}`, 2500, "warn");
 }
-
 </script>
 
 <template>
@@ -96,8 +96,17 @@ function onRowDblClick() {
     <div class="grid shrink-0 grid-cols-6 items-center gap-x-3 gap-y-1.5 border-b border-border/60 px-3 py-2">
       <div class="col-span-2 flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">完成时间</label>
-        <DatePicker v-model="input.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-          show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+        <DatePicker
+          v-model="input.dates"
+          selection-mode="range"
+          :manual-input="false"
+          date-format="yy-mm-dd"
+          show-time
+          hour-format="24"
+          show-icon
+          placeholder="开始 至 结束"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="col-span-4 flex min-w-0 items-center gap-1">
         <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="loading" @click="query">
@@ -106,10 +115,20 @@ function onRowDblClick() {
       </div>
     </div>
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows" :pagination="false"
-        :animate-rows="false" :loading="loading" @grid-ready="onReady" @row-double-clicked="onRowDblClick" @first-data-rendered="autoSizeOnFirstData" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="rows"
+        :pagination="false"
+        :animate-rows="false"
+        :loading="loading"
+        @grid-ready="onReady"
+        @row-double-clicked="onRowDblClick"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
-
   </div>
 </template>

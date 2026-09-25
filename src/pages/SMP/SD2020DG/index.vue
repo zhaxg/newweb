@@ -22,7 +22,14 @@ import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, GridApi, GridReadyEvent, ValueGetterParams, ValueSetterParams } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
-import { tmp2000Api, tLZG02Api, type InputTmp2000Dto, type QueryTmp2000Dto, type TLSlabDto, type InsertTlZG02Dto } from "@/api/mes4ddh/smp.swagger";
+import {
+  tmp2000Api,
+  tLZG02Api,
+  type InputTmp2000Dto,
+  type QueryTmp2000Dto,
+  type TLSlabDto,
+  type InsertTlZG02Dto,
+} from "@/api/mes4ddh/smp.swagger";
 import { useMenuQuery } from "@/lib/menuQuery";
 import { useToast } from "@/composables/useToast";
 
@@ -42,7 +49,8 @@ function bridge(cols: ColDef[]): ColDef[] {
     const ck = f.charAt(0).toLowerCase() + f.slice(1);
     return {
       ...c,
-      valueGetter: (p: ValueGetterParams) => (p.data as Record<string, unknown> | undefined)?.[ck] ?? (p.data as Record<string, unknown> | undefined)?.[f],
+      valueGetter: (p: ValueGetterParams) =>
+        (p.data as Record<string, unknown> | undefined)?.[ck] ?? (p.data as Record<string, unknown> | undefined)?.[f],
       valueSetter: (p: ValueSetterParams) => {
         const d = p.data as Record<string, unknown> | undefined;
         if (!d) return false;
@@ -57,83 +65,85 @@ function bridge(cols: ColDef[]): ColDef[] {
 type Row = QueryTmp2000Dto & { Selected?: boolean; COrderNo?: string; NFlag?: number };
 const rows = ref<Row[]>([]);
 
-const colDefs = ref<ColDef[]>(bridge([
-      { field: "Selected", headerName: "选择", hide: true },
-      { field: "COrderNo", headerName: "订单号", width: 150 },
-      { field: "NFlag", headerName: "计划类型", width: 150 },
-      { field: "NStatus", headerName: "订单状态", width: 150 },
-      { field: "IsTl", headerName: "是否已提料", width: 150 },
-      { field: "COrderCustCname", headerName: "订货客户", width: 150 },
-      { field: "CSteelType", headerName: "钢类", width: 150 },
-      { field: "CSgCode", headerName: "钢种", width: 150 },
-      { field: "CSgCodeNk", headerName: "内控钢种", width: 150 },
-      { field: "CSpec", headerName: "规格", width: 150 },
-      { field: "NThick", headerName: "厚度", width: 150 },
-      { field: "NWidth", headerName: "宽度", width: 150 },
-      { field: "NLen", headerName: "长度", width: 150 },
-      { field: "CDelivyStatusDesc", headerName: "交货状态说明", width: 150 },
-      { field: "NNum", headerName: "订货件数", width: 150 },
-      { field: "NWgt", headerName: "订单重量", width: 150 },
-      { field: "CTol", headerName: "公差", width: 150 },
-      { field: "CSgStd", headerName: "执行标准", width: 150 },
-      { field: "CConRemark", headerName: "备注", width: 150 },
-      { field: "NThickTolMin", headerName: "厚度下偏差", width: 150 },
-      { field: "NThickTolMax", headerName: "厚度上偏差", width: 150 },
-      { field: "NWidthTolMin", headerName: "宽度下偏差", width: 150 },
-      { field: "NWidthTolMax", headerName: "宽度上偏差", width: 150 },
-      { field: "CLineCode", headerName: "产线代码", width: 150 },
-      { field: "Creator", headerName: "创建人", width: 150 },
-      { field: "CreateTime", headerName: "创建时间", width: 150 },
-      { field: "CSendUserId", headerName: "销售提报人", width: 150 },
-      { field: "DSendTime", headerName: "销售提报时间", width: 150 },
-      { field: "Id", headerName: "主键", hide: true },
-      { field: "COrderCustNo", headerName: "客户编码", hide: true },
-      { field: "NThickMin", headerName: "厚度下限", hide: true },
-      { field: "NThickMax", headerName: "厚度上限", hide: true },
-      { field: "NWidthMin", headerName: "宽度下限", hide: true },
-      { field: "NWidthMax", headerName: "宽度上限", hide: true },
-      { field: "NWidthWgt", headerName: "边部宽度余量", hide: true },
-      { field: "CLengthType", headerName: "长度类型", hide: true },
-      { field: "NLenMin", headerName: "长度下限", hide: true },
-      { field: "NLenMax", headerName: "长度上限", hide: true },
-      { field: "CDelivyStatusCode", headerName: "交货状态", hide: true },
-      { field: "CTrimFlag", headerName: "切边方式", hide: true },
-      { field: "COverstepBl", headerName: "短溢装比例", hide: true },
-      { field: "CDelivyQtyFlag", headerName: "计重方式", hide: true },
-      { field: "CFlawDesc", headerName: "探伤等级", hide: true },
-      { field: "CConNo", headerName: "合同号", hide: true },
-      { field: "DJhqTime", headerName: "交货期", hide: true },
-      { field: "CDelivyAddress", headerName: "流向", hide: true },
-      { field: "CSpecialMarkGy", headerName: "性能要求", hide: true },
-      { field: "NWtMax", headerName: "单量上限", hide: true },
-      { field: "NWtMin", headerName: "单量下限", hide: true },
-      { field: "CInboundNo", headerName: "入库标识", hide: true },
-      { field: "NLenTolMin", headerName: "长度下偏差", hide: true },
-      { field: "NLenTolMax", headerName: "长度上偏差", hide: true },
-      { field: "DTimeShipment", headerName: "预计船期", hide: true },
-      { field: "CJrzzgyCode", headerName: "加热轧制工艺编码", hide: true },
-      { field: "CJqgyCode", headerName: "剪切工艺编码", hide: true },
-      { field: "CExitem1", headerName: "是否工程单", hide: true },
-      { field: "LastModifier", headerName: "最后修改人", hide: true },
-      { field: "LastModifyTime", headerName: "最后修改时间", hide: true },
-      { field: "CDeptCode", headerName: "部门编码", hide: true },
-      { field: "CDesignDesc", headerName: "质量设计失败说明", hide: true },
-      { field: "NOrderProcFlag", headerName: "合同处理标志（", hide: true },
-      { field: "COrderProcUserId", headerName: "合同处理操作人", hide: true },
-      { field: "DOrderProcTime", headerName: "合同处理时间", hide: true },
-      { field: "CZgGyCode", headerName: "轧钢工艺编码", hide: true },
-      { field: "CPushUserId", headerName: "下发生产人", hide: true },
-      { field: "DPushTime", headerName: "下发生产时间", hide: true },
-      { field: "NSfpj", headerName: "评审状态", hide: true },
-      { field: "CPjName", headerName: "评审人", hide: true },
-      { field: "NExitem2", headerName: "申请通知", hide: true },
-      { field: "COrderTypeCode", headerName: "订单性质编码", hide: true },
-      { field: "COrderTypeDesc", headerName: "订单性质说明", hide: true },
-      { field: "CExitem4", headerName: "变更原因", hide: true },
-      { field: "CExitem3", headerName: "原始订单号", hide: true },
-      { field: "OrderCP", headerName: "侧喷要求", hide: true },
-      { field: "CGf", headerName: "平直度", hide: true },
-]));
+const colDefs = ref<ColDef[]>(
+  bridge([
+    { field: "Selected", headerName: "选择", hide: true },
+    { field: "COrderNo", headerName: "订单号", width: 150 },
+    { field: "NFlag", headerName: "计划类型", width: 150 },
+    { field: "NStatus", headerName: "订单状态", width: 150 },
+    { field: "IsTl", headerName: "是否已提料", width: 150 },
+    { field: "COrderCustCname", headerName: "订货客户", width: 150 },
+    { field: "CSteelType", headerName: "钢类", width: 150 },
+    { field: "CSgCode", headerName: "钢种", width: 150 },
+    { field: "CSgCodeNk", headerName: "内控钢种", width: 150 },
+    { field: "CSpec", headerName: "规格", width: 150 },
+    { field: "NThick", headerName: "厚度", width: 150 },
+    { field: "NWidth", headerName: "宽度", width: 150 },
+    { field: "NLen", headerName: "长度", width: 150 },
+    { field: "CDelivyStatusDesc", headerName: "交货状态说明", width: 150 },
+    { field: "NNum", headerName: "订货件数", width: 150 },
+    { field: "NWgt", headerName: "订单重量", width: 150 },
+    { field: "CTol", headerName: "公差", width: 150 },
+    { field: "CSgStd", headerName: "执行标准", width: 150 },
+    { field: "CConRemark", headerName: "备注", width: 150 },
+    { field: "NThickTolMin", headerName: "厚度下偏差", width: 150 },
+    { field: "NThickTolMax", headerName: "厚度上偏差", width: 150 },
+    { field: "NWidthTolMin", headerName: "宽度下偏差", width: 150 },
+    { field: "NWidthTolMax", headerName: "宽度上偏差", width: 150 },
+    { field: "CLineCode", headerName: "产线代码", width: 150 },
+    { field: "Creator", headerName: "创建人", width: 150 },
+    { field: "CreateTime", headerName: "创建时间", width: 150 },
+    { field: "CSendUserId", headerName: "销售提报人", width: 150 },
+    { field: "DSendTime", headerName: "销售提报时间", width: 150 },
+    { field: "Id", headerName: "主键", hide: true },
+    { field: "COrderCustNo", headerName: "客户编码", hide: true },
+    { field: "NThickMin", headerName: "厚度下限", hide: true },
+    { field: "NThickMax", headerName: "厚度上限", hide: true },
+    { field: "NWidthMin", headerName: "宽度下限", hide: true },
+    { field: "NWidthMax", headerName: "宽度上限", hide: true },
+    { field: "NWidthWgt", headerName: "边部宽度余量", hide: true },
+    { field: "CLengthType", headerName: "长度类型", hide: true },
+    { field: "NLenMin", headerName: "长度下限", hide: true },
+    { field: "NLenMax", headerName: "长度上限", hide: true },
+    { field: "CDelivyStatusCode", headerName: "交货状态", hide: true },
+    { field: "CTrimFlag", headerName: "切边方式", hide: true },
+    { field: "COverstepBl", headerName: "短溢装比例", hide: true },
+    { field: "CDelivyQtyFlag", headerName: "计重方式", hide: true },
+    { field: "CFlawDesc", headerName: "探伤等级", hide: true },
+    { field: "CConNo", headerName: "合同号", hide: true },
+    { field: "DJhqTime", headerName: "交货期", hide: true },
+    { field: "CDelivyAddress", headerName: "流向", hide: true },
+    { field: "CSpecialMarkGy", headerName: "性能要求", hide: true },
+    { field: "NWtMax", headerName: "单量上限", hide: true },
+    { field: "NWtMin", headerName: "单量下限", hide: true },
+    { field: "CInboundNo", headerName: "入库标识", hide: true },
+    { field: "NLenTolMin", headerName: "长度下偏差", hide: true },
+    { field: "NLenTolMax", headerName: "长度上偏差", hide: true },
+    { field: "DTimeShipment", headerName: "预计船期", hide: true },
+    { field: "CJrzzgyCode", headerName: "加热轧制工艺编码", hide: true },
+    { field: "CJqgyCode", headerName: "剪切工艺编码", hide: true },
+    { field: "CExitem1", headerName: "是否工程单", hide: true },
+    { field: "LastModifier", headerName: "最后修改人", hide: true },
+    { field: "LastModifyTime", headerName: "最后修改时间", hide: true },
+    { field: "CDeptCode", headerName: "部门编码", hide: true },
+    { field: "CDesignDesc", headerName: "质量设计失败说明", hide: true },
+    { field: "NOrderProcFlag", headerName: "合同处理标志（", hide: true },
+    { field: "COrderProcUserId", headerName: "合同处理操作人", hide: true },
+    { field: "DOrderProcTime", headerName: "合同处理时间", hide: true },
+    { field: "CZgGyCode", headerName: "轧钢工艺编码", hide: true },
+    { field: "CPushUserId", headerName: "下发生产人", hide: true },
+    { field: "DPushTime", headerName: "下发生产时间", hide: true },
+    { field: "NSfpj", headerName: "评审状态", hide: true },
+    { field: "CPjName", headerName: "评审人", hide: true },
+    { field: "NExitem2", headerName: "申请通知", hide: true },
+    { field: "COrderTypeCode", headerName: "订单性质编码", hide: true },
+    { field: "COrderTypeDesc", headerName: "订单性质说明", hide: true },
+    { field: "CExitem4", headerName: "变更原因", hide: true },
+    { field: "CExitem3", headerName: "原始订单号", hide: true },
+    { field: "OrderCP", headerName: "侧喷要求", hide: true },
+    { field: "CGf", headerName: "平直度", hide: true },
+  ]),
+);
 
 /* 查询条件（原 dataLayoutControl1；下拉枚举照 Designer 提取摘要抄写） */
 const q = reactive({
@@ -311,13 +321,27 @@ onMounted(async () => {
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">状态</label>
-        <Select v-model="q.orderStatus" :options="statusOptions" option-label="label" option-value="value"
-          placeholder="请选择" show-clear class="min-w-0 flex-1" />
+        <Select
+          v-model="q.orderStatus"
+          :options="statusOptions"
+          option-label="label"
+          option-value="value"
+          placeholder="请选择"
+          show-clear
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">计划类型</label>
-        <Select v-model="q.nFlag" :options="flagOptions" option-label="label" option-value="value"
-          placeholder="请选择" show-clear class="min-w-0 flex-1" />
+        <Select
+          v-model="q.nFlag"
+          :options="flagOptions"
+          option-label="label"
+          option-value="value"
+          placeholder="请选择"
+          show-clear
+          class="min-w-0 flex-1"
+        />
       </div>
     </div>
 
@@ -330,8 +354,15 @@ onMounted(async () => {
       <label class="ml-2 shrink-0 whitespace-nowrap text-xs text-muted-foreground">计划日期</label>
       <DatePicker v-model="dtPlan" :manual-input="false" date-format="yy-mm-dd" show-icon class="!w-36 shrink-0" />
       <label class="ml-2 shrink-0 whitespace-nowrap text-xs text-muted-foreground">提料坯型</label>
-      <Select v-model="slabCode" :options="slabOptions" option-label="cName" option-value="cCode"
-        placeholder="请选择坯型" show-clear class="!w-44 shrink-0" />
+      <Select
+        v-model="slabCode"
+        :options="slabOptions"
+        option-label="cName"
+        option-value="cCode"
+        placeholder="请选择坯型"
+        show-clear
+        class="!w-44 shrink-0"
+      />
       <label class="ml-2 shrink-0 whitespace-nowrap text-xs text-muted-foreground">是否冷坯计划</label>
       <ToggleSwitch v-model="slabCool" class="shrink-0" />
       <Button text class="shrink-0 whitespace-nowrap" @click="onGen">
@@ -352,7 +383,13 @@ onMounted(async () => {
         :default-col-def="hmxDefaultColDef"
         :column-defs="colDefs"
         :row-data="rows"
-        :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
+        :row-selection="{
+          mode: 'multiRow',
+          checkboxes: true,
+          headerCheckbox: true,
+          enableClickSelection: true,
+          enableSelectionWithoutKeys: true,
+        }"
         :pagination="false"
         :loading="querying"
         @grid-ready="onGridReady"

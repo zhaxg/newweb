@@ -57,42 +57,42 @@ const input = reactive({
 });
 
 const colDefs: ColDef[] = [
-        { field: "selected", headerName: "选择", hide: true },
-      { field: "cOrderNo", headerName: "订单号", width: 100 },
-      { field: "cInboundNo", headerName: "入库标识", width: 100 },
-      { field: "cConsignee", headerName: "订货单位", width: 100 },
-      { field: "cSettleCust", headerName: "结算单位", width: 100 },
-      { field: "cPieceNo", headerName: "件次号", width: 100 },
-      { field: "cSgCode", headerName: "钢种", width: 100 },
-      { field: "cSpec", headerName: "规格", width: 100 },
-      { field: "cSgStd", headerName: "执行标准", width: 100 },
-      { field: "nNum", headerName: "支数", width: 100 },
-      { field: "nCalWgt", headerName: "理重", width: 100 },
-      { field: "cComplexDecideCode", headerName: "综判结果", width: 100 },
-      { field: "cSurfaceResult", headerName: "表检结果", width: 100 },
-      { field: "cDetectResultCode", headerName: "探伤判定结果", width: 100 },
-      { field: "nQmLevel", headerName: "质量等级", width: 100 },
-      { field: "cProdCode", headerName: "品名", width: 100 },
-      { field: "cStackNo", headerName: "垛位号", width: 100 },
-      { field: "cStackNum", headerName: "层号", width: 100 },
-      { field: "nThick", headerName: "厚度", width: 100 },
-      { field: "nWth", headerName: "宽度", width: 100 },
-      { field: "nLen", headerName: "长度", width: 100 },
-      { field: "nQmStatus", headerName: "质量状态", width: 100 },
-      { field: "nLockReason", headerName: "质量封锁原因", width: 100 },
-      { field: "cWgtToler", headerName: "公差", width: 100 },
-      { field: "cCutFlag", headerName: "切边方式", width: 100 },
-      { field: "cDetectDefectLevel", headerName: "探伤等级", width: 100 },
-      { field: "cSpecialMarkGy", headerName: "性能要求", width: 100 },
-      { field: "cDelivyStatusCode", headerName: "交货状态", width: 100 },
-      { field: "cDelivyAddress", headerName: "流向", width: 100 },
-      { field: "nStatus", headerName: "库存状态", width: 100 },
-      { field: "cProRemark", headerName: "生产备注", width: 100 },
-      { field: "dProTime", headerName: "产出时间", width: 100 },
-      { field: "cStoreCode", headerName: "库区号", width: 100 },
-      { field: "cStove", headerName: "炉号", width: 100 },
-      { field: "cPrintCode", headerName: "喷号", width: 100, hide: true },
-      { field: "nWgt", headerName: "实重", width: 100, hide: true },
+  { field: "selected", headerName: "选择", hide: true },
+  { field: "cOrderNo", headerName: "订单号", width: 100 },
+  { field: "cInboundNo", headerName: "入库标识", width: 100 },
+  { field: "cConsignee", headerName: "订货单位", width: 100 },
+  { field: "cSettleCust", headerName: "结算单位", width: 100 },
+  { field: "cPieceNo", headerName: "件次号", width: 100 },
+  { field: "cSgCode", headerName: "钢种", width: 100 },
+  { field: "cSpec", headerName: "规格", width: 100 },
+  { field: "cSgStd", headerName: "执行标准", width: 100 },
+  { field: "nNum", headerName: "支数", width: 100 },
+  { field: "nCalWgt", headerName: "理重", width: 100 },
+  { field: "cComplexDecideCode", headerName: "综判结果", width: 100 },
+  { field: "cSurfaceResult", headerName: "表检结果", width: 100 },
+  { field: "cDetectResultCode", headerName: "探伤判定结果", width: 100 },
+  { field: "nQmLevel", headerName: "质量等级", width: 100 },
+  { field: "cProdCode", headerName: "品名", width: 100 },
+  { field: "cStackNo", headerName: "垛位号", width: 100 },
+  { field: "cStackNum", headerName: "层号", width: 100 },
+  { field: "nThick", headerName: "厚度", width: 100 },
+  { field: "nWth", headerName: "宽度", width: 100 },
+  { field: "nLen", headerName: "长度", width: 100 },
+  { field: "nQmStatus", headerName: "质量状态", width: 100 },
+  { field: "nLockReason", headerName: "质量封锁原因", width: 100 },
+  { field: "cWgtToler", headerName: "公差", width: 100 },
+  { field: "cCutFlag", headerName: "切边方式", width: 100 },
+  { field: "cDetectDefectLevel", headerName: "探伤等级", width: 100 },
+  { field: "cSpecialMarkGy", headerName: "性能要求", width: 100 },
+  { field: "cDelivyStatusCode", headerName: "交货状态", width: 100 },
+  { field: "cDelivyAddress", headerName: "流向", width: 100 },
+  { field: "nStatus", headerName: "库存状态", width: 100 },
+  { field: "cProRemark", headerName: "生产备注", width: 100 },
+  { field: "dProTime", headerName: "产出时间", width: 100 },
+  { field: "cStoreCode", headerName: "库区号", width: 100 },
+  { field: "cStove", headerName: "炉号", width: 100 },
+  { field: "cPrintCode", headerName: "喷号", width: 100, hide: true },
+  { field: "nWgt", headerName: "实重", width: 100, hide: true },
 ];
 
 function onGridReady(e: GridReadyEvent) {
@@ -158,9 +158,7 @@ async function onCancelMatch() {
   if (!window.confirm(`确认取消匹配订单?件数：${selected.length}`)) return;
   querying.value = true;
   try {
-    const pieceNos = selected
-      .map((x) => x.cPieceNo ?? "")
-      .filter(Boolean);
+    const pieceNos = selected.map((x) => x.cPieceNo ?? "").filter(Boolean);
     const count = (await tmp2000Api.cancelMatchOrder(pieceNos)) ?? 0;
     await onQuery();
     toast(`取消成功${count}条！`, 2500, "success");
@@ -345,7 +343,13 @@ function onZgOrder() {
         :default-col-def="hmxDefaultColDef"
         :column-defs="colDefs"
         :row-data="rows"
-        :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
+        :row-selection="{
+          mode: 'multiRow',
+          checkboxes: true,
+          headerCheckbox: true,
+          enableClickSelection: true,
+          enableSelectionWithoutKeys: true,
+        }"
         :suppress-column-virtualisation="true"
         :pagination="false"
         :animate-rows="false"

@@ -72,7 +72,12 @@ export const limsRoutes: RouteMap = {
       if (input.cOrderNo && !String(j.cOrderNo ?? "").includes(String(input.cOrderNo))) return false;
       if (input.cLineCode && !String(j.cLineCode ?? "").includes(String(input.cLineCode))) return false;
       if (input.cStatus != null && input.cStatus !== "" && Number(j.cStatus) !== Number(input.cStatus)) return false;
-      if (input.cRecheckFlag != null && input.cRecheckFlag !== "" && Number(j.cRecheckFlag) !== Number(input.cRecheckFlag)) return false;
+      if (
+        input.cRecheckFlag != null &&
+        input.cRecheckFlag !== "" &&
+        Number(j.cRecheckFlag) !== Number(input.cRecheckFlag)
+      )
+        return false;
       if (!inTimeRange(j.createTime, input.createTime)) return false;
       return true;
     });
@@ -171,7 +176,12 @@ export const limsRoutes: RouteMap = {
       if (input.cSgStd && !String(j.cSgStd ?? "").includes(String(input.cSgStd))) return false;
       if (input.cOrderNo && !String(j.cOrderNo ?? "").includes(String(input.cOrderNo))) return false;
       if (input.cLineCode && !String(j.cLineCode ?? "").includes(String(input.cLineCode))) return false;
-      if (input.cRecheckFlag != null && input.cRecheckFlag !== "" && Number(j.cRecheckFlag) !== Number(input.cRecheckFlag)) return false;
+      if (
+        input.cRecheckFlag != null &&
+        input.cRecheckFlag !== "" &&
+        Number(j.cRecheckFlag) !== Number(input.cRecheckFlag)
+      )
+        return false;
       if (statuses && !statuses.includes(Number(j.cStatus))) return false;
       if (!inTimeRange(j.createTime, input.createTime)) return false;
       return true;
@@ -227,7 +237,10 @@ export const limsRoutes: RouteMap = {
   /* 删除取样要求 */
   [`post ${LIMS}/testJob/deleteSampleRequires`]: (config) => {
     const p = getParams(config);
-    saveJson(SAMPLES_KEY, loadSamples().filter((s) => s.id !== p.id));
+    saveJson(
+      SAMPLES_KEY,
+      loadSamples().filter((s) => s.id !== p.id),
+    );
     return ok(config, null);
   },
 
@@ -276,8 +289,16 @@ export const limsRoutes: RouteMap = {
         if (input.cSgStd && !String(j.cSgStd ?? "").includes(String(input.cSgStd))) return false;
         if (input.cOrderNo && !String(j.cOrderNo ?? "").includes(String(input.cOrderNo))) return false;
         if (input.cLineCode && !String(j.cLineCode ?? "").includes(String(input.cLineCode))) return false;
-        if (input.cRecheckFlag != null && input.cRecheckFlag !== "" && Number(j.cRecheckFlag) !== Number(input.cRecheckFlag)) return false;
-        if (input.checkStatus != null && !inTimeRange(j.dReceiveTime, input.dReceiveTime === undefined ? input.createTime : undefined)) {
+        if (
+          input.cRecheckFlag != null &&
+          input.cRecheckFlag !== "" &&
+          Number(j.cRecheckFlag) !== Number(input.cRecheckFlag)
+        )
+          return false;
+        if (
+          input.checkStatus != null &&
+          !inTimeRange(j.dReceiveTime, input.dReceiveTime === undefined ? input.createTime : undefined)
+        ) {
           /* fallthrough */
         }
         if (!inTimeRange(j.dReceiveTime, input.dReceiveTime)) return false;
@@ -539,9 +560,33 @@ export const limsRoutes: RouteMap = {
         nTestTimes: 1,
         cRecheckFlag: 0,
         results: [
-          { subItemCode: "P101", subItemName: "上屈服强度", cTestResult: "352.7", judgeResult: 2, typeCode: "1", testItem: "T001", testItemName: "拉伸" },
-          { subItemCode: "P106", subItemName: "下屈服强度", cTestResult: "340.2", judgeResult: 2, typeCode: "1", testItem: "T001", testItemName: "拉伸" },
-          { subItemCode: "P201", subItemName: "抗拉强度", cTestResult: "455.1", judgeResult: 3, typeCode: "2", testItem: "T002", testItemName: "冲击" },
+          {
+            subItemCode: "P101",
+            subItemName: "上屈服强度",
+            cTestResult: "352.7",
+            judgeResult: 2,
+            typeCode: "1",
+            testItem: "T001",
+            testItemName: "拉伸",
+          },
+          {
+            subItemCode: "P106",
+            subItemName: "下屈服强度",
+            cTestResult: "340.2",
+            judgeResult: 2,
+            typeCode: "1",
+            testItem: "T001",
+            testItemName: "拉伸",
+          },
+          {
+            subItemCode: "P201",
+            subItemName: "抗拉强度",
+            cTestResult: "455.1",
+            judgeResult: 3,
+            typeCode: "2",
+            testItem: "T002",
+            testItemName: "冲击",
+          },
         ],
       })),
     ),
@@ -945,45 +990,93 @@ export const limsRoutes: RouteMap = {
   ["post /dDH.Service.LIMS.Services/tql1060/queryStorage"]: (config) =>
     ok(
       config,
-      demoRows(3, (i) => ({ id: `D${i + 1}`, selected: false, cPieceNo: `P00${i + 1}`, cStove: `S26C0${i + 1}`, nStatus: 1 })),
+      demoRows(3, (i) => ({
+        id: `D${i + 1}`,
+        selected: false,
+        cPieceNo: `P00${i + 1}`,
+        cStove: `S26C0${i + 1}`,
+        nStatus: 1,
+      })),
     ),
   ["post /dDH.Service.LIMS.Services/tql1060/queryRecord"]: (config) =>
     ok(
       config,
-      demoRows(3, (i) => ({ id: `D${i + 1}`, selected: false, cPieceNo: `P00${i + 1}`, cStove: `S26C0${i + 1}`, nStatus: 1 })),
+      demoRows(3, (i) => ({
+        id: `D${i + 1}`,
+        selected: false,
+        cPieceNo: `P00${i + 1}`,
+        cStove: `S26C0${i + 1}`,
+        nStatus: 1,
+      })),
     ),
   ["post /dDH.Service.LIMS.Services/tql1060/setDisable"]: (config) => ok(config, null),
   ["post /dDH.Service.LIMS.Services/tql1070/queryStorage"]: (config) =>
     ok(
       config,
-      demoRows(3, (i) => ({ id: `D${i + 1}`, selected: false, cPieceNo: `P00${i + 1}`, cStove: `S26C0${i + 1}`, nStatus: 1 })),
+      demoRows(3, (i) => ({
+        id: `D${i + 1}`,
+        selected: false,
+        cPieceNo: `P00${i + 1}`,
+        cStove: `S26C0${i + 1}`,
+        nStatus: 1,
+      })),
     ),
   ["post /dDH.Service.LIMS.Services/tql1070/queryRecord"]: (config) =>
     ok(
       config,
-      demoRows(3, (i) => ({ id: `D${i + 1}`, selected: false, cPieceNo: `P00${i + 1}`, cStove: `S26C0${i + 1}`, nStatus: 1 })),
+      demoRows(3, (i) => ({
+        id: `D${i + 1}`,
+        selected: false,
+        cPieceNo: `P00${i + 1}`,
+        cStove: `S26C0${i + 1}`,
+        nStatus: 1,
+      })),
     ),
   ["post /dDH.Service.LIMS.Services/tql1070/queryTql1070"]: (config) =>
     ok(
       config,
-      demoRows(3, (i) => ({ id: `D${i + 1}`, selected: false, cPieceNo: `P00${i + 1}`, cStove: `S26C0${i + 1}`, nStatus: 1 })),
+      demoRows(3, (i) => ({
+        id: `D${i + 1}`,
+        selected: false,
+        cPieceNo: `P00${i + 1}`,
+        cStove: `S26C0${i + 1}`,
+        nStatus: 1,
+      })),
     ),
   ["post /dDH.Service.LIMS.Services/tql1070/setDisable"]: (config) => ok(config, null),
   ["post /dDH.Service.LIMS.Services/qZ5000/queryCpcf"]: (config) =>
     ok(
       config,
-      demoRows(3, (i) => ({ id: `D${i + 1}`, selected: false, cPieceNo: `P00${i + 1}`, cStove: `S26C0${i + 1}`, nStatus: 1 })),
+      demoRows(3, (i) => ({
+        id: `D${i + 1}`,
+        selected: false,
+        cPieceNo: `P00${i + 1}`,
+        cStove: `S26C0${i + 1}`,
+        nStatus: 1,
+      })),
     ),
   ["post /dDH.Service.LIMS.Services/testJob/batchAutoJudge"]: (config) => ok(config, null),
   ["post /dDH.Service.LIMS.Services/stoveCFRecord/queryRecord"]: (config) =>
     ok(
       config,
-      demoRows(3, (i) => ({ id: `D${i + 1}`, selected: false, cPieceNo: `P00${i + 1}`, cStove: `S26C0${i + 1}`, nStatus: 1 })),
+      demoRows(3, (i) => ({
+        id: `D${i + 1}`,
+        selected: false,
+        cPieceNo: `P00${i + 1}`,
+        cStove: `S26C0${i + 1}`,
+        nStatus: 1,
+      })),
     ),
   ["post /dDH.Service.LIMS.Services/stoveCFRecord/queryProcessRecord"]: (config) =>
     ok(
       config,
-      demoRows(3, (i) => ({ id: `D${i + 1}`, selected: false, cPieceNo: `P00${i + 1}`, cStove: `S26C0${i + 1}`, nStatus: 1 })),
+      demoRows(3, (i) => ({
+        id: `D${i + 1}`,
+        selected: false,
+        cPieceNo: `P00${i + 1}`,
+        cStove: `S26C0${i + 1}`,
+        nStatus: 1,
+      })),
     ),
   ["post /dDH.Service.LIMS.Services/tql1050/addImages"]: (config) => ok(config, null),
 
@@ -991,7 +1084,13 @@ export const limsRoutes: RouteMap = {
   ["post /dDH.Service.LIMS.Services/testJob/queryAllSamples"]: (config) =>
     ok(
       config,
-      demoRows(3, (i) => ({ id: `D${i + 1}`, selected: false, cPieceNo: `P00${i + 1}`, cStove: `S26C0${i + 1}`, nStatus: 1 })),
+      demoRows(3, (i) => ({
+        id: `D${i + 1}`,
+        selected: false,
+        cPieceNo: `P00${i + 1}`,
+        cStove: `S26C0${i + 1}`,
+        nStatus: 1,
+      })),
     ),
   ["post /dDH.Service.LIMS.Services/stoveChemicalCompositionTest/syncStoveCf"]: (config) => ok(config, null),
 
@@ -999,47 +1098,95 @@ export const limsRoutes: RouteMap = {
   ["post /dDH.Service.LIMS.Services/tql2001/queryStoveInfo"]: (config) =>
     ok(
       config,
-      demoRows(3, (i) => ({ id: `D${i + 1}`, selected: false, cTestNo: `T2609${i + 1}`, cStove: `S26C0${i + 1}`, cPieceNo: `P00${i + 1}` })),
+      demoRows(3, (i) => ({
+        id: `D${i + 1}`,
+        selected: false,
+        cTestNo: `T2609${i + 1}`,
+        cStove: `S26C0${i + 1}`,
+        cPieceNo: `P00${i + 1}`,
+      })),
     ),
   ["post /dDH.Service.LIMS.Services/tql2001/queryStoveData"]: (config) =>
     ok(
       config,
-      demoRows(3, (i) => ({ id: `D${i + 1}`, selected: false, cTestNo: `T2609${i + 1}`, cStove: `S26C0${i + 1}`, cPieceNo: `P00${i + 1}` })),
+      demoRows(3, (i) => ({
+        id: `D${i + 1}`,
+        selected: false,
+        cTestNo: `T2609${i + 1}`,
+        cStove: `S26C0${i + 1}`,
+        cPieceNo: `P00${i + 1}`,
+      })),
     ),
   ["post /dDH.Service.LIMS.Services/stoveChemicalCompositionTest/queryFinalOrDisableSamples"]: (config) =>
     ok(
       config,
-      demoRows(3, (i) => ({ id: `D${i + 1}`, selected: false, cTestNo: `T2609${i + 1}`, cStove: `S26C0${i + 1}`, cPieceNo: `P00${i + 1}` })),
+      demoRows(3, (i) => ({
+        id: `D${i + 1}`,
+        selected: false,
+        cTestNo: `T2609${i + 1}`,
+        cStove: `S26C0${i + 1}`,
+        cPieceNo: `P00${i + 1}`,
+      })),
     ),
   ["post /dDH.Service.LIMS.Services/stoveChemicalCompositionTest/queryFinalSample"]: (config) =>
     ok(
       config,
-      demoRows(3, (i) => ({ id: `D${i + 1}`, selected: false, cTestNo: `T2609${i + 1}`, cStove: `S26C0${i + 1}`, cPieceNo: `P00${i + 1}` })),
+      demoRows(3, (i) => ({
+        id: `D${i + 1}`,
+        selected: false,
+        cTestNo: `T2609${i + 1}`,
+        cStove: `S26C0${i + 1}`,
+        cPieceNo: `P00${i + 1}`,
+      })),
     ),
   ["post /dDH.Service.LIMS.Services/stoveChemicalCompositionTest/recheck"]: (config) => ok(config, null),
   ["post /dDH.Service.LIMS.Services/stoveChemicalCompositionTest/getStoveTestStds"]: (config) =>
     ok(
       config,
-      demoRows(3, (i) => ({ id: `D${i + 1}`, selected: false, cTestNo: `T2609${i + 1}`, cStove: `S26C0${i + 1}`, cPieceNo: `P00${i + 1}` })),
+      demoRows(3, (i) => ({
+        id: `D${i + 1}`,
+        selected: false,
+        cTestNo: `T2609${i + 1}`,
+        cStove: `S26C0${i + 1}`,
+        cPieceNo: `P00${i + 1}`,
+      })),
     ),
   ["post /dDH.Service.LIMS.Services/stoveChemicalCompositionTest/stoveAutoJudge"]: (config) => ok(config, null),
   ["post /dDH.Service.LIMS.Services/testJob/queryTestJobMainForJudge"]: (config) =>
     ok(
       config,
-      demoRows(3, (i) => ({ id: `D${i + 1}`, selected: false, cTestNo: `T2609${i + 1}`, cStove: `S26C0${i + 1}`, cPieceNo: `P00${i + 1}` })),
+      demoRows(3, (i) => ({
+        id: `D${i + 1}`,
+        selected: false,
+        cTestNo: `T2609${i + 1}`,
+        cStove: `S26C0${i + 1}`,
+        cPieceNo: `P00${i + 1}`,
+      })),
     ),
   ["post /dDH.Service.LIMS.Services/testJob/changeJudgeResult"]: (config) => ok(config, null),
   ["post /dDH.Service.LIMS.Services/testJob/checkComplexDecide"]: (config) => ok(config, null),
   ["post /dDH.Service.LIMS.Services/testJob/queryRecheckSampleRequires"]: (config) =>
     ok(
       config,
-      demoRows(3, (i) => ({ id: `D${i + 1}`, selected: false, cTestNo: `T2609${i + 1}`, cStove: `S26C0${i + 1}`, cPieceNo: `P00${i + 1}` })),
+      demoRows(3, (i) => ({
+        id: `D${i + 1}`,
+        selected: false,
+        cTestNo: `T2609${i + 1}`,
+        cStove: `S26C0${i + 1}`,
+        cPieceNo: `P00${i + 1}`,
+      })),
     ),
   ["post /dDH.Service.LIMS.Services/testJob/labRecheck"]: (config) => ok(config, null),
   ["post /dDH.Service.LIMS.Services/testJob/qMRecheck"]: (config) => ok(config, null),
   ["post /dDH.Service.LIMS.Services/testJob/querySamplesByTestNo"]: (config) =>
     ok(
       config,
-      demoRows(3, (i) => ({ id: `D${i + 1}`, selected: false, cTestNo: `T2609${i + 1}`, cStove: `S26C0${i + 1}`, cPieceNo: `P00${i + 1}` })),
+      demoRows(3, (i) => ({
+        id: `D${i + 1}`,
+        selected: false,
+        cTestNo: `T2609${i + 1}`,
+        cStove: `S26C0${i + 1}`,
+        cPieceNo: `P00${i + 1}`,
+      })),
     ),
 };

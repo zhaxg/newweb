@@ -20,7 +20,16 @@ import type { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { hmxDefaultColDef, makeHmxGridTheme, autoSizeOnFirstData } from "@/lib/agGrid";
 import { useMenuQuery } from "@/lib/menuQuery";
-import { tyd1000Api, tyd2020Api, Tyd2010TypeEnum, Tyd2011StatusEnum, type QueryDBDto, type Tyd1000, type Tyd2020, type Tyd2020Dto } from "@/api/mes4ddh/syd.swagger";
+import {
+  tyd1000Api,
+  tyd2020Api,
+  Tyd2010TypeEnum,
+  Tyd2011StatusEnum,
+  type QueryDBDto,
+  type Tyd1000,
+  type Tyd2020,
+  type Tyd2020Dto,
+} from "@/api/mes4ddh/syd.swagger";
 import { useToast } from "@/composables/useToast";
 
 const { toast } = useToast();
@@ -41,8 +50,13 @@ const params = computed<InputParams>(() => ({
 }));
 
 function defaultRange(): [Date, Date] {
-  const start = new Date(); start.setHours(0, 0, 0, 0); start.setDate(start.getDate() - 1);
-  const end = new Date(); end.setHours(0, 0, 0, 0); end.setDate(end.getDate() + 1); end.setSeconds(end.getSeconds() - 1);
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  start.setDate(start.getDate() - 1);
+  const end = new Date();
+  end.setHours(0, 0, 0, 0);
+  end.setDate(end.getDate() + 1);
+  end.setSeconds(end.getSeconds() - 1);
   return [start, end];
 }
 
@@ -148,8 +162,12 @@ const detailApi = ref<GridApi | null>(null);
 
 const showOut = computed(() => params.value.Operators?.includes("btnOut") ?? false);
 
-function onMasterReady(e: GridReadyEvent) { masterApi.value = e.api; }
-function onDetailReady(e: GridReadyEvent) { detailApi.value = e.api; }
+function onMasterReady(e: GridReadyEvent) {
+  masterApi.value = e.api;
+}
+function onDetailReady(e: GridReadyEvent) {
+  detailApi.value = e.api;
+}
 
 function isoDate(d: Date): string {
   const p = (n: number) => String(n).padStart(2, "0");
@@ -159,7 +177,8 @@ function isoDate(d: Date): string {
 async function loadStores() {
   try {
     const list = ((await tyd1000Api.queryRoom("")) ?? []) as Tyd1000[];
-    const opts = list.filter((x) => x.cStoreCode != null)
+    const opts = list
+      .filter((x) => x.cStoreCode != null)
       .map((x) => ({ label: x.cStoreDes ?? x.cStoreCode ?? "", value: x.cStoreCode! }));
     storeOptions.value = opts;
     tarStoreOptions.value = params.value.TarStores?.length
@@ -170,14 +189,14 @@ async function loadStores() {
       q.cStore = q.cStore;
     }
     if (tarStoreOptions.value.length === 1) q.cTarStore = tarStoreOptions.value[0]!.value;
-  } catch { /* 拦截层已 toast */ }
+  } catch {
+    /* 拦截层已 toast */
+  }
 }
 
 function buildQuery(): QueryDBDto {
   return {
-    timeRange: q.dates?.[0] && q.dates?.[1]
-      ? { min: isoDate(q.dates[0]), max: isoDate(q.dates[1]) }
-      : undefined,
+    timeRange: q.dates?.[0] && q.dates?.[1] ? { min: isoDate(q.dates[0]), max: isoDate(q.dates[1]) } : undefined,
     cStore: q.cStore || null,
     cTarStore: q.cTarStore || null,
     cStatus: q.nStatus,
@@ -196,13 +215,22 @@ async function onQuery() {
     requestAnimationFrame(() => masterApi.value?.autoSizeAllColumns());
     if (masters.value.length) selectFirst();
     if (!masters.value.length) toast("无符合条件的数据", 2000, "info");
-  } catch { /* 拦截层已 toast */ } finally { querying.value = false; }
+  } catch {
+    /* 拦截层已 toast */
+  } finally {
+    querying.value = false;
+  }
 }
 
 function selectFirst() {
   if (!masterApi.value) return;
   let first = true;
-  masterApi.value.forEachNode((n) => { if (first) { n.setSelected(true, true); first = false; } });
+  masterApi.value.forEachNode((n) => {
+    if (first) {
+      n.setSelected(true, true);
+      first = false;
+    }
+  });
 }
 
 function focusMaster(): Tyd2020Dto | null {
@@ -224,38 +252,66 @@ function onMasterSelectionChanged() {
 /* btnOut 调拨出库 → DBCK */
 async function onOut() {
   const cur = focusMaster();
-  if (!cur) { toast("请选择后再操作", 2000, "warn"); return; }
+  if (!cur) {
+    toast("请选择后再操作", 2000, "warn");
+    return;
+  }
   const list = (cur.details ?? []) as Tyd2020[];
-  if (list.some((l) => l.nStatus !== Tyd2011StatusEnum.Request)) { toast("状态错误不允许操作", 2500, "warn"); return; }
+  if (list.some((l) => l.nStatus !== Tyd2011StatusEnum.Request)) {
+    toast("状态错误不允许操作", 2500, "warn");
+    return;
+  }
   if (!window.confirm(`确认出库？数量${list.length}`)) return;
   querying.value = true;
   try {
     await tyd2020Api.dBCK(list.map((w) => w.id!).filter(Boolean));
     await onQuery();
-  } catch { /* 拦截层已 toast */ } finally { querying.value = false; }
+  } catch {
+    /* 拦截层已 toast */
+  } finally {
+    querying.value = false;
+  }
 }
 
 /* btnRecevie 接收入库 → FrmYD2000DBRK（占位） */
 function onReceive() {
   const cur = focusMaster();
-  if (!cur) { toast("请选择后再操作", 2000, "warn"); return; }
+  if (!cur) {
+    toast("请选择后再操作", 2000, "warn");
+    return;
+  }
   const selected = selectedDetails();
-  if (!selected.length) { toast("请勾选材料后再操作", 2500, "warn"); return; }
-  if (selected.some((l) => l.nStatus !== Tyd2011StatusEnum.Out)) { toast("状态错误不允许操作", 2500, "warn"); return; }
+  if (!selected.length) {
+    toast("请勾选材料后再操作", 2500, "warn");
+    return;
+  }
+  if (selected.some((l) => l.nStatus !== Tyd2011StatusEnum.Out)) {
+    toast("状态错误不允许操作", 2500, "warn");
+    return;
+  }
   toast("接收入库弹窗（FrmYD2000DBRK）待接入", 2500, "warn");
 }
 
 /* btnCancel 取消调拨 → CancelCPDBRK / CancelDB */
 async function onCancel() {
   const cur = focusMaster();
-  if (!cur) { toast("请选择后再操作", 2000, "warn"); return; }
+  if (!cur) {
+    toast("请选择后再操作", 2000, "warn");
+    return;
+  }
   const validStatus =
     cur.nBusinsType === Tyd2010TypeEnum.DB203 || cur.nBusinsType === Tyd2010TypeEnum.DB201
       ? Tyd2011StatusEnum.Out
       : Tyd2011StatusEnum.Request;
   const selected = selectedDetails();
-  if (!selected.length) { toast("请勾选材料后再操作", 2500, "warn"); return; }
-  if (selected.some((l) => l.nStatus !== validStatus)) { toast("状态错误不允许操作", 2500, "warn"); return; }
+  if (!selected.length) {
+    toast("请勾选材料后再操作", 2500, "warn");
+    return;
+  }
+  if (selected.some((l) => l.nStatus !== validStatus)) {
+    toast("状态错误不允许操作", 2500, "warn");
+    return;
+  }
   if (!window.confirm(`确认取消？数量${selected.length}`)) return;
   querying.value = true;
   try {
@@ -263,10 +319,16 @@ async function onCancel() {
     if (cur.nBusinsType === Tyd2010TypeEnum.DB203) await tyd2020Api.cancelCPDBRK(ids);
     else await tyd2020Api.cancelDB(ids);
     await onQuery();
-  } catch { /* 拦截层已 toast */ } finally { querying.value = false; }
+  } catch {
+    /* 拦截层已 toast */
+  } finally {
+    querying.value = false;
+  }
 }
 
-onMounted(() => { void loadStores().then(() => onQuery()); });
+onMounted(() => {
+  void loadStores().then(() => onQuery());
+});
 </script>
 
 <template>
@@ -275,18 +337,38 @@ onMounted(() => { void loadStores().then(() => onQuery()); });
     <div class="grid shrink-0 grid-cols-6 items-center gap-x-3 gap-y-1.5 border-b border-border/60 px-3 py-2">
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-14 shrink-0 text-xs text-muted-foreground">申请状态</label>
-        <Select v-model="q.nStatus" :options="STATUS_OPTIONS" option-label="label" option-value="value" show-clear
-          placeholder="全部" class="min-w-0 flex-1" />
+        <Select
+          v-model="q.nStatus"
+          :options="STATUS_OPTIONS"
+          option-label="label"
+          option-value="value"
+          show-clear
+          placeholder="全部"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-12 shrink-0 text-xs text-muted-foreground">库区</label>
-        <Select v-model="q.cStore" :options="storeOptions" option-label="label" option-value="value"
-          placeholder="库区" class="min-w-0 flex-1" />
+        <Select
+          v-model="q.cStore"
+          :options="storeOptions"
+          option-label="label"
+          option-value="value"
+          placeholder="库区"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">目标库区</label>
-        <Select v-model="q.cTarStore" :options="tarStoreOptions" option-label="label" option-value="value" show-clear
-          placeholder="全部" class="min-w-0 flex-1" />
+        <Select
+          v-model="q.cTarStore"
+          :options="tarStoreOptions"
+          option-label="label"
+          option-value="value"
+          show-clear
+          placeholder="全部"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-14 shrink-0 text-xs text-muted-foreground">件次号</label>
@@ -298,8 +380,17 @@ onMounted(() => { void loadStores().then(() => onQuery()); });
       </div>
       <div class="col-span-2 flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">申请时间</label>
-        <DatePicker v-model="q.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-          show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+        <DatePicker
+          v-model="q.dates"
+          selection-mode="range"
+          :manual-input="false"
+          date-format="yy-mm-dd"
+          show-time
+          hour-format="24"
+          show-icon
+          placeholder="开始 至 结束"
+          class="min-w-0 flex-1"
+        />
       </div>
     </div>
 
@@ -318,12 +409,21 @@ onMounted(() => { void loadStores().then(() => onQuery()); });
     <Splitter class="min-h-0 flex-1" layout="vertical">
       <SplitterPanel :size="45" :minSize="25" class="flex flex-col overflow-hidden">
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="masterColDefs"
-            :default-col-def="hmxDefaultColDef" :row-data="masters" :locale-text="AG_GRID_LOCALE_CN"
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :column-defs="masterColDefs"
+            :default-col-def="hmxDefaultColDef"
+            :row-data="masters"
+            :locale-text="AG_GRID_LOCALE_CN"
             :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
-            :pagination="false" :animate-rows="false" :loading="querying"
-            @grid-ready="onMasterReady" @selection-changed="onMasterSelectionChanged"
-            @first-data-rendered="autoSizeOnFirstData" />
+            :pagination="false"
+            :animate-rows="false"
+            :loading="querying"
+            @grid-ready="onMasterReady"
+            @selection-changed="onMasterSelectionChanged"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
 
@@ -339,11 +439,25 @@ onMounted(() => { void loadStores().then(() => onQuery()); });
           <span class="ml-auto text-xs text-muted-foreground">调拨明细（{{ details.length }}）</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="detailColDefs"
-            :default-col-def="hmxDefaultColDef" :row-data="details" :locale-text="AG_GRID_LOCALE_CN"
-            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-            :pagination="false" :animate-rows="false"
-            @grid-ready="onDetailReady" @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :column-defs="detailColDefs"
+            :default-col-def="hmxDefaultColDef"
+            :row-data="details"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :row-selection="{
+              mode: 'multiRow',
+              checkboxes: true,
+              headerCheckbox: true,
+              enableClickSelection: true,
+              enableSelectionWithoutKeys: true,
+            }"
+            :pagination="false"
+            :animate-rows="false"
+            @grid-ready="onDetailReady"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
     </Splitter>

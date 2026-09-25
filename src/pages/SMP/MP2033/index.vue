@@ -136,7 +136,10 @@ function sortCut(list: FrmMS2033Dto_StoveCutInfo[]): FrmMS2033Dto_StoveCutInfo[]
   return [...list].sort((a, b) => Number(a.nStrandNoSeqPlanTime ?? 0) - Number(b.nStrandNoSeqPlanTime ?? 0));
 }
 /** 替换左右列表（原 Clear+AddRange(OrderBy NStrandNoSeqPlanTime)） */
-function replaceCut(data?: { dataSourceLeft?: FrmMS2033Dto_StoveCutInfo[] | null; dataSourceRight?: FrmMS2033Dto_StoveCutInfo[] | null }) {
+function replaceCut(data?: {
+  dataSourceLeft?: FrmMS2033Dto_StoveCutInfo[] | null;
+  dataSourceRight?: FrmMS2033Dto_StoveCutInfo[] | null;
+}) {
   leftRows.value = sortCut(data?.dataSourceLeft ?? []);
   rightRows.value = sortCut(data?.dataSourceRight ?? []);
   currentCut.value = null;
@@ -202,7 +205,12 @@ function makeCutColDefs(list: () => FrmMS2033Dto_StoveCutInfo[]): ColDef[] {
     { colId: "NWidth", field: "nWidth", headerName: "坯宽", width: 70 },
     { colId: "NWgt", field: "nWgt", headerName: "坯重", width: 80 },
     { colId: "NStrandNoSeqPlanTime", field: "nStrandNoSeqPlanTime", headerName: "计划日期件次顺序号", width: 140 },
-    { colId: "NStrandNoSeq1PlanTime", field: "nStrandNoSeq1PlanTime", headerName: "计划日期流号一切顺序号", width: 160 },
+    {
+      colId: "NStrandNoSeq1PlanTime",
+      field: "nStrandNoSeq1PlanTime",
+      headerName: "计划日期流号一切顺序号",
+      width: 160,
+    },
     /* 隐藏 43 列 */
     { colId: "_tmp20410", field: "_tmp20410", headerName: "", hide: true },
     { colId: "Id", field: "id", headerName: "主键", hide: true },
@@ -246,7 +254,12 @@ function makeCutColDefs(list: () => FrmMS2033Dto_StoveCutInfo[]): ColDef[] {
     { colId: "CSw06", field: "cSw06", headerName: "备用字段6", hide: true },
     { colId: "Selected", field: "selected", headerName: "选择", hide: true },
     { colId: "Index", field: "index", headerName: "序号", hide: true },
-    { colId: "StoveHaveMoreSgCode", field: "stoveHaveMoreSgCode", headerName: "炉次计划产出的件次是否存在多个钢种", hide: true },
+    {
+      colId: "StoveHaveMoreSgCode",
+      field: "stoveHaveMoreSgCode",
+      headerName: "炉次计划产出的件次是否存在多个钢种",
+      hide: true,
+    },
   ];
 }
 const leftColDefs = ref<ColDef[]>(makeCutColDefs(() => leftRows.value));
@@ -413,7 +426,12 @@ async function onRemoveStoveCun() {
     return;
   }
   querying.value = false;
-  if (!window.confirm(`确定删除生成的计划日期为${row.cPlanTime}的炉次及切割计划数据？\n注意：数据删除后无法恢复！请谨慎操作！`)) return;
+  if (
+    !window.confirm(
+      `确定删除生成的计划日期为${row.cPlanTime}的炉次及切割计划数据？\n注意：数据删除后无法恢复！请谨慎操作！`,
+    )
+  )
+    return;
   querying.value = true;
   try {
     await frmMP2033Api.removeStoveCunInfo(param);
@@ -504,7 +522,12 @@ async function removeReal(row: FrmMS2033Dto_StoveCutInfo | null | undefined) {
     dataOperateTypeEnum: 3 /* DataOperateTypeEnum.Delete */,
     addOrRemoveData: { _stoveCutInfo: row },
   };
-  if (!window.confirm(`确定删除‘${row.cStrandNo}’流数据中所选的制造命令号为‘${row.cPono}’炉流序号为‘${row.nStrandNoSeq}’的件次信息？`)) return;
+  if (
+    !window.confirm(
+      `确定删除‘${row.cStrandNo}’流数据中所选的制造命令号为‘${row.cPono}’炉流序号为‘${row.nStrandNoSeq}’的件次信息？`,
+    )
+  )
+    return;
   querying.value = true;
   try {
     const data = await frmMP2033Api.calcuateNewData(body);
@@ -549,7 +572,12 @@ async function onChangeSgByStove() {
   const info = requireSg();
   if (!info || !currentCut.value) return;
   const cur = currentCut.value;
-  if (!window.confirm(`确定将制造命令号为‘${cur.cPono}’的炉次的钢种和制造标准更新为‘${info.cSgCode}-${info.cSgStd}’？\n注意：因更新的数据范围较大，该操作会直接提交数据库！`)) return;
+  if (
+    !window.confirm(
+      `确定将制造命令号为‘${cur.cPono}’的炉次的钢种和制造标准更新为‘${info.cSgCode}-${info.cSgStd}’？\n注意：因更新的数据范围较大，该操作会直接提交数据库！`,
+    )
+  )
+    return;
   querying.value = true;
   try {
     await frmMP2033Api.updateStoveSgCodeInfo(cur, info);
@@ -626,8 +654,15 @@ onMounted(async () => {
       <span class="shrink-0 text-xs text-muted-foreground">~</span>
       <DatePicker v-model="dtE" date-format="yy-mm-dd" show-icon class="shrink-0" @value-change="fullWidth" />
       <label class="shrink-0 text-xs text-muted-foreground">轧制产线</label>
-      <Select v-model="cboZGLineInfo" :options="zgOptions" option-label="label" option-value="value" show-clear
-        placeholder="请选择" class="w-36 shrink-0" />
+      <Select
+        v-model="cboZGLineInfo"
+        :options="zgOptions"
+        option-label="label"
+        option-value="value"
+        show-clear
+        placeholder="请选择"
+        class="w-36 shrink-0"
+      />
       <label class="shrink-0 text-xs text-muted-foreground">计算用炉容量</label>
       <div class="w-24 shrink-0">
         <InputNumber v-model="speStoveWgt" :min="50" :max="250" :show-buttons="false" fluid />
@@ -635,8 +670,12 @@ onMounted(async () => {
       <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="querying" @click="onQuery">
         <IconSearch class="h-3 w-3" />查询
       </Button>
-      <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onCreateStoveCun">生成炉次及切割计划</Button>
-      <Button variant="outlined" severity="danger" class="shrink-0 whitespace-nowrap" @click="onRemoveStoveCun">删除炉次及切割计划</Button>
+      <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onCreateStoveCun"
+        >生成炉次及切割计划</Button
+      >
+      <Button variant="outlined" severity="danger" class="shrink-0 whitespace-nowrap" @click="onRemoveStoveCun"
+        >删除炉次及切割计划</Button
+      >
       <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onSave">
         <IconDeviceFloppy class="h-3 w-3" />保存
       </Button>
@@ -647,8 +686,15 @@ onMounted(async () => {
       <div class="flex h-9 items-center gap-1 border-b border-border/60 px-2">
         <InputText v-model="textEdit1" />
         <label class="shrink-0 text-xs text-muted-foreground">计划状态</label>
-        <Select v-model="icboPlan" :options="planStatusOptions" option-label="label" option-value="value" show-clear
-          placeholder="全部" class="w-32" />
+        <Select
+          v-model="icboPlan"
+          :options="planStatusOptions"
+          option-label="label"
+          option-value="value"
+          show-clear
+          placeholder="全部"
+          class="w-32"
+        />
         <label class="shrink-0 text-xs text-muted-foreground">钢坯宽度</label>
         <MultiSelect v-model="cboKGPWidth" :options="kgpWidthOptions" placeholder="全部" class="w-56" />
       </div>
@@ -658,12 +704,26 @@ onMounted(async () => {
     <Splitter class="min-h-0 flex-1" layout="vertical">
       <SplitterPanel :size="32" :minSize="15" class="flex flex-col overflow-hidden">
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="planColDefs" :row-data="planRows" :pagination="false"
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="planColDefs"
+            :row-data="planRows"
+            :pagination="false"
             :loading="querying"
-            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-            @grid-ready="ready('plan')" @first-data-rendered="autoSizeOnFirstData"
-            @selection-changed="onPlanSelectionChanged" />
+            :row-selection="{
+              mode: 'multiRow',
+              checkboxes: true,
+              headerCheckbox: true,
+              enableClickSelection: true,
+              enableSelectionWithoutKeys: true,
+            }"
+            @grid-ready="ready('plan')"
+            @first-data-rendered="autoSizeOnFirstData"
+            @selection-changed="onPlanSelectionChanged"
+          />
         </div>
       </SplitterPanel>
 
@@ -687,8 +747,16 @@ onMounted(async () => {
           <label class="shrink-0 text-xs text-muted-foreground">生产备注</label>
           <InputText v-model="txtProRemark" class="w-32 shrink-0" />
           <label class="shrink-0 text-xs text-muted-foreground">钢种信息</label>
-          <Select v-model="cboSgCodeInfo" :options="sgOptions" option-label="label" option-value="value" show-clear
-            placeholder="请选择" class="w-56 shrink-0" filter />
+          <Select
+            v-model="cboSgCodeInfo"
+            :options="sgOptions"
+            option-label="label"
+            option-value="value"
+            show-clear
+            placeholder="请选择"
+            class="w-56 shrink-0"
+            filter
+          />
         </div>
 
         <!-- stackPanel3：N流添加/N流删除/X流添加/X流删除/炉次改钢种/件次改钢种 -->
@@ -705,22 +773,42 @@ onMounted(async () => {
         <Splitter class="min-h-0 flex-1" layout="horizontal">
           <SplitterPanel :size="50" :minSize="25" class="flex flex-col overflow-hidden">
             <div class="min-h-0 flex-1 overflow-hidden">
-              <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                :default-col-def="hmxDefaultColDef" :column-defs="leftColDefs" :row-data="leftRows" :pagination="false"
-                :loading="querying" :get-row-style="cutRowStyle"
-                :row-selection="{ mode: 'singleRow', enableClickSelection: true }" @grid-ready="ready('left')"
-                @first-data-rendered="autoSizeOnFirstData" @selection-changed="onCutSelected('N')"
-                @cell-double-clicked="onCutDblClick" />
+              <AgGridVue
+                class="hmx-ag-grid h-full w-full"
+                :theme="theme"
+                :locale-text="AG_GRID_LOCALE_CN"
+                :default-col-def="hmxDefaultColDef"
+                :column-defs="leftColDefs"
+                :row-data="leftRows"
+                :pagination="false"
+                :loading="querying"
+                :get-row-style="cutRowStyle"
+                :row-selection="{ mode: 'singleRow', enableClickSelection: true }"
+                @grid-ready="ready('left')"
+                @first-data-rendered="autoSizeOnFirstData"
+                @selection-changed="onCutSelected('N')"
+                @cell-double-clicked="onCutDblClick"
+              />
             </div>
           </SplitterPanel>
           <SplitterPanel :size="50" :minSize="25" class="flex flex-col overflow-hidden">
             <div class="min-h-0 flex-1 overflow-hidden">
-              <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                :default-col-def="hmxDefaultColDef" :column-defs="rightColDefs" :row-data="rightRows"
-                :pagination="false" :loading="querying" :get-row-style="cutRowStyle"
-                :row-selection="{ mode: 'singleRow', enableClickSelection: true }" @grid-ready="ready('right')"
-                @first-data-rendered="autoSizeOnFirstData" @selection-changed="onCutSelected('X')"
-                @cell-double-clicked="onCutDblClick" />
+              <AgGridVue
+                class="hmx-ag-grid h-full w-full"
+                :theme="theme"
+                :locale-text="AG_GRID_LOCALE_CN"
+                :default-col-def="hmxDefaultColDef"
+                :column-defs="rightColDefs"
+                :row-data="rightRows"
+                :pagination="false"
+                :loading="querying"
+                :get-row-style="cutRowStyle"
+                :row-selection="{ mode: 'singleRow', enableClickSelection: true }"
+                @grid-ready="ready('right')"
+                @first-data-rendered="autoSizeOnFirstData"
+                @selection-changed="onCutSelected('X')"
+                @cell-double-clicked="onCutDblClick"
+              />
             </div>
           </SplitterPanel>
         </Splitter>

@@ -72,7 +72,9 @@ const topRows = ref<QueryHR5200_JCDto[]>([]);
 const topLoading = ref(false);
 const topApi = ref<GridApi | null>(null);
 const topCurrent = ref<QueryHR5200_JCDto | null>(null);
-function onTopReady(e: GridReadyEvent) { topApi.value = e.api; }
+function onTopReady(e: GridReadyEvent) {
+  topApi.value = e.api;
+}
 function onTopSelectionChanged() {
   topCurrent.value = (topApi.value?.getSelectedRows()[0] as QueryHR5200_JCDto | undefined) ?? null;
 }
@@ -81,7 +83,9 @@ function onTopSelectionChanged() {
 const bottomRows = ref<Thr5200[]>([]);
 const bottomLoading = ref(false);
 const bottomApi = ref<GridApi | null>(null);
-function onBottomReady(e: GridReadyEvent) { bottomApi.value = e.api; }
+function onBottomReady(e: GridReadyEvent) {
+  bottomApi.value = e.api;
+}
 
 /* ---------- 列定义（列集/顺序按 Designer VisibleIndex） ---------- */
 const logTypeFmt = (p: ValueFormatterParams) =>
@@ -139,12 +143,13 @@ const bottomColDefs: ColDef[] = [
 async function dataBind() {
   topLoading.value = true;
   try {
-    const list = (await hR5300JCZFApi.getListAsync1({
-      cLineCode: lineCode.value || undefined,
-      cStove: stove1.value.trim() || undefined,
-      cPieceNo: pieceNo1.value.trim() || undefined,
-      timeRange: toTimeRange(dates1.value),
-    })) ?? [];
+    const list =
+      (await hR5300JCZFApi.getListAsync1({
+        cLineCode: lineCode.value || undefined,
+        cStove: stove1.value.trim() || undefined,
+        cPieceNo: pieceNo1.value.trim() || undefined,
+        timeRange: toTimeRange(dates1.value),
+      })) ?? [];
     topRows.value = list;
     topCurrent.value = null;
     requestAnimationFrame(() => topApi.value?.autoSizeAllColumns());
@@ -158,12 +163,13 @@ async function dataBind() {
 async function dataBindThrLogJc() {
   bottomLoading.value = true;
   try {
-    const list = (await hR5300JCZFApi.getListAsync2({
-      cLineCode: lineCode.value || undefined,
-      cStove: stove2.value.trim() || undefined,
-      cPieceNo: pieceNo2.value.trim() || undefined,
-      timeRange: toTimeRange(dates2.value),
-    })) ?? [];
+    const list =
+      (await hR5300JCZFApi.getListAsync2({
+        cLineCode: lineCode.value || undefined,
+        cStove: stove2.value.trim() || undefined,
+        cPieceNo: pieceNo2.value.trim() || undefined,
+        timeRange: toTimeRange(dates2.value),
+      })) ?? [];
     bottomRows.value = list;
     requestAnimationFrame(() => bottomApi.value?.autoSizeAllColumns());
   } catch {
@@ -322,13 +328,27 @@ onMounted(async () => {
         <div class="grid shrink-0 grid-cols-6 items-center gap-x-3 gap-y-1.5 border-b border-border/60 px-3 py-2">
           <div class="flex min-w-0 items-center gap-1.5">
             <label class="w-16 shrink-0 text-xs text-muted-foreground">产线</label>
-            <Select v-model="lineCode" :options="lineOptions" option-label="label" option-value="value"
-              class="min-w-0 flex-1" />
+            <Select
+              v-model="lineCode"
+              :options="lineOptions"
+              option-label="label"
+              option-value="value"
+              class="min-w-0 flex-1"
+            />
           </div>
           <div class="col-span-2 flex min-w-0 items-center gap-1.5">
             <label class="w-16 shrink-0 text-xs text-muted-foreground">时间范围</label>
-            <DatePicker v-model="dates1" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-              show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+            <DatePicker
+              v-model="dates1"
+              selection-mode="range"
+              :manual-input="false"
+              date-format="yy-mm-dd"
+              show-time
+              hour-format="24"
+              show-icon
+              placeholder="开始 至 结束"
+              class="min-w-0 flex-1"
+            />
           </div>
           <div class="flex min-w-0 items-center gap-1.5">
             <label class="w-16 shrink-0 text-xs text-muted-foreground">炉号</label>
@@ -349,21 +369,31 @@ onMounted(async () => {
           <label class="ml-2 shrink-0 text-xs text-muted-foreground">轧制完成/轧废支数</label>
           <!-- 定宽容器 + fluid：非 fluid 时 input 默认 intrinsic 宽 > w-28，溢出后被右侧按钮叠画 -->
           <div class="w-28 shrink-0">
-            <InputNumber v-model="nQuaZF" :min="0" :max="99999" :show-buttons="false" :use-grouping="false"
-              fluid />
+            <InputNumber v-model="nQuaZF" :min="0" :max="99999" :show-buttons="false" :use-grouping="false" fluid />
           </div>
           <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="btnRollFinish">轧制完成</Button>
-          <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="btnCanleRollFinish">撤销轧制完成</Button>
+          <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="btnCanleRollFinish"
+            >撤销轧制完成</Button
+          >
           <Button variant="outlined" severity="danger" class="shrink-0 whitespace-nowrap" @click="btnZF">轧废</Button>
           <span class="ml-auto shrink-0 text-xs font-medium text-muted-foreground">可轧废材料</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="topColDefs" :row-data="topRows"
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="topColDefs"
+            :row-data="topRows"
             :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
-            :pagination="false" :animate-rows="false" :loading="topLoading"
-            @grid-ready="onTopReady" @selection-changed="onTopSelectionChanged"
-            @first-data-rendered="autoSizeOnFirstData" />
+            :pagination="false"
+            :animate-rows="false"
+            :loading="topLoading"
+            @grid-ready="onTopReady"
+            @selection-changed="onTopSelectionChanged"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
 
@@ -371,14 +401,27 @@ onMounted(async () => {
         <!-- stackPanel1：时间范围(与上栏同宽，占两列)/件次号/炉号 + 查询/撤销轧废 -->
         <div class="flex h-9 shrink-0 items-center gap-1.5 border-b border-border/60 px-2">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">时间范围</label>
-          <DatePicker v-model="dates2" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-            show-time hour-format="24" show-icon placeholder="开始 至 结束" class="w-[27rem] shrink-0" />
+          <DatePicker
+            v-model="dates2"
+            selection-mode="range"
+            :manual-input="false"
+            date-format="yy-mm-dd"
+            show-time
+            hour-format="24"
+            show-icon
+            placeholder="开始 至 结束"
+            class="w-[27rem] shrink-0"
+          />
           <label class="shrink-0 text-xs text-muted-foreground">件次号</label>
           <InputText v-model="pieceNo2" class="w-36 shrink-0" @keydown.enter="dataBindThrLogJc" />
           <label class="shrink-0 text-xs text-muted-foreground">炉号</label>
           <InputText v-model="stove2" class="w-36 shrink-0" @keydown.enter="dataBindThrLogJc" />
-          <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="bottomLoading"
-            @click="dataBindThrLogJc">
+          <Button
+            variant="outlined"
+            class="shrink-0 whitespace-nowrap"
+            :loading="bottomLoading"
+            @click="dataBindThrLogJc"
+          >
             <IconSearch class="h-3 w-3" />查询
           </Button>
           <Button variant="outlined" severity="danger" class="shrink-0 whitespace-nowrap" @click="btnCanle">
@@ -387,18 +430,38 @@ onMounted(async () => {
           <span class="ml-auto shrink-0 text-xs font-medium text-muted-foreground">轧废记录</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="bottomColDefs" :row-data="bottomRows"
-            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-            :pagination="false" :animate-rows="false" :loading="bottomLoading"
-            @grid-ready="onBottomReady" @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="bottomColDefs"
+            :row-data="bottomRows"
+            :row-selection="{
+              mode: 'multiRow',
+              checkboxes: true,
+              headerCheckbox: true,
+              enableClickSelection: true,
+              enableSelectionWithoutKeys: true,
+            }"
+            :pagination="false"
+            :animate-rows="false"
+            :loading="bottomLoading"
+            @grid-ready="onBottomReady"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
     </Splitter>
 
     <!-- ShowYesNo 受控确认 -->
-    <Dialog :visible="confirmOpen" modal header="确认" :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
-      @update:visible="confirmOpen = $event">
+    <Dialog
+      :visible="confirmOpen"
+      modal
+      header="确认"
+      :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
+      @update:visible="confirmOpen = $event"
+    >
       <p class="text-xs">{{ confirmMsg }}</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />

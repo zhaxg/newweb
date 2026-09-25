@@ -84,7 +84,7 @@ watch(
       M.value = null;
       return;
     }
-    M.value = props.msc ? (reactiveMSC(props.msc)) : null;
+    M.value = props.msc ? reactiveMSC(props.msc) : null;
     selectedLine.value = null;
     selectedProc.value = null;
     selectedTreeId.value = null;
@@ -449,9 +449,13 @@ async function onConfirmOk() {
 </script>
 
 <template>
-  <Dialog :visible="props.visible" modal header="编辑冶金规范信息"
+  <Dialog
+    :visible="props.visible"
+    modal
+    header="编辑冶金规范信息"
     :style="{ width: 'min(74rem, calc(100vw - 2rem))', height: 'min(44rem, calc(100vh - 4rem))' }"
-    @update:visible="requestClose">
+    @update:visible="requestClose"
+  >
     <div class="flex h-full min-h-0 flex-col gap-2">
       <!-- 摘要（原 groupControl1「冶金规范摘要信息」包 dataLayoutControl1，4列行主序） -->
       <div class="shrink-0 rounded-border border border-border/60">
@@ -468,38 +472,81 @@ async function onConfirmOk() {
         <div v-if="form" class="grid grid-cols-4 items-start gap-x-3 gap-y-1.5 p-2">
           <div class="flex min-w-0 items-center gap-1.5">
             <label class="w-24 shrink-0 text-xs text-muted-foreground">冶金规范码</label>
-            <InputText :model-value="form.cMsc ?? ''" class="min-w-0 flex-1"
-              @update:model-value="(v: string | undefined) => onMscChanged(v)" />
+            <InputText
+              :model-value="form.cMsc ?? ''"
+              class="min-w-0 flex-1"
+              @update:model-value="(v: string | undefined) => onMscChanged(v)"
+            />
           </div>
           <div class="flex min-w-0 items-center gap-1.5">
             <label class="w-24 shrink-0 text-xs text-muted-foreground">产品大类</label>
-            <Select :model-value="form.cProdClassCode ?? null" :options="kvProdClass" :filter="true" show-clear
-              option-label="label" option-value="value" placeholder="产品大类" class="min-w-0 flex-1"
-              @update:model-value="onProdClassChange" />
+            <Select
+              :model-value="form.cProdClassCode ?? null"
+              :options="kvProdClass"
+              :filter="true"
+              show-clear
+              option-label="label"
+              option-value="value"
+              placeholder="产品大类"
+              class="min-w-0 flex-1"
+              @update:model-value="onProdClassChange"
+            />
           </div>
           <div class="flex min-w-0 items-center gap-1.5">
             <label class="w-24 shrink-0 text-xs text-muted-foreground">品名</label>
-            <Select :model-value="form.cProdCode ?? null" :options="kvProdCode" :filter="true" show-clear
-              option-label="label" option-value="value" placeholder="品名" class="min-w-0 flex-1"
-              @update:model-value="onProdCodeChange" />
+            <Select
+              :model-value="form.cProdCode ?? null"
+              :options="kvProdCode"
+              :filter="true"
+              show-clear
+              option-label="label"
+              option-value="value"
+              placeholder="品名"
+              class="min-w-0 flex-1"
+              @update:model-value="onProdCodeChange"
+            />
           </div>
           <div class="flex min-w-0 items-center gap-1.5">
             <label class="w-24 shrink-0 text-xs text-muted-foreground">交货状态</label>
-            <Select :model-value="form.cDelivyStatusCode ?? null" :options="kvDelivy" :filter="true" show-clear
-              option-label="label" option-value="value" placeholder="交货状态" class="min-w-0 flex-1"
-              @update:model-value="onDelivyChange" />
+            <Select
+              :model-value="form.cDelivyStatusCode ?? null"
+              :options="kvDelivy"
+              :filter="true"
+              show-clear
+              option-label="label"
+              option-value="value"
+              placeholder="交货状态"
+              class="min-w-0 flex-1"
+              @update:model-value="onDelivyChange"
+            />
           </div>
 
           <div class="flex min-w-0 items-center gap-1.5">
             <label class="w-24 shrink-0 text-xs text-muted-foreground">钢种大类</label>
-            <Select v-model="form.cSteelType" :options="kvSteel" :filter="true" show-clear
-              option-label="label" option-value="value" placeholder="钢种大类" class="min-w-0 flex-1" />
+            <Select
+              v-model="form.cSteelType"
+              :options="kvSteel"
+              :filter="true"
+              show-clear
+              option-label="label"
+              option-value="value"
+              placeholder="钢种大类"
+              class="min-w-0 flex-1"
+            />
           </div>
           <div class="flex min-w-0 items-center gap-1.5">
             <label class="w-24 shrink-0 text-xs text-muted-foreground">标准牌号</label>
-            <Select :model-value="form.cStdSgCode ?? null" :options="sgOptions" :filter="true" show-clear
-              option-label="label" option-value="value" placeholder="标准牌号" class="min-w-0 flex-1"
-              @update:model-value="onSgChange" />
+            <Select
+              :model-value="form.cStdSgCode ?? null"
+              :options="sgOptions"
+              :filter="true"
+              show-clear
+              option-label="label"
+              option-value="value"
+              placeholder="标准牌号"
+              class="min-w-0 flex-1"
+              @update:model-value="onSgChange"
+            />
           </div>
           <div class="flex min-w-0 items-center gap-1.5">
             <label class="w-24 shrink-0 text-xs text-muted-foreground">标准描述</label>
@@ -512,9 +559,17 @@ async function onConfirmOk() {
 
           <div class="flex min-w-0 items-center gap-1.5">
             <label class="w-24 shrink-0 text-xs text-muted-foreground">加工用途</label>
-            <Select :model-value="form.cCustStdCode ?? null" :options="kvCustStd" :filter="true" show-clear
-              option-label="label" option-value="value" placeholder="加工用途" class="min-w-0 flex-1"
-              @update:model-value="onCustStdChange" />
+            <Select
+              :model-value="form.cCustStdCode ?? null"
+              :options="kvCustStd"
+              :filter="true"
+              show-clear
+              option-label="label"
+              option-value="value"
+              placeholder="加工用途"
+              class="min-w-0 flex-1"
+              @update:model-value="onCustStdChange"
+            />
           </div>
           <div class="flex min-w-0 items-center gap-1.5">
             <label class="w-24 shrink-0 text-xs text-muted-foreground">精度等级</label>
@@ -522,8 +577,16 @@ async function onConfirmOk() {
           </div>
           <div class="flex min-w-0 items-center gap-1.5">
             <label class="w-24 shrink-0 text-xs text-muted-foreground">制造厂别</label>
-            <Select v-model="form.cFactoryId" :options="kvFactory" :filter="true" show-clear
-              option-label="label" option-value="value" placeholder="制造厂别" class="min-w-0 flex-1" />
+            <Select
+              v-model="form.cFactoryId"
+              :options="kvFactory"
+              :filter="true"
+              show-clear
+              option-label="label"
+              option-value="value"
+              placeholder="制造厂别"
+              class="min-w-0 flex-1"
+            />
           </div>
           <div class="flex min-w-0 items-center gap-1.5">
             <label class="w-24 shrink-0 text-xs text-muted-foreground">来源MSC</label>
@@ -565,12 +628,20 @@ async function onConfirmOk() {
             </Button>
           </div>
           <div class="min-h-0 flex-1 overflow-hidden">
-            <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-              :default-col-def="hmxDefaultColDef" :column-defs="lineColDefs" :row-data="lineRows"
+            <AgGridVue
+              class="hmx-ag-grid h-full w-full"
+              :theme="theme"
+              :locale-text="AG_GRID_LOCALE_CN"
+              :default-col-def="hmxDefaultColDef"
+              :column-defs="lineColDefs"
+              :row-data="lineRows"
               :get-row-id="(p: any) => String(p.data.id)"
               :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
-              :pagination="false" @grid-ready="(e: GridReadyEvent) => (lineApi = e.api)"
-              @first-data-rendered="autoSizeOnFirstData" @selection-changed="onLineSelectionChanged" />
+              :pagination="false"
+              @grid-ready="(e: GridReadyEvent) => (lineApi = e.api)"
+              @first-data-rendered="autoSizeOnFirstData"
+              @selection-changed="onLineSelectionChanged"
+            />
           </div>
         </SplitterPanel>
         <SplitterPanel :size="43" class="flex min-h-0 min-w-0 flex-col">
@@ -588,12 +659,20 @@ async function onConfirmOk() {
             </Button>
           </div>
           <div class="min-h-0 flex-1 overflow-hidden">
-            <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-              :default-col-def="hmxDefaultColDef" :column-defs="procColDefs" :row-data="procRows"
+            <AgGridVue
+              class="hmx-ag-grid h-full w-full"
+              :theme="theme"
+              :locale-text="AG_GRID_LOCALE_CN"
+              :default-col-def="hmxDefaultColDef"
+              :column-defs="procColDefs"
+              :row-data="procRows"
               :get-row-id="(p: any) => String(p.data.id)"
               :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
-              :pagination="false" @grid-ready="(e: GridReadyEvent) => (procApi = e.api)"
-              @first-data-rendered="autoSizeOnFirstData" @selection-changed="onProcSelectionChanged" />
+              :pagination="false"
+              @grid-ready="(e: GridReadyEvent) => (procApi = e.api)"
+              @first-data-rendered="autoSizeOnFirstData"
+              @selection-changed="onProcSelectionChanged"
+            />
           </div>
         </SplitterPanel>
       </Splitter>
@@ -611,22 +690,49 @@ async function onConfirmOk() {
         <SplitterPanel :size="76" class="flex min-h-0 min-w-0 flex-col overflow-hidden">
           <div class="flex h-8 shrink-0 items-center border-b border-border/60 px-2">
             <span class="text-xs font-medium text-muted-foreground">
-              {{ bottomKind === "idx" ? "基表信息" : bottomKind === "basic" ? "基表数据明细" : bottomKind === "t1" ? "试验项目要求" : "试验项目标准" }}
+              {{
+                bottomKind === "idx"
+                  ? "基表信息"
+                  : bottomKind === "basic"
+                    ? "基表数据明细"
+                    : bottomKind === "t1"
+                      ? "试验项目要求"
+                      : "试验项目标准"
+              }}
             </span>
           </div>
           <div class="min-h-0 flex-1 overflow-hidden">
             <div v-show="bottomKind === 'idx'" class="h-full overflow-hidden">
-              <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                :default-col-def="hmxDefaultColDef" :column-defs="idxColDefs" :row-data="idxRows"
+              <AgGridVue
+                class="hmx-ag-grid h-full w-full"
+                :theme="theme"
+                :locale-text="AG_GRID_LOCALE_CN"
+                :default-col-def="hmxDefaultColDef"
+                :column-defs="idxColDefs"
+                :row-data="idxRows"
                 :get-row-id="(p: any) => String(p.data.id)"
                 :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
-                :pagination="false" @first-data-rendered="autoSizeOnFirstData" />
+                :pagination="false"
+                @first-data-rendered="autoSizeOnFirstData"
+              />
             </div>
-            <MscBasicIdxView v-show="bottomKind === 'basic'" class="h-full" :idx="bottomKind === 'basic' ? bottomIdx : null" />
-            <Tqmtm01T1View v-show="bottomKind === 't1'" class="h-full" :idx="bottomKind === 't1' ? (bottomIdx as Tqmtmt1Idx) : null"
-              @data-changed="bump" />
-            <Tqmtm01P0View v-show="bottomKind === 'p0'" class="h-full"
-              :node="bottomKind === 'p0' ? bottomNode : null" @data-changed="bump" />
+            <MscBasicIdxView
+              v-show="bottomKind === 'basic'"
+              class="h-full"
+              :idx="bottomKind === 'basic' ? bottomIdx : null"
+            />
+            <Tqmtm01T1View
+              v-show="bottomKind === 't1'"
+              class="h-full"
+              :idx="bottomKind === 't1' ? (bottomIdx as Tqmtmt1Idx) : null"
+              @data-changed="bump"
+            />
+            <Tqmtm01P0View
+              v-show="bottomKind === 'p0'"
+              class="h-full"
+              :node="bottomKind === 'p0' ? bottomNode : null"
+              @data-changed="bump"
+            />
           </div>
         </SplitterPanel>
       </Splitter>
@@ -636,8 +742,13 @@ async function onConfirmOk() {
     <Tqmtm01ProcDialog :visible="procOpen" :dto="procDto" @update:visible="procOpen = $event" @ok="onProcDialogOk" />
 
     <!-- 确认（原 MsgBox.ShowYesNo） -->
-    <Dialog :visible="confirmOpen" modal header="确认" :style="{ width: 'min(24rem, calc(100vw - 2rem))' }"
-      @update:visible="confirmOpen = $event">
+    <Dialog
+      :visible="confirmOpen"
+      modal
+      header="确认"
+      :style="{ width: 'min(24rem, calc(100vw - 2rem))' }"
+      @update:visible="confirmOpen = $event"
+    >
       <p class="text-xs">{{ confirmMsg }}</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />
@@ -646,8 +757,17 @@ async function onConfirmOk() {
     </Dialog>
 
     <!-- 原 FormClosing：XtraMessageBox Yes/No/Cancel -->
-    <Dialog :visible="closeConfirm" modal header="确认" :style="{ width: 'min(24rem, calc(100vw - 2rem))' }"
-      @update:visible="(v: boolean) => { if (!v) closeConfirm = false; }">
+    <Dialog
+      :visible="closeConfirm"
+      modal
+      header="确认"
+      :style="{ width: 'min(24rem, calc(100vw - 2rem))' }"
+      @update:visible="
+        (v: boolean) => {
+          if (!v) closeConfirm = false;
+        }
+      "
+    >
       <p class="text-xs">是否保存冶金规范？</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="closeConfirm = false" />

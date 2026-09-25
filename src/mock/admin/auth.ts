@@ -3,11 +3,7 @@ import type { InternalAxiosRequestConfig } from "axios";
 import type { RouteMap } from "./core";
 import { API_BASE, getBody, getParams, ok } from "./core";
 import { CaptchaType, UserType } from "@/api/admin/enums";
-import type {
-  CaptchaInfo,
-  FetchTokenInput,
-  HmxUserSession,
-} from "@/api/admin/types";
+import type { CaptchaInfo, FetchTokenInput, HmxUserSession } from "@/api/admin/types";
 import { loadRescs, loadUsers } from "./store";
 
 /**
@@ -20,8 +16,7 @@ const TOKEN_PREFIX = "mock-token.";
 
 /** MathPow 挑战串真实格式「难度#28位随机前缀#时间戳」，难度取小值保证前端 PoW 秒解 */
 function makeChallenge(): CaptchaInfo {
-  const alphabet =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   let prefix = "";
   for (let i = 0; i < 28; i++) {
     prefix += alphabet[Math.floor(Math.random() * alphabet.length)];
@@ -66,10 +61,8 @@ function userIdFromToken(token?: string): string {
 /** 菜单资源来自种子表 data/rescs.ts（HM_X_RES 真实导出），按命名空间过滤 */
 
 export const authRoutes: RouteMap = {
-  [`post ${API_BASE}/auth/getCaptchaImage`]: (config) =>
-    ok(config, makeChallenge()),
-  [`post ${API_BASE}/auth/getCaptchaChallenge`]: (config) =>
-    ok(config, makeChallenge()),
+  [`post ${API_BASE}/auth/getCaptchaImage`]: (config) => ok(config, makeChallenge()),
+  [`post ${API_BASE}/auth/getCaptchaChallenge`]: (config) => ok(config, makeChallenge()),
   [`post ${API_BASE}/auth/token`]: (config: InternalAxiosRequestConfig) => {
     const input = getBody<FetchTokenInput>(config);
     const userId = (input.userId ?? "").trim() || "admin";
@@ -93,7 +86,10 @@ export const authRoutes: RouteMap = {
   [`post ${API_BASE}/auth/getUserRescList`]: (config) => {
     const { groupId } = getBody<{ groupId?: string; rescType?: number[] }>(config);
     const ns = groupId || "TDWEB";
-    return ok(config, loadRescs().filter((r) => r.cNsCode === ns));
+    return ok(
+      config,
+      loadRescs().filter((r) => r.cNsCode === ns),
+    );
   },
   [`post ${API_BASE}/auth/hasPermission`]: (config) => ok(config, true),
   [`post ${API_BASE}/auth/logout`]: (config) => ok(config, null),

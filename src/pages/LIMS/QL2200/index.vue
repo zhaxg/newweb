@@ -63,7 +63,11 @@ function toTimeRange(dates: Date[] | null): TimeRange | undefined {
 }
 
 /* ---------- 动态元素列（原 Load：QuerySysKvItemList(QMYS) → GridColumn.Caption=CName/FieldName=CCode） ---------- */
-interface ElemCol { code: string; name: string; points: number }
+interface ElemCol {
+  code: string;
+  name: string;
+  points: number;
+}
 const elemCols = ref<ElemCol[]>([]);
 
 async function loadElemCols() {
@@ -122,7 +126,12 @@ const colDefs = computed<ColDef[]>(() => {
     { field: "cStove", headerName: "炉号", width: 100, pinned: "left", aggFunc: stoveAgg },
     { field: "cSampleNo", headerName: "试样号", width: 110 },
     { field: "cSgSign", headerName: "钢种", width: 90, cellClass: sgCellClass },
-    { field: "cLineCode", headerName: "产线", width: 80, valueFormatter: (p) => lineOptions.value.find((l) => l.value === p.value)?.label ?? (p.value ?? "") },
+    {
+      field: "cLineCode",
+      headerName: "产线",
+      width: 80,
+      valueFormatter: (p) => lineOptions.value.find((l) => l.value === p.value)?.label ?? p.value ?? "",
+    },
     { field: "cFinalFlag", headerName: "是否最终样", width: 95, valueFormatter: yesNoFmt },
     { field: "cSpec", headerName: "规格", width: 90 },
     { field: "nCount", headerName: "支数", width: 70 },
@@ -149,7 +158,10 @@ function yesNoFmt(p: ValueFormatterParams) {
   return p.value == null ? "" : Number(p.value) === 1 ? "是" : "否";
 }
 function sampleJudgeFmt(p: ValueFormatterParams) {
-  return (({ 0: "待判", 1: "不需判", 2: "合格", 3: "不合格" }) as Record<string, string>)[String(p.value)] ?? (p.value == null ? "" : String(p.value));
+  return (
+    ({ 0: "待判", 1: "不需判", 2: "合格", 3: "不合格" } as Record<string, string>)[String(p.value)] ??
+    (p.value == null ? "" : String(p.value))
+  );
 }
 /** 原 gvCFRecord_CustomDrawCell：钢种/执行标准列按 CAutoJudgeResult 着色（不合格=红、待判=蓝） */
 function sgCellClass(p: any) {
@@ -203,13 +215,30 @@ onMounted(() => {
         </div>
         <div class="col-span-2 flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">炉次时间</label>
-          <DatePicker v-model="input.createDate" selectionMode="range" :manualInput="false" date-format="yy-mm-dd"
-            show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+          <DatePicker
+            v-model="input.createDate"
+            selectionMode="range"
+            :manualInput="false"
+            date-format="yy-mm-dd"
+            show-time
+            hour-format="24"
+            show-icon
+            placeholder="开始 至 结束"
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">产线</label>
-          <Select v-model="input.cLineCode" :options="lineOptions" option-label="label" option-value="value" show-clear
-            filter placeholder="全部" class="min-w-0 flex-1" />
+          <Select
+            v-model="input.cLineCode"
+            :options="lineOptions"
+            option-label="label"
+            option-value="value"
+            show-clear
+            filter
+            placeholder="全部"
+            class="min-w-0 flex-1"
+          />
         </div>
       </div>
     </div>
@@ -223,11 +252,28 @@ onMounted(() => {
 
     <!-- 数据表格（原 gvCFRecord；grandTotalRow = 原 SetTotalView 汇总） -->
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows"
-        :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-        :suppress-column-virtualisation="true" :grand-total-row="elemCols.length ? 'bottom' : undefined" :pagination="false"
-        :animate-rows="false" :loading="querying" @grid-ready="onGridReady" @first-data-rendered="autoSizeOnFirstData" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="rows"
+        :row-selection="{
+          mode: 'multiRow',
+          checkboxes: true,
+          headerCheckbox: true,
+          enableClickSelection: true,
+          enableSelectionWithoutKeys: true,
+        }"
+        :suppress-column-virtualisation="true"
+        :grand-total-row="elemCols.length ? 'bottom' : undefined"
+        :pagination="false"
+        :animate-rows="false"
+        :loading="querying"
+        @grid-ready="onGridReady"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
   </div>
 </template>

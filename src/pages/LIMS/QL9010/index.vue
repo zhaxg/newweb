@@ -20,12 +20,7 @@ import Splitter from "primevue/splitter";
 import SplitterPanel from "primevue/splitterpanel";
 import { IconClipboard, IconCopy, IconDeviceFloppy, IconSearch } from "@tabler/icons-vue";
 import { AgGridVue } from "ag-grid-vue3";
-import type {
-  ColDef,
-  GridApi,
-  GridReadyEvent,
-  ValueFormatterParams,
-} from "ag-grid-community";
+import type { ColDef, GridApi, GridReadyEvent, ValueFormatterParams } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
 import {
@@ -55,7 +50,8 @@ const rangeFmt = (range: { min?: number | null; max?: number | null; equalsMetho
   const eq = Number(range.equalsMethod ?? 1);
   const leftOpen = (eq & 2) !== 0;
   const rightOpen = (eq & 4) !== 0;
-  if (range.min != null && range.max != null) return `${leftOpen ? "(" : "["}${range.min}, ${range.max}${rightOpen ? ")" : "]"}`;
+  if (range.min != null && range.max != null)
+    return `${leftOpen ? "(" : "["}${range.min}, ${range.max}${rightOpen ? ")" : "]"}`;
   if (range.min != null) return `${leftOpen ? "(" : "["}${range.min}, )`;
   return `( , ${range.max}${rightOpen ? ")" : "]"}`;
 };
@@ -146,7 +142,12 @@ const jobColDefs = ref<ColDef[]>([
   { field: "nTestTimes", headerName: "试验次数", width: 90 },
   { field: "cRecheckFlag", headerName: "复验标记", width: 90, valueFormatter: yesNoFmt },
   { field: "cStatus", headerName: "委托单状态", width: 120, valueFormatter: statusFmt },
-  { field: "cLineCode", headerName: "产线代码", width: 100, valueFormatter: (p) => lineOptions.value.find((l) => l.value === p.value)?.label ?? (p.value ?? "") },
+  {
+    field: "cLineCode",
+    headerName: "产线代码",
+    width: 100,
+    valueFormatter: (p) => lineOptions.value.find((l) => l.value === p.value)?.label ?? p.value ?? "",
+  },
   { field: "cSgSign", headerName: "钢种", width: 100 },
   { field: "cSgStd", headerName: "执行标准", width: 120 },
   { field: "cDeliveryStateDesc", headerName: "交货状态描述", width: 130 },
@@ -156,10 +157,22 @@ const jobColDefs = ref<ColDef[]>([
   { field: "nThick", headerName: "厚度mm", width: 90 },
   { field: "nWth", headerName: "宽度mm", width: 90 },
   { field: "nLen", headerName: "长度mm", width: 90 },
-  { field: "cAutoJudgeResult", headerName: "自动判定结果", width: 120, valueFormatter: jobJudgeFmt, cellClass: (p) => jobJudgeCell(p) },
+  {
+    field: "cAutoJudgeResult",
+    headerName: "自动判定结果",
+    width: 120,
+    valueFormatter: jobJudgeFmt,
+    cellClass: (p) => jobJudgeCell(p),
+  },
   { field: "cJudgeUser", headerName: "判定人", width: 90 },
   { field: "dJudgeTime", headerName: "判定时间", width: 140 },
-  { field: "cJudgeResult", headerName: "最终判定结果", width: 120, valueFormatter: jobJudgeFmt, cellClass: (p) => jobJudgeCell(p) },
+  {
+    field: "cJudgeResult",
+    headerName: "最终判定结果",
+    width: 120,
+    valueFormatter: jobJudgeFmt,
+    cellClass: (p) => jobJudgeCell(p),
+  },
   { field: "cJudgeRemark", headerName: "判定备注", width: 120 },
   { field: "creator", headerName: "创建人", width: 90 },
   { field: "createTime", headerName: "创建时间", width: 140 },
@@ -263,7 +276,13 @@ const sampleColDefs = ref<ColDef[]>([
   { field: "cSamplePosDesc", headerName: "取样位置", width: 100 },
   { field: "cSampleLenDesc", headerName: "取样长度说明", width: 120 },
   { field: "cTestDirectDesc", headerName: "试验方向", width: 90 },
-  { field: "cJudgeResult", headerName: "判定结果", width: 90, valueFormatter: sampleJudgeFmt, cellClass: (p) => sampleJudgeCell(p) },
+  {
+    field: "cJudgeResult",
+    headerName: "判定结果",
+    width: 90,
+    valueFormatter: sampleJudgeFmt,
+    cellClass: (p) => sampleJudgeCell(p),
+  },
   { field: "cJudgeRemark", headerName: "判定备注", width: 130 },
   { field: "labRemark", headerName: "实验室备注", width: 130 },
   { field: "cTestItem", headerName: "试验项目", width: 100 },
@@ -389,10 +408,7 @@ async function onJobSelectionChanged(e: { api: GridApi }) {
   loadingChildren.value = true;
   const token = String(job.id);
   try {
-    const [samples, reqs] = await Promise.all([
-      qL9010Api.querySamples(token),
-      qL9010Api.querySampleRequires(token),
-    ]);
+    const [samples, reqs] = await Promise.all([qL9010Api.querySamples(token), qL9010Api.querySampleRequires(token)]);
     if (String(selectedJob.value?.id ?? "") !== token) return;
     const list = [...(samples ?? [])].sort(
       (a, b) =>
@@ -446,8 +462,16 @@ onMounted(() => {
       <div class="grid grid-cols-6 items-center gap-x-3 gap-y-1.5">
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">产线代码</label>
-          <Select v-model="input.cLineCode" :options="lineOptions" option-label="label" option-value="value"
-            show-clear filter placeholder="全部" class="min-w-0 flex-1" />
+          <Select
+            v-model="input.cLineCode"
+            :options="lineOptions"
+            option-label="label"
+            option-value="value"
+            show-clear
+            filter
+            placeholder="全部"
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">委托单号</label>
@@ -475,23 +499,59 @@ onMounted(() => {
         </div>
         <div class="col-span-2 flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">委托时间</label>
-          <DatePicker v-model="input.createTime" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-            show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+          <DatePicker
+            v-model="input.createTime"
+            selection-mode="range"
+            :manual-input="false"
+            date-format="yy-mm-dd"
+            show-time
+            hour-format="24"
+            show-icon
+            placeholder="开始 至 结束"
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="col-span-2 flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">接收时间</label>
-          <DatePicker v-model="input.dReceiveTime" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-            show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+          <DatePicker
+            v-model="input.dReceiveTime"
+            selection-mode="range"
+            :manual-input="false"
+            date-format="yy-mm-dd"
+            show-time
+            hour-format="24"
+            show-icon
+            placeholder="开始 至 结束"
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="col-span-2 flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">报出时间</label>
-          <DatePicker v-model="input.dCheckTime" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-            show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+          <DatePicker
+            v-model="input.dCheckTime"
+            selection-mode="range"
+            :manual-input="false"
+            date-format="yy-mm-dd"
+            show-time
+            hour-format="24"
+            show-icon
+            placeholder="开始 至 结束"
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="col-span-2 flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">打印时间</label>
-          <DatePicker v-model="input.printTime" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-            show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+          <DatePicker
+            v-model="input.printTime"
+            selection-mode="range"
+            :manual-input="false"
+            date-format="yy-mm-dd"
+            show-time
+            hour-format="24"
+            show-icon
+            placeholder="开始 至 结束"
+            class="min-w-0 flex-1"
+          />
         </div>
       </div>
     </div>
@@ -510,12 +570,23 @@ onMounted(() => {
       <!-- Panel1：委托单（ucTestJob1，无独立标题条） -->
       <SplitterPanel :size="61" :minSize="30" class="flex min-h-0 flex-col overflow-hidden">
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="jobColDefs" :row-data="jobRows"
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="jobColDefs"
+            :row-data="jobRows"
             :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
-            :get-row-class="jobRowClass" :suppress-column-virtualisation="true" :pagination="false"
-            :animate-rows="false" :loading="querying" @grid-ready="onJobGridReady"
-            @selection-changed="onJobSelectionChanged" @first-data-rendered="autoSizeOnFirstData" />
+            :get-row-class="jobRowClass"
+            :suppress-column-virtualisation="true"
+            :pagination="false"
+            :animate-rows="false"
+            :loading="querying"
+            @grid-ready="onJobGridReady"
+            @selection-changed="onJobSelectionChanged"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
 
@@ -528,12 +599,21 @@ onMounted(() => {
               <span class="text-xs font-medium text-muted-foreground">取样要求（{{ requireRows.length }}）</span>
             </div>
             <div class="min-h-0 flex-1 overflow-hidden">
-              <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                :default-col-def="hmxDefaultColDef" :column-defs="requireColDefs" :row-data="requireRows"
+              <AgGridVue
+                class="hmx-ag-grid h-full w-full"
+                :theme="theme"
+                :locale-text="AG_GRID_LOCALE_CN"
+                :default-col-def="hmxDefaultColDef"
+                :column-defs="requireColDefs"
+                :row-data="requireRows"
                 :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
-                :suppress-column-virtualisation="true" :pagination="false" :animate-rows="false"
-                :loading="loadingChildren" @grid-ready="onRequireGridReady"
-                @first-data-rendered="autoSizeOnFirstData" />
+                :suppress-column-virtualisation="true"
+                :pagination="false"
+                :animate-rows="false"
+                :loading="loadingChildren"
+                @grid-ready="onRequireGridReady"
+                @first-data-rendered="autoSizeOnFirstData"
+              />
             </div>
           </SplitterPanel>
 
@@ -549,15 +629,28 @@ onMounted(() => {
                   <Button variant="outlined" class="shrink-0 whitespace-nowrap">
                     <IconClipboard class="h-3 w-3" />粘贴结果
                   </Button>
-                  <span class="ml-auto shrink-0 text-xs font-medium text-muted-foreground">试样信息（{{ sampleRows.length }}）</span>
+                  <span class="ml-auto shrink-0 text-xs font-medium text-muted-foreground"
+                    >试样信息（{{ sampleRows.length }}）</span
+                  >
                 </div>
                 <div class="min-h-0 flex-1 overflow-hidden">
-                  <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                    :default-col-def="hmxDefaultColDef" :column-defs="sampleColDefs" :row-data="sampleRows"
+                  <AgGridVue
+                    class="hmx-ag-grid h-full w-full"
+                    :theme="theme"
+                    :locale-text="AG_GRID_LOCALE_CN"
+                    :default-col-def="hmxDefaultColDef"
+                    :column-defs="sampleColDefs"
+                    :row-data="sampleRows"
                     :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
-                    :get-row-class="sampleRowClass" :suppress-column-virtualisation="true" :pagination="false"
-                    :animate-rows="false" :loading="loadingChildren" @grid-ready="onSampleGridReady"
-                    @selection-changed="onSampleSelectionChanged" @first-data-rendered="autoSizeOnFirstData" />
+                    :get-row-class="sampleRowClass"
+                    :suppress-column-virtualisation="true"
+                    :pagination="false"
+                    :animate-rows="false"
+                    :loading="loadingChildren"
+                    @grid-ready="onSampleGridReady"
+                    @selection-changed="onSampleSelectionChanged"
+                    @first-data-rendered="autoSizeOnFirstData"
+                  />
                 </div>
               </SplitterPanel>
               <SplitterPanel :minSize="30" class="flex min-h-0 flex-col overflow-hidden">
@@ -569,10 +662,19 @@ onMounted(() => {
                   <span class="ml-auto shrink-0 text-xs font-medium text-muted-foreground">检验结果</span>
                 </div>
                 <div class="min-h-0 flex-1 overflow-hidden">
-                  <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                    :default-col-def="hmxDefaultColDef" :column-defs="detailColDefs" :row-data="detailRows"
-                    :suppress-column-virtualisation="true" :pagination="false" :animate-rows="false"
-                    @grid-ready="onDetailGridReady" @first-data-rendered="autoSizeOnFirstData" />
+                  <AgGridVue
+                    class="hmx-ag-grid h-full w-full"
+                    :theme="theme"
+                    :locale-text="AG_GRID_LOCALE_CN"
+                    :default-col-def="hmxDefaultColDef"
+                    :column-defs="detailColDefs"
+                    :row-data="detailRows"
+                    :suppress-column-virtualisation="true"
+                    :pagination="false"
+                    :animate-rows="false"
+                    @grid-ready="onDetailGridReady"
+                    @first-data-rendered="autoSizeOnFirstData"
+                  />
                 </div>
               </SplitterPanel>
             </Splitter>

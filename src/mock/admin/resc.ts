@@ -42,7 +42,12 @@ export function fromApi(api: Partial<HmxRes>, existing?: HmxRes): HmxRes {
 export const rescRoutes: RouteMap = {
   [`post ${P}/getResources`]: (config) => {
     const { ns } = getParams(config);
-    return ok(config, loadRescs().filter((r) => !ns || r.cNsCode === ns).sort(byOrder));
+    return ok(
+      config,
+      loadRescs()
+        .filter((r) => !ns || r.cNsCode === ns)
+        .sort(byOrder),
+    );
   },
   [`post ${P}/getAllResouces`]: (config) => {
     const { ns } = getParams(config);
@@ -73,7 +78,8 @@ export const rescRoutes: RouteMap = {
     const { id } = getParams(config);
     if (!id) return fail(config, 1001, "缺少参数 id");
     const rows = loadRescs();
-    if (rows.some((r) => r.cPid === id)) return fail(config, 1004, "当前资源具有子集，不允许直接删除，请删除子集后再操作！");
+    if (rows.some((r) => r.cPid === id))
+      return fail(config, 1004, "当前资源具有子集，不允许直接删除，请删除子集后再操作！");
     saveRescs(rows.filter((r) => r.id !== id));
     return ok(config, id);
   },

@@ -16,14 +16,26 @@ import type { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { hmxDefaultColDef, makeHmxGridTheme, autoSizeOnFirstData } from "@/lib/agGrid";
 import { useMenuQuery } from "@/lib/menuQuery";
-import { tyd1000Api, tyd2020Api, Tyd2010TypeEnum, Tyd2011StatusEnum, type QueryDBDto, type Tyd1000, type Tyd2020 } from "@/api/mes4ddh/syd.swagger";
+import {
+  tyd1000Api,
+  tyd2020Api,
+  Tyd2010TypeEnum,
+  Tyd2011StatusEnum,
+  type QueryDBDto,
+  type Tyd1000,
+  type Tyd2020,
+} from "@/api/mes4ddh/syd.swagger";
 import { useToast } from "@/composables/useToast";
 
 const { toast } = useToast();
 const theme = makeHmxGridTheme();
 const { json: qsJson } = useMenuQuery();
 
-interface InputParams { Store?: string; TarStores?: string[]; Operators?: string[] }
+interface InputParams {
+  Store?: string;
+  TarStores?: string[];
+  Operators?: string[];
+}
 const params = computed<InputParams>(() => ({
   Store: typeof qsJson.Store === "string" ? qsJson.Store : undefined,
   TarStores: Array.isArray(qsJson.TarStores) ? (qsJson.TarStores as string[]) : [],
@@ -31,8 +43,13 @@ const params = computed<InputParams>(() => ({
 }));
 
 function defaultRange(): [Date, Date] {
-  const start = new Date(); start.setHours(0, 0, 0, 0); start.setDate(start.getDate() - 1);
-  const end = new Date(); end.setHours(0, 0, 0, 0); end.setDate(end.getDate() + 1); end.setSeconds(end.getSeconds() - 1);
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  start.setDate(start.getDate() - 1);
+  const end = new Date();
+  end.setHours(0, 0, 0, 0);
+  end.setDate(end.getDate() + 1);
+  end.setSeconds(end.getSeconds() - 1);
   return [start, end];
 }
 
@@ -115,7 +132,9 @@ const rows = ref<Tyd2020[]>([]);
 const querying = ref(false);
 const api = ref<GridApi | null>(null);
 
-function onReady(e: GridReadyEvent) { api.value = e.api; }
+function onReady(e: GridReadyEvent) {
+  api.value = e.api;
+}
 
 function isoDate(d: Date): string {
   const p = (n: number) => String(n).padStart(2, "0");
@@ -125,21 +144,22 @@ function isoDate(d: Date): string {
 async function loadStores() {
   try {
     const list = ((await tyd1000Api.queryRoom("")) ?? []) as Tyd1000[];
-    const opts = list.filter((x) => x.cStoreCode != null)
+    const opts = list
+      .filter((x) => x.cStoreCode != null)
       .map((x) => ({ label: x.cStoreDes ?? x.cStoreCode ?? "", value: x.cStoreCode! }));
     storeOptions.value = opts;
     tarStoreOptions.value = params.value.TarStores?.length
       ? opts.filter((o) => params.value.TarStores!.includes(o.value))
       : opts;
     if (tarStoreOptions.value.length === 1) q.cTarStore = tarStoreOptions.value[0]!.value;
-  } catch { /* 拦截层已 toast */ }
+  } catch {
+    /* 拦截层已 toast */
+  }
 }
 
 function buildQuery(): QueryDBDto {
   return {
-    timeRange: q.dates?.[0] && q.dates?.[1]
-      ? { min: isoDate(q.dates[0]), max: isoDate(q.dates[1]) }
-      : undefined,
+    timeRange: q.dates?.[0] && q.dates?.[1] ? { min: isoDate(q.dates[0]), max: isoDate(q.dates[1]) } : undefined,
     cStore: q.cStore || null,
     cTarStore: q.cTarStore || null,
     dbStatus: q.nStatus ?? null,
@@ -155,7 +175,11 @@ async function onQuery() {
     api.value?.setGridOption("rowData", rows.value);
     requestAnimationFrame(() => api.value?.autoSizeAllColumns());
     if (!rows.value.length) toast("无符合条件的数据", 2000, "info");
-  } catch { /* 拦截层已 toast */ } finally { querying.value = false; }
+  } catch {
+    /* 拦截层已 toast */
+  } finally {
+    querying.value = false;
+  }
 }
 
 function focus(): Tyd2020 | null {
@@ -169,21 +193,38 @@ function selectedRows(): Tyd2020[] {
 
 function onReceive() {
   const current = focus();
-  if (!current) { toast("请选择后再操作", 2000, "warn"); return; }
+  if (!current) {
+    toast("请选择后再操作", 2000, "warn");
+    return;
+  }
   const selected = selectedRows();
-  if (!selected.length) { toast("请勾选材料后再操作", 2500, "warn"); return; }
-  if (selected.some((l) => l.nStatus !== Tyd2011StatusEnum.Out)) { toast("状态错误不允许操作", 2500, "warn"); return; }
+  if (!selected.length) {
+    toast("请勾选材料后再操作", 2500, "warn");
+    return;
+  }
+  if (selected.some((l) => l.nStatus !== Tyd2011StatusEnum.Out)) {
+    toast("状态错误不允许操作", 2500, "warn");
+    return;
+  }
   toast("接收入库弹窗（FrmYD2000DBRK）待接入", 2500, "warn");
 }
 
 async function onCancel() {
   const current = focus();
-  if (!current) { toast("请选择后再操作", 2000, "warn"); return; }
-  const validStatus =
-    current.nBusinsType === Tyd2010TypeEnum.DB203 ? Tyd2011StatusEnum.Out : Tyd2011StatusEnum.Request;
+  if (!current) {
+    toast("请选择后再操作", 2000, "warn");
+    return;
+  }
+  const validStatus = current.nBusinsType === Tyd2010TypeEnum.DB203 ? Tyd2011StatusEnum.Out : Tyd2011StatusEnum.Request;
   const selected = selectedRows();
-  if (!selected.length) { toast("请勾选材料后再操作", 2500, "warn"); return; }
-  if (selected.some((l) => l.nStatus !== validStatus)) { toast("状态错误不允许操作", 2500, "warn"); return; }
+  if (!selected.length) {
+    toast("请勾选材料后再操作", 2500, "warn");
+    return;
+  }
+  if (selected.some((l) => l.nStatus !== validStatus)) {
+    toast("状态错误不允许操作", 2500, "warn");
+    return;
+  }
   if (!window.confirm(`确认取消？数量${selected.length}`)) return;
   querying.value = true;
   try {
@@ -191,10 +232,16 @@ async function onCancel() {
     if (current.nBusinsType === Tyd2010TypeEnum.DB203) await tyd2020Api.cancelCPDBRK(ids);
     else await tyd2020Api.cancelDB(ids);
     await onQuery();
-  } catch { /* 拦截层已 toast */ } finally { querying.value = false; }
+  } catch {
+    /* 拦截层已 toast */
+  } finally {
+    querying.value = false;
+  }
 }
 
-onMounted(() => { void loadStores().then(() => onQuery()); });
+onMounted(() => {
+  void loadStores().then(() => onQuery());
+});
 </script>
 
 <template>
@@ -203,18 +250,38 @@ onMounted(() => { void loadStores().then(() => onQuery()); });
     <div class="grid shrink-0 grid-cols-6 items-center gap-x-3 gap-y-1.5 border-b border-border/60 px-3 py-2">
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">目标库区</label>
-        <Select v-model="q.cTarStore" :options="tarStoreOptions" option-label="label" option-value="value" show-clear
-          placeholder="全部" class="min-w-0 flex-1" />
+        <Select
+          v-model="q.cTarStore"
+          :options="tarStoreOptions"
+          option-label="label"
+          option-value="value"
+          show-clear
+          placeholder="全部"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-12 shrink-0 text-xs text-muted-foreground">库区</label>
-        <Select v-model="q.cStore" :options="storeOptions" option-label="label" option-value="value"
-          placeholder="库区" class="min-w-0 flex-1" />
+        <Select
+          v-model="q.cStore"
+          :options="storeOptions"
+          option-label="label"
+          option-value="value"
+          placeholder="库区"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-14 shrink-0 text-xs text-muted-foreground">申请状态</label>
-        <Select v-model="q.nStatus" :options="STATUS_OPTIONS" option-label="label" option-value="value" show-clear
-          placeholder="全部" class="min-w-0 flex-1" />
+        <Select
+          v-model="q.nStatus"
+          :options="STATUS_OPTIONS"
+          option-label="label"
+          option-value="value"
+          show-clear
+          placeholder="全部"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-12 shrink-0 text-xs text-muted-foreground">车号</label>
@@ -222,8 +289,17 @@ onMounted(() => { void loadStores().then(() => onQuery()); });
       </div>
       <div class="col-span-2 flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">申请时间</label>
-        <DatePicker v-model="q.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-          show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+        <DatePicker
+          v-model="q.dates"
+          selection-mode="range"
+          :manual-input="false"
+          date-format="yy-mm-dd"
+          show-time
+          hour-format="24"
+          show-icon
+          placeholder="开始 至 结束"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-14 shrink-0 text-xs text-muted-foreground">件次号</label>
@@ -247,11 +323,26 @@ onMounted(() => { void loadStores().then(() => onQuery()); });
 
     <!-- 单表 -->
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="colDefs"
-        :default-col-def="hmxDefaultColDef" :row-data="rows" :locale-text="AG_GRID_LOCALE_CN"
-        :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-        :pagination="false" :animate-rows="false" :loading="querying"
-        @grid-ready="onReady" @first-data-rendered="autoSizeOnFirstData" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :column-defs="colDefs"
+        :default-col-def="hmxDefaultColDef"
+        :row-data="rows"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :row-selection="{
+          mode: 'multiRow',
+          checkboxes: true,
+          headerCheckbox: true,
+          enableClickSelection: true,
+          enableSelectionWithoutKeys: true,
+        }"
+        :pagination="false"
+        :animate-rows="false"
+        :loading="querying"
+        @grid-ready="onReady"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
   </div>
 </template>

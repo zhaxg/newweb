@@ -69,13 +69,24 @@ async function onQuery() {
     <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
       <InputText v-model="testNo" placeholder="委托单号" class="h-7 w-36 text-xs" @keyup.enter="onQuery" />
       <Button variant="outlined" :loading="querying" class="shrink-0 whitespace-nowrap" @click="onQuery">
-        <IconSearch class="h-3 w-3" />查询</Button>
-      <span class="ml-2 text-xs text-destructive">*保存记录数据量较大，为保证查询性能，仅支持输入<b>完整</b>委托单号查询</span>
+        <IconSearch class="h-3 w-3" />查询</Button
+      >
+      <span class="ml-2 text-xs text-destructive"
+        >*保存记录数据量较大，为保证查询性能，仅支持输入<b>完整</b>委托单号查询</span
+      >
     </div>
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows" :pagination="false"
-        @grid-ready="onGridReady" @first-data-rendered="autoSizeOnFirstData" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="rows"
+        :pagination="false"
+        @grid-ready="onGridReady"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
   </div>
 </template>

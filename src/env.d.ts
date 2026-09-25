@@ -23,6 +23,10 @@ declare module "*.vue" {
 
 // PrimeVue 5 未随包发布该子模块的 d.ts（运行时是 mitt 实例）
 declare module "primevue/toasteventbus" {
-  const ToastEventBus: { on(type: string, listener: (event: any) => void): void; emit(type: string, event?: any): void; off(type: string, listener?: (event: any) => void): void };
+  const ToastEventBus: {
+    on(type: string, listener: (event: any) => void): void;
+    emit(type: string, event?: any): void;
+    off(type: string, listener?: (event: any) => void): void;
+  };
   export default ToastEventBus;
 }

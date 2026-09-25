@@ -24,11 +24,26 @@ const theme = makeHmxGridTheme();
 /* 时间范围默认值（原 uctimeRange1._Load：本月1日 ~ 次日） */
 function defaultRange(): Date[] {
   const now = new Date();
-  return [new Date(now.getFullYear(), now.getMonth(), 1), new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1)];
+  return [
+    new Date(now.getFullYear(), now.getMonth(), 1),
+    new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1),
+  ];
 }
 function isoLocal(d: Date): string {
   const p = (n: number) => String(n).padStart(2, "0");
-  return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate()) + "T" + p(d.getHours()) + ":" + p(d.getMinutes()) + ":" + p(d.getSeconds());
+  return (
+    d.getFullYear() +
+    "-" +
+    p(d.getMonth() + 1) +
+    "-" +
+    p(d.getDate()) +
+    "T" +
+    p(d.getHours()) +
+    ":" +
+    p(d.getMinutes()) +
+    ":" +
+    p(d.getSeconds())
+  );
 }
 function toTimeRange(list: Date[] | null): TimeRange | undefined {
   if (!list || list.length < 2) return undefined;
@@ -110,8 +125,17 @@ async function onSync() {
     <!-- 按钮行（原 stackPanel1：板坯号 textEdit1 + 日期 uctimeRange1 + 查询 + 同步）；ui-rules §6 与按钮同行、用 placeholder -->
     <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
       <InputText v-model="keyword" placeholder="板坯号" class="w-40" @keydown.enter="onQuery" />
-      <DatePicker v-model="dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd" show-time
-        hour-format="24" show-icon placeholder="日期" class="w-80" />
+      <DatePicker
+        v-model="dates"
+        selection-mode="range"
+        :manual-input="false"
+        date-format="yy-mm-dd"
+        show-time
+        hour-format="24"
+        show-icon
+        placeholder="日期"
+        class="w-80"
+      />
       <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="querying" @click="onQuery">
         <IconSearch class="h-3 w-3" />查询
       </Button>
@@ -120,11 +144,26 @@ async function onSync() {
       </Button>
     </div>
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows"
-        :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-        :pagination="false" :animate-rows="false" :loading="querying" @grid-ready="onGridReady"
-        @first-data-rendered="autoSizeOnFirstData" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="rows"
+        :row-selection="{
+          mode: 'multiRow',
+          checkboxes: true,
+          headerCheckbox: true,
+          enableClickSelection: true,
+          enableSelectionWithoutKeys: true,
+        }"
+        :pagination="false"
+        :animate-rows="false"
+        :loading="querying"
+        @grid-ready="onGridReady"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
   </div>
 </template>

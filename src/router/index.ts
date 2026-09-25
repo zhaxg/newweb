@@ -39,7 +39,8 @@ declare module "vue-router" {
    （缺省进默认布局），加布局只改注册表、不动这里。 */
 
 const staticLayoutLeaves: RouteRecordRaw[] = [homeRoute, forbiddenRoute, ...businessRoutes];
-const childrenOf = (layout: string) => staticLayoutLeaves.filter((r) => (r.meta?.layout ?? defaultLayoutName) === layout);
+const childrenOf = (layout: string) =>
+  staticLayoutLeaves.filter((r) => (r.meta?.layout ?? defaultLayoutName) === layout);
 
 const layoutParents: RouteRecordRaw[] = layouts.map((l) => ({
   path: "/",

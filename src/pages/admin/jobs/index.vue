@@ -52,8 +52,16 @@ const REM = 2 * parseFloat(getComputedStyle(document.documentElement).fontSize) 
 
 const columnDefs: ColDef[] = [
   {
-    colId: "enable", field: "enable", headerName: "", width: REM, minWidth: REM, maxWidth: REM,
-    pinned: "left", sortable: false, resizable: true, filter: false,
+    colId: "enable",
+    field: "enable",
+    headerName: "",
+    width: REM,
+    minWidth: REM,
+    maxWidth: REM,
+    pinned: "left",
+    sortable: false,
+    resizable: true,
+    filter: false,
     suppressHeaderMenuButton: true,
     cellRenderer: EnableColorCell,
   },
@@ -238,19 +246,35 @@ async function onExcute() {
     </div>
 
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="columnDefs"
-        :default-col-def="hmxDefaultColDef" :row-data="rows" :get-row-id="getRowId"
-        :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }" :loading="querying"
-        :pagination="false" :animate-rows="false" :locale-text="AG_GRID_LOCALE_CN" @grid-ready="onGridReady"
-        @selection-changed="onSelectionChanged" @row-double-clicked="onRowDoubleClicked"
-        @first-data-rendered="autoSizeOnFirstData" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :column-defs="columnDefs"
+        :default-col-def="hmxDefaultColDef"
+        :row-data="rows"
+        :get-row-id="getRowId"
+        :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
+        :loading="querying"
+        :pagination="false"
+        :animate-rows="false"
+        :locale-text="AG_GRID_LOCALE_CN"
+        @grid-ready="onGridReady"
+        @selection-changed="onSelectionChanged"
+        @row-double-clicked="onRowDoubleClicked"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
 
     <JobEditDialog v-model:open="editOpen" :job="editJob" @submit="onEditSubmit" />
 
     <!-- 删除确认（对应原 DialogPlugin.confirm 警告框） -->
-    <Dialog :visible="confirmOpen" modal header="警告" :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
-      @update:visible="confirmOpen = $event">
+    <Dialog
+      :visible="confirmOpen"
+      modal
+      header="警告"
+      :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
+      @update:visible="confirmOpen = $event"
+    >
       <p class="text-xs">你确定删除当前选择的计划任务么: {{ confirmTarget?.cName }}</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />

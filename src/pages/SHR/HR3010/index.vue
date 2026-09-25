@@ -71,7 +71,9 @@ const zpRows = ref<Thr3000Dto[]>([]);
 const zpLoading = ref(false);
 const zpApi = ref<GridApi | null>(null);
 const zpCurrent = ref<Thr3000Dto | null>(null);
-function onZpReady(e: GridReadyEvent) { zpApi.value = e.api; }
+function onZpReady(e: GridReadyEvent) {
+  zpApi.value = e.api;
+}
 function onZpSelectionChanged() {
   const rows = zpApi.value?.getSelectedRows() as Thr3000Dto[] | undefined;
   zpCurrent.value = rows?.[0] ?? null;
@@ -83,7 +85,9 @@ const mxRows = ref<Thr3010[]>([]);
 const mxLoading = ref(false);
 const mxApi = ref<GridApi | null>(null);
 const mxCurrent = ref<Thr3010 | null>(null);
-function onMxReady(e: GridReadyEvent) { mxApi.value = e.api; }
+function onMxReady(e: GridReadyEvent) {
+  mxApi.value = e.api;
+}
 function onMxSelectionChanged() {
   mxCurrent.value = (mxApi.value?.getSelectedRows()[0] as Thr3010 | undefined) ?? null;
 }
@@ -116,11 +120,35 @@ const l2StatusFmt = (p: ValueFormatterParams) => {
   return m[String(p.value)] ?? "";
 };
 const furStatusFmt = (p: ValueFormatterParams) =>
-  (({ [String(Thr3010FurStatusEnum.Batch)]: "已组批", [String(Thr3010FurStatusEnum.Wait)]: "待入炉", [String(Thr3010FurStatusEnum.RefuseBefore)]: "炉前拒收", [String(Thr3010FurStatusEnum.EnterFur)]: "入炉", [String(Thr3010FurStatusEnum.Eliminate)]: "剔炉", [String(Thr3010FurStatusEnum.ExitFur)]: "出炉", [String(Thr3010FurStatusEnum.RefuseAfter)]: "炉后拒收" }) as Record<string, string>)[String(p.value)] ?? "";
+  (
+    ({
+      [String(Thr3010FurStatusEnum.Batch)]: "已组批",
+      [String(Thr3010FurStatusEnum.Wait)]: "待入炉",
+      [String(Thr3010FurStatusEnum.RefuseBefore)]: "炉前拒收",
+      [String(Thr3010FurStatusEnum.EnterFur)]: "入炉",
+      [String(Thr3010FurStatusEnum.Eliminate)]: "剔炉",
+      [String(Thr3010FurStatusEnum.ExitFur)]: "出炉",
+      [String(Thr3010FurStatusEnum.RefuseAfter)]: "炉后拒收",
+    }) as Record<string, string>
+  )[String(p.value)] ?? "";
 const rollStatusFmt = (p: ValueFormatterParams) =>
-  (({ [String(Thr3010RollStatusEnum.Batch)]: "已组批", [String(Thr3010RollStatusEnum.Wait)]: "待入轧", [String(Thr3010RollStatusEnum.FinishRoll)]: "轧制完成", [String(Thr3010RollStatusEnum.Cut)]: "切断", [String(Thr3010RollStatusEnum.Waste)]: "轧废" }) as Record<string, string>)[String(p.value)] ?? "";
+  (
+    ({
+      [String(Thr3010RollStatusEnum.Batch)]: "已组批",
+      [String(Thr3010RollStatusEnum.Wait)]: "待入轧",
+      [String(Thr3010RollStatusEnum.FinishRoll)]: "轧制完成",
+      [String(Thr3010RollStatusEnum.Cut)]: "切断",
+      [String(Thr3010RollStatusEnum.Waste)]: "轧废",
+    }) as Record<string, string>
+  )[String(p.value)] ?? "";
 const jqStatusFmt = (p: ValueFormatterParams) =>
-  (({ [String(Thr3010JqStatusEnum.Batch)]: "已组批", [String(Thr3010JqStatusEnum.Wait)]: "待剪切", [String(Thr3010JqStatusEnum.Finish)]: "剪切完成" }) as Record<string, string>)[String(p.value)] ?? "";
+  (
+    ({
+      [String(Thr3010JqStatusEnum.Batch)]: "已组批",
+      [String(Thr3010JqStatusEnum.Wait)]: "待剪切",
+      [String(Thr3010JqStatusEnum.Finish)]: "剪切完成",
+    }) as Record<string, string>
+  )[String(p.value)] ?? "";
 
 const zpColDefs: ColDef[] = [
   { colId: "selected", field: "selected", headerName: "选择", width: 112, hide: true },
@@ -213,15 +241,36 @@ const mxColDefs: ColDef[] = [
   { colId: "cSlabId", field: "cSlabId", headerName: "TYD2000主键", width: 150, hide: true },
   { colId: "cLineCode", field: "cLineCode", headerName: "产线代码", width: 112, hide: true },
   { colId: "cOrderNo", field: "cOrderNo", headerName: "提料计划号", width: 120, hide: true },
-  { colId: "nFurStatus", field: "nFurStatus", headerName: "加热炉状态", width: 125, hide: true, valueFormatter: furStatusFmt },
+  {
+    colId: "nFurStatus",
+    field: "nFurStatus",
+    headerName: "加热炉状态",
+    width: 125,
+    hide: true,
+    valueFormatter: furStatusFmt,
+  },
   { colId: "cFurCode", field: "cFurCode", headerName: "加热炉编号", width: 125, hide: true },
-  { colId: "nRollStatus", field: "nRollStatus", headerName: "轧制状态", width: 112, hide: true, valueFormatter: rollStatusFmt },
+  {
+    colId: "nRollStatus",
+    field: "nRollStatus",
+    headerName: "轧制状态",
+    width: 112,
+    hide: true,
+    valueFormatter: rollStatusFmt,
+  },
   { colId: "cRollCode", field: "cRollCode", headerName: "轧机编号", width: 112, hide: true },
   { colId: "cFinishEmp", field: "cFinishEmp", headerName: "轧制完成人", width: 125, hide: true },
   { colId: "dRoll", field: "dRoll", headerName: "轧制完成时间", width: 138, hide: true },
   { colId: "cRollShift", field: "cRollShift", headerName: "轧制完成班次", width: 138, hide: true },
   { colId: "cRollGroup", field: "cRollGroup", headerName: "轧制完成班组", width: 138, hide: true },
-  { colId: "nJqStatus", field: "nJqStatus", headerName: "剪切计划状态", width: 138, hide: true, valueFormatter: jqStatusFmt },
+  {
+    colId: "nJqStatus",
+    field: "nJqStatus",
+    headerName: "剪切计划状态",
+    width: 138,
+    hide: true,
+    valueFormatter: jqStatusFmt,
+  },
   { colId: "cJqCode", field: "cJqCode", headerName: "剪切设备", width: 112, hide: true },
 ];
 
@@ -229,15 +278,16 @@ const mxColDefs: ColDef[] = [
 async function queryZp() {
   zpLoading.value = true;
   try {
-    const list = (await hR3000Api.queryThr3000Dtos({
-      cLineCode,
-      cOrderNo: input.cOrderNo.trim() || undefined,
-      cSgCode: input.cSgCode.trim() || undefined,
-      cSgStd: input.cSgStd.trim() || undefined,
-      cBatchNo: input.cBatchNo.trim() || undefined,
-      cStove: input.cStove.trim() || undefined,
-      dCreateTimeRange: toTimeRange(input.dates),
-    })) ?? [];
+    const list =
+      (await hR3000Api.queryThr3000Dtos({
+        cLineCode,
+        cOrderNo: input.cOrderNo.trim() || undefined,
+        cSgCode: input.cSgCode.trim() || undefined,
+        cSgStd: input.cSgStd.trim() || undefined,
+        cBatchNo: input.cBatchNo.trim() || undefined,
+        cStove: input.cStove.trim() || undefined,
+        dCreateTimeRange: toTimeRange(input.dates),
+      })) ?? [];
     zpRows.value = list;
     zpCurrent.value = null;
     mxRows.value = [];
@@ -252,7 +302,7 @@ async function queryZp() {
 async function bindMx(thr3000: Thr3000Dto | null) {
   mxLoading.value = true;
   try {
-    const list = thr3000 ? (await hR3000Api.queryThr3010s(thr3000.id ?? undefined)) ?? [] : [];
+    const list = thr3000 ? ((await hR3000Api.queryThr3010s(thr3000.id ?? undefined)) ?? []) : [];
     mxRows.value = list;
     mxCurrent.value = null;
     requestAnimationFrame(() => mxApi.value?.autoSizeAllColumns());
@@ -421,8 +471,17 @@ async function btnShowQy() {
           </div>
           <div class="flex min-w-0 items-center gap-1.5">
             <label class="w-16 shrink-0 text-xs text-muted-foreground">组批时间</label>
-            <DatePicker v-model="input.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-              show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+            <DatePicker
+              v-model="input.dates"
+              selection-mode="range"
+              :manual-input="false"
+              date-format="yy-mm-dd"
+              show-time
+              hour-format="24"
+              show-icon
+              placeholder="开始 至 结束"
+              class="min-w-0 flex-1"
+            />
           </div>
         </div>
         <!-- 工具栏（查询/上移/下移/材料添加/撤销组批 [+system: 生成代表样/查看代表样]） -->
@@ -442,12 +501,27 @@ async function btnShowQy() {
           </template>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="zpColDefs" :row-data="zpRows"
-            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-            :pagination="false" :animate-rows="false" :loading="zpLoading"
-            @grid-ready="onZpReady" @selection-changed="onZpSelectionChanged"
-            @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="zpColDefs"
+            :row-data="zpRows"
+            :row-selection="{
+              mode: 'multiRow',
+              checkboxes: true,
+              headerCheckbox: true,
+              enableClickSelection: true,
+              enableSelectionWithoutKeys: true,
+            }"
+            :pagination="false"
+            :animate-rows="false"
+            :loading="zpLoading"
+            @grid-ready="onZpReady"
+            @selection-changed="onZpSelectionChanged"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
 
@@ -456,18 +530,38 @@ async function btnShowQy() {
           <span class="text-xs font-medium text-muted-foreground">计划材料明细</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="mxColDefs" :row-data="mxRows"
-            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-            :pagination="false" :animate-rows="false" :loading="mxLoading"
-            @grid-ready="onMxReady" @selection-changed="onMxSelectionChanged"
-            @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="mxColDefs"
+            :row-data="mxRows"
+            :row-selection="{
+              mode: 'multiRow',
+              checkboxes: true,
+              headerCheckbox: true,
+              enableClickSelection: true,
+              enableSelectionWithoutKeys: true,
+            }"
+            :pagination="false"
+            :animate-rows="false"
+            :loading="mxLoading"
+            @grid-ready="onMxReady"
+            @selection-changed="onMxSelectionChanged"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
     </Splitter>
 
-    <Dialog :visible="confirmOpen" modal header="确认" :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
-      @update:visible="confirmOpen = $event">
+    <Dialog
+      :visible="confirmOpen"
+      modal
+      header="确认"
+      :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
+      @update:visible="confirmOpen = $event"
+    >
       <p class="text-xs">{{ confirmMsg }}</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />
@@ -476,8 +570,13 @@ async function btnShowQy() {
     </Dialog>
 
     <!-- 查看代表样结果（原 MsgBox.Show） -->
-    <Dialog :visible="qyOpen" modal header="代表样" :style="{ width: 'min(36rem, calc(100vw - 2rem))' }"
-      @update:visible="qyOpen = $event">
+    <Dialog
+      :visible="qyOpen"
+      modal
+      header="代表样"
+      :style="{ width: 'min(36rem, calc(100vw - 2rem))' }"
+      @update:visible="qyOpen = $event"
+    >
       <pre class="text-xs whitespace-pre-wrap">{{ qyMsg }}</pre>
       <template #footer>
         <Button label="关闭" variant="outlined" @click="qyOpen = false" />

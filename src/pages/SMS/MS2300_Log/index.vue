@@ -43,50 +43,52 @@ const rangeVal = ref(rangeOptions[0]);
 
 const rows = ref<Record<string, unknown>[]>([]);
 
-const colDefs = ref<ColDef[]>([      { field: "DTime", headerName: "时间", width: 86 },
-      { field: "CLineName", headerName: "产线名称", width: 112 },
-      { field: "CMachineName", headerName: "机台名称", width: 112 },
-      { field: "CStoveNo", headerName: "炉号", width: 86 },
-      { field: "CPono", headerName: "制造命令号", width: 125 },
-      { field: "CType3", headerName: "操作方式", width: 112 },
-      { field: "CRemark", headerName: "反馈结果", width: 112 },
-      { field: "Creator", headerName: "创建人", width: 99 },
-      { field: "CreateTime", headerName: "创建时间", width: 112 },
-      { field: "Id", headerName: "主键", width: 86, hide: true },
-      { field: "CType", headerName: "类型", width: 86, hide: true },
-      { field: "CProc", headerName: "工序", width: 86, hide: true },
-      { field: "CMachineCode", headerName: "机台编码", width: 112, hide: true },
-      { field: "CMachinestationCode", headerName: "工位编码", width: 112, hide: true },
-      { field: "CMachinestationDesc", headerName: "工位描述", width: 112, hide: true },
-      { field: "CType1", headerName: "操作类型1", width: 125, hide: true },
-      { field: "CType2", headerName: "操作类型2", width: 125, hide: true },
-      { field: "CIpAddr", headerName: "服务器IP地址", width: 151, hide: true },
-      { field: "CTms1030Data", headerName: "tms1030表数据", width: 190, hide: true },
-      { field: "CTms2000Data", headerName: "tms2000表数据", width: 190, hide: true },
-      { field: "CTms2010Data", headerName: "tms2010表数据", width: 190, hide: true },
-      { field: "CRunData", headerName: "运转记录表数据", width: 151, hide: true },
-      { field: "CExceptionInfo", headerName: "异常信息", width: 112, hide: true },
-      { field: "COtherData", headerName: "其它数据记录", width: 138, hide: true },
-      { field: "CTimestamp", headerName: "时间戳", width: 99, hide: true },
-      { field: "LastModifier", headerName: "最后修改人", width: 125, hide: true },
-      { field: "LastModifyTime", headerName: "最后修改时间", width: 138, hide: true },
-      { field: "CSw01", headerName: "备用字段1", width: 125, hide: true },
-      { field: "CSw02", headerName: "备用字段2", width: 125, hide: true },
-      { field: "CSw03", headerName: "备用字段3", width: 125, hide: true },
-      { field: "CSw04", headerName: "备用字段4", width: 125, hide: true },
-      { field: "CSw05", headerName: "备用字段5", width: 125, hide: true },
-      { field: "CSw06", headerName: "备用字段6", width: 125, hide: true },
-      { field: "Selected", headerName: "选择", width: 86, hide: true },
-      { field: "CLineCode", headerName: "产线", width: 86, hide: true },
-      { field: "CExceptionInfoStr", headerName: "异常信息字符串", width: 151, hide: true },
-      { field: "COtherDataStr", headerName: "其它数据记录字符串", width: 177, hide: true },
-      { field: "CRunDataStr", headerName: "运转记录表数据字符串", width: 190, hide: true },
-      { field: "CSw01Str", headerName: "备用字段1字符串", width: 164, hide: true },
-      { field: "CSw02Str", headerName: "备用字段2字符串", width: 164, hide: true },
-      { field: "CSw03Str", headerName: "备用字段3字符串", width: 164, hide: true },
-      { field: "CTms1030DataStr", headerName: "tms1030表数据字符串", width: 229, hide: true },
-      { field: "CTms2000DataStr", headerName: "tms2000表数据字符串", width: 229, hide: true },
-      { field: "CTms2010DataStr", headerName: "tms2010表数据字符串", width: 229, hide: true }]);
+const colDefs = ref<ColDef[]>([
+  { field: "DTime", headerName: "时间", width: 86 },
+  { field: "CLineName", headerName: "产线名称", width: 112 },
+  { field: "CMachineName", headerName: "机台名称", width: 112 },
+  { field: "CStoveNo", headerName: "炉号", width: 86 },
+  { field: "CPono", headerName: "制造命令号", width: 125 },
+  { field: "CType3", headerName: "操作方式", width: 112 },
+  { field: "CRemark", headerName: "反馈结果", width: 112 },
+  { field: "Creator", headerName: "创建人", width: 99 },
+  { field: "CreateTime", headerName: "创建时间", width: 112 },
+  { field: "Id", headerName: "主键", width: 86, hide: true },
+  { field: "CType", headerName: "类型", width: 86, hide: true },
+  { field: "CProc", headerName: "工序", width: 86, hide: true },
+  { field: "CMachineCode", headerName: "机台编码", width: 112, hide: true },
+  { field: "CMachinestationCode", headerName: "工位编码", width: 112, hide: true },
+  { field: "CMachinestationDesc", headerName: "工位描述", width: 112, hide: true },
+  { field: "CType1", headerName: "操作类型1", width: 125, hide: true },
+  { field: "CType2", headerName: "操作类型2", width: 125, hide: true },
+  { field: "CIpAddr", headerName: "服务器IP地址", width: 151, hide: true },
+  { field: "CTms1030Data", headerName: "tms1030表数据", width: 190, hide: true },
+  { field: "CTms2000Data", headerName: "tms2000表数据", width: 190, hide: true },
+  { field: "CTms2010Data", headerName: "tms2010表数据", width: 190, hide: true },
+  { field: "CRunData", headerName: "运转记录表数据", width: 151, hide: true },
+  { field: "CExceptionInfo", headerName: "异常信息", width: 112, hide: true },
+  { field: "COtherData", headerName: "其它数据记录", width: 138, hide: true },
+  { field: "CTimestamp", headerName: "时间戳", width: 99, hide: true },
+  { field: "LastModifier", headerName: "最后修改人", width: 125, hide: true },
+  { field: "LastModifyTime", headerName: "最后修改时间", width: 138, hide: true },
+  { field: "CSw01", headerName: "备用字段1", width: 125, hide: true },
+  { field: "CSw02", headerName: "备用字段2", width: 125, hide: true },
+  { field: "CSw03", headerName: "备用字段3", width: 125, hide: true },
+  { field: "CSw04", headerName: "备用字段4", width: 125, hide: true },
+  { field: "CSw05", headerName: "备用字段5", width: 125, hide: true },
+  { field: "CSw06", headerName: "备用字段6", width: 125, hide: true },
+  { field: "Selected", headerName: "选择", width: 86, hide: true },
+  { field: "CLineCode", headerName: "产线", width: 86, hide: true },
+  { field: "CExceptionInfoStr", headerName: "异常信息字符串", width: 151, hide: true },
+  { field: "COtherDataStr", headerName: "其它数据记录字符串", width: 177, hide: true },
+  { field: "CRunDataStr", headerName: "运转记录表数据字符串", width: 190, hide: true },
+  { field: "CSw01Str", headerName: "备用字段1字符串", width: 164, hide: true },
+  { field: "CSw02Str", headerName: "备用字段2字符串", width: 164, hide: true },
+  { field: "CSw03Str", headerName: "备用字段3字符串", width: 164, hide: true },
+  { field: "CTms1030DataStr", headerName: "tms1030表数据字符串", width: 229, hide: true },
+  { field: "CTms2000DataStr", headerName: "tms2000表数据字符串", width: 229, hide: true },
+  { field: "CTms2010DataStr", headerName: "tms2010表数据字符串", width: 229, hide: true },
+]);
 
 /** 后端 JSON 为 camelCase（首字母小写），extract 列为 PascalCase——回填时首字母还原 */
 function toPascal(row: Record<string, unknown>): Record<string, unknown> {
@@ -131,8 +133,13 @@ onMounted(() => {
       <label class="shrink-0 text-xs text-muted-foreground">日期</label>
       <DatePicker v-model="deDate" :manual-input="false" date-format="yy-mm-dd" show-icon class="shrink-0" />
       <label class="shrink-0 text-xs text-muted-foreground">日期</label>
-      <Select v-model="rangeVal" :options="rangeOptions" option-label="label" option-value="value"
-        class="w-40 shrink-0" />
+      <Select
+        v-model="rangeVal"
+        :options="rangeOptions"
+        option-label="label"
+        option-value="value"
+        class="w-40 shrink-0"
+      />
       <label class="shrink-0 text-xs text-muted-foreground">炉次号</label>
       <InputText v-model="stoveNo" class="w-32 shrink-0" />
       <label class="shrink-0 text-xs text-muted-foreground">制造命令号</label>
@@ -142,9 +149,18 @@ onMounted(() => {
       </Button>
     </div>
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows" :pagination="false"
-        :loading="querying" @grid-ready="onGridReady" @first-data-rendered="autoSizeOnFirstData" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="rows"
+        :pagination="false"
+        :loading="querying"
+        @grid-ready="onGridReady"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
   </div>
 </template>

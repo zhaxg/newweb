@@ -128,8 +128,13 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <Dialog v-model:visible="showModal" modal header="新版本可用" :style="{ width: 'min(28rem, 92vw)' }"
-    :dismissable-mask="false">
+  <Dialog
+    v-model:visible="showModal"
+    modal
+    header="新版本可用"
+    :style="{ width: 'min(28rem, 92vw)' }"
+    :dismissable-mask="false"
+  >
     <div class="text-body leading-relaxed text-foreground">
       <div>检测到新版本，点击「刷新」重新加载页面</div>
       <!-- 版本标识（etag）可能很长且无空格，单独成块 break-all 换行，不撑乱行内布局 -->

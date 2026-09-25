@@ -99,7 +99,9 @@ async function onQuery() {
 
     const map = new Map<string, Tyd2000Allocation>();
     for (const r of list) {
-      const date = String(r.createTime ?? "").slice(0, 10).replace(/-/g, "/");
+      const date = String(r.createTime ?? "")
+        .slice(0, 10)
+        .replace(/-/g, "/");
       const key = `${r.creator}|${date}|${r.cSettleCust}|${r.cCustName}`;
       const hit = map.get(key);
       if (hit) {
@@ -154,7 +156,13 @@ onMounted(() => {
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">开始时间</label>
-          <DatePicker v-model="q.dBegin" :manual-input="false" date-format="yy-mm-dd" show-icon class="min-w-0 flex-1" />
+          <DatePicker
+            v-model="q.dBegin"
+            :manual-input="false"
+            date-format="yy-mm-dd"
+            show-icon
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">截止时间</label>

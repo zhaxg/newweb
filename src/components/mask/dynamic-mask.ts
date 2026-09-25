@@ -1,5 +1,5 @@
-import type { MaskItType } from './mask-it';
-import type { TokenType } from './tokens';
+import type { MaskItType } from "./mask-it";
+import type { TokenType } from "./tokens";
 
 type DynamicMaskResult = (value: string, masked?: boolean) => string;
 
@@ -19,6 +19,6 @@ export const dynamicMask = (
         return maskIt(value, currentMask, tokens, masked);
       }
     }
-    return '';
+    return "";
   };
 };

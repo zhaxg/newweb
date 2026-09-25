@@ -231,10 +231,7 @@ async function bindZcMx(current: QueryFhJl2000Dto | null) {
     cPlanId: current.cPlanId ?? null,
     cMatCode: current.cMatCode ?? null,
   };
-  const [stock, mats] = await Promise.all([
-    fh2000Api.getFhTyd2000(input),
-    fh2000Api.getFh1002Lst(input),
-  ]);
+  const [stock, mats] = await Promise.all([fh2000Api.getFhTyd2000(input), fh2000Api.getFh1002Lst(input)]);
   stockRows.value = (stock ?? []) as QueryFhTyd2000Dto[];
   matRows.value = (mats ?? []) as Fh1002[];
   stockApi.value?.setGridOption("rowData", stockRows.value);
@@ -406,12 +403,27 @@ onMounted(() => {
       <!-- 制卡发货明细（标题已并入顶部查询工具栏） -->
       <SplitterPanel :size="55" :minSize="25" class="flex flex-col overflow-hidden">
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="jlColDefs"
-            :default-col-def="hmxDefaultColDef" :row-data="jlRows" :locale-text="AG_GRID_LOCALE_CN"
-            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-            :pagination="false" :animate-rows="false" :loading="querying"
-            @grid-ready="onJlReady" @selection-changed="onJlSelectionChanged"
-            @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :column-defs="jlColDefs"
+            :default-col-def="hmxDefaultColDef"
+            :row-data="jlRows"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :row-selection="{
+              mode: 'multiRow',
+              checkboxes: true,
+              headerCheckbox: true,
+              enableClickSelection: true,
+              enableSelectionWithoutKeys: true,
+            }"
+            :pagination="false"
+            :animate-rows="false"
+            :loading="querying"
+            @grid-ready="onJlReady"
+            @selection-changed="onJlSelectionChanged"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
 
@@ -423,11 +435,27 @@ onMounted(() => {
           <label class="shrink-0 text-xs text-muted-foreground">重量</label>
           <InputText :model-value="String(checkedWgt)" readonly class="w-28 shrink-0" />
           <label class="ml-2 shrink-0 text-xs text-muted-foreground">班组</label>
-          <Select v-model="cGroupNo" :options="groupOptions" option-label="label" option-value="value" show-clear
-            filter placeholder="选择班组" class="w-36 shrink-0" />
+          <Select
+            v-model="cGroupNo"
+            :options="groupOptions"
+            option-label="label"
+            option-value="value"
+            show-clear
+            filter
+            placeholder="选择班组"
+            class="w-36 shrink-0"
+          />
           <label class="shrink-0 text-xs text-muted-foreground">班次</label>
-          <Select v-model="cShiftNo" :options="shiftOptions" option-label="label" option-value="value" show-clear
-            filter placeholder="选择班次" class="w-36 shrink-0" />
+          <Select
+            v-model="cShiftNo"
+            :options="shiftOptions"
+            option-label="label"
+            option-value="value"
+            show-clear
+            filter
+            placeholder="选择班次"
+            class="w-36 shrink-0"
+          />
           <!-- 原「确认装车 / 下发计量称重」按需求移到右栏「材料删除」之后 -->
           <span class="ml-auto text-xs font-medium text-muted-foreground">成品库存</span>
         </div>
@@ -436,12 +464,26 @@ onMounted(() => {
           <!-- 成品库存（原 gridView2 ViewCaption=成品库存；标题已按需求移到班组/班次工具栏末尾） -->
           <SplitterPanel :size="47" :minSize="25" class="flex flex-col overflow-hidden">
             <div class="min-h-0 flex-1 overflow-hidden">
-              <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="stockColDefs"
-                :default-col-def="hmxDefaultColDef" :row-data="stockRows" :locale-text="AG_GRID_LOCALE_CN"
-                :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-                :pagination="false" :animate-rows="false"
-                @grid-ready="onStockReady" @selection-changed="onStockSelectionChanged"
-                @first-data-rendered="autoSizeOnFirstData" />
+              <AgGridVue
+                class="hmx-ag-grid h-full w-full"
+                :theme="theme"
+                :column-defs="stockColDefs"
+                :default-col-def="hmxDefaultColDef"
+                :row-data="stockRows"
+                :locale-text="AG_GRID_LOCALE_CN"
+                :row-selection="{
+                  mode: 'multiRow',
+                  checkboxes: true,
+                  headerCheckbox: true,
+                  enableClickSelection: true,
+                  enableSelectionWithoutKeys: true,
+                }"
+                :pagination="false"
+                :animate-rows="false"
+                @grid-ready="onStockReady"
+                @selection-changed="onStockSelectionChanged"
+                @first-data-rendered="autoSizeOnFirstData"
+              />
             </div>
           </SplitterPanel>
 
@@ -459,11 +501,25 @@ onMounted(() => {
               <span class="ml-auto text-xs font-medium text-muted-foreground">装车明细</span>
             </div>
             <div class="min-h-0 flex-1 overflow-hidden">
-              <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="matColDefs"
-                :default-col-def="hmxDefaultColDef" :row-data="matRows" :locale-text="AG_GRID_LOCALE_CN"
-                :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-                :pagination="false" :animate-rows="false"
-                @grid-ready="onMatReady" @first-data-rendered="autoSizeOnFirstData" />
+              <AgGridVue
+                class="hmx-ag-grid h-full w-full"
+                :theme="theme"
+                :column-defs="matColDefs"
+                :default-col-def="hmxDefaultColDef"
+                :row-data="matRows"
+                :locale-text="AG_GRID_LOCALE_CN"
+                :row-selection="{
+                  mode: 'multiRow',
+                  checkboxes: true,
+                  headerCheckbox: true,
+                  enableClickSelection: true,
+                  enableSelectionWithoutKeys: true,
+                }"
+                :pagination="false"
+                :animate-rows="false"
+                @grid-ready="onMatReady"
+                @first-data-rendered="autoSizeOnFirstData"
+              />
             </div>
           </SplitterPanel>
         </Splitter>

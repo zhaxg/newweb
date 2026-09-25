@@ -56,9 +56,8 @@ function onReady(e: GridReadyEvent) {
 async function onQuery() {
   querying.value = true;
   try {
-    const list = ((await inventoryApi.queryInventoryResult(
-      inventoryPlanNo.value.trim() || undefined,
-    )) ?? []) as Tyd2000PdResult[];
+    const list = ((await inventoryApi.queryInventoryResult(inventoryPlanNo.value.trim() || undefined)) ??
+      []) as Tyd2000PdResult[];
     rows.value = list;
     api.value?.setGridOption("rowData", list);
     requestAnimationFrame(() => api.value?.autoSizeAllColumns());
@@ -97,11 +96,26 @@ onMounted(() => {
 
     <!-- 单表（原 gridControl1 Dock.Fill） -->
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="colDefs"
-        :default-col-def="hmxDefaultColDef" :row-data="rows" :locale-text="AG_GRID_LOCALE_CN"
-        :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-        :pagination="false" :animate-rows="false" :loading="querying"
-        @grid-ready="onReady" @first-data-rendered="autoSizeOnFirstData" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :column-defs="colDefs"
+        :default-col-def="hmxDefaultColDef"
+        :row-data="rows"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :row-selection="{
+          mode: 'multiRow',
+          checkboxes: true,
+          headerCheckbox: true,
+          enableClickSelection: true,
+          enableSelectionWithoutKeys: true,
+        }"
+        :pagination="false"
+        :animate-rows="false"
+        :loading="querying"
+        @grid-ready="onReady"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
   </div>
 </template>

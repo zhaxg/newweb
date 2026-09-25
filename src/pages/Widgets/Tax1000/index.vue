@@ -151,13 +151,29 @@ function onEditSubmit() {
   toast("画面迁移：保存逻辑待接入", 2000, "warn");
 }
 
-function onAdd1010() { if (requireConfig()) {/* TODO */} }
-function onDelete1010() { /* TODO */ }
-function onSave1010() { toast("画面迁移：保存逻辑待接入", 2000, "warn"); }
+function onAdd1010() {
+  if (requireConfig()) {
+    /* TODO */
+  }
+}
+function onDelete1010() {
+  /* TODO */
+}
+function onSave1010() {
+  toast("画面迁移：保存逻辑待接入", 2000, "warn");
+}
 
-function onAdd1020() { if (requireConfig()) {/* TODO */} }
-function onDelete1020() { /* TODO */ }
-function onSave1020() { toast("画面迁移：保存逻辑待接入", 2000, "warn"); }
+function onAdd1020() {
+  if (requireConfig()) {
+    /* TODO */
+  }
+}
+function onDelete1020() {
+  /* TODO */
+}
+function onSave1020() {
+  toast("画面迁移：保存逻辑待接入", 2000, "warn");
+}
 
 function onAutoSubmit() {
   autoOpen.value = false;
@@ -192,10 +208,20 @@ function onAutoSubmit() {
           <span class="text-xs font-medium text-muted-foreground">排班配置</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="configColDefs"
-            :default-col-def="hmxDefaultColDef" :row-data="configs" :get-row-id="getConfigRowId"
-            :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }" :pagination="false" :animate-rows="false" :locale-text="AG_GRID_LOCALE_CN"
-            @grid-ready="onConfigReady" @selection-changed="onConfigSelectionChanged" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :column-defs="configColDefs"
+            :default-col-def="hmxDefaultColDef"
+            :row-data="configs"
+            :get-row-id="getConfigRowId"
+            :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
+            :pagination="false"
+            :animate-rows="false"
+            :locale-text="AG_GRID_LOCALE_CN"
+            @grid-ready="onConfigReady"
+            @selection-changed="onConfigSelectionChanged"
+          />
         </div>
       </SplitterPanel>
 
@@ -214,9 +240,18 @@ function onAutoSubmit() {
           <span class="ml-auto text-xs text-muted-foreground">班次循环</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="shiftColDefs"
-            :default-col-def="hmxDefaultColDef" :row-data="shiftLoops" :get-row-id="getShiftRowId"
-            :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }" :pagination="false" :animate-rows="false" :locale-text="AG_GRID_LOCALE_CN" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :column-defs="shiftColDefs"
+            :default-col-def="hmxDefaultColDef"
+            :row-data="shiftLoops"
+            :get-row-id="getShiftRowId"
+            :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
+            :pagination="false"
+            :animate-rows="false"
+            :locale-text="AG_GRID_LOCALE_CN"
+          />
         </div>
       </SplitterPanel>
 
@@ -235,9 +270,18 @@ function onAutoSubmit() {
           <span class="ml-auto text-xs text-muted-foreground">班组循环</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="groupColDefs"
-            :default-col-def="hmxDefaultColDef" :row-data="groupLoops" :get-row-id="getGroupRowId"
-            :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }" :pagination="false" :animate-rows="false" :locale-text="AG_GRID_LOCALE_CN" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :column-defs="groupColDefs"
+            :default-col-def="hmxDefaultColDef"
+            :row-data="groupLoops"
+            :get-row-id="getGroupRowId"
+            :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
+            :pagination="false"
+            :animate-rows="false"
+            :locale-text="AG_GRID_LOCALE_CN"
+          />
         </div>
       </SplitterPanel>
     </Splitter>

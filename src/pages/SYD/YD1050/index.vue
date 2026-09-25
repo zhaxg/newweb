@@ -127,11 +127,20 @@ onMounted(() => {
 
     <!-- 单表（原 gridControl1 Dock.Fill） -->
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="colDefs"
-        :default-col-def="hmxDefaultColDef" :row-data="rows" :locale-text="AG_GRID_LOCALE_CN"
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :column-defs="colDefs"
+        :default-col-def="hmxDefaultColDef"
+        :row-data="rows"
+        :locale-text="AG_GRID_LOCALE_CN"
         :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
-        :pagination="false" :animate-rows="false" :loading="querying"
-        @grid-ready="onReady" @first-data-rendered="autoSizeOnFirstData" />
+        :pagination="false"
+        :animate-rows="false"
+        :loading="querying"
+        @grid-ready="onReady"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
   </div>
 </template>

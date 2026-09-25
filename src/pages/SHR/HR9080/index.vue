@@ -46,7 +46,9 @@ const input = reactive({
 const rows = shallowRef<TiL2me01Dto[]>([]);
 const loading = ref(false);
 const api = ref<GridApi | null>(null);
-function onReady(e: GridReadyEvent) { api.value = e.api; }
+function onReady(e: GridReadyEvent) {
+  api.value = e.api;
+}
 
 /* 原 EnumCodeConverter<TiL2me01RejectReasonEnum> / <TiL2me01RejectPositionEnum.StringValue> */
 const reasonFmt = (p: ValueFormatterParams) =>
@@ -55,7 +57,7 @@ const zoneFmt = (p: ValueFormatterParams) =>
   ({ FUR: "炉前甩坯", FURD: "炉后甩坯", RM: "粗轧轧废", FRM: "精轧轧废", PDID: "计划删除" })[String(p.value)] ?? "";
 
 const colDefs: ColDef[] = [
-    { colId: "plateNo", field: "plateNo", headerName: "钢板号", width: 150 },
+  { colId: "plateNo", field: "plateNo", headerName: "钢板号", width: 150 },
   { colId: "slabNo", field: "slabNo", headerName: "板坯号", width: 150 },
   { colId: "zone", field: "zone", headerName: "位置", width: 150, valueFormatter: zoneFmt },
   { colId: "reason", field: "reason", headerName: "异常原因", width: 150, valueFormatter: reasonFmt },
@@ -160,8 +162,17 @@ async function query() {
       </div>
       <div class="col-span-2 flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">作业时间</label>
-        <DatePicker v-model="input.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-          show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+        <DatePicker
+          v-model="input.dates"
+          selection-mode="range"
+          :manual-input="false"
+          date-format="yy-mm-dd"
+          show-time
+          hour-format="24"
+          show-icon
+          placeholder="开始 至 结束"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="col-span-2 flex min-w-0 items-center gap-1">
         <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="loading" @click="query">
@@ -170,10 +181,19 @@ async function query() {
       </div>
     </div>
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows" :pagination="false"
-        :animate-rows="false" :loading="loading" @grid-ready="onReady"
-        @first-data-rendered="autoSizeOnFirstData" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="rows"
+        :pagination="false"
+        :animate-rows="false"
+        :loading="loading"
+        @grid-ready="onReady"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
   </div>
 </template>

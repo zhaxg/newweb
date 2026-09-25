@@ -29,7 +29,12 @@ function applyRoles(data: Scd<Record<string, any>>): Scd<Record<string, any>> {
     return rest;
   };
   for (const item of data.addedItems) {
-    rows.push({ selected: false, ...strip(item), creator: item.creator || "admin", createTime: item.createTime || formatNow() } as HmxRole);
+    rows.push({
+      selected: false,
+      ...strip(item),
+      creator: item.creator || "admin",
+      createTime: item.createTime || formatNow(),
+    } as HmxRole);
   }
   for (const item of data.changedItems) {
     const i = rows.findIndex((r) => r.id === item.id);

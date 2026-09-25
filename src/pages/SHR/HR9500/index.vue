@@ -61,7 +61,9 @@ const input = reactive({
 const rows = shallowRef<Tmp2000HzDto[]>([]);
 const loading = ref(false);
 const api = ref<GridApi | null>(null);
-function onReady(e: GridReadyEvent) { api.value = e.api; }
+function onReady(e: GridReadyEvent) {
+  api.value = e.api;
+}
 const colDefs: ColDef[] = [
   /*  { colId: "cOrderNo", field: "cOrderNo", headerName: "订单号", width: 150 },
   { colId: "cInboundNo", field: "cInboundNo", headerName: "入库标识", width: 150 },
@@ -187,7 +189,15 @@ const colDefs: ColDef[] = [
 
 /* ---------- 下：7 个库存页签（同一份缓存按条件过滤） ---------- */
 let kcList: Tyd2000OrderDto[] = [];
-const tabCaptions = ["炼钢产出明细", "轧制完成明细", "堆冷材料明细", "剪切完成明细", "精整中材料明细", "成品库存明细", "发货明细"];
+const tabCaptions = [
+  "炼钢产出明细",
+  "轧制完成明细",
+  "堆冷材料明细",
+  "剪切完成明细",
+  "精整中材料明细",
+  "成品库存明细",
+  "发货明细",
+];
 const tabFilters = [
   (x: Tyd2000OrderDto) => x.nProType === NProTypeEnum.P,
   (x: Tyd2000OrderDto) => x.nProType === NProTypeEnum.R,
@@ -195,7 +205,8 @@ const tabFilters = [
   (x: Tyd2000OrderDto) => x.nProType === NProTypeEnum.C,
   (x: Tyd2000OrderDto) => x.nProType === NProTypeEnum.C && x.cStoreCode === "ZG01-01",
   (x: Tyd2000OrderDto) => x.nProType === NProTypeEnum.C && x.cStoreCode === "ZG01-04",
-  (x: Tyd2000OrderDto) => x.nProType === NProTypeEnum.C && x.cStoreCode === "ZG01-04" && x.nStatus === InventoryStatusEnum.Out,
+  (x: Tyd2000OrderDto) =>
+    x.nProType === NProTypeEnum.C && x.cStoreCode === "ZG01-04" && x.nStatus === InventoryStatusEnum.Out,
 ];
 const kcColDefs: ColDef[][] = [
   /*[
@@ -381,7 +392,9 @@ const kcColDefs: ColDef[][] = [
 const activeTab = ref(0);
 const kcRows = ref<Tyd2000OrderDto[][]>(tabCaptions.map(() => []));
 const kcApis = ref<(GridApi | null)[]>(tabCaptions.map(() => null));
-function onKcReady(i: number, e: GridReadyEvent) { kcApis.value[i] = e.api; }
+function onKcReady(i: number, e: GridReadyEvent) {
+  kcApis.value[i] = e.api;
+}
 
 function applyKc(i: number) {
   kcRows.value[i] = kcList.filter(tabFilters[i]);
@@ -419,7 +432,7 @@ async function onSelected() {
   const row = (api.value?.getSelectedRows()[0] as Tmp2000HzDto | undefined) ?? null;
   loading.value = true;
   try {
-    kcList = row ? (await hR9500Api.queryOrderKc(row.cOrderNo ?? undefined)) ?? [] : [];
+    kcList = row ? ((await hR9500Api.queryOrderKc(row.cOrderNo ?? undefined)) ?? []) : [];
     for (let i = 0; i < tabCaptions.length; i++) applyKc(i);
   } catch {
     /* 拦截层已 toast */
@@ -455,8 +468,17 @@ async function onSelected() {
       </div>
       <div class="col-span-2 flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">录入时间</label>
-        <DatePicker v-model="input.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-          show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+        <DatePicker
+          v-model="input.dates"
+          selection-mode="range"
+          :manual-input="false"
+          date-format="yy-mm-dd"
+          show-time
+          hour-format="24"
+          show-icon
+          placeholder="开始 至 结束"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="col-span-3 flex min-w-0 items-center gap-1">
         <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="loading" @click="query">
@@ -471,11 +493,21 @@ async function onSelected() {
           <span class="text-xs font-medium text-muted-foreground">销售订单列表</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows"
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="colDefs"
+            :row-data="rows"
             :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
-            :pagination="false" :animate-rows="false" :loading="loading" @grid-ready="onReady"
-            @selection-changed="onSelected" @first-data-rendered="autoSizeOnFirstData" />
+            :pagination="false"
+            :animate-rows="false"
+            :loading="loading"
+            @grid-ready="onReady"
+            @selection-changed="onSelected"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
       <SplitterPanel :minSize="20" class="flex min-h-0 flex-col overflow-hidden">
@@ -485,10 +517,19 @@ async function onSelected() {
           </TabList>
           <TabPanels class="min-h-0 flex-1">
             <TabPanel v-for="(c, i) in tabCaptions" :key="i" :value="i" class="h-full p-0">
-              <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                :default-col-def="hmxDefaultColDef" :column-defs="kcColDefs[i] ?? []" :row-data="kcRows[i]"
-                :pagination="false" :animate-rows="false" :loading="loading"
-                @grid-ready="(e: GridReadyEvent) => onKcReady(i, e)" @first-data-rendered="autoSizeOnFirstData" />
+              <AgGridVue
+                class="hmx-ag-grid h-full w-full"
+                :theme="theme"
+                :locale-text="AG_GRID_LOCALE_CN"
+                :default-col-def="hmxDefaultColDef"
+                :column-defs="kcColDefs[i] ?? []"
+                :row-data="kcRows[i]"
+                :pagination="false"
+                :animate-rows="false"
+                :loading="loading"
+                @grid-ready="(e: GridReadyEvent) => onKcReady(i, e)"
+                @first-data-rendered="autoSizeOnFirstData"
+              />
             </TabPanel>
           </TabPanels>
         </Tabs>

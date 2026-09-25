@@ -17,12 +17,7 @@ import { Tabs, TabList, Tab, TabPanels, TabPanel } from "primevue";
 import Splitter from "primevue/splitter";
 import SplitterPanel from "primevue/splitterpanel";
 import { hmxDefaultColDef, makeHmxGridTheme, autoSizeOnFirstData } from "@/lib/agGrid";
-import {
-  mSCApi,
-  ValidFlag,
-  type MSCQueryPara,
-  type MSCQueryParaPaginationQueryInput,
-} from "@/api/mes4ddh/sqm.swagger";
+import { mSCApi, ValidFlag, type MSCQueryPara, type MSCQueryParaPaginationQueryInput } from "@/api/mes4ddh/sqm.swagger";
 import { systemKeyValueApi } from "@/api/admin/request";
 import { useToast } from "@/composables/useToast";
 import {
@@ -116,7 +111,7 @@ onMounted(async () => {
 
 /* ---------- 网格列 ---------- */
 const VALID_NAME = (p: { value: unknown }) =>
-  p.value == null ? "" : (ValidFlag.Valid === Number(p.value) ? "Valid" : "Invalid"); // 原枚举单元格 ToString
+  p.value == null ? "" : ValidFlag.Valid === Number(p.value) ? "Valid" : "Invalid"; // 原枚举单元格 ToString
 const TYPE_NAME = (p: { value: unknown }) =>
   ({ 0: "None", 1: "A", 2: "B", 3: "C", 4: "D" })[Number(p.value)] ?? String(p.value ?? ""); // ToString 形态
 const kvFmt = (get: () => { label: string; value: string }[]) => (p: { value: unknown }) =>
@@ -462,18 +457,42 @@ async function onDisable() {
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">产品大类</label>
-          <Select v-model="para.cProdClassCode" :options="kvProdClass" :filter="true" show-clear
-            option-label="label" option-value="value" placeholder="产品大类" class="min-w-0 flex-1" />
+          <Select
+            v-model="para.cProdClassCode"
+            :options="kvProdClass"
+            :filter="true"
+            show-clear
+            option-label="label"
+            option-value="value"
+            placeholder="产品大类"
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">品名</label>
-          <Select v-model="para.cProdCode" :options="kvProdCode" :filter="true" show-clear
-            option-label="label" option-value="value" placeholder="品名" class="min-w-0 flex-1" />
+          <Select
+            v-model="para.cProdCode"
+            :options="kvProdCode"
+            :filter="true"
+            show-clear
+            option-label="label"
+            option-value="value"
+            placeholder="品名"
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">制造厂别</label>
-          <Select v-model="para.factoryId" :options="kvFactory" :filter="true" show-clear
-            option-label="label" option-value="value" placeholder="制造厂别" class="min-w-0 flex-1" />
+          <Select
+            v-model="para.factoryId"
+            :options="kvFactory"
+            :filter="true"
+            show-clear
+            option-label="label"
+            option-value="value"
+            placeholder="制造厂别"
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">标准</label>
@@ -521,33 +540,61 @@ async function onDisable() {
           </TabList>
           <TabPanels class="min-h-0 flex-1 overflow-hidden !p-0">
             <TabPanel value="msc" class="h-full overflow-hidden">
-              <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                :default-col-def="hmxDefaultColDef" :column-defs="mscColDefs" :row-data="mscRows"
+              <AgGridVue
+                class="hmx-ag-grid h-full w-full"
+                :theme="theme"
+                :locale-text="AG_GRID_LOCALE_CN"
+                :default-col-def="hmxDefaultColDef"
+                :column-defs="mscColDefs"
+                :row-data="mscRows"
                 :get-row-id="(p: any) => String(p.data.id)"
                 :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
-                :pagination="false" @grid-ready="(e: GridReadyEvent) => (mscApi = e.api)"
-                @first-data-rendered="autoSizeOnFirstData" @selection-changed="onMscSelectionChanged" />
+                :pagination="false"
+                @grid-ready="(e: GridReadyEvent) => (mscApi = e.api)"
+                @first-data-rendered="autoSizeOnFirstData"
+                @selection-changed="onMscSelectionChanged"
+              />
             </TabPanel>
             <TabPanel value="line" class="h-full overflow-hidden">
-              <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                :default-col-def="hmxDefaultColDef" :column-defs="lineColDefs" :row-data="lineRows"
+              <AgGridVue
+                class="hmx-ag-grid h-full w-full"
+                :theme="theme"
+                :locale-text="AG_GRID_LOCALE_CN"
+                :default-col-def="hmxDefaultColDef"
+                :column-defs="lineColDefs"
+                :row-data="lineRows"
                 :get-row-id="(p: any) => String(p.data.id)"
                 :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
-                :pagination="false" @grid-ready="(e: GridReadyEvent) => (lineApi = e.api)"
-                @first-data-rendered="autoSizeOnFirstData" @selection-changed="onLineSelectionChanged" />
+                :pagination="false"
+                @grid-ready="(e: GridReadyEvent) => (lineApi = e.api)"
+                @first-data-rendered="autoSizeOnFirstData"
+                @selection-changed="onLineSelectionChanged"
+              />
             </TabPanel>
             <TabPanel value="proc" class="h-full overflow-hidden">
-              <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                :default-col-def="hmxDefaultColDef" :column-defs="procColDefs" :row-data="procRows"
+              <AgGridVue
+                class="hmx-ag-grid h-full w-full"
+                :theme="theme"
+                :locale-text="AG_GRID_LOCALE_CN"
+                :default-col-def="hmxDefaultColDef"
+                :column-defs="procColDefs"
+                :row-data="procRows"
                 :get-row-id="(p: any) => String(p.data.id)"
                 :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
-                :pagination="false" @grid-ready="(e: GridReadyEvent) => (procApi = e.api)"
-                @first-data-rendered="autoSizeOnFirstData" @selection-changed="onProcSelectionChanged" />
+                :pagination="false"
+                @grid-ready="(e: GridReadyEvent) => (procApi = e.api)"
+                @first-data-rendered="autoSizeOnFirstData"
+                @selection-changed="onProcSelectionChanged"
+              />
             </TabPanel>
           </TabPanels>
         </Tabs>
-        <MscPaginationBar :data-count="dataCount" :page-index="pageIndex" :page-size="pageSize"
-          @change="onPageChange" />
+        <MscPaginationBar
+          :data-count="dataCount"
+          :page-index="pageIndex"
+          :page-size="pageSize"
+          @change="onPageChange"
+        />
       </SplitterPanel>
 
       <!-- 下：左树 | 右单页内容（原 split2 Panel2 → split1 左右 248 宽） -->
@@ -564,23 +611,49 @@ async function onDisable() {
           <SplitterPanel :size="78" class="flex min-h-0 min-w-0 flex-col overflow-hidden">
             <div class="flex h-8 shrink-0 items-center border-b border-border/60 px-2">
               <span class="text-xs font-medium text-muted-foreground">
-                {{ bottomKind === "idx" ? "基表信息" : bottomKind === "basic" ? "基表数据明细" : bottomKind === "t1" ? "试验项目要求" : "试验项目标准" }}
+                {{
+                  bottomKind === "idx"
+                    ? "基表信息"
+                    : bottomKind === "basic"
+                      ? "基表数据明细"
+                      : bottomKind === "t1"
+                        ? "试验项目要求"
+                        : "试验项目标准"
+                }}
               </span>
             </div>
             <div class="min-h-0 flex-1 overflow-hidden">
               <div v-show="bottomKind === 'idx'" class="h-full overflow-hidden">
-                <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                  :default-col-def="hmxDefaultColDef" :column-defs="idxColDefs" :row-data="idxRows"
+                <AgGridVue
+                  class="hmx-ag-grid h-full w-full"
+                  :theme="theme"
+                  :locale-text="AG_GRID_LOCALE_CN"
+                  :default-col-def="hmxDefaultColDef"
+                  :column-defs="idxColDefs"
+                  :row-data="idxRows"
                   :get-row-id="(p: any) => String(p.data.id)"
                   :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
-                  :pagination="false" @first-data-rendered="autoSizeOnFirstData" />
+                  :pagination="false"
+                  @first-data-rendered="autoSizeOnFirstData"
+                />
               </div>
-              <MscBasicIdxView v-show="bottomKind === 'basic'" class="h-full"
-                :idx="bottomKind === 'basic' ? bottomIdx : null" />
-              <Tqmtm01T1View v-show="bottomKind === 't1'" class="h-full"
-                :idx="bottomKind === 't1' ? (bottomIdx as Tqmtmt1Idx) : null" @data-changed="bump" />
-              <Tqmtm01P0View v-show="bottomKind === 'p0'" class="h-full"
-                :node="bottomKind === 'p0' ? bottomNode : null" @data-changed="bump" />
+              <MscBasicIdxView
+                v-show="bottomKind === 'basic'"
+                class="h-full"
+                :idx="bottomKind === 'basic' ? bottomIdx : null"
+              />
+              <Tqmtm01T1View
+                v-show="bottomKind === 't1'"
+                class="h-full"
+                :idx="bottomKind === 't1' ? (bottomIdx as Tqmtmt1Idx) : null"
+                @data-changed="bump"
+              />
+              <Tqmtm01P0View
+                v-show="bottomKind === 'p0'"
+                class="h-full"
+                :node="bottomKind === 'p0' ? bottomNode : null"
+                @data-changed="bump"
+              />
             </div>
           </SplitterPanel>
         </Splitter>
@@ -588,8 +661,13 @@ async function onDisable() {
     </Splitter>
 
     <!-- 确认（原 MsgBox.ShowYesNo） -->
-    <Dialog :visible="confirmOpen" modal header="确认" :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
-      @update:visible="confirmOpen = $event">
+    <Dialog
+      :visible="confirmOpen"
+      modal
+      header="确认"
+      :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
+      @update:visible="confirmOpen = $event"
+    >
       <p class="text-xs">{{ confirmMsg }}</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />
@@ -598,7 +676,12 @@ async function onDisable() {
     </Dialog>
 
     <Tqmtm01BuildDialog :visible="buildOpen" @update:visible="buildOpen = $event" @ok="onBuildOk" />
-    <Tqmtm01EditDialog :visible="editOpen" :msc="editTarget" :vm="vm" @update:visible="editOpen = $event"
-      @ok="onEditOk" />
+    <Tqmtm01EditDialog
+      :visible="editOpen"
+      :msc="editTarget"
+      :vm="vm"
+      @update:visible="editOpen = $event"
+      @ok="onEditOk"
+    />
   </div>
 </template>

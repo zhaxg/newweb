@@ -17,7 +17,14 @@ import InputText from "primevue/inputtext";
 import Select from "primevue/select";
 import { IconDeviceFloppy, IconPlus, IconSearch, IconTrash } from "@tabler/icons-vue";
 import { AgGridVue } from "ag-grid-vue3";
-import type { ColDef, GridApi, GridReadyEvent, SelectionChangedEvent, ValueGetterParams, ValueSetterParams } from "ag-grid-community";
+import type {
+  ColDef,
+  GridApi,
+  GridReadyEvent,
+  SelectionChangedEvent,
+  ValueGetterParams,
+  ValueSetterParams,
+} from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
 import { useMenuQuery } from "@/lib/menuQuery";
@@ -150,9 +157,7 @@ const machineCode = ref<string | null>(null);
 const machineOptions = ref<{ label: string; value: string }[]>([]);
 /** LF 喂线机专用物料（原 Full_lfMtrlDatas） */
 const lfMtrlDatas = ref<Array<Record<string, unknown>>>([]);
-const lfMtrlNames = computed(() =>
-  lfMtrlDatas.value.map((x) => String(x.cName ?? x.CName ?? "")).filter(Boolean),
-);
+const lfMtrlNames = computed(() => lfMtrlDatas.value.map((x) => String(x.cName ?? x.CName ?? "")).filter(Boolean));
 /** ShowOperationButton：机台编码以 LF/RH 结尾且喂线物料非空时显示（原 Visible=false 默认隐藏） */
 const showTuSiBtn = computed(() => {
   const mc = machineCode.value ?? "";
@@ -315,7 +320,9 @@ function onRemove() {
   if (!p) return;
   const row = selected.value;
   if (!row) return;
-  const ok = window.confirm(`确定删除选择的机台为：‘${gv(row, "CMachineName") ?? ""}’，料仓名称为：‘${gv(row, "CSiloName") ?? ""}’的配置数据？`);
+  const ok = window.confirm(
+    `确定删除选择的机台为：‘${gv(row, "CMachineName") ?? ""}’，料仓名称为：‘${gv(row, "CSiloName") ?? ""}’的配置数据？`,
+  );
   if (!ok) return;
   rows.value = rows.value.filter((r) => r !== row);
   selected.value = null;
@@ -362,8 +369,16 @@ onMounted(async () => {
       <label class="shrink-0 text-xs text-muted-foreground">产线</label>
       <InputText :model-value="lineText" disabled class="w-32 shrink-0" />
       <label class="shrink-0 text-xs text-muted-foreground">机台</label>
-      <Select v-model="machineCode" :options="machineOptions" option-label="label" option-value="value" show-clear
-        placeholder="请选择" class="w-36 shrink-0" @value-change="onMachineChange" />
+      <Select
+        v-model="machineCode"
+        :options="machineOptions"
+        option-label="label"
+        option-value="value"
+        show-clear
+        placeholder="请选择"
+        class="w-36 shrink-0"
+        @value-change="onMachineChange"
+      />
       <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="querying" @click="query">
         <IconSearch class="h-3 w-3" />查询
       </Button>
@@ -383,10 +398,20 @@ onMounted(async () => {
     </div>
 
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows" :pagination="false"
-        :loading="querying" :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
-        @grid-ready="onGridReady" @selection-changed="onSelectionChanged" @first-data-rendered="autoSizeOnFirstData" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="rows"
+        :pagination="false"
+        :loading="querying"
+        :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
+        @grid-ready="onGridReady"
+        @selection-changed="onSelectionChanged"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
   </div>
 </template>

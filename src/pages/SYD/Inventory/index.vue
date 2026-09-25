@@ -281,13 +281,27 @@ onMounted(() => {
     <!-- 工具栏（原 stackPanel1：产线/盘点计划号/计划创建时间~ + 查询/创建盘点计划/盘点开始/结束盘点/作废） -->
     <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
       <label class="shrink-0 text-xs text-muted-foreground">产线</label>
-      <Select v-model="q.lineCode" :options="lineOptions" option-label="label" option-value="value" show-clear
-        filter placeholder="全部产线" class="w-40 shrink-0" />
+      <Select
+        v-model="q.lineCode"
+        :options="lineOptions"
+        option-label="label"
+        option-value="value"
+        show-clear
+        filter
+        placeholder="全部产线"
+        class="w-40 shrink-0"
+      />
       <label class="ml-2 shrink-0 text-xs text-muted-foreground">盘点计划号</label>
       <InputText v-model="q.inventoryPlanNo" class="w-44 shrink-0" @keydown.enter="onQuery" />
       <label class="ml-2 shrink-0 text-xs text-muted-foreground">计划创建时间</label>
-      <DatePicker v-model="q.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-        placeholder="~" class="w-72 shrink-0" />
+      <DatePicker
+        v-model="q.dates"
+        selection-mode="range"
+        :manual-input="false"
+        date-format="yy-mm-dd"
+        placeholder="~"
+        class="w-72 shrink-0"
+      />
       <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="querying" @click="onQuery">
         <IconSearch class="h-3 w-3" />查询
       </Button>
@@ -312,12 +326,21 @@ onMounted(() => {
           <span class="text-xs font-medium text-muted-foreground">盘点计划</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="planColDefs"
-            :default-col-def="hmxDefaultColDef" :row-data="plans" :locale-text="AG_GRID_LOCALE_CN"
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :column-defs="planColDefs"
+            :default-col-def="hmxDefaultColDef"
+            :row-data="plans"
+            :locale-text="AG_GRID_LOCALE_CN"
             :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
-            :pagination="false" :animate-rows="false" :loading="querying"
-            @grid-ready="onPlanReady" @selection-changed="onPlanSelectionChanged"
-            @first-data-rendered="autoSizeOnFirstData" />
+            :pagination="false"
+            :animate-rows="false"
+            :loading="querying"
+            @grid-ready="onPlanReady"
+            @selection-changed="onPlanSelectionChanged"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
 
@@ -326,10 +349,18 @@ onMounted(() => {
           <span class="text-xs font-medium text-muted-foreground">盘点区域</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="areaColDefs"
-            :default-col-def="hmxDefaultColDef" :row-data="areas" :locale-text="AG_GRID_LOCALE_CN"
-            :pagination="false" :animate-rows="false"
-            @grid-ready="onAreaReady" @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :column-defs="areaColDefs"
+            :default-col-def="hmxDefaultColDef"
+            :row-data="areas"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :pagination="false"
+            :animate-rows="false"
+            @grid-ready="onAreaReady"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
     </Splitter>

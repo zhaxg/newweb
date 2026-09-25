@@ -62,7 +62,15 @@ watch(
   () => props.visible,
   async (v) => {
     if (!v) return;
-    Object.assign(form, { productClass: null, stdSgCode: null, prodCode: null, shape: null, steelType: null, stdType: null, fac: null });
+    Object.assign(form, {
+      productClass: null,
+      stdSgCode: null,
+      prodCode: null,
+      shape: null,
+      steelType: null,
+      stdType: null,
+      fac: null,
+    });
     mscNo.value = "";
     await Promise.all([
       loadKv(kvProductClass, "A0100:PRODUCT_CLASS"),
@@ -98,10 +106,22 @@ async function setMscNo() {
     mscNo.value = "";
   }
 }
-const onShapeChange = (v: string | null) => { form.shape = v; void setMscNo(); };
-const onStdTypeChange = (v: string | null) => { form.stdType = v; void setMscNo(); };
-const onSteelChange = (v: string | null) => { form.steelType = v; void setMscNo(); };
-const onFacChange = (v: string | null) => { form.fac = v; void setMscNo(); };
+const onShapeChange = (v: string | null) => {
+  form.shape = v;
+  void setMscNo();
+};
+const onStdTypeChange = (v: string | null) => {
+  form.stdType = v;
+  void setMscNo();
+};
+const onSteelChange = (v: string | null) => {
+  form.steelType = v;
+  void setMscNo();
+};
+const onFacChange = (v: string | null) => {
+  form.fac = v;
+  void setMscNo();
+};
 
 function onOk() {
   const { productClass, stdSgCode, prodCode, shape, stdType, steelType, fac } = form;
@@ -131,50 +151,111 @@ function onOk() {
 </script>
 
 <template>
-  <Dialog :visible="props.visible" modal header="新建冶金规范"
-    :style="{ width: 'min(30rem, calc(100vw - 2rem))' }" @update:visible="emit('update:visible', $event)">
+  <Dialog
+    :visible="props.visible"
+    modal
+    header="新建冶金规范"
+    :style="{ width: 'min(30rem, calc(100vw - 2rem))' }"
+    @update:visible="emit('update:visible', $event)"
+  >
     <div class="grid grid-cols-1 items-start gap-y-2">
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-24 shrink-0 text-xs text-muted-foreground">产品大类</label>
-        <Select :model-value="form.productClass" :options="kvProductClass" :filter="true" show-clear
-          option-label="label" option-value="value" placeholder="产品大类" class="min-w-0 flex-1"
-          @update:model-value="(v: string | null) => (form.productClass = v)" />
+        <Select
+          :model-value="form.productClass"
+          :options="kvProductClass"
+          :filter="true"
+          show-clear
+          option-label="label"
+          option-value="value"
+          placeholder="产品大类"
+          class="min-w-0 flex-1"
+          @update:model-value="(v: string | null) => (form.productClass = v)"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-24 shrink-0 text-xs text-muted-foreground">标准牌号</label>
-        <Select :model-value="form.stdSgCode" :options="sgOptions" :filter="true" show-clear
-          option-label="label" option-value="value" placeholder="标准牌号" class="min-w-0 flex-1"
-          @update:model-value="(v: string | null) => (form.stdSgCode = v)" />
+        <Select
+          :model-value="form.stdSgCode"
+          :options="sgOptions"
+          :filter="true"
+          show-clear
+          option-label="label"
+          option-value="value"
+          placeholder="标准牌号"
+          class="min-w-0 flex-1"
+          @update:model-value="(v: string | null) => (form.stdSgCode = v)"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-24 shrink-0 text-xs text-muted-foreground">品名</label>
-        <Select :model-value="form.prodCode" :options="kvProdCode" :filter="true" show-clear
-          option-label="label" option-value="value" placeholder="品名" class="min-w-0 flex-1"
-          @update:model-value="(v: string | null) => (form.prodCode = v)" />
+        <Select
+          :model-value="form.prodCode"
+          :options="kvProdCode"
+          :filter="true"
+          show-clear
+          option-label="label"
+          option-value="value"
+          placeholder="品名"
+          class="min-w-0 flex-1"
+          @update:model-value="(v: string | null) => (form.prodCode = v)"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-24 shrink-0 text-xs text-muted-foreground">形状</label>
-        <Select :model-value="form.shape" :options="kvShape" :filter="true" show-clear
-          option-label="label" option-value="value" placeholder="形状" class="min-w-0 flex-1"
-          @update:model-value="onShapeChange" />
+        <Select
+          :model-value="form.shape"
+          :options="kvShape"
+          :filter="true"
+          show-clear
+          option-label="label"
+          option-value="value"
+          placeholder="形状"
+          class="min-w-0 flex-1"
+          @update:model-value="onShapeChange"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-24 shrink-0 text-xs text-muted-foreground">钢类</label>
-        <Select :model-value="form.steelType" :options="kvSteelType" :filter="true" show-clear
-          option-label="label" option-value="value" placeholder="钢类" class="min-w-0 flex-1"
-          @update:model-value="onSteelChange" />
+        <Select
+          :model-value="form.steelType"
+          :options="kvSteelType"
+          :filter="true"
+          show-clear
+          option-label="label"
+          option-value="value"
+          placeholder="钢类"
+          class="min-w-0 flex-1"
+          @update:model-value="onSteelChange"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-24 shrink-0 text-xs text-muted-foreground">标准类别</label>
-        <Select :model-value="form.stdType" :options="kvStdType" :filter="true" show-clear
-          option-label="label" option-value="value" placeholder="标准类别" class="min-w-0 flex-1"
-          @update:model-value="onStdTypeChange" />
+        <Select
+          :model-value="form.stdType"
+          :options="kvStdType"
+          :filter="true"
+          show-clear
+          option-label="label"
+          option-value="value"
+          placeholder="标准类别"
+          class="min-w-0 flex-1"
+          @update:model-value="onStdTypeChange"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-24 shrink-0 text-xs text-muted-foreground">厂别</label>
-        <Select :model-value="form.fac" :options="kvFac" :filter="true" show-clear
-          option-label="label" option-value="value" placeholder="厂别" class="min-w-0 flex-1"
-          @update:model-value="onFacChange" />
+        <Select
+          :model-value="form.fac"
+          :options="kvFac"
+          :filter="true"
+          show-clear
+          option-label="label"
+          option-value="value"
+          placeholder="厂别"
+          class="min-w-0 flex-1"
+          @update:model-value="onFacChange"
+        />
       </div>
       <div class="mt-1 flex items-center gap-1.5 border-t border-border/60 pt-2">
         <label class="w-24 shrink-0 text-xs text-muted-foreground">冶金规范码</label>

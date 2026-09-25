@@ -71,88 +71,88 @@ const chkQueryConn1 = ref(false);
 
 /* 主表（原 gridControl1/gridView1 ViewCaption=脱硫铁水信息：FrmMS2020ViewDto 19 可见 + 52 隐藏） */
 const mainCols = ref<ColDef[]>([
-        { field: "cPotNo", headerName: "罐号", width: 86 },
-      { field: "cIronNo", headerName: "铁次号", width: 99 },
-      { field: "cCarNo", headerName: "车号", width: 86 },
-      { field: "nWgtPz", headerName: "钢水皮重", width: 112 },
-      { field: "nWgtMz", headerName: "钢水毛重", width: 112 },
-      { field: "nWgt", headerName: "坯重", width: 86 },
-      { field: "nLgTemperature", headerName: "炼钢铁水站测温", width: 107 },
-      { field: "nLgKrTemperature", headerName: "炼钢KR测温", width: 85 },
-      { field: "cKrSign", headerName: "脱硫标识", width: 112 },
-      { field: "cKrState", headerName: "脱硫状态", width: 112 },
-      { field: "dInStationTime", headerName: "脱硫到站时间", width: 95 },
-      { field: "dOutStationTime", headerName: "脱硫离站时间", width: 95 },
-      { field: "nWgtTlj", headerName: "脱硫剂添加量", width: 95 },
-      { field: "dAccountDateKR", headerName: "KR账务日期", width: 85 },
-      { field: "dTeamDateKR", headerName: "KR班次日期", width: 85 },
-      { field: "cShiftKR", headerName: "KR班次", width: 112 },
-      { field: "cTeamKR", headerName: "KR班组", width: 112 },
-      { field: "cMtrlName", headerName: "物料描述", width: 112 },
-      { field: "cMtrlCode", headerName: "物料编码", width: 112 },
-      { field: "id", headerName: "主键", hide: true },
-      { field: "nWgtKz", headerName: "钢水扣重", hide: true },
-      { field: "nWgtRemaining", headerName: "剩余重量", hide: true },
-      { field: "cUnit", headerName: "单片钢坯", hide: true },
-      { field: "cState", headerName: "铁水状态", hide: true },
-      { field: "cDataAddType", headerName: "数据添加方式", hide: true },
-      { field: "cMatchingStoveSign", headerName: "炉次匹配标识", hide: true },
-      { field: "dAccountDate", headerName: "账务日期", hide: true },
-      { field: "dTeamDate", headerName: "虚拟或占用炉号班次日期", hide: true },
-      { field: "cShift", headerName: "班次", hide: true },
-      { field: "cTeam", headerName: "班组", hide: true },
-      { field: "cEnable", headerName: "启用", hide: true },
-      { field: "cBackup", headerName: "备注", hide: true },
-      { field: "dTbInTime", headerName: "铁包到达时间", hide: true },
-      { field: "dTbOutTime", headerName: "铁包离开时间", hide: true },
-      { field: "cTbInUser", headerName: "铁包到达确认人", hide: true },
-      { field: "cTbOutUser", headerName: "铁包离开确认人", hide: true },
-      { field: "dBegProTime", headerName: "脱硫开始作业时间", hide: true },
-      { field: "dEndProTime", headerName: "脱硫结束作业时间", hide: true },
-      { field: "dInStationMode", headerName: "脱硫到站操作方式", hide: true },
-      { field: "dBegProMode", headerName: "脱硫开始作业操作方式", hide: true },
-      { field: "dEndProMode", headerName: "脱硫结束作业操作方式", hide: true },
-      { field: "dOutStationMode", headerName: "脱硫离站操作方式", hide: true },
-      { field: "cUnitTl", headerName: "脱硫剂单位", hide: true },
-      { field: "cTimestamp", headerName: "时间戳", hide: true },
-      { field: "creator", headerName: "创建人", hide: true },
-      { field: "createTime", headerName: "创建时间", hide: true },
-      { field: "lastModifier", headerName: "最后修改人", hide: true },
-      { field: "lastModifyTime", headerName: "最后修改时间", hide: true },
-      { field: "cSw01", headerName: "备用字段1", hide: true },
-      { field: "cSw02", headerName: "备用字段2", hide: true },
-      { field: "cSw03", headerName: "备用字段3", hide: true },
-      { field: "cSw04", headerName: "备用字段4", hide: true },
-      { field: "cSw05", headerName: "备用字段5", hide: true },
-      { field: "cSw06", headerName: "备用字段6", hide: true },
-      { field: "selected", headerName: "选择", hide: true },
-      { field: "dWgtMzTime", headerName: "毛重计量时间", hide: true },
-      { field: "dWgtPzTime", headerName: "皮重计量时间", hide: true },
-      { field: "dWgtTime", headerName: "净重计量时间", hide: true },
-      { field: "cBizNo", headerName: "凭证单号", hide: true },
-      { field: "cBizType", headerName: "凭证类型", hide: true },
-      { field: "cCarriertype", headerName: "载具类型", hide: true },
-      { field: "cQmKrSampNo", headerName: "KR铁水质检抽检检验样号", hide: true },
-      { field: "cQmSampNo", headerName: "铁水质检抽检检验样号", hide: true },
-      { field: "dLgWgtMzTime", headerName: "炼钢计量毛重计量时间", hide: true },
-      { field: "dLgWgtPzTime", headerName: "炼钢计量皮重计量时间", hide: true },
-      { field: "dLgWgtTime", headerName: "炼钢计量净重计量时间", hide: true },
-      { field: "nIntrusion", headerName: "是否倒罐", hide: true },
-      { field: "nLgWgt", headerName: "炼钢计量净重", hide: true },
-      { field: "nLgWgtMz", headerName: "炼钢计量毛重", hide: true },
-      { field: "nLgWgtPz", headerName: "炼钢计量皮重", hide: true },
-      { field: "nQmSampled", headerName: "铁水是否质检抽检取样", hide: true },
+  { field: "cPotNo", headerName: "罐号", width: 86 },
+  { field: "cIronNo", headerName: "铁次号", width: 99 },
+  { field: "cCarNo", headerName: "车号", width: 86 },
+  { field: "nWgtPz", headerName: "钢水皮重", width: 112 },
+  { field: "nWgtMz", headerName: "钢水毛重", width: 112 },
+  { field: "nWgt", headerName: "坯重", width: 86 },
+  { field: "nLgTemperature", headerName: "炼钢铁水站测温", width: 107 },
+  { field: "nLgKrTemperature", headerName: "炼钢KR测温", width: 85 },
+  { field: "cKrSign", headerName: "脱硫标识", width: 112 },
+  { field: "cKrState", headerName: "脱硫状态", width: 112 },
+  { field: "dInStationTime", headerName: "脱硫到站时间", width: 95 },
+  { field: "dOutStationTime", headerName: "脱硫离站时间", width: 95 },
+  { field: "nWgtTlj", headerName: "脱硫剂添加量", width: 95 },
+  { field: "dAccountDateKR", headerName: "KR账务日期", width: 85 },
+  { field: "dTeamDateKR", headerName: "KR班次日期", width: 85 },
+  { field: "cShiftKR", headerName: "KR班次", width: 112 },
+  { field: "cTeamKR", headerName: "KR班组", width: 112 },
+  { field: "cMtrlName", headerName: "物料描述", width: 112 },
+  { field: "cMtrlCode", headerName: "物料编码", width: 112 },
+  { field: "id", headerName: "主键", hide: true },
+  { field: "nWgtKz", headerName: "钢水扣重", hide: true },
+  { field: "nWgtRemaining", headerName: "剩余重量", hide: true },
+  { field: "cUnit", headerName: "单片钢坯", hide: true },
+  { field: "cState", headerName: "铁水状态", hide: true },
+  { field: "cDataAddType", headerName: "数据添加方式", hide: true },
+  { field: "cMatchingStoveSign", headerName: "炉次匹配标识", hide: true },
+  { field: "dAccountDate", headerName: "账务日期", hide: true },
+  { field: "dTeamDate", headerName: "虚拟或占用炉号班次日期", hide: true },
+  { field: "cShift", headerName: "班次", hide: true },
+  { field: "cTeam", headerName: "班组", hide: true },
+  { field: "cEnable", headerName: "启用", hide: true },
+  { field: "cBackup", headerName: "备注", hide: true },
+  { field: "dTbInTime", headerName: "铁包到达时间", hide: true },
+  { field: "dTbOutTime", headerName: "铁包离开时间", hide: true },
+  { field: "cTbInUser", headerName: "铁包到达确认人", hide: true },
+  { field: "cTbOutUser", headerName: "铁包离开确认人", hide: true },
+  { field: "dBegProTime", headerName: "脱硫开始作业时间", hide: true },
+  { field: "dEndProTime", headerName: "脱硫结束作业时间", hide: true },
+  { field: "dInStationMode", headerName: "脱硫到站操作方式", hide: true },
+  { field: "dBegProMode", headerName: "脱硫开始作业操作方式", hide: true },
+  { field: "dEndProMode", headerName: "脱硫结束作业操作方式", hide: true },
+  { field: "dOutStationMode", headerName: "脱硫离站操作方式", hide: true },
+  { field: "cUnitTl", headerName: "脱硫剂单位", hide: true },
+  { field: "cTimestamp", headerName: "时间戳", hide: true },
+  { field: "creator", headerName: "创建人", hide: true },
+  { field: "createTime", headerName: "创建时间", hide: true },
+  { field: "lastModifier", headerName: "最后修改人", hide: true },
+  { field: "lastModifyTime", headerName: "最后修改时间", hide: true },
+  { field: "cSw01", headerName: "备用字段1", hide: true },
+  { field: "cSw02", headerName: "备用字段2", hide: true },
+  { field: "cSw03", headerName: "备用字段3", hide: true },
+  { field: "cSw04", headerName: "备用字段4", hide: true },
+  { field: "cSw05", headerName: "备用字段5", hide: true },
+  { field: "cSw06", headerName: "备用字段6", hide: true },
+  { field: "selected", headerName: "选择", hide: true },
+  { field: "dWgtMzTime", headerName: "毛重计量时间", hide: true },
+  { field: "dWgtPzTime", headerName: "皮重计量时间", hide: true },
+  { field: "dWgtTime", headerName: "净重计量时间", hide: true },
+  { field: "cBizNo", headerName: "凭证单号", hide: true },
+  { field: "cBizType", headerName: "凭证类型", hide: true },
+  { field: "cCarriertype", headerName: "载具类型", hide: true },
+  { field: "cQmKrSampNo", headerName: "KR铁水质检抽检检验样号", hide: true },
+  { field: "cQmSampNo", headerName: "铁水质检抽检检验样号", hide: true },
+  { field: "dLgWgtMzTime", headerName: "炼钢计量毛重计量时间", hide: true },
+  { field: "dLgWgtPzTime", headerName: "炼钢计量皮重计量时间", hide: true },
+  { field: "dLgWgtTime", headerName: "炼钢计量净重计量时间", hide: true },
+  { field: "nIntrusion", headerName: "是否倒罐", hide: true },
+  { field: "nLgWgt", headerName: "炼钢计量净重", hide: true },
+  { field: "nLgWgtMz", headerName: "炼钢计量毛重", hide: true },
+  { field: "nLgWgtPz", headerName: "炼钢计量皮重", hide: true },
+  { field: "nQmSampled", headerName: "铁水是否质检抽检取样", hide: true },
 ]);
 /* 铁水质检信息（原 vGridControl1 Caption=铁水质检信息，绑定 FrmMS2010ViewDto_TSQM——以同列集列表呈现） */
 const qcCols = ref<ColDef[]>([
-        { field: "sampleNo", headerName: "试样编号", width: 112 },
-      { field: "sampleType", headerName: "检验样类型", width: 125 },
-      { field: "c", headerName: "C", width: 80 },
-      { field: "si", headerName: "SI", width: 86 },
-      { field: "mn", headerName: "MN", width: 86 },
-      { field: "p", headerName: "P", width: 80 },
-      { field: "s", headerName: "S", width: 80 },
-      { field: "ceq", headerName: "CEQ", hide: true },
+  { field: "sampleNo", headerName: "试样编号", width: 112 },
+  { field: "sampleType", headerName: "检验样类型", width: 125 },
+  { field: "c", headerName: "C", width: 80 },
+  { field: "si", headerName: "SI", width: 86 },
+  { field: "mn", headerName: "MN", width: 86 },
+  { field: "p", headerName: "P", width: 80 },
+  { field: "s", headerName: "S", width: 80 },
+  { field: "ceq", headerName: "CEQ", hide: true },
 ]);
 
 /* dataLayoutControl1：焦点行编辑缓冲（保存时写回行并 saveData） */
@@ -172,12 +172,8 @@ const form = reactive({
 });
 
 /* KR班次/KR班组：ImageCombo 候选来自 MS_SHIFT/MS_GROUP 运行时字典（待接入，仅回显当前值） */
-const shiftOptions = computed(() =>
-  form.cShiftKR ? [{ label: form.cShiftKR, value: form.cShiftKR }] : [],
-);
-const teamOptions = computed(() =>
-  form.cTeamKR ? [{ label: form.cTeamKR, value: form.cTeamKR }] : [],
-);
+const shiftOptions = computed(() => (form.cShiftKR ? [{ label: form.cShiftKR, value: form.cShiftKR }] : []));
+const teamOptions = computed(() => (form.cTeamKR ? [{ label: form.cTeamKR, value: form.cTeamKR }] : []));
 
 function loadForm(row: Row | null) {
   editRow.value = row;
@@ -206,11 +202,12 @@ function onQcReady(e: GridReadyEvent) {
 async function queryReal() {
   querying.value = true;
   try {
-    rows.value = (await frmMS2020Api.query({
-      lineCode: lineCode || undefined,
-      date: fmt(deDate.value),
-      getLimitedDayData: chkQueryConn1.value,
-    })) ?? [];
+    rows.value =
+      (await frmMS2020Api.query({
+        lineCode: lineCode || undefined,
+        date: fmt(deDate.value),
+        getLimitedDayData: chkQueryConn1.value,
+      })) ?? [];
     requestAnimationFrame(() => mainApi.value?.autoSizeAllColumns());
   } finally {
     querying.value = false;
@@ -320,7 +317,7 @@ const plcCols = ref<ColDef[]>([]);
 onMounted(async () => {
   plcRows.value = (await uCCustomPLCPointShowInfoApi.query({ lineCode, machineCode })) ?? [];
   const keys = Object.keys(plcRows.value[0] ?? {});
-  plcCols.value = keys.map((k) => ({ field: k, headerName: k, minWidth: 80 } as ColDef));
+  plcCols.value = keys.map((k) => ({ field: k, headerName: k, minWidth: 80 }) as ColDef);
 });
 </script>
 

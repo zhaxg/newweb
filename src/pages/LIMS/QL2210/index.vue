@@ -72,7 +72,10 @@ function toTimeRange(dates: Date[] | null): TimeRange | undefined {
 }
 
 /* ---------- 动态元素列（原 Load：QuerySysKvItemList(QMYS) → Caption=CName / FieldName=CCode；汇总已注释不迁） ---------- */
-interface ElemCol { code: string; name: string }
+interface ElemCol {
+  code: string;
+  name: string;
+}
 const elemCols = ref<ElemCol[]>([]);
 async function loadElemCols() {
   try {
@@ -103,7 +106,12 @@ const colDefs = computed<ColDef[]>(() => [
   { field: "cSampleNo", headerName: "试样号", width: 110 },
   { field: "cGw", headerName: "工位", width: 70 },
   { field: "cSgSign", headerName: "钢种", width: 90, cellClass: sgCellClass },
-  { field: "cLineCode", headerName: "产线", width: 80, valueFormatter: (p) => lineOptions.value.find((l) => l.value === p.value)?.label ?? (p.value ?? "") },
+  {
+    field: "cLineCode",
+    headerName: "产线",
+    width: 80,
+    valueFormatter: (p) => lineOptions.value.find((l) => l.value === p.value)?.label ?? p.value ?? "",
+  },
   { field: "cFinalFlag", headerName: "是否最终样", width: 95, valueFormatter: yesNoFmt },
   { field: "cSpec", headerName: "规格", width: 90 },
   { field: "nCount", headerName: "支数", width: 70 },
@@ -125,7 +133,10 @@ function yesNoFmt(p: ValueFormatterParams) {
   return p.value == null ? "" : Number(p.value) === 1 ? "是" : "否";
 }
 function sampleJudgeFmt(p: ValueFormatterParams) {
-  return (({ 0: "待判", 1: "不需判", 2: "合格", 3: "不合格" }) as Record<string, string>)[String(p.value)] ?? (p.value == null ? "" : String(p.value));
+  return (
+    ({ 0: "待判", 1: "不需判", 2: "合格", 3: "不合格" } as Record<string, string>)[String(p.value)] ??
+    (p.value == null ? "" : String(p.value))
+  );
 }
 /** 原 gvCFRecord_CustomDrawCell：钢种/执行标准列按 CAutoJudgeResult 着色 */
 function sgCellClass(p: any) {
@@ -143,7 +154,9 @@ function computePassRate(list: any[]) {
   const c = list.length;
   const q = list.filter((r) => Number(r.cAutoJudgeResult) === SampleJudgeResult.Qualified).length;
   const cs = new Set(list.map((r) => r.cStove)).size;
-  const qs = new Set(list.filter((r) => Number(r.cAutoJudgeResult) === SampleJudgeResult.Qualified).map((r) => r.cStove)).size;
+  const qs = new Set(
+    list.filter((r) => Number(r.cAutoJudgeResult) === SampleJudgeResult.Qualified).map((r) => r.cStove),
+  ).size;
   const p1 = c === 0 ? 0 : (q * 100) / c;
   const p2 = cs === 0 ? 0 : (qs * 100) / cs;
   passRate.value = `按样= ${q}/${c} = ${fmtRate(p1)}%  按炉= ${qs}/${cs} = ${fmtRate(p2)}%`;
@@ -195,18 +208,42 @@ onMounted(() => {
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">工位</label>
-          <Select v-model="input.gw" :options="gwOptions" option-label="label" option-value="value" show-clear
-            placeholder="全部" class="min-w-0 flex-1" />
+          <Select
+            v-model="input.gw"
+            :options="gwOptions"
+            option-label="label"
+            option-value="value"
+            show-clear
+            placeholder="全部"
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="col-span-2 flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">炉次时间</label>
-          <DatePicker v-model="input.createDate" selectionMode="range" :manualInput="false" date-format="yy-mm-dd"
-            show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+          <DatePicker
+            v-model="input.createDate"
+            selectionMode="range"
+            :manualInput="false"
+            date-format="yy-mm-dd"
+            show-time
+            hour-format="24"
+            show-icon
+            placeholder="开始 至 结束"
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">产线</label>
-          <Select v-model="input.cLineCode" :options="lineOptions" option-label="label" option-value="value" show-clear
-            filter placeholder="全部" class="min-w-0 flex-1" />
+          <Select
+            v-model="input.cLineCode"
+            :options="lineOptions"
+            option-label="label"
+            option-value="value"
+            show-clear
+            filter
+            placeholder="全部"
+            class="min-w-0 flex-1"
+          />
         </div>
       </div>
     </div>
@@ -216,16 +253,34 @@ onMounted(() => {
       <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="querying" @click="onQuery">
         <IconSearch class="h-3 w-3" />查询
       </Button>
-      <span class="ml-4 text-xs text-muted-foreground">合格率：<span class="font-medium text-foreground">{{ passRate }}</span></span>
+      <span class="ml-4 text-xs text-muted-foreground"
+        >合格率：<span class="font-medium text-foreground">{{ passRate }}</span></span
+      >
     </div>
 
     <!-- 数据表格（原 gvCFRecord） -->
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows"
-        :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-        :suppress-column-virtualisation="true" :pagination="false" :animate-rows="false"
-        :loading="querying" @grid-ready="onGridReady" @first-data-rendered="autoSizeOnFirstData" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="rows"
+        :row-selection="{
+          mode: 'multiRow',
+          checkboxes: true,
+          headerCheckbox: true,
+          enableClickSelection: true,
+          enableSelectionWithoutKeys: true,
+        }"
+        :suppress-column-virtualisation="true"
+        :pagination="false"
+        :animate-rows="false"
+        :loading="querying"
+        @grid-ready="onGridReady"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
   </div>
 </template>

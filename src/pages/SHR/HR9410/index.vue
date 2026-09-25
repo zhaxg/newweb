@@ -44,7 +44,9 @@ const input = reactive({
 const rows = shallowRef<Thr9410Dto[]>([]);
 const loading = ref(false);
 const api = ref<GridApi | null>(null);
-function onReady(e: GridReadyEvent) { api.value = e.api; }
+function onReady(e: GridReadyEvent) {
+  api.value = e.api;
+}
 
 const colDefs: ColDef[] = [
   /*  { colId: "nOrder", field: "nOrder", headerName: "生产顺序号", width: 112 },
@@ -237,8 +239,17 @@ async function query() {
       </div>
       <div class="col-span-2 flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">时间范围</label>
-        <DatePicker v-model="input.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-          show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+        <DatePicker
+          v-model="input.dates"
+          selection-mode="range"
+          :manual-input="false"
+          date-format="yy-mm-dd"
+          show-time
+          hour-format="24"
+          show-icon
+          placeholder="开始 至 结束"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="col-span-3 flex min-w-0 items-center gap-1">
         <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="loading" @click="query">
@@ -247,10 +258,19 @@ async function query() {
       </div>
     </div>
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows" :pagination="false"
-        :animate-rows="false" :loading="loading" @grid-ready="onReady"
-        @first-data-rendered="autoSizeOnFirstData" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="rows"
+        :pagination="false"
+        :animate-rows="false"
+        :loading="loading"
+        @grid-ready="onReady"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
   </div>
 </template>

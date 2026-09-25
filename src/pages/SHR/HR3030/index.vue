@@ -40,14 +40,21 @@ const slabInput = reactive({ cBatchNo: "", cPieceNo: "", cPieceNoSlab: "", cStov
 let cLineCode: string | undefined;
 
 /* ---------- 日计划查询条件 ---------- */
-const planInput = reactive({ cSgCode: "" as string, nThick: null as number | null, nWidth: null as number | null, cPieceNo: "" });
+const planInput = reactive({
+  cSgCode: "" as string,
+  nThick: null as number | null,
+  nWidth: null as number | null,
+  cPieceNo: "",
+});
 
 /* ---------- 左上：待剪切材料明细（gridView1 / Tyd2000） ---------- */
 const slabRows = ref<Tyd2000[]>([]);
 const slabLoading = ref(false);
 const slabApi = ref<GridApi | null>(null);
 const slabCurrent = ref<Tyd2000 | null>(null);
-function onSlabReady(e: GridReadyEvent) { slabApi.value = e.api; }
+function onSlabReady(e: GridReadyEvent) {
+  slabApi.value = e.api;
+}
 function onSlabSelectionChanged() {
   const row = (slabApi.value?.getSelectedRows()[0] as Tyd2000 | undefined) ?? null;
   slabCurrent.value = row;
@@ -58,14 +65,18 @@ function onSlabSelectionChanged() {
 const jqRows = ref<Thr3030[]>([]);
 const jqLoading = ref(false);
 const jqApi = ref<GridApi | null>(null);
-function onJqReady(e: GridReadyEvent) { jqApi.value = e.api; }
+function onJqReady(e: GridReadyEvent) {
+  jqApi.value = e.api;
+}
 
 /* ---------- 下：日计划列表（gridView3 / Thr2000Dto） ---------- */
 const planRows = ref<Thr2000Dto[]>([]);
 const planLoading = ref(false);
 const planApi = ref<GridApi | null>(null);
 const planCurrent = ref<Thr2000Dto | null>(null);
-function onPlanReady(e: GridReadyEvent) { planApi.value = e.api; }
+function onPlanReady(e: GridReadyEvent) {
+  planApi.value = e.api;
+}
 function onPlanSelectionChanged() {
   planCurrent.value = (planApi.value?.getSelectedRows()[0] as Thr2000Dto | undefined) ?? null;
 }
@@ -227,15 +238,16 @@ const planColDefs: ColDef[] = [
 async function querySlab() {
   slabLoading.value = true;
   try {
-    const list = (await hR3700Api.getSlabs({
-      cStoreCode,
-      cBatchNo: slabInput.cBatchNo.trim() || undefined,
-      cPieceNo: slabInput.cPieceNo.trim() || undefined,
-      cPieceNoSlab: slabInput.cPieceNoSlab.trim() || undefined,
-      cStove: slabInput.cStove.trim() || undefined,
-      cSgCode: slabInput.cSgCode.trim() || undefined,
-      cSgStd: slabInput.cSgStd.trim() || undefined,
-    })) ?? [];
+    const list =
+      (await hR3700Api.getSlabs({
+        cStoreCode,
+        cBatchNo: slabInput.cBatchNo.trim() || undefined,
+        cPieceNo: slabInput.cPieceNo.trim() || undefined,
+        cPieceNoSlab: slabInput.cPieceNoSlab.trim() || undefined,
+        cStove: slabInput.cStove.trim() || undefined,
+        cSgCode: slabInput.cSgCode.trim() || undefined,
+        cSgStd: slabInput.cSgStd.trim() || undefined,
+      })) ?? [];
     slabRows.value = list;
     slabCurrent.value = null;
     jqRows.value = [];
@@ -271,13 +283,14 @@ async function bindThr3030(item: Tyd2000 | null) {
 async function queryPlan() {
   planLoading.value = true;
   try {
-    const list = (await hR2000Api.queryThr2000Dtos({
-      cLineCode,
-      nStatus: Thr2000StatusEnum.Open,
-      cSgCodeTl: planInput.cSgCode.trim() || undefined,
-      nThick: planInput.nThick ?? undefined,
-      nWidth: planInput.nWidth ?? undefined,
-    })) ?? [];
+    const list =
+      (await hR2000Api.queryThr2000Dtos({
+        cLineCode,
+        nStatus: Thr2000StatusEnum.Open,
+        cSgCodeTl: planInput.cSgCode.trim() || undefined,
+        nThick: planInput.nThick ?? undefined,
+        nWidth: planInput.nWidth ?? undefined,
+      })) ?? [];
     planRows.value = list;
     planCurrent.value = null;
     requestAnimationFrame(() => planApi.value?.autoSizeAllColumns());
@@ -375,12 +388,21 @@ function btnOk() {
               <span class="text-xs font-medium text-muted-foreground">待剪切材料明细</span>
             </div>
             <div class="min-h-0 flex-1 overflow-hidden">
-              <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                :default-col-def="hmxDefaultColDef" :column-defs="slabColDefs" :row-data="slabRows"
+              <AgGridVue
+                class="hmx-ag-grid h-full w-full"
+                :theme="theme"
+                :locale-text="AG_GRID_LOCALE_CN"
+                :default-col-def="hmxDefaultColDef"
+                :column-defs="slabColDefs"
+                :row-data="slabRows"
                 :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
-                :pagination="false" :animate-rows="false" :loading="slabLoading"
-                @grid-ready="onSlabReady" @selection-changed="onSlabSelectionChanged"
-                @first-data-rendered="autoSizeOnFirstData" />
+                :pagination="false"
+                :animate-rows="false"
+                :loading="slabLoading"
+                @grid-ready="onSlabReady"
+                @selection-changed="onSlabSelectionChanged"
+                @first-data-rendered="autoSizeOnFirstData"
+              />
             </div>
           </SplitterPanel>
           <SplitterPanel :minSize="20" class="flex flex-col overflow-hidden">
@@ -388,10 +410,19 @@ function btnOk() {
               <span class="text-xs font-medium text-muted-foreground">现剪切计划</span>
             </div>
             <div class="min-h-0 flex-1 overflow-hidden">
-              <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                :default-col-def="hmxDefaultColDef" :column-defs="jqColDefs" :row-data="jqRows"
-                :pagination="false" :animate-rows="false" :loading="jqLoading"
-                @grid-ready="onJqReady" @first-data-rendered="autoSizeOnFirstData" />
+              <AgGridVue
+                class="hmx-ag-grid h-full w-full"
+                :theme="theme"
+                :locale-text="AG_GRID_LOCALE_CN"
+                :default-col-def="hmxDefaultColDef"
+                :column-defs="jqColDefs"
+                :row-data="jqRows"
+                :pagination="false"
+                :animate-rows="false"
+                :loading="jqLoading"
+                @grid-ready="onJqReady"
+                @first-data-rendered="autoSizeOnFirstData"
+              />
             </div>
           </SplitterPanel>
         </Splitter>
@@ -417,18 +448,32 @@ function btnOk() {
           <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="btnOk">确认</Button>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="planColDefs" :row-data="planRows"
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="planColDefs"
+            :row-data="planRows"
             :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
-            :pagination="false" :animate-rows="false" :loading="planLoading"
-            @grid-ready="onPlanReady" @selection-changed="onPlanSelectionChanged"
-            @first-data-rendered="autoSizeOnFirstData" />
+            :pagination="false"
+            :animate-rows="false"
+            :loading="planLoading"
+            @grid-ready="onPlanReady"
+            @selection-changed="onPlanSelectionChanged"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
     </Splitter>
 
-    <Dialog :visible="confirmOpen" modal header="确认" :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
-      @update:visible="confirmOpen = $event">
+    <Dialog
+      :visible="confirmOpen"
+      modal
+      header="确认"
+      :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
+      @update:visible="confirmOpen = $event"
+    >
       <p class="text-xs">{{ confirmMsg }}</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />

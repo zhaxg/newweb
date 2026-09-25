@@ -10,14 +10,7 @@ import Textarea from "primevue/textarea";
 import Select from "primevue/select";
 import DatePicker from "primevue/datepicker";
 import Dialog from "primevue/dialog";
-import {
-  tqmtp01Api,
-  mSCApi,
-  type Tqmtm01,
-  type Tqmtp01,
-  type Tqmtp03,
-  ValidFlag,
-} from "@/api/mes4ddh/sqm.swagger";
+import { tqmtp01Api, mSCApi, type Tqmtm01, type Tqmtp01, type Tqmtp03, ValidFlag } from "@/api/mes4ddh/sqm.swagger";
 import { systemKeyValueApi } from "@/api/admin/request";
 import { NextStrId } from "@/lib/yitIdHelper";
 
@@ -155,8 +148,13 @@ const fmtD = (d: Date | null) =>
 </script>
 
 <template>
-  <Dialog :visible="props.visible" modal header="冶金规范对照"
-    :style="{ width: 'min(56rem, calc(100vw - 2rem))' }" @update:visible="emit('update:visible', $event)">
+  <Dialog
+    :visible="props.visible"
+    modal
+    header="冶金规范对照"
+    :style="{ width: 'min(56rem, calc(100vw - 2rem))' }"
+    @update:visible="emit('update:visible', $event)"
+  >
     <div class="grid grid-cols-2 items-start gap-x-3 gap-y-2">
       <div class="min-w-0">
         <div class="flex min-w-0 items-center gap-1.5">
@@ -174,27 +172,51 @@ const fmtD = (d: Date | null) =>
       <div class="min-w-0">
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-24 shrink-0 text-xs text-muted-foreground">冶金规范码</label>
-          <Select :model-value="form.cMsc ?? null" :options="mscOptions" :filter="true" show-clear
-            option-label="label" option-value="value" placeholder="选择冶金规范" class="min-w-0 flex-1"
-            @update:model-value="onMscChange" />
+          <Select
+            :model-value="form.cMsc ?? null"
+            :options="mscOptions"
+            :filter="true"
+            show-clear
+            option-label="label"
+            option-value="value"
+            placeholder="选择冶金规范"
+            class="min-w-0 flex-1"
+            @update:model-value="onMscChange"
+          />
         </div>
         <p v-if="errors.cMsc" class="mt-0.5 pl-[6.375rem] text-xs text-destructive">{{ errors.cMsc }}</p>
       </div>
       <div class="min-w-0">
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-24 shrink-0 text-xs text-muted-foreground">制造厂别</label>
-          <Select :model-value="form.cFactoryId ?? null" :options="kvFactory" :filter="true" show-clear
-            option-label="label" option-value="value" placeholder="制造厂别" class="min-w-0 flex-1"
-            @update:model-value="(v: string | null) => (form.cFactoryId = v)" />
+          <Select
+            :model-value="form.cFactoryId ?? null"
+            :options="kvFactory"
+            :filter="true"
+            show-clear
+            option-label="label"
+            option-value="value"
+            placeholder="制造厂别"
+            class="min-w-0 flex-1"
+            @update:model-value="(v: string | null) => (form.cFactoryId = v)"
+          />
         </div>
       </div>
 
       <div class="min-w-0">
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-24 shrink-0 text-xs text-muted-foreground">加工用途</label>
-          <Select v-model="jgytSel" :options="kvCustStd" :filter="true" show-clear
-            option-label="label" option-value="value" placeholder="加工用途" class="min-w-0 flex-1"
-            @update:model-value="onJgytChange" />
+          <Select
+            v-model="jgytSel"
+            :options="kvCustStd"
+            :filter="true"
+            show-clear
+            option-label="label"
+            option-value="value"
+            placeholder="加工用途"
+            class="min-w-0 flex-1"
+            @update:model-value="onJgytChange"
+          />
         </div>
       </div>
       <div class="min-w-0">
@@ -207,9 +229,17 @@ const fmtD = (d: Date | null) =>
       <div class="min-w-0">
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-24 shrink-0 text-xs text-muted-foreground">特殊用途</label>
-          <Select v-model="tsytSel" :options="kvQM04" :filter="true" show-clear
-            option-label="label" option-value="value" placeholder="特殊用途" class="min-w-0 flex-1"
-            @update:model-value="onTsytChange" />
+          <Select
+            v-model="tsytSel"
+            :options="kvQM04"
+            :filter="true"
+            show-clear
+            option-label="label"
+            option-value="value"
+            placeholder="特殊用途"
+            class="min-w-0 flex-1"
+            @update:model-value="onTsytChange"
+          />
         </div>
       </div>
       <div class="min-w-0">
@@ -243,19 +273,31 @@ const fmtD = (d: Date | null) =>
         <div class="min-w-0">
           <div class="flex min-w-0 items-center gap-1.5">
             <label class="w-24 shrink-0 text-xs text-muted-foreground">检验时间1</label>
-            <DatePicker v-model="checkDate" :manual-input="false" date-format="yy-mm-dd" show-icon
-              class="min-w-0 flex-1" />
+            <DatePicker
+              v-model="checkDate"
+              :manual-input="false"
+              date-format="yy-mm-dd"
+              show-icon
+              class="min-w-0 flex-1"
+            />
           </div>
         </div>
         <div class="min-w-0">
           <div class="flex min-w-0 items-center gap-1.5">
             <label class="w-20 shrink-0 text-xs text-muted-foreground">生效标记</label>
-            <Select :model-value="form.cValidFlag" :options="[
-              { label: '未生效', value: ValidFlag.Invalid },
-              { label: '生效', value: ValidFlag.Valid },
-            ]" show-clear option-label="label" option-value="value" placeholder="生效标记"
+            <Select
+              :model-value="form.cValidFlag"
+              :options="[
+                { label: '未生效', value: ValidFlag.Invalid },
+                { label: '生效', value: ValidFlag.Valid },
+              ]"
+              show-clear
+              option-label="label"
+              option-value="value"
+              placeholder="生效标记"
               class="min-w-0 flex-1"
-              @update:model-value="(v: ValidFlag | null) => (form.cValidFlag = v ?? ValidFlag.Invalid)" />
+              @update:model-value="(v: ValidFlag | null) => (form.cValidFlag = v ?? ValidFlag.Invalid)"
+            />
           </div>
         </div>
       </div>

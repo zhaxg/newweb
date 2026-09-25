@@ -144,12 +144,24 @@ function toTimeRange(list: Date[] | null): TimeRange | undefined {
 
 const activeTab = ref("0");
 
-function readyMain(e: GridReadyEvent) { mainApi.value = e.api; }
-function readyDay(e: GridReadyEvent) { dayApi.value = e.api; }
-function readyGroup(e: GridReadyEvent) { groupApi.value = e.api; }
-function readyStove(e: GridReadyEvent) { stoveApi.value = e.api; }
-function readySg(e: GridReadyEvent) { sgApi.value = e.api; }
-function autosize(api: GridApi | null) { requestAnimationFrame(() => api?.autoSizeAllColumns()); }
+function readyMain(e: GridReadyEvent) {
+  mainApi.value = e.api;
+}
+function readyDay(e: GridReadyEvent) {
+  dayApi.value = e.api;
+}
+function readyGroup(e: GridReadyEvent) {
+  groupApi.value = e.api;
+}
+function readyStove(e: GridReadyEvent) {
+  stoveApi.value = e.api;
+}
+function readySg(e: GridReadyEvent) {
+  sgApi.value = e.api;
+}
+function autosize(api: GridApi | null) {
+  requestAnimationFrame(() => api?.autoSizeAllColumns());
+}
 
 /** 原 HzDataBind：按 SelectedTabPageIndex 分发四个汇总接口（每次切换都重查，照 C# 不做缓存） */
 async function hzDataBind() {
@@ -200,8 +212,16 @@ async function onTabChange(v: string | number) {
     <!-- 查询行（原 stackPanel1：时间范围 Label + uctimeRange1 + btnQuery） -->
     <div class="flex h-9 shrink-0 items-center gap-2 border-b border-border/60 px-2">
       <label class="shrink-0 text-xs text-muted-foreground">时间范围</label>
-      <DatePicker v-model="q.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-        show-time hour-format="24" show-icon class="w-96 shrink-0" />
+      <DatePicker
+        v-model="q.dates"
+        selection-mode="range"
+        :manual-input="false"
+        date-format="yy-mm-dd"
+        show-time
+        hour-format="24"
+        show-icon
+        class="w-96 shrink-0"
+      />
       <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="querying" @click="onQuery">
         <IconSearch class="h-3 w-3" />查询
       </Button>
@@ -215,10 +235,18 @@ async function onTabChange(v: string | number) {
           <span class="text-xs font-medium text-muted-foreground">产出信息</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="mainCols" :row-data="mainRows"
-            :pagination="false" :loading="querying" @grid-ready="readyMain"
-            @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="mainCols"
+            :row-data="mainRows"
+            :pagination="false"
+            :loading="querying"
+            @grid-ready="readyMain"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </div>
 
@@ -236,28 +264,60 @@ async function onTabChange(v: string | number) {
           </div>
           <TabPanels class="min-h-0 flex-1 overflow-hidden !p-0">
             <TabPanel value="0" class="h-full overflow-hidden">
-              <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                :default-col-def="hmxDefaultColDef" :column-defs="dayCols" :row-data="dayRows"
-                :pagination="false" :loading="hzLoading && activeTab === '0'" @grid-ready="readyDay"
-                @first-data-rendered="autoSizeOnFirstData" />
+              <AgGridVue
+                class="hmx-ag-grid h-full w-full"
+                :theme="theme"
+                :locale-text="AG_GRID_LOCALE_CN"
+                :default-col-def="hmxDefaultColDef"
+                :column-defs="dayCols"
+                :row-data="dayRows"
+                :pagination="false"
+                :loading="hzLoading && activeTab === '0'"
+                @grid-ready="readyDay"
+                @first-data-rendered="autoSizeOnFirstData"
+              />
             </TabPanel>
             <TabPanel value="1" class="h-full overflow-hidden">
-              <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                :default-col-def="hmxDefaultColDef" :column-defs="groupCols" :row-data="groupRows"
-                :pagination="false" :loading="hzLoading && activeTab === '1'" @grid-ready="readyGroup"
-                @first-data-rendered="autoSizeOnFirstData" />
+              <AgGridVue
+                class="hmx-ag-grid h-full w-full"
+                :theme="theme"
+                :locale-text="AG_GRID_LOCALE_CN"
+                :default-col-def="hmxDefaultColDef"
+                :column-defs="groupCols"
+                :row-data="groupRows"
+                :pagination="false"
+                :loading="hzLoading && activeTab === '1'"
+                @grid-ready="readyGroup"
+                @first-data-rendered="autoSizeOnFirstData"
+              />
             </TabPanel>
             <TabPanel value="2" class="h-full overflow-hidden">
-              <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                :default-col-def="hmxDefaultColDef" :column-defs="stoveCols" :row-data="stoveRows"
-                :pagination="false" :loading="hzLoading && activeTab === '2'" @grid-ready="readyStove"
-                @first-data-rendered="autoSizeOnFirstData" />
+              <AgGridVue
+                class="hmx-ag-grid h-full w-full"
+                :theme="theme"
+                :locale-text="AG_GRID_LOCALE_CN"
+                :default-col-def="hmxDefaultColDef"
+                :column-defs="stoveCols"
+                :row-data="stoveRows"
+                :pagination="false"
+                :loading="hzLoading && activeTab === '2'"
+                @grid-ready="readyStove"
+                @first-data-rendered="autoSizeOnFirstData"
+              />
             </TabPanel>
             <TabPanel value="3" class="h-full overflow-hidden">
-              <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                :default-col-def="hmxDefaultColDef" :column-defs="sgCols" :row-data="sgRows"
-                :pagination="false" :loading="hzLoading && activeTab === '3'" @grid-ready="readySg"
-                @first-data-rendered="autoSizeOnFirstData" />
+              <AgGridVue
+                class="hmx-ag-grid h-full w-full"
+                :theme="theme"
+                :locale-text="AG_GRID_LOCALE_CN"
+                :default-col-def="hmxDefaultColDef"
+                :column-defs="sgCols"
+                :row-data="sgRows"
+                :pagination="false"
+                :loading="hzLoading && activeTab === '3'"
+                @grid-ready="readySg"
+                @first-data-rendered="autoSizeOnFirstData"
+              />
             </TabPanel>
           </TabPanels>
         </Tabs>

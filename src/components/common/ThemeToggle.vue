@@ -1,7 +1,11 @@
 <template>
-  <button ref="btnRef" type="button"
+  <button
+    ref="btnRef"
+    type="button"
     class="relative inline-flex items-center justify-center overflow-hidden rounded-full text-current transition-colors hover:bg-black/5 active:bg-black/10 dark:hover:bg-white/20 dark:active:bg-white/30"
-    :class="sizeClass" @click="toggleTheme">
+    :class="sizeClass"
+    @click="toggleTheme"
+  >
     <IconMoon v-if="isDark" class="size-[1em]" />
     <IconSun v-else class="size-[1em]" />
   </button>

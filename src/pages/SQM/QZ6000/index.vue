@@ -40,7 +40,13 @@ import {
   type InventoryInfo,
   type TimeRange,
 } from "@/api/mes4ddh/sqm.swagger";
-import { testJobApi, stoveChemicalCompositionTestApi, TestJobJudgeResult, type TestSample, type AddStoveChemTestInput } from "@/api/mes4ddh/lims.swagger";
+import {
+  testJobApi,
+  stoveChemicalCompositionTestApi,
+  TestJobJudgeResult,
+  type TestSample,
+  type AddStoveChemTestInput,
+} from "@/api/mes4ddh/lims.swagger";
 import { InventoryStatusEnum } from "@/api/mes4ddh/syd.swagger";
 import { tPa1000Api, type Tpa1000 } from "@/api/mes4ddh/shr.swagger";
 import BatchIdInput from "@/pages/Widgets/BatchIdInput/index.vue";
@@ -152,7 +158,9 @@ const q = reactive({
 const rows = ref<InventoryInfo[]>([]);
 const querying = ref(false);
 const gridApi = ref<GridApi | null>(null);
-function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
+function onGridReady(e: GridReadyEvent) {
+  gridApi.value = e.api;
+}
 
 /* ---------- 底部页签（原 XtraTabControl：熔炼成分 UCCfView / 性能 UCTestResultViewer） ---------- */
 const activeTab = ref("cf");
@@ -269,9 +277,14 @@ const colDefs: ColDef[] = [
 
 /* ---------- 行样式（原 GridView1_RowCellStyle：理化/表检/探伤 绿/红底） ---------- */
 function okVal(v: unknown) {
-  return v === SurFaceResultEnum.Pass || v === SurFaceResultEnum.LetPass
-    || v === ComplexDecideResult.Qualified || v === ComplexDecideResult.ManualRelease
-    || v === TestJobJudgeResult.Qualified || v === TestJobJudgeResult.ManualRelease;
+  return (
+    v === SurFaceResultEnum.Pass ||
+    v === SurFaceResultEnum.LetPass ||
+    v === ComplexDecideResult.Qualified ||
+    v === ComplexDecideResult.ManualRelease ||
+    v === TestJobJudgeResult.Qualified ||
+    v === TestJobJudgeResult.ManualRelease
+  );
 }
 
 function cellClass(p: { colDef?: { field?: string }; value: unknown; data?: InventoryInfo }) {
@@ -368,7 +381,12 @@ function onDisposal() {
     toast("质量封锁与未封锁的不能同时处置", 2000, "warn");
     return;
   }
-  if (selected.some((x) => x.cComplexDecideCode !== ComplexDecideResult.None && x.cComplexDecideCode !== ComplexDecideResult.NotNeedJudge)) {
+  if (
+    selected.some(
+      (x) =>
+        x.cComplexDecideCode !== ComplexDecideResult.None && x.cComplexDecideCode !== ComplexDecideResult.NotNeedJudge,
+    )
+  ) {
     toast("已综判，不允许处置，请先取消综判", 2000, "warn");
     return;
   }
@@ -462,7 +480,6 @@ async function onSyncComponent() {
     /* 拦截层已 toast */
   }
 }
-
 </script>
 
 <template>
@@ -472,8 +489,13 @@ async function onSyncComponent() {
       <div class="grid grid-cols-6 items-center gap-x-3 gap-y-1.5">
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">产线</label>
-          <Select v-model="q.lineCode" :options="lineOptions" option-label="label" option-value="value"
-            class="min-w-0 flex-1" />
+          <Select
+            v-model="q.lineCode"
+            :options="lineOptions"
+            option-label="label"
+            option-value="value"
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">炉号</label>
@@ -501,28 +523,58 @@ async function onSyncComponent() {
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">质量状态</label>
-          <Select v-model="q.qmStatus" :options="qmStatusOptions" option-label="label" option-value="value"
-            show-clear class="min-w-0 flex-1" />
+          <Select
+            v-model="q.qmStatus"
+            :options="qmStatusOptions"
+            option-label="label"
+            option-value="value"
+            show-clear
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">表面状态</label>
-          <Select v-model="q.surFaceResult" :options="surfaceOptions" option-label="label" option-value="value"
-            show-clear class="min-w-0 flex-1" />
+          <Select
+            v-model="q.surFaceResult"
+            :options="surfaceOptions"
+            option-label="label"
+            option-value="value"
+            show-clear
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">探伤状态</label>
-          <Select v-model="q.cDetectResultCode" :options="surfaceOptions" option-label="label" option-value="value"
-            show-clear class="min-w-0 flex-1" />
+          <Select
+            v-model="q.cDetectResultCode"
+            :options="surfaceOptions"
+            option-label="label"
+            option-value="value"
+            show-clear
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">综判状态</label>
-          <Select v-model="q.complexDecideResult" :options="complexOptions" option-label="label" option-value="value"
-            show-clear class="min-w-0 flex-1" />
+          <Select
+            v-model="q.complexDecideResult"
+            :options="complexOptions"
+            option-label="label"
+            option-value="value"
+            show-clear
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">库存状态</label>
-          <MultiSelect v-model="q.statuses" :options="statusOptions" option-label="label" option-value="value"
-            placeholder="全部" class="min-w-0 flex-1" />
+          <MultiSelect
+            v-model="q.statuses"
+            :options="statusOptions"
+            option-label="label"
+            option-value="value"
+            placeholder="全部"
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">检验委托</label>
@@ -530,13 +582,25 @@ async function onSyncComponent() {
         </div>
         <div class="col-span-2 flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">生产时间</label>
-          <DatePicker v-model="q.prodDates" selection-mode="range" :manual-input="false"
-            date-format="yy-mm-dd" show-icon class="min-w-0 flex-1" />
+          <DatePicker
+            v-model="q.prodDates"
+            selection-mode="range"
+            :manual-input="false"
+            date-format="yy-mm-dd"
+            show-icon
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="col-span-2 flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">入库时间</label>
-          <DatePicker v-model="q.inDates" selection-mode="range" :manual-input="false"
-            date-format="yy-mm-dd" show-icon class="min-w-0 flex-1" />
+          <DatePicker
+            v-model="q.inDates"
+            selection-mode="range"
+            :manual-input="false"
+            date-format="yy-mm-dd"
+            show-icon
+            class="min-w-0 flex-1"
+          />
         </div>
         <BatchIdInput v-model="q.lstStove" label="批量炉号" />
         <BatchIdInput v-model="q.lstBatch" label="批量批号" />
@@ -550,12 +614,8 @@ async function onSyncComponent() {
       <Button text class="shrink-0 whitespace-nowrap" :loading="querying" @click="onQuery">
         <IconSearch class="h-3 w-3" />查询
       </Button>
-      <Button text class="shrink-0 whitespace-nowrap" @click="onDisposal">
-        <IconSend class="h-3 w-3" />处置
-      </Button>
-      <Button text class="shrink-0 whitespace-nowrap" @click="onDecide">
-        <IconCheck class="h-3 w-3" />综判
-      </Button>
+      <Button text class="shrink-0 whitespace-nowrap" @click="onDisposal"> <IconSend class="h-3 w-3" />处置 </Button>
+      <Button text class="shrink-0 whitespace-nowrap" @click="onDecide"> <IconCheck class="h-3 w-3" />综判 </Button>
       <Button text severity="danger" class="shrink-0 whitespace-nowrap" @click="onCancelDecide">
         <IconX class="h-3 w-3" />取消综判
       </Button>
@@ -569,12 +629,28 @@ async function onSyncComponent() {
     <Splitter class="min-h-0 flex-1" layout="vertical">
       <SplitterPanel :size="30" :minSize="15" class="flex min-h-0 flex-col">
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows"
-            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="colDefs"
+            :row-data="rows"
+            :row-selection="{
+              mode: 'multiRow',
+              checkboxes: true,
+              headerCheckbox: true,
+              enableClickSelection: true,
+              enableSelectionWithoutKeys: true,
+            }"
             :suppress-column-virtualisation="true"
-            :pagination="false" :animate-rows="false" :loading="querying"
-            @grid-ready="onGridReady" @row-clicked="onRowClicked" @first-data-rendered="autoSizeOnFirstData" />
+            :pagination="false"
+            :animate-rows="false"
+            :loading="querying"
+            @grid-ready="onGridReady"
+            @row-clicked="onRowClicked"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
 
@@ -586,19 +662,31 @@ async function onSyncComponent() {
               <Tab value="cf">熔炼成分</Tab>
               <Tab value="perf">性能</Tab>
             </TabList>
-            <span class="ml-auto mr-2 text-xs text-muted-foreground">{{ focusedStove ? "炉号 " + focusedStove : "" }}</span>
+            <span class="ml-auto mr-2 text-xs text-muted-foreground">{{
+              focusedStove ? "炉号 " + focusedStove : ""
+            }}</span>
           </div>
           <TabPanels class="min-h-0 flex-1 overflow-hidden !p-0">
             <TabPanel value="cf" class="h-full overflow-auto">
               <div class="flex h-full items-center justify-center bg-muted/30">
-                <p class="text-xs text-muted-foreground">熔炼成分（UCCfView.ShowData）待接入{{ focusedStove ? " · " + focusedStove : "" }}</p>
+                <p class="text-xs text-muted-foreground">
+                  熔炼成分（UCCfView.ShowData）待接入{{ focusedStove ? " · " + focusedStove : "" }}
+                </p>
               </div>
             </TabPanel>
             <TabPanel value="perf" class="h-full overflow-hidden">
-              <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                :default-col-def="hmxDefaultColDef" :column-defs="sampleCols" :row-data="samples"
-                :suppress-column-virtualisation="true" :pagination="false" :animate-rows="false"
-                @first-data-rendered="autoSizeOnFirstData" />
+              <AgGridVue
+                class="hmx-ag-grid h-full w-full"
+                :theme="theme"
+                :locale-text="AG_GRID_LOCALE_CN"
+                :default-col-def="hmxDefaultColDef"
+                :column-defs="sampleCols"
+                :row-data="samples"
+                :suppress-column-virtualisation="true"
+                :pagination="false"
+                :animate-rows="false"
+                @first-data-rendered="autoSizeOnFirstData"
+              />
             </TabPanel>
           </TabPanels>
         </Tabs>

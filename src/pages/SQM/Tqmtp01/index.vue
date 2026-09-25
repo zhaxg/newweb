@@ -16,7 +16,14 @@ import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, GridApi, GridReadyEvent, SelectionChangedEvent } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { hmxDefaultColDef, makeHmxGridTheme, autoSizeOnFirstData } from "@/lib/agGrid";
-import { tqmtp01Api, type Tqmtp01, type Tqmtp03, type Tqmtp01Dto, type Tqmtp01QueryInput, ValidFlag } from "@/api/mes4ddh/sqm.swagger";
+import {
+  tqmtp01Api,
+  type Tqmtp01,
+  type Tqmtp03,
+  type Tqmtp01Dto,
+  type Tqmtp01QueryInput,
+  ValidFlag,
+} from "@/api/mes4ddh/sqm.swagger";
 import { systemKeyValueApi } from "@/api/admin/request";
 import { useToast } from "@/composables/useToast";
 import Tqmtp01EditDialog from "./Tqmtp01EditDialog.vue";
@@ -251,8 +258,12 @@ const subColDefs: ColDef[] = [
   { field: "id", headerName: "主键", width: 86, hide: true },
   { field: "selected", headerName: "选择", width: 86, hide: true },
 ];
-function onMainReady(e: GridReadyEvent) { mainApi.value = e.api; }
-function onSubReady(e: GridReadyEvent) { subApi.value = e.api; }
+function onMainReady(e: GridReadyEvent) {
+  mainApi.value = e.api;
+}
+function onSubReady(e: GridReadyEvent) {
+  subApi.value = e.api;
+}
 </script>
 
 <template>
@@ -274,18 +285,42 @@ function onSubReady(e: GridReadyEvent) { subApi.value = e.api; }
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">产品大类</label>
-          <Select v-model="input.cProdClass" :options="kvProdClass" :filter="true" show-clear
-            option-label="label" option-value="value" placeholder="产品大类" class="min-w-0 flex-1" />
+          <Select
+            v-model="input.cProdClass"
+            :options="kvProdClass"
+            :filter="true"
+            show-clear
+            option-label="label"
+            option-value="value"
+            placeholder="产品大类"
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">工厂</label>
-          <Select v-model="input.factoryId" :options="kvFactory" :filter="true" show-clear
-            option-label="label" option-value="value" placeholder="工厂" class="min-w-0 flex-1" />
+          <Select
+            v-model="input.factoryId"
+            :options="kvFactory"
+            :filter="true"
+            show-clear
+            option-label="label"
+            option-value="value"
+            placeholder="工厂"
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">交货状态</label>
-          <Select v-model="input.cDelivyStatusCode" :options="kvDelivy" :filter="true" show-clear
-            option-label="label" option-value="value" placeholder="交货状态" class="min-w-0 flex-1" />
+          <Select
+            v-model="input.cDelivyStatusCode"
+            :options="kvDelivy"
+            :filter="true"
+            show-clear
+            option-label="label"
+            option-value="value"
+            placeholder="交货状态"
+            class="min-w-0 flex-1"
+          />
         </div>
       </div>
     </div>
@@ -321,13 +356,22 @@ function onSubReady(e: GridReadyEvent) { subApi.value = e.api; }
           <span class="text-xs font-medium text-muted-foreground">产品规范</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="mainColDefs" :row-data="mainRows"
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="mainColDefs"
+            :row-data="mainRows"
             :get-row-id="(p: any) => String(p.data.id)"
             :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
-            :pagination="false" :animate-rows="false" :loading="querying"
-            @grid-ready="onMainReady" @first-data-rendered="autoSizeOnFirstData"
-            @selection-changed="onMainSelectionChanged" />
+            :pagination="false"
+            :animate-rows="false"
+            :loading="querying"
+            @grid-ready="onMainReady"
+            @first-data-rendered="autoSizeOnFirstData"
+            @selection-changed="onMainSelectionChanged"
+          />
         </div>
       </SplitterPanel>
       <SplitterPanel :size="50" class="flex min-h-0 min-w-0 flex-col">
@@ -343,19 +387,32 @@ function onSubReady(e: GridReadyEvent) { subApi.value = e.api; }
           </Button>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="subColDefs" :row-data="subRows"
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="subColDefs"
+            :row-data="subRows"
             :get-row-id="(p: any) => String(p.data.id)"
             :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
-            :pagination="false" :animate-rows="false"
-            @grid-ready="onSubReady" @first-data-rendered="autoSizeOnFirstData" />
+            :pagination="false"
+            :animate-rows="false"
+            @grid-ready="onSubReady"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
     </Splitter>
 
     <!-- 确认（对应原 MsgBox.ShowYesNo） -->
-    <Dialog :visible="confirmOpen" modal header="确认" :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
-      @update:visible="confirmOpen = $event">
+    <Dialog
+      :visible="confirmOpen"
+      modal
+      header="确认"
+      :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
+      @update:visible="confirmOpen = $event"
+    >
       <p class="text-xs">{{ confirmMsg }}</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />

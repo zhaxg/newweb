@@ -78,10 +78,7 @@ async function onQuery() {
   querying.value = true;
   try {
     const input: YD9200QueryDto = {
-      timeRange:
-        q.dates?.[0] && q.dates?.[1]
-          ? { min: isoLocal(q.dates[0]), max: isoLocal(q.dates[1]) }
-          : undefined,
+      timeRange: q.dates?.[0] && q.dates?.[1] ? { min: isoLocal(q.dates[0]), max: isoLocal(q.dates[1]) } : undefined,
     };
     const list = ((await frmYd9200Api.queryStoreList(input)) ?? []) as YD9200Dto[];
     rows.value = list;
@@ -105,8 +102,17 @@ onMounted(() => {
     <!-- 工具栏（原 stackPanel1：日期 UCTimeRange + 查询） -->
     <div class="flex h-9 shrink-0 items-center gap-2 border-b border-border/60 px-2">
       <label class="shrink-0 text-xs text-muted-foreground">日期</label>
-      <DatePicker v-model="q.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-        show-time hour-format="24" show-icon placeholder="开始 至 结束" class="w-80 shrink-0" />
+      <DatePicker
+        v-model="q.dates"
+        selection-mode="range"
+        :manual-input="false"
+        date-format="yy-mm-dd"
+        show-time
+        hour-format="24"
+        show-icon
+        placeholder="开始 至 结束"
+        class="w-80 shrink-0"
+      />
       <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="querying" @click="onQuery">
         <IconSearch class="h-3 w-3" />查询
       </Button>
@@ -115,10 +121,19 @@ onMounted(() => {
 
     <!-- 单表（原 gridControl1 Dock.Fill） -->
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="colDefs"
-        :default-col-def="hmxDefaultColDef" :row-data="rows" :locale-text="AG_GRID_LOCALE_CN"
-        :pagination="false" :animate-rows="false" :loading="querying"
-        @grid-ready="onReady" @first-data-rendered="autoSizeOnFirstData" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :column-defs="colDefs"
+        :default-col-def="hmxDefaultColDef"
+        :row-data="rows"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :pagination="false"
+        :animate-rows="false"
+        :loading="querying"
+        @grid-ready="onReady"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
   </div>
 </template>

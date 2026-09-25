@@ -77,25 +77,31 @@ const auth = useAuthStore();
 /* ---------- 格式化（照原 LDisplay / 枚举显示） ---------- */
 const yesNoFmt = (p: ValueFormatterParams) => (p.value == null ? "" : Number(p.value) === 1 ? "是" : "否");
 const statusFmt = (p: ValueFormatterParams) =>
-  (({
-    0: "未发送",
-    1: "已发送未接收",
-    20: "已接收",
-    25: "已拒收",
-    30: "已完成",
-  }) as Record<string, string>)[String(p.value)] ?? (p.value == null ? "" : String(p.value));
+  (
+    ({
+      0: "未发送",
+      1: "已发送未接收",
+      20: "已接收",
+      25: "已拒收",
+      30: "已完成",
+    }) as Record<string, string>
+  )[String(p.value)] ?? (p.value == null ? "" : String(p.value));
 const jobJudgeFmt = (p: ValueFormatterParams) =>
   (({ 0: "待判", 2: "合格", 3: "不合格", 4: "人工放行" }) as Record<string, string>)[String(p.value)] ?? "";
 const sampleJudgeFmt = (p: ValueFormatterParams) =>
   (({ 0: "待判", 1: "不需判", 2: "合格", 3: "不合格" }) as Record<string, string>)[String(p.value)] ?? "";
-const ctrlModeFmt = (p: ValueFormatterParams) => (({ 0: "标准", 1: "内控" }) as Record<string, string>)[String(p.value)] ?? "";
+const ctrlModeFmt = (p: ValueFormatterParams) =>
+  (({ 0: "标准", 1: "内控" }) as Record<string, string>)[String(p.value)] ?? "";
 /** DecimalRange.ToString（NumberRangeFormatter）：[min, max] / [min, ) / ( , max] */
-const rangeFmt = (range: { min?: number | null; max?: number | null; equalsMethod?: EqualsFlag } | null | undefined) => {
+const rangeFmt = (
+  range: { min?: number | null; max?: number | null; equalsMethod?: EqualsFlag } | null | undefined,
+) => {
   if (!range || (range.min == null && range.max == null)) return "";
   const eq = Number(range.equalsMethod ?? EqualsFlag.Default);
   const leftOpen = (eq & EqualsFlag.LeftOpen) !== 0;
   const rightOpen = (eq & EqualsFlag.RightOpen) !== 0;
-  if (range.min != null && range.max != null) return `${leftOpen ? "(" : "["}${range.min}, ${range.max}${rightOpen ? ")" : "]"}`;
+  if (range.min != null && range.max != null)
+    return `${leftOpen ? "(" : "["}${range.min}, ${range.max}${rightOpen ? ")" : "]"}`;
   if (range.min != null) return `${leftOpen ? "(" : "["}${range.min}, )`;
   return `( , ${range.max}${rightOpen ? ")" : "]"}`;
 };
@@ -122,7 +128,10 @@ function displayValue(item: TestItemValue | null | undefined): string {
   return s;
 }
 /** DecimalRangeExtinsons.CheckInRange */
-function checkInRange(range: { min?: number | null; max?: number | null; equalsMethod?: EqualsFlag } | null | undefined, value: number): boolean {
+function checkInRange(
+  range: { min?: number | null; max?: number | null; equalsMethod?: EqualsFlag } | null | undefined,
+  value: number,
+): boolean {
   if (!range) return true;
   const eq = Number(range.equalsMethod ?? EqualsFlag.Default);
   let ok = true;
@@ -168,14 +177,20 @@ function autoJudgeSample(sample: TestSample) {
     .map((x) => `${x.cTestSubItemName}不合;`)
     .join("");
   const results = (sample.testItems ?? []).map((x) => Number(x.cJudgeResult));
-  if (results.length > 0 && results.every((r) => r === SampleJudgeResult.Qualified || r === SampleJudgeResult.NoNeedForJudgement)) {
+  if (
+    results.length > 0 &&
+    results.every((r) => r === SampleJudgeResult.Qualified || r === SampleJudgeResult.NoNeedForJudgement)
+  ) {
     sample.cJudgeResult = SampleJudgeResult.Qualified;
   } else if (results.some((r) => r === SampleJudgeResult.Unqualified)) {
     sample.cJudgeResult = SampleJudgeResult.Unqualified;
   } else if (results.some((r) => r === SampleJudgeResult.None)) {
     sample.cJudgeResult = SampleJudgeResult.None;
   }
-  sample.dJudgeTime = Number(sample.cJudgeResult) === SampleJudgeResult.None ? null : new Date().toISOString().slice(0, 19).replace("T", " ");
+  sample.dJudgeTime =
+    Number(sample.cJudgeResult) === SampleJudgeResult.None
+      ? null
+      : new Date().toISOString().slice(0, 19).replace("T", " ");
 }
 function sortSamples(list: TestSample[]): TestSample[] {
   return [...list].sort(
@@ -280,7 +295,12 @@ const jobColDefs = ref<ColDef[]>([
   { field: "nTestTimes", headerName: "试验次数", width: 90 },
   { field: "cRecheckFlag", headerName: "复验标记", width: 90, valueFormatter: yesNoFmt },
   { field: "cStatus", headerName: "委托单状态", width: 120, valueFormatter: statusFmt },
-  { field: "cLineCode", headerName: "产线代码", width: 100, valueFormatter: (p) => lineOptions.value.find((l) => l.value === p.value)?.label ?? (p.value ?? "") },
+  {
+    field: "cLineCode",
+    headerName: "产线代码",
+    width: 100,
+    valueFormatter: (p) => lineOptions.value.find((l) => l.value === p.value)?.label ?? p.value ?? "",
+  },
   { field: "cSgSign", headerName: "钢种", width: 100 },
   { field: "cSgStd", headerName: "执行标准", width: 120 },
   { field: "cDeliveryStateDesc", headerName: "交货状态描述", width: 130 },
@@ -290,10 +310,22 @@ const jobColDefs = ref<ColDef[]>([
   { field: "nThick", headerName: "厚度mm", width: 90 },
   { field: "nWth", headerName: "宽度mm", width: 90 },
   { field: "nLen", headerName: "长度mm", width: 90 },
-  { field: "cAutoJudgeResult", headerName: "自动判定结果", width: 120, valueFormatter: jobJudgeFmt, cellClass: (p) => jobJudgeCell(p) },
+  {
+    field: "cAutoJudgeResult",
+    headerName: "自动判定结果",
+    width: 120,
+    valueFormatter: jobJudgeFmt,
+    cellClass: (p) => jobJudgeCell(p),
+  },
   { field: "cJudgeUser", headerName: "判定人", width: 90 },
   { field: "dJudgeTime", headerName: "判定时间", width: 140 },
-  { field: "cJudgeResult", headerName: "最终判定结果", width: 120, valueFormatter: jobJudgeFmt, cellClass: (p) => jobJudgeCell(p) },
+  {
+    field: "cJudgeResult",
+    headerName: "最终判定结果",
+    width: 120,
+    valueFormatter: jobJudgeFmt,
+    cellClass: (p) => jobJudgeCell(p),
+  },
   { field: "cJudgeRemark", headerName: "判定备注", width: 120 },
   { field: "creator", headerName: "创建人", width: 90 },
   { field: "createTime", headerName: "创建时间", width: 140 },
@@ -347,13 +379,24 @@ function jobRowClass(p: RowClassParams) {
 
 /** 单行录入 试样信息（UCTestItemResult.gridView2，TestSample 可见23+隐藏17：DJudgeTime/Selected 收隐藏） */
 const singleSampleColDefs = ref<ColDef[]>([
-  { field: "cSampleNo", headerName: "试样号", width: 100, cellClass: (p) => (Number(p.data?.cDisable) === YesNo.Y ? "smp-strike" : "") },
+  {
+    field: "cSampleNo",
+    headerName: "试样号",
+    width: 100,
+    cellClass: (p) => (Number(p.data?.cDisable) === YesNo.Y ? "smp-strike" : ""),
+  },
   { field: "cTestItemTypeDesc", headerName: "试验项目种类描述", width: 150 },
   { field: "cTestItemName", headerName: "试验项目名称", width: 130 },
   { field: "cSamplePosDesc", headerName: "取样位置", width: 100 },
   { field: "cSampleLenDesc", headerName: "取样长度说明", width: 120 },
   { field: "cTestDirectDesc", headerName: "试验方向", width: 90 },
-  { field: "cJudgeResult", headerName: "判定结果", width: 90, valueFormatter: sampleJudgeFmt, cellClass: (p) => sampleJudgeCell(p) },
+  {
+    field: "cJudgeResult",
+    headerName: "判定结果",
+    width: 90,
+    valueFormatter: sampleJudgeFmt,
+    cellClass: (p) => sampleJudgeCell(p),
+  },
   { field: "cJudgeRemark", headerName: "判定备注", width: 130 },
   { field: "labRemark", headerName: "实验室备注", width: 130 },
   { field: "cTestItem", headerName: "试验项目", width: 100 },
@@ -396,7 +439,13 @@ const mutiSampleColDefs = ref<ColDef[]>([
   { field: "cSamplePosDesc", headerName: "取样位置", width: 100 },
   { field: "cSampleLenDesc", headerName: "取样长度说明", width: 120 },
   { field: "cTestDirectDesc", headerName: "试验方向", width: 90 },
-  { field: "cJudgeResult", headerName: "判定结果", width: 90, valueFormatter: sampleJudgeFmt, cellClass: (p) => sampleJudgeCell(p) },
+  {
+    field: "cJudgeResult",
+    headerName: "判定结果",
+    width: 90,
+    valueFormatter: sampleJudgeFmt,
+    cellClass: (p) => sampleJudgeCell(p),
+  },
   { field: "cJudgeRemark", headerName: "判定备注", width: 130 },
   { field: "labRemark", headerName: "实验室备注", width: 130 },
   { field: "cTestItem", headerName: "试验项目", width: 100 },
@@ -515,7 +564,14 @@ function valueCellClass(row: TestItemValue | undefined): string {
   if (!row) return "";
   const cv = Number(row.cValue);
   const min = row.judgeRange?.min;
-  if (row.cValue != null && row.cValue !== "" && Number.isFinite(cv) && min != null && Number(min) > 0 && cv >= Number(min) * 10) {
+  if (
+    row.cValue != null &&
+    row.cValue !== "" &&
+    Number.isFinite(cv) &&
+    min != null &&
+    Number(min) > 0 &&
+    cv >= Number(min) * 10
+  ) {
     return "val-overflow";
   }
   switch (Number(row.cJudgeResult)) {
@@ -675,7 +731,8 @@ function refreshDataCells() {
 }
 function autoSizeAll() {
   requestAnimationFrame(() => {
-    for (const api of [jobGridApi, singleGridApi, mutiGridApi, detailGridApi, pivotGridApi]) api.value?.autoSizeAllColumns();
+    for (const api of [jobGridApi, singleGridApi, mutiGridApi, detailGridApi, pivotGridApi])
+      api.value?.autoSizeAllColumns();
   });
 }
 function onJobGridReady(e: GridReadyEvent) {
@@ -713,7 +770,12 @@ const IMPACT_FILL: Record<string, keyof TqlImpactCollect> = {
   P327: "cDirection", // 试验方向
   P328: "cTemperature", // 试验温度
 };
-function fillFrom(sample: TestSample, data: Record<string, unknown> | null | undefined, table: Record<string, string>, overWrite: boolean) {
+function fillFrom(
+  sample: TestSample,
+  data: Record<string, unknown> | null | undefined,
+  table: Record<string, string>,
+  overWrite: boolean,
+) {
   if (!data) return;
   for (const item of sample.testItems ?? []) {
     const has = Object.prototype.hasOwnProperty.call(table, str(item.cTestSubItem));
@@ -740,8 +802,10 @@ async function collectInto(job: TestJob, list: TestSample[], overWrite: boolean)
   ]);
   const p1Samps = list.filter((x) => x.cTestItemType === TENSILE && x.cTestItem !== Z_XIANG);
   const p3Samps = list.filter((x) => x.cTestItemType === IMPACT);
-  for (let i = 0; i < Math.min(p1Samps.length, p1?.length ?? 0); i++) fillFrom(p1Samps[i], p1![i] as never, TENSILE_FILL, overWrite);
-  for (let i = 0; i < Math.min(p3Samps.length, p3?.length ?? 0); i++) fillFrom(p3Samps[i], p3![i] as never, IMPACT_FILL, overWrite);
+  for (let i = 0; i < Math.min(p1Samps.length, p1?.length ?? 0); i++)
+    fillFrom(p1Samps[i], p1![i] as never, TENSILE_FILL, overWrite);
+  for (let i = 0; i < Math.min(p3Samps.length, p3?.length ?? 0); i++)
+    fillFrom(p3Samps[i], p3![i] as never, IMPACT_FILL, overWrite);
   bindCollected(list);
 }
 async function collectCZY(job: TestJob, list: TestSample[], overWrite: boolean) {
@@ -752,7 +816,8 @@ async function collectCZY(job: TestJob, list: TestSample[], overWrite: boolean) 
   const p3Samps = list.filter((x) => x.cTestItemType === IMPACT);
   if (!p1.length) {
     p1 = (await tqlLXCollectApi.getTensileCollectDataByBatch(str(job.cBatch))) ?? [];
-    for (let i = 0; i < Math.min(p1Samps.length, p1.length); i++) fillFrom(p1Samps[i], p1[i] as never, TENSILE_FILL, overWrite);
+    for (let i = 0; i < Math.min(p1Samps.length, p1.length); i++)
+      fillFrom(p1Samps[i], p1[i] as never, TENSILE_FILL, overWrite);
   } else {
     for (const smp of p1Samps) {
       const data = p1.find((x) => str(x.cSampleNo) === str(smp.cSampleNo));
@@ -761,7 +826,8 @@ async function collectCZY(job: TestJob, list: TestSample[], overWrite: boolean) 
   }
   if (!p3.length) {
     p3 = (await tqlLXCollectApi.getImpactCollectDataByBatch(str(job.cBatch))) ?? [];
-    for (let i = 0; i < Math.min(p3Samps.length, p3.length); i++) fillFrom(p3Samps[i], p3[i] as never, IMPACT_FILL, overWrite);
+    for (let i = 0; i < Math.min(p3Samps.length, p3.length); i++)
+      fillFrom(p3Samps[i], p3[i] as never, IMPACT_FILL, overWrite);
   } else {
     for (const smp of p3Samps) {
       const data = p3.find((x) => str(x.cSampleNo) === str(smp.cSampleNo));
@@ -998,8 +1064,16 @@ onMounted(() => {
       <div class="grid grid-cols-6 items-center gap-x-3 gap-y-1.5">
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">产线代码</label>
-          <Select v-model="input.cLineCode" :options="lineOptions" option-label="label" option-value="value"
-            show-clear filter placeholder="全部" class="min-w-0 flex-1" />
+          <Select
+            v-model="input.cLineCode"
+            :options="lineOptions"
+            option-label="label"
+            option-value="value"
+            show-clear
+            filter
+            placeholder="全部"
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">委托单号</label>
@@ -1019,13 +1093,25 @@ onMounted(() => {
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">复验标记</label>
-          <Select v-model="input.cRecheckFlag" :options="recheckOptions" option-label="label" option-value="value"
-            show-clear class="min-w-0 flex-1" />
+          <Select
+            v-model="input.cRecheckFlag"
+            :options="recheckOptions"
+            option-label="label"
+            option-value="value"
+            show-clear
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">试验项</label>
-          <Select v-model="input.testItemType" :options="testItemTypeOptions" option-label="label" option-value="value"
-            show-clear class="min-w-0 flex-1" />
+          <Select
+            v-model="input.testItemType"
+            :options="testItemTypeOptions"
+            option-label="label"
+            option-value="value"
+            show-clear
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">批号</label>
@@ -1033,8 +1119,17 @@ onMounted(() => {
         </div>
         <div class="col-span-2 flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">登记时间</label>
-          <DatePicker v-model="input.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-            show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+          <DatePicker
+            v-model="input.dates"
+            selection-mode="range"
+            :manual-input="false"
+            date-format="yy-mm-dd"
+            show-time
+            hour-format="24"
+            show-icon
+            placeholder="开始 至 结束"
+            class="min-w-0 flex-1"
+          />
         </div>
       </div>
     </div>
@@ -1062,12 +1157,23 @@ onMounted(() => {
       <!-- Panel1：检验委托（ucTestJob1，无独立标题条） -->
       <SplitterPanel :size="21" :minSize="12" class="flex min-h-0 flex-col overflow-hidden">
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="jobColDefs" :row-data="jobRows"
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="jobColDefs"
+            :row-data="jobRows"
             :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
-            :get-row-class="jobRowClass" :suppress-column-virtualisation="true" :pagination="false" :animate-rows="false"
-            :loading="querying" @grid-ready="onJobGridReady" @selection-changed="onJobSelectionChanged"
-            @first-data-rendered="autoSizeOnFirstData" />
+            :get-row-class="jobRowClass"
+            :suppress-column-virtualisation="true"
+            :pagination="false"
+            :animate-rows="false"
+            :loading="querying"
+            @grid-ready="onJobGridReady"
+            @selection-changed="onJobSelectionChanged"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
 
@@ -1096,15 +1202,33 @@ onMounted(() => {
                 <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onClearRemark">
                   <IconEraser class="h-3 w-3" />清除备注
                 </Button>
-                <span class="ml-auto shrink-0 text-xs font-medium text-muted-foreground">试样信息（{{ samples.length }}）</span>
+                <span class="ml-auto shrink-0 text-xs font-medium text-muted-foreground"
+                  >试样信息（{{ samples.length }}）</span
+                >
               </div>
               <div class="min-h-0 flex-1 overflow-hidden">
-                <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                  :default-col-def="hmxDefaultColDef" :column-defs="mutiSampleColDefs" :row-data="samples"
-                  :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-                  :get-row-class="mutiSampleRowClass" :suppress-column-virtualisation="true" :pagination="false"
-                  :animate-rows="false" :loading="loadingSamples" @grid-ready="onMutiGridReady"
-                  @first-data-rendered="autoSizeOnFirstData" />
+                <AgGridVue
+                  class="hmx-ag-grid h-full w-full"
+                  :theme="theme"
+                  :locale-text="AG_GRID_LOCALE_CN"
+                  :default-col-def="hmxDefaultColDef"
+                  :column-defs="mutiSampleColDefs"
+                  :row-data="samples"
+                  :row-selection="{
+                    mode: 'multiRow',
+                    checkboxes: true,
+                    headerCheckbox: true,
+                    enableClickSelection: true,
+                    enableSelectionWithoutKeys: true,
+                  }"
+                  :get-row-class="mutiSampleRowClass"
+                  :suppress-column-virtualisation="true"
+                  :pagination="false"
+                  :animate-rows="false"
+                  :loading="loadingSamples"
+                  @grid-ready="onMutiGridReady"
+                  @first-data-rendered="autoSizeOnFirstData"
+                />
               </div>
             </SplitterPanel>
             <SplitterPanel :minSize="35" class="flex min-h-0 flex-col overflow-hidden">
@@ -1115,11 +1239,20 @@ onMounted(() => {
                 <span class="ml-auto shrink-0 text-xs font-medium text-muted-foreground">检验结果</span>
               </div>
               <div class="min-h-0 flex-1 overflow-hidden">
-                <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                  :default-col-def="hmxDefaultColDef" :column-defs="pivotColDefs" :row-data="pivotRows"
-                  :suppress-column-virtualisation="true" :pagination="false" :animate-rows="false"
-                  @grid-ready="onPivotGridReady" @cell-value-changed="onPivotEdited"
-                  @first-data-rendered="autoSizeOnFirstData" />
+                <AgGridVue
+                  class="hmx-ag-grid h-full w-full"
+                  :theme="theme"
+                  :locale-text="AG_GRID_LOCALE_CN"
+                  :default-col-def="hmxDefaultColDef"
+                  :column-defs="pivotColDefs"
+                  :row-data="pivotRows"
+                  :suppress-column-virtualisation="true"
+                  :pagination="false"
+                  :animate-rows="false"
+                  @grid-ready="onPivotGridReady"
+                  @cell-value-changed="onPivotEdited"
+                  @first-data-rendered="autoSizeOnFirstData"
+                />
               </div>
             </SplitterPanel>
           </Splitter>
@@ -1137,15 +1270,28 @@ onMounted(() => {
                 <Button variant="outlined" class="shrink-0 whitespace-nowrap">
                   <IconClipboard class="h-3 w-3" />粘贴结果
                 </Button>
-                <span class="ml-auto shrink-0 text-xs font-medium text-muted-foreground">试样信息（{{ samples.length }}）</span>
+                <span class="ml-auto shrink-0 text-xs font-medium text-muted-foreground"
+                  >试样信息（{{ samples.length }}）</span
+                >
               </div>
               <div class="min-h-0 flex-1 overflow-hidden">
-                <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                  :default-col-def="hmxDefaultColDef" :column-defs="singleSampleColDefs" :row-data="samples"
+                <AgGridVue
+                  class="hmx-ag-grid h-full w-full"
+                  :theme="theme"
+                  :locale-text="AG_GRID_LOCALE_CN"
+                  :default-col-def="hmxDefaultColDef"
+                  :column-defs="singleSampleColDefs"
+                  :row-data="samples"
                   :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
-                  :get-row-class="singleSampleRowClass" :suppress-column-virtualisation="true" :pagination="false"
-                  :animate-rows="false" :loading="loadingSamples" @grid-ready="onSingleGridReady"
-                  @selection-changed="onSingleSelectionChanged" @first-data-rendered="autoSizeOnFirstData" />
+                  :get-row-class="singleSampleRowClass"
+                  :suppress-column-virtualisation="true"
+                  :pagination="false"
+                  :animate-rows="false"
+                  :loading="loadingSamples"
+                  @grid-ready="onSingleGridReady"
+                  @selection-changed="onSingleSelectionChanged"
+                  @first-data-rendered="autoSizeOnFirstData"
+                />
               </div>
             </SplitterPanel>
             <SplitterPanel :minSize="35" class="flex min-h-0 flex-col overflow-hidden">
@@ -1156,11 +1302,20 @@ onMounted(() => {
                 <span class="ml-auto shrink-0 text-xs font-medium text-muted-foreground">检验结果</span>
               </div>
               <div class="min-h-0 flex-1 overflow-hidden">
-                <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                  :default-col-def="hmxDefaultColDef" :column-defs="detailColDefs" :row-data="detailRows"
-                  :suppress-column-virtualisation="true" :pagination="false" :animate-rows="false"
-                  @grid-ready="onDetailGridReady" @cell-value-changed="onDetailEdited"
-                  @first-data-rendered="autoSizeOnFirstData" />
+                <AgGridVue
+                  class="hmx-ag-grid h-full w-full"
+                  :theme="theme"
+                  :locale-text="AG_GRID_LOCALE_CN"
+                  :default-col-def="hmxDefaultColDef"
+                  :column-defs="detailColDefs"
+                  :row-data="detailRows"
+                  :suppress-column-virtualisation="true"
+                  :pagination="false"
+                  :animate-rows="false"
+                  @grid-ready="onDetailGridReady"
+                  @cell-value-changed="onDetailEdited"
+                  @first-data-rendered="autoSizeOnFirstData"
+                />
               </div>
             </SplitterPanel>
           </Splitter>
@@ -1169,8 +1324,13 @@ onMounted(() => {
     </Splitter>
 
     <!-- 确认（对应原 MsgBox.ShowYesNo） -->
-    <Dialog :visible="confirmOpen" modal header="确认" :style="{ width: 'min(32rem, calc(100vw - 2rem))' }"
-      @update:visible="confirmOpen = $event">
+    <Dialog
+      :visible="confirmOpen"
+      modal
+      header="确认"
+      :style="{ width: 'min(32rem, calc(100vw - 2rem))' }"
+      @update:visible="confirmOpen = $event"
+    >
       <p class="text-xs whitespace-pre-wrap">{{ confirmMsg }}</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />
@@ -1179,12 +1339,16 @@ onMounted(() => {
     </Dialog>
 
     <!-- 增加备注（对应原 FrmConfirmValueDialog.ShowDialog） -->
-    <Dialog :visible="remarkOpen" modal :header="remarkTitle"
-      :style="{ width: 'min(26rem, calc(100vw - 2rem))' }" @update:visible="remarkOpen = $event">
+    <Dialog
+      :visible="remarkOpen"
+      modal
+      :header="remarkTitle"
+      :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
+      @update:visible="remarkOpen = $event"
+    >
       <div class="flex flex-col gap-2">
         <label class="text-xs text-muted-foreground">请输入备注</label>
-        <InputText v-model="remarkText" class="w-full" :invalid="remarkInvalid" autofocus
-          @keyup.enter="submitRemark" />
+        <InputText v-model="remarkText" class="w-full" :invalid="remarkInvalid" autofocus @keyup.enter="submitRemark" />
         <span v-if="remarkInvalid" class="text-xs text-destructive">请输入备注</span>
       </div>
       <template #footer>

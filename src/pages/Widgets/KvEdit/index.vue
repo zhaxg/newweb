@@ -89,9 +89,7 @@ async function onQuery() {
   try {
     const list = (await systemKeyValueApi.querySysKvItemList(pcode)) ?? [];
     const kw = keyword.value.trim();
-    const rows = kw
-      ? list.filter((x) => (x.cCode ?? "").includes(kw) || (x.cName ?? "").includes(kw))
-      : list;
+    const rows = kw ? list.filter((x) => (x.cCode ?? "").includes(kw) || (x.cName ?? "").includes(kw)) : list;
     trackList.value = new TrackableList<HmxKv>(rows);
     gridApi.value?.deselectAll();
     requestAnimationFrame(() => gridApi.value?.autoSizeAllColumns());
@@ -164,7 +162,13 @@ onMounted(() => {
         :column-defs="colDefs"
         :row-data="trackList"
         :get-row-id="getRowId"
-        :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
+        :row-selection="{
+          mode: 'multiRow',
+          checkboxes: true,
+          headerCheckbox: true,
+          enableClickSelection: true,
+          enableSelectionWithoutKeys: true,
+        }"
         :suppress-column-virtualisation="true"
         :pagination="false"
         :animate-rows="false"

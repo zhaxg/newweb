@@ -47,14 +47,24 @@ function onSubmit() {
 </script>
 
 <template>
-  <Dialog :visible="open" modal header="编辑" :style="{ width: 'min(28rem, calc(100vw - 2rem))' }"
-    @update:visible="emit('update:open', $event)">
+  <Dialog
+    :visible="open"
+    modal
+    header="编辑"
+    :style="{ width: 'min(28rem, calc(100vw - 2rem))' }"
+    @update:visible="emit('update:open', $event)"
+  >
     <div class="min-w-0 space-y-3 py-1">
       <div class="grid grid-cols-1 gap-x-4 gap-y-3">
         <div class="min-w-0 space-y-1">
           <label class="text-xs font-medium text-muted-foreground">选择机台</label>
-          <InputText v-model="form.cMachineId" placeholder="请输入机台" autocapitalize="off" spellcheck="false"
-            class="w-full min-w-0" />
+          <InputText
+            v-model="form.cMachineId"
+            placeholder="请输入机台"
+            autocapitalize="off"
+            spellcheck="false"
+            class="w-full min-w-0"
+          />
         </div>
         <div class="min-w-0 space-y-1">
           <label class="text-xs font-medium text-muted-foreground">工厂</label>

@@ -68,16 +68,22 @@ function pageKey(pageId: string | undefined, routeName: unknown): string {
 
 <template>
   <div class="flex min-h-0 flex-1 flex-col">
-    <HmxHeader @open-settings="settingsOpen = true" @logout="logout" @toggle-sidebar="sidebarVisible = !sidebarVisible"
-      @open-page="openPage" />
+    <HmxHeader
+      @open-settings="settingsOpen = true"
+      @logout="logout"
+      @toggle-sidebar="sidebarVisible = !sidebarVisible"
+      @open-page="openPage"
+    />
     <div class="flex min-h-0 flex-1">
       <!-- v-show：只隐藏不卸载，保留侧栏展开/搜索/宽度等状态 -->
       <HmxSidebar v-show="sidebarVisible" :active-page-id="route.meta.pageId ?? null" @open-page="openPage" />
       <main class="flex min-h-0 min-w-0 flex-1 flex-col">
         <HmxTabBar />
         <div class="min-h-0 flex-1 overflow-hidden p-1.25 dark:bg-[#282828]">
-          <div class="relative flex h-full min-h-0 flex-col overflow-hidden rounded-sm"
-            :class="route.name === 'home' ? '' : 'bg-background'">
+          <div
+            class="relative flex h-full min-h-0 flex-col overflow-hidden rounded-sm"
+            :class="route.name === 'home' ? '' : 'bg-background'"
+          >
             <RouterView v-slot="{ Component, route: r }">
               <Transition name="page" mode="out-in">
                 <KeepAlive :max="25">
@@ -102,7 +108,9 @@ function pageKey(pageId: string | undefined, routeName: unknown): string {
 <style scoped>
 /* 页面切换动画：out-in 快速淡出 + 淡入微升，总时长 ~280ms，观感不拖沓 */
 .page-enter-active {
-  transition: opacity 0.18s ease, transform 0.18s cubic-bezier(0.25, 0.8, 0.5, 1);
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s cubic-bezier(0.25, 0.8, 0.5, 1);
 }
 
 .page-leave-active {
@@ -119,7 +127,6 @@ function pageKey(pageId: string | undefined, routeName: unknown): string {
 }
 
 @media (prefers-reduced-motion: reduce) {
-
   .page-enter-active,
   .page-leave-active {
     transition: none;

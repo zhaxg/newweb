@@ -19,22 +19,9 @@ import InputText from "primevue/inputtext";
 import Select from "primevue/select";
 import Splitter from "primevue/splitter";
 import SplitterPanel from "primevue/splitterpanel";
-import {
-  IconCheck,
-  IconDeviceFloppy,
-  IconLock,
-  IconPlus,
-  IconQrcode,
-  IconSearch,
-} from "@tabler/icons-vue";
+import { IconCheck, IconDeviceFloppy, IconLock, IconPlus, IconQrcode, IconSearch } from "@tabler/icons-vue";
 import { AgGridVue } from "ag-grid-vue3";
-import type {
-  ColDef,
-  GridApi,
-  GridReadyEvent,
-  SelectionChangedEvent,
-  ValueFormatterParams,
-} from "ag-grid-community";
+import type { ColDef, GridApi, GridReadyEvent, SelectionChangedEvent, ValueFormatterParams } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
 import {
@@ -138,8 +125,7 @@ function buildQuery(): QueryStoveChemicalCompositionInput {
     planNo: input.planNo?.trim() || undefined,
     sgSign: input.sgSign?.trim() || undefined,
     sgStd: input.sgStd?.trim() || undefined,
-    stoveChemResult:
-      input.stoveChemResult === "" || input.stoveChemResult == null ? null : input.stoveChemResult,
+    stoveChemResult: input.stoveChemResult === "" || input.stoveChemResult == null ? null : input.stoveChemResult,
     recheckFlag: input.recheckFlag === "" || input.recheckFlag == null ? null : input.recheckFlag,
     confirmFlag: input.confirmFlag === "" || input.confirmFlag == null ? null : input.confirmFlag,
     prdTime: toTimeRange(input.prdDate),
@@ -162,7 +148,12 @@ const stoveColDefs = ref<ColDef[]>([
   { field: "cStNo", headerName: "制造标准号", width: 110 },
   { field: "cOrderNo", headerName: "订单号", width: 120 },
   { field: "cOrderTsyq", headerName: "合同特殊要求", width: 140 },
-  { field: "cLineCode", headerName: "产线代码", width: 95, valueFormatter: (p) => lineOptions.value.find((l) => l.value === p.value)?.label ?? (p.value ?? "") },
+  {
+    field: "cLineCode",
+    headerName: "产线代码",
+    width: 95,
+    valueFormatter: (p) => lineOptions.value.find((l) => l.value === p.value)?.label ?? p.value ?? "",
+  },
   { field: "cMachine", headerName: "炉台号", width: 90 },
   { field: "cRouteCode", headerName: "精炼路径", width: 100 },
   { field: "nThick", headerName: "厚度", width: 70 },
@@ -194,7 +185,13 @@ const sampleColDefs = ref<ColDef[]>([
   { field: "cStove", headerName: "炉号", width: 90 },
   { field: "cSendUser", headerName: "发送人", width: 90 },
   { field: "dSendTime", headerName: "发送时间", width: 140 },
-  { field: "cJudgeResult", headerName: "判定结果", width: 90, valueFormatter: sampleJudgeFmt, cellClass: (p) => judgeCell(p) },
+  {
+    field: "cJudgeResult",
+    headerName: "判定结果",
+    width: 90,
+    valueFormatter: sampleJudgeFmt,
+    cellClass: (p) => judgeCell(p),
+  },
   { field: "cJudgeRemark", headerName: "判定备注", width: 120 },
   { field: "cRecheckFlag", headerName: "复验标记", width: 90, valueFormatter: yesNoFmt },
   { field: "cFinalFlag", headerName: "是否最终样", width: 100, valueFormatter: yesNoFmt },
@@ -308,7 +305,8 @@ async function onSampleSelection(e: SelectionChangedEvent) {
   try {
     let items = row.testItems;
     if (!items?.length) {
-      items = ((await stoveChemicalCompositionTestApi.getSamplesItems(row.id ?? undefined)) ?? []) as StoveSampleTestItem[];
+      items = ((await stoveChemicalCompositionTestApi.getSamplesItems(row.id ?? undefined)) ??
+        []) as StoveSampleTestItem[];
       row.testItems = items;
     }
     testItems.value = [...items];
@@ -426,8 +424,16 @@ onMounted(() => {
       <div class="grid grid-cols-6 items-center gap-x-3 gap-y-1.5">
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">产线</label>
-          <Select v-model="input.lineCode" :options="lineOptions" option-label="label" option-value="value"
-            show-clear filter placeholder="全部" class="min-w-0 flex-1" />
+          <Select
+            v-model="input.lineCode"
+            :options="lineOptions"
+            option-label="label"
+            option-value="value"
+            show-clear
+            filter
+            placeholder="全部"
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">炉号</label>
@@ -451,28 +457,64 @@ onMounted(() => {
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">判定结果</label>
-          <Select v-model="input.stoveChemResult" :options="stoveChemOptions" option-label="label" option-value="value"
-            show-clear class="min-w-0 flex-1" />
+          <Select
+            v-model="input.stoveChemResult"
+            :options="stoveChemOptions"
+            option-label="label"
+            option-value="value"
+            show-clear
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">复验标记</label>
-          <Select v-model="input.recheckFlag" :options="yesNoOptions" option-label="label" option-value="value"
-            show-clear class="min-w-0 flex-1" />
+          <Select
+            v-model="input.recheckFlag"
+            :options="yesNoOptions"
+            option-label="label"
+            option-value="value"
+            show-clear
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">是否已确认</label>
-          <Select v-model="input.confirmFlag" :options="confirmFlagOptions" option-label="label" option-value="value"
-            show-clear class="min-w-0 flex-1" />
+          <Select
+            v-model="input.confirmFlag"
+            :options="confirmFlagOptions"
+            option-label="label"
+            option-value="value"
+            show-clear
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="col-span-3 flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">生产时间</label>
-          <DatePicker v-model="input.prdDate" selectionMode="range" :manualInput="false" date-format="yy-mm-dd"
-            show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+          <DatePicker
+            v-model="input.prdDate"
+            selectionMode="range"
+            :manualInput="false"
+            date-format="yy-mm-dd"
+            show-time
+            hour-format="24"
+            show-icon
+            placeholder="开始 至 结束"
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="col-span-3 flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">送检时间</label>
-          <DatePicker v-model="input.sendDate" selectionMode="range" :manualInput="false" date-format="yy-mm-dd"
-            show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+          <DatePicker
+            v-model="input.sendDate"
+            selectionMode="range"
+            :manualInput="false"
+            date-format="yy-mm-dd"
+            show-time
+            hour-format="24"
+            show-icon
+            placeholder="开始 至 结束"
+            class="min-w-0 flex-1"
+          />
         </div>
       </div>
     </div>
@@ -504,20 +546,33 @@ onMounted(() => {
     <Splitter class="min-h-0 flex-1" layout="vertical">
       <SplitterPanel :size="64" :minSize="25" class="flex flex-col overflow-hidden">
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="stoveColDefs" :row-data="stoveRows"
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="stoveColDefs"
+            :row-data="stoveRows"
             :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
-            :pagination="false" :animate-rows="false" :loading="querying"
-            @grid-ready="onStoveGridReady" @selection-changed="onStoveSelection"
-            @first-data-rendered="autoSizeOnFirstData" />
+            :pagination="false"
+            :animate-rows="false"
+            :loading="querying"
+            @grid-ready="onStoveGridReady"
+            @selection-changed="onStoveSelection"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
 
       <SplitterPanel :minSize="25" class="flex min-h-0 flex-col overflow-hidden">
         <!-- 下栏左右（原 238/1172≈20%：二维码 | UCCfResult；二维码可隐藏） -->
         <Splitter class="min-h-0 flex-1">
-          <SplitterPanel v-if="showBarcode && currentSample?.cSampleNo" :size="20" :minSize="12"
-            class="flex flex-col overflow-hidden">
+          <SplitterPanel
+            v-if="showBarcode && currentSample?.cSampleNo"
+            :size="20"
+            :minSize="12"
+            class="flex flex-col overflow-hidden"
+          >
             <div class="flex h-8 shrink-0 items-center border-b border-border/60 px-2">
               <span class="text-xs font-medium text-muted-foreground">二维码</span>
             </div>
@@ -536,19 +591,29 @@ onMounted(() => {
                   <span class="text-xs font-medium text-muted-foreground">炉次成分试样</span>
                 </div>
                 <div class="min-h-0 flex-1 overflow-hidden">
-                  <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                    :default-col-def="hmxDefaultColDef" :column-defs="sampleColDefs" :row-data="samples"
+                  <AgGridVue
+                    class="hmx-ag-grid h-full w-full"
+                    :theme="theme"
+                    :locale-text="AG_GRID_LOCALE_CN"
+                    :default-col-def="hmxDefaultColDef"
+                    :column-defs="sampleColDefs"
+                    :row-data="samples"
                     :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
-                    :pagination="false" :animate-rows="false"
-                    @grid-ready="onSampleGridReady" @selection-changed="onSampleSelection"
-                    @first-data-rendered="autoSizeOnFirstData" />
+                    :pagination="false"
+                    :animate-rows="false"
+                    @grid-ready="onSampleGridReady"
+                    @selection-changed="onSampleSelection"
+                    @first-data-rendered="autoSizeOnFirstData"
+                  />
                 </div>
               </SplitterPanel>
 
               <SplitterPanel :minSize="28" class="flex flex-col overflow-hidden">
                 <!-- 保存结果按钮条 h-9 + 右=炉次成分信息（有按钮共用行） -->
-                <div v-if="showSave && allowEditResult"
-                  class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
+                <div
+                  v-if="showSave && allowEditResult"
+                  class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2"
+                >
                   <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onSaveItems">
                     <IconDeviceFloppy class="h-3 w-3" />保存结果
                   </Button>
@@ -558,10 +623,18 @@ onMounted(() => {
                   <span class="ml-auto text-xs font-medium text-muted-foreground">炉次成分信息</span>
                 </div>
                 <div class="min-h-0 flex-1 overflow-hidden">
-                  <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                    :default-col-def="hmxDefaultColDef" :column-defs="itemColDefs" :row-data="testItems"
-                    :pagination="false" :animate-rows="false"
-                    @grid-ready="onItemGridReady" @first-data-rendered="autoSizeOnFirstData" />
+                  <AgGridVue
+                    class="hmx-ag-grid h-full w-full"
+                    :theme="theme"
+                    :locale-text="AG_GRID_LOCALE_CN"
+                    :default-col-def="hmxDefaultColDef"
+                    :column-defs="itemColDefs"
+                    :row-data="testItems"
+                    :pagination="false"
+                    :animate-rows="false"
+                    @grid-ready="onItemGridReady"
+                    @first-data-rendered="autoSizeOnFirstData"
+                  />
                 </div>
               </SplitterPanel>
             </Splitter>
@@ -571,8 +644,13 @@ onMounted(() => {
     </Splitter>
 
     <!-- 确认（对应原 MsgBox.ShowYesNo） -->
-    <Dialog :visible="confirmOpen" modal header="确认" :style="{ width: 'min(28rem, calc(100vw - 2rem))' }"
-      @update:visible="confirmOpen = $event">
+    <Dialog
+      :visible="confirmOpen"
+      modal
+      header="确认"
+      :style="{ width: 'min(28rem, calc(100vw - 2rem))' }"
+      @update:visible="confirmOpen = $event"
+    >
       <p class="text-xs whitespace-pre-line">{{ confirmMsg }}</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />

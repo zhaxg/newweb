@@ -78,7 +78,6 @@ const txtKh = ref("");
 const txtArea = ref("");
 const txtNum = ref<number>(1);
 
-
 /** AG Grid 本版 GridApi 无 selectIndex：用 forEachNode 选中首行 */
 function selectFirstRow(gridApi: GridApi | null) {
   if (!gridApi) return;
@@ -112,10 +111,7 @@ function filterDetail(storeCode: string | undefined) {
 async function onQuery() {
   querying.value = true;
   try {
-    const [roomList, stackSource] = await Promise.all([
-      tyd1000Api.queryRoom(""),
-      tyd1000Api.queryStacks(""),
-    ]);
+    const [roomList, stackSource] = await Promise.all([tyd1000Api.queryRoom(""), tyd1000Api.queryStacks("")]);
     rooms.value = (roomList ?? []) as Tyd1000[];
     allStacks.value = (stackSource ?? []) as Tyd1010[];
     roomApi.value?.setGridOption("rowData", rooms.value);
@@ -267,12 +263,21 @@ function onImport() {
           <span class="text-xs font-medium text-muted-foreground">库区</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="roomColDefs"
-            :default-col-def="hmxDefaultColDef" :row-data="rooms" :locale-text="AG_GRID_LOCALE_CN"
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :column-defs="roomColDefs"
+            :default-col-def="hmxDefaultColDef"
+            :row-data="rooms"
+            :locale-text="AG_GRID_LOCALE_CN"
             :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
-            :pagination="false" :animate-rows="false" :loading="querying"
-            @grid-ready="onRoomReady" @selection-changed="onRoomSelectionChanged"
-            @first-data-rendered="autoSizeOnFirstData" />
+            :pagination="false"
+            :animate-rows="false"
+            :loading="querying"
+            @grid-ready="onRoomReady"
+            @selection-changed="onRoomSelectionChanged"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
 
@@ -283,12 +288,26 @@ function onImport() {
           </span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="stackColDefs"
-            :default-col-def="hmxDefaultColDef" :row-data="stackList" :locale-text="AG_GRID_LOCALE_CN"
-            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-            :pagination="false" :animate-rows="false"
-            @grid-ready="onStackReady" @first-data-rendered="autoSizeOnFirstData"
-            @cell-value-changed="refresh" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :column-defs="stackColDefs"
+            :default-col-def="hmxDefaultColDef"
+            :row-data="stackList"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :row-selection="{
+              mode: 'multiRow',
+              checkboxes: true,
+              headerCheckbox: true,
+              enableClickSelection: true,
+              enableSelectionWithoutKeys: true,
+            }"
+            :pagination="false"
+            :animate-rows="false"
+            @grid-ready="onStackReady"
+            @first-data-rendered="autoSizeOnFirstData"
+            @cell-value-changed="refresh"
+          />
         </div>
       </SplitterPanel>
     </Splitter>

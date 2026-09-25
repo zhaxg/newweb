@@ -14,9 +14,9 @@ import { buildDeptTree, descendantIds, type DeptTreeNode } from "./departments";
 const props = defineProps<{
   open: boolean;
   allRows: HmxDept[];
-  
+
   editing: HmxDept | null;
-  
+
   presetPid: string | null;
 }>();
 
@@ -55,15 +55,19 @@ function toPTree(nodes: DeptTreeNode[]): PTreeNode[] {
 
 const selectableTree = computed<PTreeNode[]>(() => {
   const editing = props.editing;
-  const rows = editing ? props.allRows.filter((r) => !descendantIds(props.allRows, editing.id ?? "").has(r.id ?? "")) : props.allRows;
+  const rows = editing
+    ? props.allRows.filter((r) => !descendantIds(props.allRows, editing.id ?? "").has(r.id ?? ""))
+    : props.allRows;
   return toPTree(buildDeptTree(rows));
 });
 
 // TreeSelect 的 v-model 是 {key:true} 选择映射，这里适配回 string|null
-const parentSelection = computed<Record<string, boolean> | null>(() => (typeof form.cDeptPid === "string" && form.cDeptPid ? { [form.cDeptPid]: true } : null));
+const parentSelection = computed<Record<string, boolean> | null>(() =>
+  typeof form.cDeptPid === "string" && form.cDeptPid ? { [form.cDeptPid]: true } : null,
+);
 
 function onParentSelection(keys: Record<string, boolean> | null) {
-  form.cDeptPid = keys ? Object.keys(keys).find((k) => keys[k]) ?? null : null;
+  form.cDeptPid = keys ? (Object.keys(keys).find((k) => keys[k]) ?? null) : null;
 }
 
 watch(
@@ -109,33 +113,64 @@ function onSave() {
 </script>
 
 <template>
-  <Dialog :visible="open" modal :header="editing ? '编辑部门' : '添加部门'"
-    :style="{ width: 'min(36rem, calc(100vw - 2rem))' }" @update:visible="emit('update:open', $event)">
+  <Dialog
+    :visible="open"
+    modal
+    :header="editing ? '编辑部门' : '添加部门'"
+    :style="{ width: 'min(36rem, calc(100vw - 2rem))' }"
+    @update:visible="emit('update:open', $event)"
+  >
     <div class="min-w-0 space-y-4 py-1">
       <!-- 基本信息：双列布局 -->
       <div class="grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2">
         <div class="min-w-0 space-y-1">
-          <label class="text-xs font-medium text-muted-foreground">部门名称<span class="ml-0.5 text-destructive">*</span></label>
-          <InputText v-model="form.cDeptName" placeholder="请输入部门名称" autofocus autocapitalize="off" spellcheck="false"
-            class="w-full min-w-0" @keydown.enter="onSave" />
+          <label class="text-xs font-medium text-muted-foreground"
+            >部门名称<span class="ml-0.5 text-destructive">*</span></label
+          >
+          <InputText
+            v-model="form.cDeptName"
+            placeholder="请输入部门名称"
+            autofocus
+            autocapitalize="off"
+            spellcheck="false"
+            class="w-full min-w-0"
+            @keydown.enter="onSave"
+          />
         </div>
 
         <div class="min-w-0 space-y-1">
           <label class="text-xs font-medium text-muted-foreground">上级部门</label>
-          <TreeSelect :model-value="parentSelection" @update:model-value="onParentSelection" :options="selectableTree"
-            placeholder="-请选择-（顶级部门）" filter show-clear class="w-full min-w-0" />
+          <TreeSelect
+            :model-value="parentSelection"
+            @update:model-value="onParentSelection"
+            :options="selectableTree"
+            placeholder="-请选择-（顶级部门）"
+            filter
+            show-clear
+            class="w-full min-w-0"
+          />
         </div>
 
         <div class="min-w-0 space-y-1">
           <label class="text-xs font-medium text-muted-foreground">集团代码</label>
-          <InputText v-model="form.cCompany" placeholder="如 HMX" autocapitalize="off" spellcheck="false"
-            class="w-full min-w-0" />
+          <InputText
+            v-model="form.cCompany"
+            placeholder="如 HMX"
+            autocapitalize="off"
+            spellcheck="false"
+            class="w-full min-w-0"
+          />
         </div>
 
         <div class="min-w-0 space-y-1">
           <label class="text-xs font-medium text-muted-foreground">自定义分类</label>
-          <InputText v-model="form.cClassify" placeholder="如 职能 / 事业部" autocapitalize="off" spellcheck="false"
-            class="w-full min-w-0" />
+          <InputText
+            v-model="form.cClassify"
+            placeholder="如 职能 / 事业部"
+            autocapitalize="off"
+            spellcheck="false"
+            class="w-full min-w-0"
+          />
         </div>
       </div>
 
@@ -152,9 +187,11 @@ function onSave() {
           <!-- 仅展示前 3 个；form 仍携带 cSw04/05，编辑保存时原值回写不丢失 -->
           <div v-for="n in 3" :key="n" class="min-w-0 space-y-1">
             <label class="text-xs text-muted-foreground/80">扩展{{ n }}</label>
-            <InputText :model-value="(form as Record<string, string>)[`cSw0${n}`]"
+            <InputText
+              :model-value="(form as Record<string, string>)[`cSw0${n}`]"
               @update:model-value="(v: string | undefined) => ((form as Record<string, string>)[`cSw0${n}`] = v ?? '')"
-              class="w-full min-w-0 bg-background" />
+              class="w-full min-w-0 bg-background"
+            />
           </div>
         </div>
       </div>

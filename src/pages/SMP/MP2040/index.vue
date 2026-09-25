@@ -310,7 +310,9 @@ function onJcSelectionChanged(_e: SelectionChangedEvent) {
 /* ---------- 按钮逻辑（原事件逐条） ---------- */
 /** 生成浇次（simpleButton2_Click → CreatJc：选中=Selected 标记） */
 async function onCreateJc() {
-  const ids = selectedStoves().map((x) => x.id).filter(Boolean) as string[];
+  const ids = selectedStoves()
+    .map((x) => x.id)
+    .filter(Boolean) as string[];
   if (!ids.length) {
     toast("没有选择组成浇次的炉次计划！", 2500, "warn");
     return;
@@ -326,7 +328,9 @@ async function onCreateJc() {
 
 /** 删除炉次（simpleButton4_Click → DeleteLc） */
 async function onDeleteLc() {
-  const ids = selectedStoves().map((x) => x.id).filter(Boolean) as string[];
+  const ids = selectedStoves()
+    .map((x) => x.id)
+    .filter(Boolean) as string[];
   if (!ids.length) {
     toast("没有选择需要删除的炉次！", 2500, "warn");
     return;
@@ -367,26 +371,46 @@ async function onDeleteJc() {
         <IconSearch class="h-3 w-3" />查询
       </Button>
       <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onCreateJc">生成浇次</Button>
-      <Button variant="outlined" severity="danger" class="shrink-0 whitespace-nowrap" @click="onDeleteLc">删除炉次</Button>
+      <Button variant="outlined" severity="danger" class="shrink-0 whitespace-nowrap" @click="onDeleteLc"
+        >删除炉次</Button
+      >
     </div>
 
     <!-- 上下分栏：上=炉次 gcStove（原 Dock.Fill）；splitterControl1.Bottom；下=panel1 -->
     <Splitter class="min-h-0 flex-1" layout="vertical">
       <SplitterPanel :size="46" :minSize="20" class="flex flex-col overflow-hidden">
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="stoveColDefs" :row-data="stoveRows" :pagination="false"
-            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-            :loading="querying" :master-detail="true" :detail-grid-options="stoveDetailOptions"
-            :get-detail-row-data="getStoveDetailRows" @grid-ready="ready('stove')"
-            @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="stoveColDefs"
+            :row-data="stoveRows"
+            :pagination="false"
+            :row-selection="{
+              mode: 'multiRow',
+              checkboxes: true,
+              headerCheckbox: true,
+              enableClickSelection: true,
+              enableSelectionWithoutKeys: true,
+            }"
+            :loading="querying"
+            :master-detail="true"
+            :detail-grid-options="stoveDetailOptions"
+            :get-detail-row-data="getStoveDetailRows"
+            @grid-ready="ready('stove')"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
 
       <SplitterPanel :minSize="30" class="flex flex-col overflow-hidden">
         <!-- stackPanel2：删除浇次（panel1 内 Dock.Top，横跨两表） -->
         <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
-          <Button variant="outlined" severity="danger" class="shrink-0 whitespace-nowrap" @click="onDeleteJc">删除浇次</Button>
+          <Button variant="outlined" severity="danger" class="shrink-0 whitespace-nowrap" @click="onDeleteJc"
+            >删除浇次</Button
+          >
         </div>
 
         <!-- 左右分栏（splitterControl2，≈588/965）：左=浇次信息 gcJc（Dock.Left）｜右=浇次炉次信息 gcJcStove（Fill） -->
@@ -396,11 +420,20 @@ async function onDeleteJc() {
               <span class="text-xs font-medium text-muted-foreground">浇次信息</span>
             </div>
             <div class="min-h-0 flex-1 overflow-hidden">
-              <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                :default-col-def="hmxDefaultColDef" :column-defs="jcColDefs" :row-data="jcRows" :pagination="false"
-                :loading="querying" :row-selection="{ mode: 'singleRow', enableClickSelection: true }"
-                @grid-ready="ready('jc')" @first-data-rendered="autoSizeOnFirstData"
-                @selection-changed="onJcSelectionChanged" />
+              <AgGridVue
+                class="hmx-ag-grid h-full w-full"
+                :theme="theme"
+                :locale-text="AG_GRID_LOCALE_CN"
+                :default-col-def="hmxDefaultColDef"
+                :column-defs="jcColDefs"
+                :row-data="jcRows"
+                :pagination="false"
+                :loading="querying"
+                :row-selection="{ mode: 'singleRow', enableClickSelection: true }"
+                @grid-ready="ready('jc')"
+                @first-data-rendered="autoSizeOnFirstData"
+                @selection-changed="onJcSelectionChanged"
+              />
             </div>
           </SplitterPanel>
           <SplitterPanel :minSize="25" class="flex flex-col overflow-hidden">
@@ -408,11 +441,20 @@ async function onDeleteJc() {
               <span class="text-xs font-medium text-muted-foreground">浇次炉次信息</span>
             </div>
             <div class="min-h-0 flex-1 overflow-hidden">
-              <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                :default-col-def="hmxDefaultColDef" :column-defs="jcStoveColDefs" :row-data="jcStoveRows"
-                :pagination="false" :master-detail="true" :detail-grid-options="stoveDetailOptions"
-                :get-detail-row-data="getStoveDetailRows" @grid-ready="ready('jcStove')"
-                @first-data-rendered="autoSizeOnFirstData" />
+              <AgGridVue
+                class="hmx-ag-grid h-full w-full"
+                :theme="theme"
+                :locale-text="AG_GRID_LOCALE_CN"
+                :default-col-def="hmxDefaultColDef"
+                :column-defs="jcStoveColDefs"
+                :row-data="jcStoveRows"
+                :pagination="false"
+                :master-detail="true"
+                :detail-grid-options="stoveDetailOptions"
+                :get-detail-row-data="getStoveDetailRows"
+                @grid-ready="ready('jcStove')"
+                @first-data-rendered="autoSizeOnFirstData"
+              />
             </div>
           </SplitterPanel>
         </Splitter>

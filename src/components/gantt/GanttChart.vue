@@ -145,10 +145,7 @@ onBeforeUnmount(() => {
   chart.value = null;
 });
 
-watch(
-  () => [props.startDate, props.endDate, props.resources, props.appointments, props.gridLines] as const,
-  reload,
-);
+watch(() => [props.startDate, props.endDate, props.resources, props.appointments, props.gridLines] as const, reload);
 watch(
   () => [props.selectModel, props.canMoveHorizontal, props.canMoveVertical, props.showLink] as const,
   ([selectModel, canMoveHorizontal, canMoveVertical, showLink]) => {

@@ -42,8 +42,12 @@ const stoveRows = shallowRef<StoveRslDto[]>([]);
 const loading = ref(false);
 const dayApi = ref<GridApi | null>(null);
 const stoveApi = ref<GridApi | null>(null);
-function onDayReady(e: GridReadyEvent) { dayApi.value = e.api; }
-function onStoveReady(e: GridReadyEvent) { stoveApi.value = e.api; }
+function onDayReady(e: GridReadyEvent) {
+  dayApi.value = e.api;
+}
+function onStoveReady(e: GridReadyEvent) {
+  stoveApi.value = e.api;
+}
 
 const dayColDefs: ColDef[] = [
   /*  { colId: "date", field: "date", headerName: "日期", width: 150 },
@@ -92,8 +96,17 @@ function onTabChange(v: string | number) {
     <div class="grid shrink-0 grid-cols-6 items-center gap-x-3 gap-y-1.5 border-b border-border/60 px-3 py-2">
       <div class="col-span-2 flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">日期范围</label>
-        <DatePicker v-model="input.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-          show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+        <DatePicker
+          v-model="input.dates"
+          selection-mode="range"
+          :manual-input="false"
+          date-format="yy-mm-dd"
+          show-time
+          hour-format="24"
+          show-icon
+          placeholder="开始 至 结束"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="col-span-4 flex min-w-0 items-center gap-1">
         <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="loading" @click="query">
@@ -108,16 +121,34 @@ function onTabChange(v: string | number) {
       </TabList>
       <TabPanels class="min-h-0 flex-1">
         <TabPanel :value="0" class="h-full p-0">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="dayColDefs" :row-data="dayRows" :pagination="false"
-            :animate-rows="false" :loading="loading" @grid-ready="onDayReady"
-            @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="dayColDefs"
+            :row-data="dayRows"
+            :pagination="false"
+            :animate-rows="false"
+            :loading="loading"
+            @grid-ready="onDayReady"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </TabPanel>
         <TabPanel :value="1" class="h-full p-0">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="stoveColDefs" :row-data="stoveRows" :pagination="false"
-            :animate-rows="false" :loading="loading" @grid-ready="onStoveReady"
-            @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="stoveColDefs"
+            :row-data="stoveRows"
+            :pagination="false"
+            :animate-rows="false"
+            :loading="loading"
+            @grid-ready="onStoveReady"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </TabPanel>
       </TabPanels>
     </Tabs>

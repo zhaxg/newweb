@@ -13,7 +13,14 @@ import Select from "primevue/select";
 import { IconArrowBackUp, IconSearch } from "@tabler/icons-vue";
 import type { GridApi } from "ag-grid-community";
 import { useMenuQuery } from "@/lib/menuQuery";
-import { cPStorageApi, tyd1000Api, tyd2000Api, type StorageInputDto, type Tyd1000, type Tyd2000Dto } from "@/api/mes4ddh/syd.swagger";
+import {
+  cPStorageApi,
+  tyd1000Api,
+  tyd2000Api,
+  type StorageInputDto,
+  type Tyd1000,
+  type Tyd2000Dto,
+} from "@/api/mes4ddh/syd.swagger";
 import UcStorageGrid from "../_uc/UcStorageGrid.vue";
 import { useToast } from "@/composables/useToast";
 
@@ -102,9 +109,7 @@ function buildInput(): StorageInputDto {
     nThick: decimalRange(q.thickRange),
     nWth: decimalRange(q.wthRange),
     nLen: decimalRange(q.lenRange),
-    dProTime: q.proTime?.[0] && q.proTime?.[1]
-      ? { min: isoDate(q.proTime[0]), max: isoDate(q.proTime[1]) }
-      : undefined,
+    dProTime: q.proTime?.[0] && q.proTime?.[1] ? { min: isoDate(q.proTime[0]), max: isoDate(q.proTime[1]) } : undefined,
     cSteelType: q.cSteelType,
     cDelivyStatusCode: q.cDelivyStatusCode,
     customerName: q.customerName || null,
@@ -166,8 +171,16 @@ onMounted(() => {
     <div class="grid shrink-0 grid-cols-6 items-center gap-x-3 gap-y-1.5 border-b border-border/60 px-3 py-2">
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">库区</label>
-        <Select v-model="q.cStoreCode" :options="storeOptions" option-label="label" option-value="value" show-clear
-          filter placeholder="选择库区" class="min-w-0 flex-1" />
+        <Select
+          v-model="q.cStoreCode"
+          :options="storeOptions"
+          option-label="label"
+          option-value="value"
+          show-clear
+          filter
+          placeholder="选择库区"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">批号</label>
@@ -215,8 +228,17 @@ onMounted(() => {
       </div>
       <div class="col-span-2 flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">产出时间</label>
-        <DatePicker v-model="q.proTime" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-          show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+        <DatePicker
+          v-model="q.proTime"
+          selection-mode="range"
+          :manual-input="false"
+          date-format="yy-mm-dd"
+          show-time
+          hour-format="24"
+          show-icon
+          placeholder="开始 至 结束"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">件次号</label>

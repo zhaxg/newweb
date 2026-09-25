@@ -53,21 +53,46 @@ const propColDefs: ColDef[] = [
   { field: "LastModifier", headerName: "最后修改人", width: 100 },
 ];
 
-function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
-function onPropGridReady(e: GridReadyEvent) { propGridApi.value = e.api; }
+function onGridReady(e: GridReadyEvent) {
+  gridApi.value = e.api;
+}
+function onPropGridReady(e: GridReadyEvent) {
+  propGridApi.value = e.api;
+}
 
 async function onQuery() {
   querying.value = true;
-  try { rows.value = []; props.value = []; } finally { querying.value = false; }
+  try {
+    rows.value = [];
+    props.value = [];
+  } finally {
+    querying.value = false;
+  }
 }
-function onAddBaseTable() { /* TODO */ }
-function onDeleteBaseTable() { /* TODO */ }
-function onSaveBaseTable() { /* TODO */ }
-function onApplyChange() { /* TODO */ }
-function onPreviewConfig() { /* TODO */ }
-function onAddProp() { /* TODO */ }
-function onDeleteProp() { /* TODO */ }
-function onSaveProp() { /* TODO */ }
+function onAddBaseTable() {
+  /* TODO */
+}
+function onDeleteBaseTable() {
+  /* TODO */
+}
+function onSaveBaseTable() {
+  /* TODO */
+}
+function onApplyChange() {
+  /* TODO */
+}
+function onPreviewConfig() {
+  /* TODO */
+}
+function onAddProp() {
+  /* TODO */
+}
+function onDeleteProp() {
+  /* TODO */
+}
+function onSaveProp() {
+  /* TODO */
+}
 </script>
 
 <template>
@@ -75,8 +100,15 @@ function onSaveProp() { /* TODO */ }
     <!-- 工具栏：关键字 + 所有基表操作按钮（1个条件合并一行） -->
     <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
       <label class="shrink-0 whitespace-nowrap text-xs text-muted-foreground">关键字</label>
-      <InputText v-model="keyword" maxlength="100" placeholder="关键字" autocapitalize="off" spellcheck="false"
-        class="w-48 shrink-0" @keydown.enter="onQuery" />
+      <InputText
+        v-model="keyword"
+        maxlength="100"
+        placeholder="关键字"
+        autocapitalize="off"
+        spellcheck="false"
+        class="w-48 shrink-0"
+        @keydown.enter="onQuery"
+      />
       <Button text class="shrink-0 whitespace-nowrap" :loading="querying" @click="onQuery">
         <IconSearch class="h-3 w-3" />查询
       </Button>
@@ -106,10 +138,20 @@ function onSaveProp() { /* TODO */ }
           <span class="text-xs font-medium text-muted-foreground">基表列表</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="tableColDefs" :row-data="rows"
-            :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }" :pagination="false" :animate-rows="false" :loading="querying"
-            @grid-ready="onGridReady" @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="tableColDefs"
+            :row-data="rows"
+            :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
+            :pagination="false"
+            :animate-rows="false"
+            :loading="querying"
+            @grid-ready="onGridReady"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
 
@@ -129,10 +171,19 @@ function onSaveProp() { /* TODO */ }
           </Button>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="propColDefs" :row-data="props"
-            :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }" :pagination="false" :animate-rows="false"
-            @grid-ready="onPropGridReady" @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="propColDefs"
+            :row-data="props"
+            :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
+            :pagination="false"
+            :animate-rows="false"
+            @grid-ready="onPropGridReady"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
     </Splitter>

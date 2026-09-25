@@ -58,10 +58,12 @@ const rows = shallowRef<TiL2me14Dto[]>([]);
 const rawList = shallowRef<TiL2me14Dto[]>([]);
 const loading = ref(false);
 const api = ref<GridApi | null>(null);
-function onReady(e: GridReadyEvent) { api.value = e.api; }
+function onReady(e: GridReadyEvent) {
+  api.value = e.api;
+}
 
 const colDefs: ColDef[] = [
-    { colId: "cBatchOrder", field: "cBatchOrder", headerName: "组批号", width: 112 },
+  { colId: "cBatchOrder", field: "cBatchOrder", headerName: "组批号", width: 112 },
   { colId: "cBilletTypeCode", field: "cBilletTypeCode", headerName: "铸坯标识", width: 112 },
   { colId: "cProRemark", field: "cProRemark", headerName: "生产备注", width: 112 },
   { colId: "createTime", field: "createTime", headerName: "创建时间", width: 112 },
@@ -143,28 +145,32 @@ const activeTab = ref(0);
 
 const hzGroupColDefs: (ColGroupDef | ColDef)[] = [
   {
-    groupId: "g1", headerName: "",
+    groupId: "g1",
+    headerName: "",
     children: [
       { colId: "cShiftGroup", field: "cShiftGroup", headerName: "班组", width: 112 },
       { colId: "nQua", field: "nQua", headerName: "块数", width: 112 },
     ],
   },
   {
-    groupId: "kl", headerName: "空冷",
+    groupId: "kl",
+    headerName: "空冷",
     children: [
       { colId: "nKLQua", field: "nKLQua", headerName: "块数", width: 112 },
       { colId: "nKLRate", field: "nKLRate", headerName: "比例", width: 112 },
     ],
   },
   {
-    groupId: "sl", headerName: "水冷",
+    groupId: "sl",
+    headerName: "水冷",
     children: [
       { colId: "nSLQua", field: "nSLQua", headerName: "块数", width: 112 },
       { colId: "nSLRate", field: "nSLRate", headerName: "比例", width: 112 },
     ],
   },
   {
-    groupId: "dq", headerName: "DQ(高压模式)",
+    groupId: "dq",
+    headerName: "DQ(高压模式)",
     children: [
       { colId: "nDQQua", field: "nDQQua", headerName: "块数", width: 112 },
       { colId: "nDQRate", field: "nDQRate", headerName: "比例", width: 112 },
@@ -175,28 +181,32 @@ const hzGroupColDefs: (ColGroupDef | ColDef)[] = [
 
 const hzAuthorColDefs: (ColGroupDef | ColDef)[] = [
   {
-    groupId: "g2", headerName: "",
+    groupId: "g2",
+    headerName: "",
     children: [
       { colId: "author", field: "author", headerName: "责任者", width: 112 },
       { colId: "nQua", field: "nQua", headerName: "块数", width: 112 },
     ],
   },
   {
-    groupId: "kl", headerName: "空冷",
+    groupId: "kl",
+    headerName: "空冷",
     children: [
       { colId: "nKLQua", field: "nKLQua", headerName: "块数", width: 112 },
       { colId: "nKLRate", field: "nKLRate", headerName: "比例", width: 112 },
     ],
   },
   {
-    groupId: "sl", headerName: "水冷",
+    groupId: "sl",
+    headerName: "水冷",
     children: [
       { colId: "nSLQua", field: "nSLQua", headerName: "块数", width: 112 },
       { colId: "nSLRate", field: "nSLRate", headerName: "比例", width: 112 },
     ],
   },
   {
-    groupId: "dq", headerName: "DQ(高压模式)",
+    groupId: "dq",
+    headerName: "DQ(高压模式)",
     children: [
       { colId: "nDQQua", field: "nDQQua", headerName: "块数", width: 112 },
       { colId: "nDQRate", field: "nDQRate", headerName: "比例", width: 112 },
@@ -269,8 +279,17 @@ async function query() {
       </div>
       <div class="col-span-2 flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">作业时间</label>
-        <DatePicker v-model="input.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-          show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+        <DatePicker
+          v-model="input.dates"
+          selection-mode="range"
+          :manual-input="false"
+          date-format="yy-mm-dd"
+          show-time
+          hour-format="24"
+          show-icon
+          placeholder="开始 至 结束"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="col-span-2 flex min-w-0 items-center gap-1">
         <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="loading" @click="query">
@@ -284,10 +303,19 @@ async function query() {
         <span class="text-xs font-medium text-muted-foreground">ACC超快冷实绩</span>
       </div>
       <div class="min-h-0 flex-[7] overflow-hidden">
-        <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-          :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows" :pagination="false"
-          :animate-rows="false" :loading="loading" @grid-ready="onReady"
-          @first-data-rendered="autoSizeOnFirstData" />
+        <AgGridVue
+          class="hmx-ag-grid h-full w-full"
+          :theme="theme"
+          :locale-text="AG_GRID_LOCALE_CN"
+          :default-col-def="hmxDefaultColDef"
+          :column-defs="colDefs"
+          :row-data="rows"
+          :pagination="false"
+          :animate-rows="false"
+          :loading="loading"
+          @grid-ready="onReady"
+          @first-data-rendered="autoSizeOnFirstData"
+        />
       </div>
       <div class="flex min-h-0 flex-[3] flex-col border-t border-border/60">
         <div class="flex h-8 shrink-0 items-center gap-2 border-b border-border/60 px-2">
@@ -300,16 +328,32 @@ async function query() {
           </TabList>
           <TabPanels class="min-h-0 flex-1">
             <TabPanel :value="0" class="h-full p-0">
-              <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                :default-col-def="hmxDefaultColDef" :column-defs="hzGroupColDefs" :row-data="hzGroupRows"
-                :pagination="false" :animate-rows="false" :loading="hzLoading"
-                @first-data-rendered="autoSizeOnFirstData" />
+              <AgGridVue
+                class="hmx-ag-grid h-full w-full"
+                :theme="theme"
+                :locale-text="AG_GRID_LOCALE_CN"
+                :default-col-def="hmxDefaultColDef"
+                :column-defs="hzGroupColDefs"
+                :row-data="hzGroupRows"
+                :pagination="false"
+                :animate-rows="false"
+                :loading="hzLoading"
+                @first-data-rendered="autoSizeOnFirstData"
+              />
             </TabPanel>
             <TabPanel :value="1" class="h-full p-0">
-              <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                :default-col-def="hmxDefaultColDef" :column-defs="hzAuthorColDefs" :row-data="hzAuthorRows"
-                :pagination="false" :animate-rows="false" :loading="hzLoading"
-                @first-data-rendered="autoSizeOnFirstData" />
+              <AgGridVue
+                class="hmx-ag-grid h-full w-full"
+                :theme="theme"
+                :locale-text="AG_GRID_LOCALE_CN"
+                :default-col-def="hmxDefaultColDef"
+                :column-defs="hzAuthorColDefs"
+                :row-data="hzAuthorRows"
+                :pagination="false"
+                :animate-rows="false"
+                :loading="hzLoading"
+                @first-data-rendered="autoSizeOnFirstData"
+              />
             </TabPanel>
           </TabPanels>
         </Tabs>

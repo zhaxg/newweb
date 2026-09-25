@@ -26,7 +26,9 @@ const gridApi = ref<GridApi | null>(null);
 const dayStart = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
 /** 原 ucTimeRange1.Value = new TimeRange(今天-7日.Date, 今天.Date.AddDays(1)) */
 const input = reactive({
-  timeRange: [dayStart(new Date(Date.now() - 7 * 86400000)), dayStart(new Date(Date.now() + 86400000))] as Date[] | null,
+  timeRange: [dayStart(new Date(Date.now() - 7 * 86400000)), dayStart(new Date(Date.now() + 86400000))] as
+    | Date[]
+    | null,
   fileName: "",
   regulateNo: "",
 });
@@ -52,7 +54,9 @@ function getRowId(p: GetRowIdParams) {
   return String(d.id ?? "");
 }
 
-function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
+function onGridReady(e: GridReadyEvent) {
+  gridApi.value = e.api;
+}
 
 async function onQuery() {
   querying.value = true;
@@ -84,9 +88,17 @@ async function onQuery() {
       <div class="grid grid-cols-6 items-center gap-x-3 gap-y-1.5">
         <div class="col-span-2 flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">时间范围</label>
-          <DatePicker v-model="input.timeRange" selection-mode="range" :manual-input="false"
-            date-format="yy-mm-dd" show-time hour-format="24" show-icon placeholder="开始 至 结束"
-            class="min-w-0 flex-1" />
+          <DatePicker
+            v-model="input.timeRange"
+            selection-mode="range"
+            :manual-input="false"
+            date-format="yy-mm-dd"
+            show-time
+            hour-format="24"
+            show-icon
+            placeholder="开始 至 结束"
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">文件名称</label>
@@ -109,12 +121,28 @@ async function onQuery() {
 
     <!-- 数据表格（原 gridControl1 / gridView1，TiGzmfileRecord） -->
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows" :get-row-id="getRowId"
-        :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="rows"
+        :get-row-id="getRowId"
+        :row-selection="{
+          mode: 'multiRow',
+          checkboxes: true,
+          headerCheckbox: true,
+          enableClickSelection: true,
+          enableSelectionWithoutKeys: true,
+        }"
         :suppress-column-virtualisation="true"
-        :pagination="false" :animate-rows="false" :loading="querying"
-        @grid-ready="onGridReady" @first-data-rendered="autoSizeOnFirstData" />
+        :pagination="false"
+        :animate-rows="false"
+        :loading="querying"
+        @grid-ready="onGridReady"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
   </div>
 </template>

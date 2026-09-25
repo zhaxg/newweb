@@ -18,16 +18,35 @@ import DatePicker from "primevue/datepicker";
 import InputText from "primevue/inputtext";
 import Select from "primevue/select";
 import {
-  IconArrowBackUp, IconBox, IconCubeUnfolded, IconEraser, IconFileImport, IconGridDots,
-  IconPencil, IconPlus, IconRefresh, IconSearch, IconStack2, IconTriangleInverted, IconX,
+  IconArrowBackUp,
+  IconBox,
+  IconCubeUnfolded,
+  IconEraser,
+  IconFileImport,
+  IconGridDots,
+  IconPencil,
+  IconPlus,
+  IconRefresh,
+  IconSearch,
+  IconStack2,
+  IconTriangleInverted,
+  IconX,
 } from "@tabler/icons-vue";
 import type { GridApi } from "ag-grid-community";
 import { useMenuQuery } from "@/lib/menuQuery";
 import { systemKeyValueApi } from "@/api/admin/request";
 import {
-  InventoryStatusEnum, NProTypeEnum, StorageInOutTypeEnum,
-  tyd2000Api, tyd1000Api,
-  type QueryNotInStorageDto, type StorageInOutDto, type StoragePosition, type TimeRange, type Tyd1000, type Tyd2000Dto,
+  InventoryStatusEnum,
+  NProTypeEnum,
+  StorageInOutTypeEnum,
+  tyd2000Api,
+  tyd1000Api,
+  type QueryNotInStorageDto,
+  type StorageInOutDto,
+  type StoragePosition,
+  type TimeRange,
+  type Tyd1000,
+  type Tyd2000Dto,
 } from "@/api/mes4ddh/syd.swagger";
 import { storageApi } from "@/api/mes4ddh/syd.swagger";
 import { tms3000Api, tms9001Api } from "@/api/mes4ddh/sms.swagger";
@@ -56,7 +75,9 @@ const param = computed<Params>(() => {
         CMachineCode: typeof o.CMachineCode === "string" ? o.CMachineCode : undefined,
         CTarStoreCodes: Array.isArray(o.CTarStoreCodes) ? o.CTarStoreCodes : [],
       };
-    } catch { /* 坏 JSON 按空处理 */ }
+    } catch {
+      /* 坏 JSON 按空处理 */
+    }
   }
   return {};
 });
@@ -82,8 +103,12 @@ const STATUS_OPTIONS = [
 ];
 
 function defaultRange(): [Date, Date] {
-  const start = new Date(); start.setHours(0, 0, 0, 0); start.setDate(start.getDate() - 1);
-  const end = new Date(); end.setDate(end.getDate() + 1); end.setHours(23, 59, 59, 0);
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  start.setDate(start.getDate() - 1);
+  const end = new Date();
+  end.setDate(end.getDate() + 1);
+  end.setHours(23, 59, 59, 0);
   return [start, end];
 }
 
@@ -127,9 +152,10 @@ async function onQuery() {
   querying.value = true;
   try {
     const input: QueryNotInStorageDto = {
-      dProTime: q.proDates?.[0] && q.proDates?.[1]
-        ? { min: isoDate(q.proDates[0]), max: isoDate(q.proDates[1]) } as TimeRange
-        : undefined,
+      dProTime:
+        q.proDates?.[0] && q.proDates?.[1]
+          ? ({ min: isoDate(q.proDates[0]), max: isoDate(q.proDates[1]) } as TimeRange)
+          : undefined,
       cStove: q.cStove.trim() || null,
       cPieceNo: q.cPieceNo.trim() || null,
       cPieceNoSlab: q.cPieceNoSlab.trim() || null,
@@ -141,34 +167,56 @@ async function onQuery() {
     rows.value = ((await tyd2000Api.queryNotInStorage(input)) ?? []) as Tyd2000Dto[];
     requestAnimationFrame(() => api.value?.autoSizeAllColumns());
     if (!rows.value.length) toast("无符合条件的数据", 2000, "info");
-  } catch { /* 拦截层已 toast */ } finally { querying.value = false; }
+  } catch {
+    /* 拦截层已 toast */
+  } finally {
+    querying.value = false;
+  }
 }
 
 /* btnInStorage 入库 → FrmYD2010RK / FrmYD2010RKTransfer（按产线分流，占位） */
 function onInStorage() {
   const selected = selectedRows().filter((w) => w.nStatus === InventoryStatusEnum.NotIn);
-  if (!selected.length) { toast("请选择[待入库]的材料再操作", 2500, "warn"); return; }
-  if (!param.value.CStoreCode) { toast("未设置入库库区，不能操作", 2500, "warn"); return; }
+  if (!selected.length) {
+    toast("请选择[待入库]的材料再操作", 2500, "warn");
+    return;
+  }
+  if (!param.value.CStoreCode) {
+    toast("未设置入库库区，不能操作", 2500, "warn");
+    return;
+  }
   const isLg1 = param.value.CLineCode === "LG01";
-  toast(isLg1
-    ? "转运入库弹窗（FrmYD2010RKTransfer）待接入"
-    : "入库弹窗（FrmYD2010RK）待接入", 2500, "warn");
+  toast(isLg1 ? "转运入库弹窗（FrmYD2010RKTransfer）待接入" : "入库弹窗（FrmYD2010RK）待接入", 2500, "warn");
 }
 
 /* btnRk2 图形化入库 → FrmKanban + KanBanRKDDNew1（占位） */
 function onRk2() {
   const selected = selectedRows().filter((w) => w.nStatus === InventoryStatusEnum.NotIn);
-  if (!selected.length) { toast("请选择[待入库]的材料再操作", 2500, "warn"); return; }
-  if (!param.value.CStoreCode) { toast("未设置入库库区，不能操作", 2500, "warn"); return; }
+  if (!selected.length) {
+    toast("请选择[待入库]的材料再操作", 2500, "warn");
+    return;
+  }
+  if (!param.value.CStoreCode) {
+    toast("未设置入库库区，不能操作", 2500, "warn");
+    return;
+  }
   toast("图形化入库看板（FrmKanban → kanBanRKDDNew1）待接入", 2500, "warn");
 }
 
 /* btnTK 退库 → OutStorage(TKCK) + SetStackNum */
 async function onTk() {
   const selected = selectedRows().filter((w) => w.nStatus === InventoryStatusEnum.Normal);
-  if (!selected.length) { toast("请选择[在库]的材料再操作", 2500, "warn"); return; }
+  if (!selected.length) {
+    toast("请选择[在库]的材料再操作", 2500, "warn");
+    return;
+  }
   const pieceNos = selected.map((l) => l.cPieceNo!).filter(Boolean);
-  if (!window.confirm(`确认退库?${"\n"}库区${param.value.CStoreCode}${"\n"}数量${selected.length}?${"\n"}${pieceNos.join("\n")}`)) return;
+  if (
+    !window.confirm(
+      `确认退库?${"\n"}库区${param.value.CStoreCode}${"\n"}数量${selected.length}?${"\n"}${pieceNos.join("\n")}`,
+    )
+  )
+    return;
   querying.value = true;
   try {
     const dto: StorageInOutDto = {
@@ -178,12 +226,16 @@ async function onTk() {
       pieceNos,
     };
     await storageApi.outStorage(dto);
-    const positions: StoragePosition[] = [...new Map(
-      selected.map((l) => [`${l.cStoreCode}|${l.cStackNo}`, l]),
-    ).values()].map((l) => ({ cStore: param.value.CStoreCode ?? null, cStackNo: l.cStackNo ?? null }));
+    const positions: StoragePosition[] = [
+      ...new Map(selected.map((l) => [`${l.cStoreCode}|${l.cStackNo}`, l])).values(),
+    ].map((l) => ({ cStore: param.value.CStoreCode ?? null, cStackNo: l.cStackNo ?? null }));
     await tyd2000Api.setStackNum(positions);
     await onQuery();
-  } catch { /* 拦截层已 toast */ } finally { querying.value = false; }
+  } catch {
+    /* 拦截层已 toast */
+  } finally {
+    querying.value = false;
+  }
 }
 
 /* simpleButton1 板坯导入入库 → 原 Excel 导入（web 无 xlsx 设施） */
@@ -198,7 +250,10 @@ async function onSetException() {
     toast("只能对[待入库]的坯料设置异常坯", 2500, "warn");
     return;
   }
-  if (!selected.length) { toast("请先选择坯料", 2000, "warn"); return; }
+  if (!selected.length) {
+    toast("请先选择坯料", 2000, "warn");
+    return;
+  }
   try {
     if (!exceptionOptions.value.length) {
       const list = (await systemKeyValueApi.querySysKvItemList("A0000:SLAB_EXCEPTION")) ?? [];
@@ -206,13 +261,18 @@ async function onSetException() {
         .filter((x) => x.cCode != null)
         .map((x) => ({ label: x.cName ?? x.cCode ?? "", value: x.cCode! }));
     }
-  } catch { /* 拦截层已 toast */ }
+  } catch {
+    /* 拦截层已 toast */
+  }
   const choices = exceptionOptions.value.map((o, i) => `${i + 1}. ${o.label}`).join("\n");
   const picked = window.prompt(`选择异常坯类型：\n${choices || "(字典为空)"}`);
   if (picked == null) return;
   const idx = Number(picked) - 1;
   const chosen = exceptionOptions.value[idx];
-  if (!chosen) { toast("请选择异常坯类型后再确认", 2500, "warn"); return; }
+  if (!chosen) {
+    toast("请选择异常坯类型后再确认", 2500, "warn");
+    return;
+  }
   querying.value = true;
   try {
     await tms3000Api.setException({
@@ -220,35 +280,61 @@ async function onSetException() {
       exceptionType: chosen.value,
     });
     await onQuery();
-  } catch { /* 拦截层已 toast */ } finally { querying.value = false; }
+  } catch {
+    /* 拦截层已 toast */
+  } finally {
+    querying.value = false;
+  }
 }
 
 /* btnSetCancelException 取消标记异常 → CancelException */
 async function onCancelException() {
   const storages = selectedRows();
-  if (!storages.length) { toast("请选择后再操作", 2000, "warn"); return; }
-  if (storages.some((l) => l.cBilletTypeCode !== "Y")) { toast("请选择异常坯后再操作", 2500, "warn"); return; }
-  if (storages.some((w) => w.nStatus !== InventoryStatusEnum.NotIn)) { toast("只能对[待入库]的坯料取消异常坯", 2500, "warn"); return; }
-  if (storages.some((l) => l.cOrderNo)) { toast("已匹配订单，不允许操作", 2500, "warn"); return; }
+  if (!storages.length) {
+    toast("请选择后再操作", 2000, "warn");
+    return;
+  }
+  if (storages.some((l) => l.cBilletTypeCode !== "Y")) {
+    toast("请选择异常坯后再操作", 2500, "warn");
+    return;
+  }
+  if (storages.some((w) => w.nStatus !== InventoryStatusEnum.NotIn)) {
+    toast("只能对[待入库]的坯料取消异常坯", 2500, "warn");
+    return;
+  }
+  if (storages.some((l) => l.cOrderNo)) {
+    toast("已匹配订单，不允许操作", 2500, "warn");
+    return;
+  }
   if (!window.confirm("确认取消？")) return;
   querying.value = true;
   try {
     await tms3000Api.cancelException({ pieceNos: storages.map((l) => l.cPieceNo!).filter(Boolean) });
     await onQuery();
-  } catch { /* 拦截层已 toast */ } finally { querying.value = false; }
+  } catch {
+    /* 拦截层已 toast */
+  } finally {
+    querying.value = false;
+  }
 }
 
 /* btnSLRK 坯料补录 → FrmMS9003（占位） */
 function onSlrk() {
   const current = focusRow();
-  if (!current) { toast("请选择任意要补录的炉次实绩信息", 2500, "warn"); return; }
+  if (!current) {
+    toast("请选择任意要补录的炉次实绩信息", 2500, "warn");
+    return;
+  }
   toast("坯料补录弹窗（FrmMS9003）待接入", 2500, "warn");
 }
 
 /* btnCancelOrder 取消匹配订单 → KV 原因 + CancelMathPlanAndZp */
 async function onCancelOrder() {
   const storages = selectedRows().filter((w) => w.cOrderNo);
-  if (!storages.length) { toast("请选择已匹配的材料", 2500, "warn"); return; }
+  if (!storages.length) {
+    toast("请选择已匹配的材料", 2500, "warn");
+    return;
+  }
   const error = [InventoryStatusEnum.ConsumeLocked, InventoryStatusEnum.Consume];
   if (storages.some((w) => error.includes(w.nStatus as InventoryStatusEnum))) {
     toast("已投料生产，不允许操作", 2500, "warn");
@@ -256,34 +342,56 @@ async function onCancelOrder() {
   }
   try {
     const list = (await systemKeyValueApi.querySysKvItemList("A0000:CANCEL_MATCH_REASON")) ?? [];
-    const opts = list.filter((x) => x.cCode != null)
-      .map((x) => ({ cCode: x.cCode!, cName: x.cName ?? x.cCode! }));
+    const opts = list.filter((x) => x.cCode != null).map((x) => ({ cCode: x.cCode!, cName: x.cName ?? x.cCode! }));
     const choices = opts.map((o, i) => `${i + 1}. ${o.cName}`).join("\n");
     const picked = window.prompt(`取消${storages.length}支,请选择取消原因：\n${choices || "(字典为空)"}`);
     if (picked == null) return;
     const chosen = opts[Number(picked) - 1];
-    if (!chosen) { toast("请选择取消原因", 2500, "warn"); return; }
+    if (!chosen) {
+      toast("请选择取消原因", 2500, "warn");
+      return;
+    }
     querying.value = true;
     await tms9001Api.cancelMathPlanAndZp({
-      cPieceNo: storages.map((w) => w.cPieceNo!).filter(Boolean).join(","),
+      cPieceNo: storages
+        .map((w) => w.cPieceNo!)
+        .filter(Boolean)
+        .join(","),
     } as never);
     await onQuery();
-  } catch { /* 拦截层已 toast */ } finally { querying.value = false; }
+  } catch {
+    /* 拦截层已 toast */
+  } finally {
+    querying.value = false;
+  }
 }
 
 /* btnDeleteSJ 删除坯料 → DelSjByPieceNo */
 async function onDeleteSJ() {
   const storages = selectedRows();
-  if (!storages.length) { toast("请勾选要删除的材料", 2500, "warn"); return; }
+  if (!storages.length) {
+    toast("请勾选要删除的材料", 2500, "warn");
+    return;
+  }
   const error = [InventoryStatusEnum.ConsumeLocked, InventoryStatusEnum.Consume];
-  if (storages.some((w) => error.includes(w.nStatus as InventoryStatusEnum))) { toast("已投料生产，不允许操作", 2500, "warn"); return; }
-  if (storages.some((l) => l.cOrderNo)) { toast("已匹配订单，不允许操作", 2500, "warn"); return; }
+  if (storages.some((w) => error.includes(w.nStatus as InventoryStatusEnum))) {
+    toast("已投料生产，不允许操作", 2500, "warn");
+    return;
+  }
+  if (storages.some((l) => l.cOrderNo)) {
+    toast("已匹配订单，不允许操作", 2500, "warn");
+    return;
+  }
   if (!window.confirm(`确认删除实绩？数量${storages.length}`)) return;
   querying.value = true;
   try {
     await tms3000Api.delSjByPieceNo(storages.map((w) => w.cPieceNo!).filter(Boolean));
     await onQuery();
-  } catch { /* 拦截层已 toast */ } finally { querying.value = false; }
+  } catch {
+    /* 拦截层已 toast */
+  } finally {
+    querying.value = false;
+  }
 }
 
 /* btnAddRemark 添加生产备注 → 内联 prompt 复刻 MemoEdit 对话框 + AddProRemark */
@@ -291,23 +399,37 @@ async function onAddRemark() {
   const selected = rows.value.filter((x) => x.selected);
   const fromGrid = (api.value?.getSelectedRows() ?? []) as Tyd2000Dto[];
   const use = fromGrid.length ? fromGrid : selected;
-  if (!use.length) { toast("请选择后再操作", 2000, "warn"); return; }
+  if (!use.length) {
+    toast("请选择后再操作", 2000, "warn");
+    return;
+  }
   const oldRemark = [...new Set(use.map((w) => w.cProRemark).filter((r) => r))].join(";");
   const text = window.prompt(`正在修改${use.length}件材料的生产备注`, oldRemark ? oldRemark + ";" : "");
   if (text == null) return;
   querying.value = true;
   try {
-    await tyd2000Api.addProRemark(use.map((l) => ({
-      id: l.id, cPieceNo: l.cPieceNo, cProRemark: text,
-    })) as never);
+    await tyd2000Api.addProRemark(
+      use.map((l) => ({
+        id: l.id,
+        cPieceNo: l.cPieceNo,
+        cProRemark: text,
+      })) as never,
+    );
     await onQuery();
-  } catch { /* 拦截层已 toast */ } finally { querying.value = false; }
+  } catch {
+    /* 拦截层已 toast */
+  } finally {
+    querying.value = false;
+  }
 }
 
 /* btnUpdate 坯料修改 → FrmMS9002（占位） */
 function onUpdate() {
   const current = focusRow();
-  if (!current) { toast("请选择要修改的的材料", 2500, "warn"); return; }
+  if (!current) {
+    toast("请选择要修改的的材料", 2500, "warn");
+    return;
+  }
   if (current.nStatus !== InventoryStatusEnum.NotIn && current.nStatus !== InventoryStatusEnum.Normal) {
     toast("库存状态错误，不允许修改", 2500, "warn");
     return;
@@ -321,7 +443,10 @@ function onUpdate() {
 /* btnDB 创建调拨单 → FrmYD2000DB（占位） */
 function onDB() {
   const selected = selectedRows();
-  if (!selected.length) { toast("请选择后再操作", 2000, "warn"); return; }
+  if (!selected.length) {
+    toast("请选择后再操作", 2000, "warn");
+    return;
+  }
   if (new Set(selected.map((w) => w.cStoreCode)).size > 1) {
     toast("请选择同一库区的数据进行操作", 2500, "warn");
     return;
@@ -329,7 +454,9 @@ function onDB() {
   toast("创建调拨单弹窗（FrmYD2000DB）待接入", 2500, "warn");
 }
 
-onMounted(() => { void onQuery(); });
+onMounted(() => {
+  void onQuery();
+});
 </script>
 
 <template>
@@ -338,8 +465,17 @@ onMounted(() => { void onQuery(); });
     <div class="grid shrink-0 grid-cols-6 items-center gap-x-3 gap-y-1.5 border-b border-border/60 px-3 py-2">
       <div class="col-span-2 flex min-w-0 items-center gap-1.5">
         <label class="w-14 shrink-0 text-xs text-muted-foreground">产出时间</label>
-        <DatePicker v-model="q.proDates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-          show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+        <DatePicker
+          v-model="q.proDates"
+          selection-mode="range"
+          :manual-input="false"
+          date-format="yy-mm-dd"
+          show-time
+          hour-format="24"
+          show-icon
+          placeholder="开始 至 结束"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-12 shrink-0 text-xs text-muted-foreground">炉号</label>
@@ -351,8 +487,15 @@ onMounted(() => { void onQuery(); });
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">库存状态</label>
-        <Select v-model="q.nStatus" :options="STATUS_OPTIONS" option-label="label" option-value="value" show-clear
-          placeholder="全部" class="min-w-0 flex-1" />
+        <Select
+          v-model="q.nStatus"
+          :options="STATUS_OPTIONS"
+          option-label="label"
+          option-value="value"
+          show-clear
+          placeholder="全部"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">入口材料号</label>
@@ -389,7 +532,13 @@ onMounted(() => { void onQuery(); });
       <Button v-if="!hideForPlate" variant="outlined" class="shrink-0 whitespace-nowrap" @click="onCancelOrder">
         <IconEraser class="h-3 w-3" />取消匹配订单
       </Button>
-      <Button v-if="!hideForPlate" variant="outlined" severity="danger" class="shrink-0 whitespace-nowrap" @click="onDeleteSJ">
+      <Button
+        v-if="!hideForPlate"
+        variant="outlined"
+        severity="danger"
+        class="shrink-0 whitespace-nowrap"
+        @click="onDeleteSJ"
+      >
         <IconX class="h-3 w-3" />删除坯料
       </Button>
       <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onAddRemark">
@@ -402,7 +551,8 @@ onMounted(() => { void onQuery(); });
         <IconStack2 class="h-3 w-3" />创建调拨单
       </Button>
       <span class="ml-auto shrink-0 text-xs text-muted-foreground">
-        {{ rows.length }} 行<span v-if="isSlab"> · 板坯</span><span v-else-if="isPlate"> · 棒材</span><span v-else-if="isP4"> · 成品</span>
+        {{ rows.length }} 行<span v-if="isSlab"> · 板坯</span><span v-else-if="isPlate"> · 棒材</span
+        ><span v-else-if="isP4"> · 成品</span>
       </span>
       <Button variant="outlined" class="ml-1 shrink-0 whitespace-nowrap" aria-label="刷新" @click="onQuery">
         <IconRefresh class="h-3 w-3" />

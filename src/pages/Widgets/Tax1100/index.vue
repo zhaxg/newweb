@@ -47,8 +47,12 @@ const input = reactive({
 });
 
 // range 模式返回 [start, end]，拆给后端两个独立参数
-function begTime() { return input.dates?.[0] ?? null; }
-function endTime() { return input.dates?.[1] ?? null; }
+function begTime() {
+  return input.dates?.[0] ?? null;
+}
+function endTime() {
+  return input.dates?.[1] ?? null;
+}
 
 const columnDefs: ColDef[] = [
   { colId: "cPlantId", field: "cPlantId", headerName: "工厂", width: 100 },
@@ -133,9 +137,17 @@ function onAutoShift() {
         <!-- 第二行：时间段占2列 + 4空 -->
         <div class="col-span-2 flex min-w-0 items-center gap-1.5">
           <label class="w-7 shrink-0 text-xs text-muted-foreground">时间</label>
-          <DatePicker v-model="input.dates" selectionMode="range" :manualInput="false"
-            date-format="yy-mm-dd" show-time hour-format="24" show-icon
-            placeholder="开始 至 结束" class="min-w-0 flex-1" />
+          <DatePicker
+            v-model="input.dates"
+            selectionMode="range"
+            :manualInput="false"
+            date-format="yy-mm-dd"
+            show-time
+            hour-format="24"
+            show-icon
+            placeholder="开始 至 结束"
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="col-span-4" />
       </div>
@@ -146,9 +158,7 @@ function onAutoShift() {
       <Button text size="small" class="whitespace-nowrap" :loading="querying" @click="onQuery">
         <IconSearch class="h-3.5 w-3.5" />查询
       </Button>
-      <Button text size="small" class="whitespace-nowrap" @click="onAdd">
-        <IconPlus class="h-3.5 w-3.5" />添加
-      </Button>
+      <Button text size="small" class="whitespace-nowrap" @click="onAdd"> <IconPlus class="h-3.5 w-3.5" />添加 </Button>
       <Button text size="small" severity="danger" class="whitespace-nowrap" @click="onDelete">
         <IconTrash class="h-3.5 w-3.5" />删除
       </Button>
@@ -163,10 +173,20 @@ function onAutoShift() {
 
     <!-- 表格区 -->
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="columnDefs"
-        :default-col-def="hmxDefaultColDef" :row-data="rows" :get-row-id="getRowId" :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
-        :pagination="false" :animate-rows="false" :loading="querying" :locale-text="AG_GRID_LOCALE_CN"
-        @first-data-rendered="autoSizeOnFirstData" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :column-defs="columnDefs"
+        :default-col-def="hmxDefaultColDef"
+        :row-data="rows"
+        :get-row-id="getRowId"
+        :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
+        :pagination="false"
+        :animate-rows="false"
+        :loading="querying"
+        :locale-text="AG_GRID_LOCALE_CN"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
   </div>
 </template>

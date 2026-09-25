@@ -58,61 +58,61 @@ const deEndDate = ref<Date | null>(today());
 
 /* 主表（原 gridControl1/gridView1：FrmMS2030ViewDto_Main 13 可见 + 17 隐藏） */
 const mainCols = ref<ColDef[]>([
-        { field: "cContainerNo", headerName: "斗号", width: 86 },
-      { field: "nWgt", headerName: "坯重", width: 86 },
-      { field: "cUnit", headerName: "单片钢坯", width: 112 },
-      { field: "cUseFactory", headerName: "配料使用工厂", width: 95 },
-      { field: "cUsedStoveNo", headerName: "使用炉号", width: 112 },
-      { field: "cUsedPono", headerName: "使用炉次制造命令号", width: 131 },
-      { field: "dTeamDate", headerName: "虚拟或占用炉号班次日期", width: 203 },
-      { field: "cShift", headerName: "班次", width: 86 },
-      { field: "cTeam", headerName: "班组", width: 86 },
-      { field: "cState", headerName: "铁水状态", width: 112 },
-      { field: "nWgtUse", headerName: "炉次耗用重量", width: 95 },
-      { field: "creator", headerName: "创建人", width: 99 },
-      { field: "createTime", headerName: "创建时间", width: 112 },
-      { field: "id", headerName: "主键", hide: true },
-      { field: "cConfigStoveNo", headerName: "配料炉号", hide: true },
-      { field: "cEnable", headerName: "启用", hide: true },
-      { field: "cBackup", headerName: "备注", hide: true },
-      { field: "cTimestamp", headerName: "时间戳", hide: true },
-      { field: "lastModifier", headerName: "最后修改人", hide: true },
-      { field: "lastModifyTime", headerName: "最后修改时间", hide: true },
-      { field: "cSw01", headerName: "备用字段1", hide: true },
-      { field: "cSw02", headerName: "备用字段2", hide: true },
-      { field: "cSw03", headerName: "备用字段3", hide: true },
-      { field: "cSw04", headerName: "备用字段4", hide: true },
-      { field: "cSw05", headerName: "备用字段5", hide: true },
-      { field: "cSw06", headerName: "备用字段6", hide: true },
-      { field: "selected", headerName: "选择", hide: true },
-      { field: "cWarehouseDesc", headerName: "废钢库房名称", hide: true },
-      { field: "cWarehouseNo", headerName: "废钢库房编码", hide: true },
-      { field: "wgtIsPartUsed", headerName: "是否是部分耗用", hide: true },
+  { field: "cContainerNo", headerName: "斗号", width: 86 },
+  { field: "nWgt", headerName: "坯重", width: 86 },
+  { field: "cUnit", headerName: "单片钢坯", width: 112 },
+  { field: "cUseFactory", headerName: "配料使用工厂", width: 95 },
+  { field: "cUsedStoveNo", headerName: "使用炉号", width: 112 },
+  { field: "cUsedPono", headerName: "使用炉次制造命令号", width: 131 },
+  { field: "dTeamDate", headerName: "虚拟或占用炉号班次日期", width: 203 },
+  { field: "cShift", headerName: "班次", width: 86 },
+  { field: "cTeam", headerName: "班组", width: 86 },
+  { field: "cState", headerName: "铁水状态", width: 112 },
+  { field: "nWgtUse", headerName: "炉次耗用重量", width: 95 },
+  { field: "creator", headerName: "创建人", width: 99 },
+  { field: "createTime", headerName: "创建时间", width: 112 },
+  { field: "id", headerName: "主键", hide: true },
+  { field: "cConfigStoveNo", headerName: "配料炉号", hide: true },
+  { field: "cEnable", headerName: "启用", hide: true },
+  { field: "cBackup", headerName: "备注", hide: true },
+  { field: "cTimestamp", headerName: "时间戳", hide: true },
+  { field: "lastModifier", headerName: "最后修改人", hide: true },
+  { field: "lastModifyTime", headerName: "最后修改时间", hide: true },
+  { field: "cSw01", headerName: "备用字段1", hide: true },
+  { field: "cSw02", headerName: "备用字段2", hide: true },
+  { field: "cSw03", headerName: "备用字段3", hide: true },
+  { field: "cSw04", headerName: "备用字段4", hide: true },
+  { field: "cSw05", headerName: "备用字段5", hide: true },
+  { field: "cSw06", headerName: "备用字段6", hide: true },
+  { field: "selected", headerName: "选择", hide: true },
+  { field: "cWarehouseDesc", headerName: "废钢库房名称", hide: true },
+  { field: "cWarehouseNo", headerName: "废钢库房编码", hide: true },
+  { field: "wgtIsPartUsed", headerName: "是否是部分耗用", hide: true },
 ]);
 /* 子表（原 gridControl2/gridView2 ViewCaption=斗废钢明细信息：FrmMS2030ViewDto_Item 6 可见 + 16 隐藏） */
 const itemCols = ref<ColDef[]>([
-        { field: "cContainerNo", headerName: "斗号", width: 86 },
-      { field: "cMtrlDesc", headerName: "物料描述", width: 112 },
-      { field: "nWgt", headerName: "坯重", width: 86 },
-      { field: "cUnit", headerName: "单片钢坯", width: 112 },
-      { field: "creator", headerName: "创建人", width: 99 },
-      { field: "createTime", headerName: "创建时间", width: 112 },
-      { field: "id", headerName: "主键", hide: true },
-      { field: "cTms2040Id", headerName: "父id", hide: true },
-      { field: "cMtrlCode", headerName: "物料编码", hide: true },
-      { field: "cFgLevel", headerName: "废钢等级", hide: true },
-      { field: "cEnable", headerName: "启用", hide: true },
-      { field: "cBackup", headerName: "备注", hide: true },
-      { field: "cTimestamp", headerName: "时间戳", hide: true },
-      { field: "lastModifier", headerName: "最后修改人", hide: true },
-      { field: "lastModifyTime", headerName: "最后修改时间", hide: true },
-      { field: "cSw01", headerName: "备用字段1", hide: true },
-      { field: "cSw02", headerName: "备用字段2", hide: true },
-      { field: "cSw03", headerName: "备用字段3", hide: true },
-      { field: "cSw04", headerName: "备用字段4", hide: true },
-      { field: "cSw05", headerName: "备用字段5", hide: true },
-      { field: "cSw06", headerName: "备用字段6", hide: true },
-      { field: "selected", headerName: "选择", hide: true },
+  { field: "cContainerNo", headerName: "斗号", width: 86 },
+  { field: "cMtrlDesc", headerName: "物料描述", width: 112 },
+  { field: "nWgt", headerName: "坯重", width: 86 },
+  { field: "cUnit", headerName: "单片钢坯", width: 112 },
+  { field: "creator", headerName: "创建人", width: 99 },
+  { field: "createTime", headerName: "创建时间", width: 112 },
+  { field: "id", headerName: "主键", hide: true },
+  { field: "cTms2040Id", headerName: "父id", hide: true },
+  { field: "cMtrlCode", headerName: "物料编码", hide: true },
+  { field: "cFgLevel", headerName: "废钢等级", hide: true },
+  { field: "cEnable", headerName: "启用", hide: true },
+  { field: "cBackup", headerName: "备注", hide: true },
+  { field: "cTimestamp", headerName: "时间戳", hide: true },
+  { field: "lastModifier", headerName: "最后修改人", hide: true },
+  { field: "lastModifyTime", headerName: "最后修改时间", hide: true },
+  { field: "cSw01", headerName: "备用字段1", hide: true },
+  { field: "cSw02", headerName: "备用字段2", hide: true },
+  { field: "cSw03", headerName: "备用字段3", hide: true },
+  { field: "cSw04", headerName: "备用字段4", hide: true },
+  { field: "cSw05", headerName: "备用字段5", hide: true },
+  { field: "cSw06", headerName: "备用字段6", hide: true },
+  { field: "selected", headerName: "选择", hide: true },
 ]);
 
 function onMainReady(e: GridReadyEvent) {
@@ -126,11 +126,12 @@ function onItemReady(e: GridReadyEvent) {
 async function queryMain() {
   querying.value = true;
   try {
-    mainRows.value = (await frmMS2030Api.queryMain({
-      wareHouseNo: warehouseNo || undefined,
-      begDate: fmt(deBegDate.value),
-      endDate: fmt(deEndDate.value),
-    })) ?? [];
+    mainRows.value =
+      (await frmMS2030Api.queryMain({
+        wareHouseNo: warehouseNo || undefined,
+        begDate: fmt(deBegDate.value),
+        endDate: fmt(deEndDate.value),
+      })) ?? [];
     requestAnimationFrame(() => mainApi.value?.autoSizeAllColumns());
   } finally {
     querying.value = false;
@@ -157,7 +158,12 @@ function onAdd() {
   /* 原 ShiftInfo.CheckShiftInfo + 「请选择班次班组！」——web 无班次模块，跳过（见来源注释待接入） */
   editOpen.value = true;
 }
-async function onEditConfirm(info: { cContainerNo: string; nWgtWG: number; nWgtZC: number; cUseFactory: string | undefined }) {
+async function onEditConfirm(info: {
+  cContainerNo: string;
+  nWgtWG: number;
+  nWgtZC: number;
+  cUseFactory: string | undefined;
+}) {
   editOpen.value = false;
   const mainId = NextStrId();
   const main: Row = {

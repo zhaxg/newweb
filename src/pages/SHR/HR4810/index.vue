@@ -63,8 +63,12 @@ const loading = ref(false);
 const hzLoading = ref(false);
 const api = ref<GridApi | null>(null);
 const hzApi = ref<GridApi | null>(null);
-function onReady(e: GridReadyEvent) { api.value = e.api; }
-function onHzReady(e: GridReadyEvent) { hzApi.value = e.api; }
+function onReady(e: GridReadyEvent) {
+  api.value = e.api;
+}
+function onHzReady(e: GridReadyEvent) {
+  hzApi.value = e.api;
+}
 
 const colDefs: ColDef[] = [
   /*  { colId: "date", field: "date", headerName: "日期", width: 150 },
@@ -375,12 +379,19 @@ async function hzBind() {
     // 原过滤：成品重/炉重/理重/矫直板重 均 ≥0（空值排除）
     const hzlist = rows.value.filter(
       (x) =>
-        typeof x.nWgtCp === "number" && x.nWgtCp >= 0 &&
-        typeof x.nWgtFur === "number" && x.nWgtFur >= 0 &&
-        typeof x.nWgtLl === "number" && x.nWgtLl >= 0 &&
-        typeof x.nWgtZjb === "number" && x.nWgtZjb >= 0,
+        typeof x.nWgtCp === "number" &&
+        x.nWgtCp >= 0 &&
+        typeof x.nWgtFur === "number" &&
+        x.nWgtFur >= 0 &&
+        typeof x.nWgtLl === "number" &&
+        x.nWgtLl >= 0 &&
+        typeof x.nWgtZjb === "number" &&
+        x.nWgtZjb >= 0,
     );
-    if (hzlist.length <= 0) { hzRows.value = []; return; }
+    if (hzlist.length <= 0) {
+      hzRows.value = [];
+      return;
+    }
     const fn = tabMethods[activeTab.value] ?? tabMethods[0];
     hzRows.value = (await fn(hzlist)) ?? [];
     requestAnimationFrame(() => hzApi.value?.autoSizeAllColumns());
@@ -402,8 +413,8 @@ onMounted(async () => {
       systemKeyValueApi.getSysKvListByGroup("A0000:THR_GROUP") ?? [],
       systemKeyValueApi.getSysKvListByGroup("010100:CUTFLAG") ?? [],
     ]);
-    groupOptions.value = (g).map((x) => ({ label: x.cName ?? x.cCode ?? "", value: x.cCode ?? "" }));
-    trimOptions.value = (t).map((x) => ({ label: x.cName ?? x.cCode ?? "", value: x.cCode ?? "" }));
+    groupOptions.value = g.map((x) => ({ label: x.cName ?? x.cCode ?? "", value: x.cCode ?? "" }));
+    trimOptions.value = t.map((x) => ({ label: x.cName ?? x.cCode ?? "", value: x.cCode ?? "" }));
   } catch {
     /* 拦截层已 toast */
   }
@@ -423,13 +434,23 @@ onMounted(async () => {
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">班组</label>
-        <Select v-model="input.cShiftGroup" :options="groupOptions" option-label="label" option-value="value"
-          class="min-w-0 flex-1" />
+        <Select
+          v-model="input.cShiftGroup"
+          :options="groupOptions"
+          option-label="label"
+          option-value="value"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">切边方式</label>
-        <Select v-model="input.cTrimFlag" :options="trimOptions" option-label="label" option-value="value"
-          class="min-w-0 flex-1" />
+        <Select
+          v-model="input.cTrimFlag"
+          :options="trimOptions"
+          option-label="label"
+          option-value="value"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">钢种</label>
@@ -437,8 +458,17 @@ onMounted(async () => {
       </div>
       <div class="col-span-2 flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">时间范围</label>
-        <DatePicker v-model="input.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-          show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+        <DatePicker
+          v-model="input.dates"
+          selection-mode="range"
+          :manual-input="false"
+          date-format="yy-mm-dd"
+          show-time
+          hour-format="24"
+          show-icon
+          placeholder="开始 至 结束"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="col-span-2 flex min-w-0 items-center gap-1">
         <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="loading" @click="query">
@@ -451,10 +481,19 @@ onMounted(async () => {
         <span class="text-xs font-medium text-muted-foreground">明细信息</span>
       </div>
       <div class="min-h-0 flex-[4] overflow-hidden">
-        <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-          :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows" :pagination="false"
-          :animate-rows="false" :loading="loading" @grid-ready="onReady"
-          @first-data-rendered="autoSizeOnFirstData" />
+        <AgGridVue
+          class="hmx-ag-grid h-full w-full"
+          :theme="theme"
+          :locale-text="AG_GRID_LOCALE_CN"
+          :default-col-def="hmxDefaultColDef"
+          :column-defs="colDefs"
+          :row-data="rows"
+          :pagination="false"
+          :animate-rows="false"
+          :loading="loading"
+          @grid-ready="onReady"
+          @first-data-rendered="autoSizeOnFirstData"
+        />
       </div>
       <div class="flex h-8 shrink-0 items-center gap-2 border-t border-border/60 border-b border-border/60 px-2">
         <span class="text-xs font-medium text-muted-foreground">成材率汇总</span>
@@ -469,10 +508,19 @@ onMounted(async () => {
         </TabList>
         <TabPanels class="min-h-0 flex-1">
           <TabPanel v-for="i in [0, 1, 2, 3, 4]" :key="i" :value="i" class="h-full p-0">
-            <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-              :default-col-def="hmxDefaultColDef" :column-defs="hzCols[activeTab] ?? []" :row-data="hzRows" :pagination="false"
-              :animate-rows="false" :loading="hzLoading" @grid-ready="onHzReady"
-              @first-data-rendered="autoSizeOnFirstData" />
+            <AgGridVue
+              class="hmx-ag-grid h-full w-full"
+              :theme="theme"
+              :locale-text="AG_GRID_LOCALE_CN"
+              :default-col-def="hmxDefaultColDef"
+              :column-defs="hzCols[activeTab] ?? []"
+              :row-data="hzRows"
+              :pagination="false"
+              :animate-rows="false"
+              :loading="hzLoading"
+              @grid-ready="onHzReady"
+              @first-data-rendered="autoSizeOnFirstData"
+            />
           </TabPanel>
         </TabPanels>
       </Tabs>

@@ -36,7 +36,10 @@ export const printReportRoutes: RouteMap = {
   [`post ${P}/queryAllTemplates`]: (config) => {
     const { templateType } = getParams(config) as { templateType?: number };
     const t = Number(templateType ?? 2);
-    return ok(config, loadTemplates().filter((x) => x.nTemplateType === t));
+    return ok(
+      config,
+      loadTemplates().filter((x) => x.nTemplateType === t),
+    );
   },
 
   [`post ${P}/saveOrUpdateTemplate`]: (config) => {

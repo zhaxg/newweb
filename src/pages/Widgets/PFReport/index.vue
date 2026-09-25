@@ -50,8 +50,12 @@ const itemColDefs: ColDef[] = [
   { field: "CParentItemCode", headerName: "父指标", width: 120 },
 ];
 
-function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
-function onItemGridReady(e: GridReadyEvent) { itemGridApi.value = e.api; }
+function onGridReady(e: GridReadyEvent) {
+  gridApi.value = e.api;
+}
+function onItemGridReady(e: GridReadyEvent) {
+  itemGridApi.value = e.api;
+}
 
 async function onQuery() {
   querying.value = true;
@@ -67,18 +71,33 @@ async function onQuery() {
     querying.value = false;
   }
 }
-function onAddReport() { /* TODO */ }
-function onEditReport() { /* TODO */ }
-function onConfigReportItems() { /* TODO */ }
-function onDeleteReport() { /* TODO */ }
+function onAddReport() {
+  /* TODO */
+}
+function onEditReport() {
+  /* TODO */
+}
+function onConfigReportItems() {
+  /* TODO */
+}
+function onDeleteReport() {
+  /* TODO */
+}
 </script>
 
 <template>
   <div class="flex min-h-0 flex-1 flex-col">
     <!-- 工具栏：1个条件合并一行，无label用placeholder -->
     <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
-      <InputText v-model="keyword" maxlength="100" placeholder="关键字" autocapitalize="off" spellcheck="false"
-        class="w-48 shrink-0" @keydown.enter="onQuery" />
+      <InputText
+        v-model="keyword"
+        maxlength="100"
+        placeholder="关键字"
+        autocapitalize="off"
+        spellcheck="false"
+        class="w-48 shrink-0"
+        @keydown.enter="onQuery"
+      />
       <Button text class="shrink-0 whitespace-nowrap" :loading="querying" @click="onQuery">
         <IconSearch class="h-3 w-3" />查询
       </Button>
@@ -105,10 +124,20 @@ function onDeleteReport() { /* TODO */ }
           <span class="text-xs font-medium text-muted-foreground">报表列表</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="reportColDefs" :row-data="rows"
-            :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }" :pagination="false" :animate-rows="false" :loading="querying"
-            @grid-ready="onGridReady" @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="reportColDefs"
+            :row-data="rows"
+            :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
+            :pagination="false"
+            :animate-rows="false"
+            :loading="querying"
+            @grid-ready="onGridReady"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
 
@@ -119,10 +148,19 @@ function onDeleteReport() { /* TODO */ }
           <span class="ml-auto text-xs text-muted-foreground">项目（{{ items.length }}）</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="itemColDefs" :row-data="items"
-            :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }" :pagination="false" :animate-rows="false"
-            @grid-ready="onItemGridReady" @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="itemColDefs"
+            :row-data="items"
+            :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
+            :pagination="false"
+            :animate-rows="false"
+            @grid-ready="onItemGridReady"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
     </Splitter>

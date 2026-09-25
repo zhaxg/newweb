@@ -40,32 +40,60 @@ const colDefs = ref<ColDef[]>([
   { field: "CWorkshopCode", headerName: "车间编号", width: 110 },
 ]);
 
-function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
+function onGridReady(e: GridReadyEvent) {
+  gridApi.value = e.api;
+}
 
 async function onQuery() {
   querying.value = true;
-  try { rows.value = []; } finally { querying.value = false; }
+  try {
+    rows.value = [];
+  } finally {
+    querying.value = false;
+  }
 }
-function onadd() { /* TODO */ }
-function onedit() { /* TODO */ }
-function ondelete() { /* TODO */ }
-function oncalcCurrentMonth() { /* TODO */ }
+function onadd() {
+  /* TODO */
+}
+function onedit() {
+  /* TODO */
+}
+function ondelete() {
+  /* TODO */
+}
+function oncalcCurrentMonth() {
+  /* TODO */
+}
 </script>
 
 <template>
   <div class="flex min-h-0 flex-1 flex-col">
     <!-- 工具栏：对应 stackPanel1（Dock=Top，5 按钮：查询/添加/编辑/删除/计算当月）；原窗体无查询条件输入 -->
     <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
-      <Button text class="shrink-0 whitespace-nowrap" :loading="querying" @click="onQuery"><IconSearch class="h-3 w-3" />查询</Button>
+      <Button text class="shrink-0 whitespace-nowrap" :loading="querying" @click="onQuery"
+        ><IconSearch class="h-3 w-3" />查询</Button
+      >
       <Button text class="shrink-0 whitespace-nowrap" @click="onadd"><IconPlus class="h-3 w-3" />添加</Button>
       <Button text class="shrink-0 whitespace-nowrap" @click="onedit"><IconPencil class="h-3 w-3" />编辑</Button>
-      <Button text severity="danger" class="shrink-0 whitespace-nowrap" @click="ondelete"><IconTrash class="h-3 w-3" />删除</Button>
-      <Button text class="shrink-0 whitespace-nowrap" @click="oncalcCurrentMonth"><IconCalculator class="h-3 w-3" />计算当月</Button>
+      <Button text severity="danger" class="shrink-0 whitespace-nowrap" @click="ondelete"
+        ><IconTrash class="h-3 w-3" />删除</Button
+      >
+      <Button text class="shrink-0 whitespace-nowrap" @click="oncalcCurrentMonth"
+        ><IconCalculator class="h-3 w-3" />计算当月</Button
+      >
     </div>
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows"
-        row-selection="multiple" @grid-ready="onGridReady" @first-data-rendered="autoSizeOnFirstData" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="rows"
+        row-selection="multiple"
+        @grid-ready="onGridReady"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
   </div>
 </template>

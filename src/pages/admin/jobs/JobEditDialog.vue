@@ -2,7 +2,6 @@
 /** 对应 FrmTsTask（计划任务编辑）：HmxWinForms.Forms.Admin.FrmTsTask
  *  画面迁移，逻辑不迁移到 */
 
-
 import { reactive, watch } from "vue";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
@@ -92,8 +91,13 @@ function onSubmit() {
 </script>
 
 <template>
-  <Dialog :visible="open" modal header="编辑任务信息" :style="{ width: 'min(44rem, calc(100vw - 2rem))' }"
-    @update:visible="emit('update:open', $event)">
+  <Dialog
+    :visible="open"
+    modal
+    header="编辑任务信息"
+    :style="{ width: 'min(44rem, calc(100vw - 2rem))' }"
+    @update:visible="emit('update:open', $event)"
+  >
     <div class="min-w-0 space-y-3 py-1">
       <div class="grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2">
         <div class="min-w-0 space-y-1">
@@ -101,35 +105,68 @@ function onSubmit() {
           <InputText :model-value="form.id" disabled class="w-full min-w-0" />
         </div>
         <div class="min-w-0 space-y-1">
-          <label class="text-xs font-medium text-muted-foreground">任务名称<span
-              class="ml-0.5 text-destructive">*</span></label>
-          <InputText v-model="form.cName" placeholder="请输入任务名称" autofocus autocapitalize="off" spellcheck="false"
-            class="w-full min-w-0" @keydown.enter="onSubmit" />
+          <label class="text-xs font-medium text-muted-foreground"
+            >任务名称<span class="ml-0.5 text-destructive">*</span></label
+          >
+          <InputText
+            v-model="form.cName"
+            placeholder="请输入任务名称"
+            autofocus
+            autocapitalize="off"
+            spellcheck="false"
+            class="w-full min-w-0"
+            @keydown.enter="onSubmit"
+          />
         </div>
 
         <div class="min-w-0 space-y-1">
-          <label class="text-xs font-medium text-muted-foreground">触发器名称<span
-              class="ml-0.5 text-destructive">*</span></label>
-          <InputText v-model="form.cTrigerName" placeholder="请输入触发器名称" autocapitalize="off" spellcheck="false"
-            class="w-full min-w-0" @keydown.enter="onSubmit" />
+          <label class="text-xs font-medium text-muted-foreground"
+            >触发器名称<span class="ml-0.5 text-destructive">*</span></label
+          >
+          <InputText
+            v-model="form.cTrigerName"
+            placeholder="请输入触发器名称"
+            autocapitalize="off"
+            spellcheck="false"
+            class="w-full min-w-0"
+            @keydown.enter="onSubmit"
+          />
         </div>
         <div class="min-w-0 space-y-1">
           <label class="text-xs font-medium text-muted-foreground">Cron表达式</label>
-          <InputText v-model="form.cCronExp" placeholder="请输入Cron表达式" autocapitalize="off" spellcheck="false"
-            class="w-full min-w-0" @keydown.enter="onSubmit" />
+          <InputText
+            v-model="form.cCronExp"
+            placeholder="请输入Cron表达式"
+            autocapitalize="off"
+            spellcheck="false"
+            class="w-full min-w-0"
+            @keydown.enter="onSubmit"
+          />
         </div>
 
         <div class="min-w-0 space-y-1 sm:col-span-2">
-          <label class="text-xs font-medium text-muted-foreground">程序集限定名<span
-              class="ml-0.5 text-destructive">*</span></label>
-          <InputText v-model="form.cAssemblyQualifiedName" placeholder="请输入程序集限定名" autocapitalize="off"
-            spellcheck="false" class="w-full min-w-0" @keydown.enter="onSubmit" />
+          <label class="text-xs font-medium text-muted-foreground"
+            >程序集限定名<span class="ml-0.5 text-destructive">*</span></label
+          >
+          <InputText
+            v-model="form.cAssemblyQualifiedName"
+            placeholder="请输入程序集限定名"
+            autocapitalize="off"
+            spellcheck="false"
+            class="w-full min-w-0"
+            @keydown.enter="onSubmit"
+          />
         </div>
 
         <div class="min-w-0 space-y-1">
           <label class="text-xs font-medium text-muted-foreground">间隔分钟数</label>
-          <InputNumber v-model="form.nIntervalMinutes" :min="0" :show-buttons="false" :use-grouping="false"
-            class="w-full min-w-0" />
+          <InputNumber
+            v-model="form.nIntervalMinutes"
+            :min="0"
+            :show-buttons="false"
+            :use-grouping="false"
+            class="w-full min-w-0"
+          />
         </div>
         <div class="min-w-0 space-y-1">
           <label class="text-xs font-medium text-muted-foreground">重复次数</label>
@@ -137,23 +174,43 @@ function onSubmit() {
         </div>
         <div class="min-w-0 space-y-1">
           <label class="text-xs font-medium text-muted-foreground">延迟分钟数</label>
-          <InputNumber v-model="form.nDelayMinutes" :min="0" :show-buttons="false" :use-grouping="false"
-            class="w-full min-w-0" />
+          <InputNumber
+            v-model="form.nDelayMinutes"
+            :min="0"
+            :show-buttons="false"
+            :use-grouping="false"
+            class="w-full min-w-0"
+          />
         </div>
         <div class="min-w-0 space-y-1">
           <label class="text-xs font-medium text-muted-foreground">允许并行</label>
-          <Select v-model="form.enablePaiallel" :options="STATUS_OPTIONS" option-label="label" option-value="value"
-            class="w-full min-w-0" />
+          <Select
+            v-model="form.enablePaiallel"
+            :options="STATUS_OPTIONS"
+            option-label="label"
+            option-value="value"
+            class="w-full min-w-0"
+          />
         </div>
         <div class="min-w-0 space-y-1">
           <label class="text-xs font-medium text-muted-foreground">错过机制</label>
-          <Select v-model="form.cFlagMisfired" :options="MISFIRED_OPTIONS" option-label="label" option-value="value"
-            class="w-full min-w-0" />
+          <Select
+            v-model="form.cFlagMisfired"
+            :options="MISFIRED_OPTIONS"
+            option-label="label"
+            option-value="value"
+            class="w-full min-w-0"
+          />
         </div>
         <div class="min-w-0 space-y-1">
           <label class="text-xs font-medium text-muted-foreground">是否启用</label>
-          <Select v-model="form.enable" :options="STATUS_OPTIONS" option-label="label" option-value="value"
-            class="w-full min-w-0" />
+          <Select
+            v-model="form.enable"
+            :options="STATUS_OPTIONS"
+            option-label="label"
+            option-value="value"
+            class="w-full min-w-0"
+          />
         </div>
       </div>
     </div>

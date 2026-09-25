@@ -3,12 +3,32 @@
  *  画面迁移，逻辑不迁移到 */
 
 import { computed, defineComponent, h, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
-import { IconBuilding, IconChevronDown, IconChevronRight, IconFolder, IconFolderOpen, IconNetwork, IconPencil, IconPlus, IconSearch, IconTrash } from "@tabler/icons-vue";
+import {
+  IconBuilding,
+  IconChevronDown,
+  IconChevronRight,
+  IconFolder,
+  IconFolderOpen,
+  IconNetwork,
+  IconPencil,
+  IconPlus,
+  IconSearch,
+  IconTrash,
+} from "@tabler/icons-vue";
 
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import { AgGridVue } from "ag-grid-vue3";
-import type { AutoGroupColumnDef, ColDef, GetRowIdParams, GridApi, GridReadyEvent, RowClickedEvent, RowNode, ValueFormatterParams } from "ag-grid-community";
+import type {
+  AutoGroupColumnDef,
+  ColDef,
+  GetRowIdParams,
+  GridApi,
+  GridReadyEvent,
+  RowClickedEvent,
+  RowNode,
+  ValueFormatterParams,
+} from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
 import { useToast } from "@/composables/useToast";
@@ -300,21 +320,46 @@ function onInvalid(message: string) {
 
     <!-- 树形表格：ag-grid treeData（对应原 DevExpress TreeList） -->
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="columnDefs"
-        :default-col-def="hmxDefaultColDef" :auto-group-column-def="autoGroupColumnDef" :row-data="gridRows"
-        :get-row-id="getRowId" :tree-data="true" :get-data-path="getDataPath"
-        :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }" :pagination="false"
-        :animate-rows="false" :locale-text="AG_GRID_LOCALE_CN" @grid-ready="onGridReady"
-        @selection-changed="onSelectionChanged" @row-clicked="onRowClicked" @row-double-clicked="onRowDoubleClicked"
-        @expander-changed="onExpanderChanged" @first-data-rendered="autoSizeOnFirstData" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :column-defs="columnDefs"
+        :default-col-def="hmxDefaultColDef"
+        :auto-group-column-def="autoGroupColumnDef"
+        :row-data="gridRows"
+        :get-row-id="getRowId"
+        :tree-data="true"
+        :get-data-path="getDataPath"
+        :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
+        :pagination="false"
+        :animate-rows="false"
+        :locale-text="AG_GRID_LOCALE_CN"
+        @grid-ready="onGridReady"
+        @selection-changed="onSelectionChanged"
+        @row-clicked="onRowClicked"
+        @row-double-clicked="onRowDoubleClicked"
+        @expander-changed="onExpanderChanged"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
 
-    <DeptEditDialog v-model:open="editOpen" :all-rows="rows" :editing="editTarget" :preset-pid="editPresetPid"
-      @save="onSaveDept" @invalid="onInvalid" />
+    <DeptEditDialog
+      v-model:open="editOpen"
+      :all-rows="rows"
+      :editing="editTarget"
+      :preset-pid="editPresetPid"
+      @save="onSaveDept"
+      @invalid="onInvalid"
+    />
 
     <!-- 删除确认（对应原 MsgBox.ShowYesNo("是否确定删除当前项？")） -->
-    <Dialog :visible="confirmOpen" modal header="删除确认" :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
-      @update:visible="confirmOpen = $event">
+    <Dialog
+      :visible="confirmOpen"
+      modal
+      header="删除确认"
+      :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
+      @update:visible="confirmOpen = $event"
+    >
       <p class="text-xs">是否确定删除当前项「{{ confirmTarget?.cDeptName }}」？</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />

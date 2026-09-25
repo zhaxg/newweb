@@ -67,89 +67,89 @@ const gridApi = ref<GridApi | null>(null);
 
 /* 列按 Designer VisibleIndex（含 Selected）；CreateTime 以 hide: true 迁入 */
 const rawCols: ColDef[] = [
-      { field: "selected", headerName: "选择", width: 112 },
-      { field: "cCustName", headerName: "客户", width: 112 },
-      { field: "cSaleCon", headerName: "销售合同号", width: 112 },
-      { field: "cInboundNo", headerName: "入库标识", width: 112 },
-      { field: "cTqCon1", headerName: "套切合同1", width: 112 },
-      { field: "nWidthTq1", headerName: "套切宽度1", width: 112 },
-      { field: "nLenTq1", headerName: "套切长度1", width: 112 },
-      { field: "cStoreposNo1", headerName: "库位标识1", width: 112 },
-      { field: "cTqCon2", headerName: "套切合同2", width: 112 },
-      { field: "nWidthTq2", headerName: "套切宽度2", width: 112 },
-      { field: "nLenTq2", headerName: "套切长度2", width: 112 },
-      { field: "cStoreposNo2", headerName: "库位标识2", width: 112 },
-      { field: "cTqCon3", headerName: "套切合同3", width: 112 },
-      { field: "nWidthTq3", headerName: "套切宽度3", width: 112 },
-      { field: "nLenTq3", headerName: "套切长度3", width: 112 },
-      { field: "cStoreposNo3", headerName: "库位标识3", width: 112 },
-      { field: "cTqCon4", headerName: "套切合同4", width: 112 },
-      { field: "nWidthTq4", headerName: "套切宽度4", width: 112 },
-      { field: "nLenTq4", headerName: "套切长度4", width: 112 },
-      { field: "cStoreposNo4", headerName: "库位标识4", width: 112 },
-      { field: "cZpNo", headerName: "组批号", width: 112 },
-      { field: "cSlabNo", headerName: "板坯号", width: 112 },
-      { field: "cCardNo", headerName: "牌号", width: 112 },
-      { field: "cDelivyAddress", headerName: "流向", width: 112 },
-      { field: "cTrimFlag", headerName: "切边标识", width: 112 },
-      { field: "nSlabThick", headerName: "坯厚mm", width: 112 },
-      { field: "nSlabWidth", headerName: "坯宽mm", width: 112 },
-      { field: "nSlabLen", headerName: "坯长mm", width: 112 },
-      { field: "nPlanSlabWgt", headerName: "计划坯重", width: 112 },
-      { field: "nSlabWgt", headerName: "坯重", width: 112 },
-      { field: "nStoveWgt", headerName: "炉前称重", width: 112 },
-      { field: "nOrderThick", headerName: "订货厚mm", width: 112 },
-      { field: "nOrderWidth", headerName: "订货宽mm", width: 112 },
-      { field: "cOrderWidth2", headerName: "订单宽度2", width: 112 },
-      { field: "nOrderLen", headerName: "订货长mm", width: 112 },
-      { field: "cOrderLen2", headerName: "订单长度2", width: 112 },
-      { field: "cTol", headerName: "公差", width: 112 },
-      { field: "nBc", headerName: "倍尺", width: 112 },
-      { field: "cPlanNo", headerName: "计划号", width: 112 },
-      { field: "dProductTime", headerName: "生产时刻", width: 112 },
-      { field: "dOutTime", headerName: "抽出时刻", width: 112 },
-      { field: "cAuthor", headerName: "责任者", width: 112 },
-      { field: "cCrewCode", headerName: "机组代码", width: 112 },
-      { field: "dFurTime", headerName: "装炉时刻", width: 112 },
-      { field: "cFurCode", headerName: "加热炉号", width: 112 },
-      { field: "cPassNo", headerName: "道号", width: 112 },
-      { field: "nFurTemp", headerName: "装炉前温度", width: 112 },
-      { field: "cFurShiftNo", headerName: "入炉班次", width: 112 },
-      { field: "cFurShiftGroup", headerName: "入炉班组", width: 112 },
-      { field: "nOutPlateAvgTemp", headerName: "出钢时板坯均热度", width: 112 },
-      { field: "nOutPlateCenterTemp", headerName: "出钢时板坯中心热度", width: 112 },
-      { field: "nOutAvgTemp", headerName: "抽出平均温度", width: 112 },
-      { field: "dInStoveTime", headerName: "在炉内时间(min)", width: 112 },
-      { field: "dOutStoveTime", headerName: "出炉时刻", width: 112 },
-      { field: "cProdCode", headerName: "品名", width: 112 },
-      { field: "dYrSlabEvenHeatTemp", headerName: "预热段入口的板坯均热温度", width: 112 },
-      { field: "dYrSlabAvgTemp", headerName: "预热段入口的平均板坯温度", width: 112 },
-      { field: "dYrSlabCenterTemp", headerName: "预热段入口的板坯中心温度", width: 112 },
-      { field: "dYrAvgTemp", headerName: "在预热段时的平均温度", width: 112 },
-      { field: "dYrInStoveTime", headerName: "预热段在炉时间(min)", width: 112 },
-      { field: "dHeatRkSlabAvgTemp1", headerName: "加热段1入口板坯平均温度", width: 112 },
-      { field: "dHeatSlabFaceTemp1", headerName: "加热段1入口板坯表面温度", width: 112 },
-      { field: "dHeatSlabCenterTemp1", headerName: "加热段1入口板坯中心温度", width: 112 },
-      { field: "dHeatSlabAvgTemp1", headerName: "在加热段1时的平均温度", width: 112 },
-      { field: "dHeatInStoveTime1", headerName: "加热段1在炉时段(min)", width: 112 },
-      { field: "dHeatRkSlabAvgTemp2", headerName: "加热段2入口板坯平均温度", width: 112 },
-      { field: "dHeatSlabCenterTemp2", headerName: "加热段2入口板坯中心温度", width: 112 },
-      { field: "dHeatSlabFaceTemp2", headerName: "加热段2入口板坯表面温度", width: 112 },
-      { field: "dHeatSlabAvgTemp2", headerName: "在加热段2时的平均温度", width: 112 },
-      { field: "dHeatInStoveTime2", headerName: "加热段2在炉时段(min)", width: 112 },
-      { field: "dHeatAvgTemp", headerName: "均热段时的平均温度", width: 112 },
-      { field: "dHeatInStoveTime", headerName: "均热段在炉时段(min)", width: 112 },
-      { field: "dEvenHeatAvgTemp", headerName: "均热段入口板坯平均温度", width: 112 },
-      { field: "dEvenHeatCenterTemp", headerName: "均热段入口板坯中心温度", width: 112 },
-      { field: "dEvenHeatFaceTemp", headerName: "均热段入口板坯表面温度", width: 112 },
-      { field: "createTime", headerName: "创建时间", width: 112, hide: true },
+  { field: "selected", headerName: "选择", width: 112 },
+  { field: "cCustName", headerName: "客户", width: 112 },
+  { field: "cSaleCon", headerName: "销售合同号", width: 112 },
+  { field: "cInboundNo", headerName: "入库标识", width: 112 },
+  { field: "cTqCon1", headerName: "套切合同1", width: 112 },
+  { field: "nWidthTq1", headerName: "套切宽度1", width: 112 },
+  { field: "nLenTq1", headerName: "套切长度1", width: 112 },
+  { field: "cStoreposNo1", headerName: "库位标识1", width: 112 },
+  { field: "cTqCon2", headerName: "套切合同2", width: 112 },
+  { field: "nWidthTq2", headerName: "套切宽度2", width: 112 },
+  { field: "nLenTq2", headerName: "套切长度2", width: 112 },
+  { field: "cStoreposNo2", headerName: "库位标识2", width: 112 },
+  { field: "cTqCon3", headerName: "套切合同3", width: 112 },
+  { field: "nWidthTq3", headerName: "套切宽度3", width: 112 },
+  { field: "nLenTq3", headerName: "套切长度3", width: 112 },
+  { field: "cStoreposNo3", headerName: "库位标识3", width: 112 },
+  { field: "cTqCon4", headerName: "套切合同4", width: 112 },
+  { field: "nWidthTq4", headerName: "套切宽度4", width: 112 },
+  { field: "nLenTq4", headerName: "套切长度4", width: 112 },
+  { field: "cStoreposNo4", headerName: "库位标识4", width: 112 },
+  { field: "cZpNo", headerName: "组批号", width: 112 },
+  { field: "cSlabNo", headerName: "板坯号", width: 112 },
+  { field: "cCardNo", headerName: "牌号", width: 112 },
+  { field: "cDelivyAddress", headerName: "流向", width: 112 },
+  { field: "cTrimFlag", headerName: "切边标识", width: 112 },
+  { field: "nSlabThick", headerName: "坯厚mm", width: 112 },
+  { field: "nSlabWidth", headerName: "坯宽mm", width: 112 },
+  { field: "nSlabLen", headerName: "坯长mm", width: 112 },
+  { field: "nPlanSlabWgt", headerName: "计划坯重", width: 112 },
+  { field: "nSlabWgt", headerName: "坯重", width: 112 },
+  { field: "nStoveWgt", headerName: "炉前称重", width: 112 },
+  { field: "nOrderThick", headerName: "订货厚mm", width: 112 },
+  { field: "nOrderWidth", headerName: "订货宽mm", width: 112 },
+  { field: "cOrderWidth2", headerName: "订单宽度2", width: 112 },
+  { field: "nOrderLen", headerName: "订货长mm", width: 112 },
+  { field: "cOrderLen2", headerName: "订单长度2", width: 112 },
+  { field: "cTol", headerName: "公差", width: 112 },
+  { field: "nBc", headerName: "倍尺", width: 112 },
+  { field: "cPlanNo", headerName: "计划号", width: 112 },
+  { field: "dProductTime", headerName: "生产时刻", width: 112 },
+  { field: "dOutTime", headerName: "抽出时刻", width: 112 },
+  { field: "cAuthor", headerName: "责任者", width: 112 },
+  { field: "cCrewCode", headerName: "机组代码", width: 112 },
+  { field: "dFurTime", headerName: "装炉时刻", width: 112 },
+  { field: "cFurCode", headerName: "加热炉号", width: 112 },
+  { field: "cPassNo", headerName: "道号", width: 112 },
+  { field: "nFurTemp", headerName: "装炉前温度", width: 112 },
+  { field: "cFurShiftNo", headerName: "入炉班次", width: 112 },
+  { field: "cFurShiftGroup", headerName: "入炉班组", width: 112 },
+  { field: "nOutPlateAvgTemp", headerName: "出钢时板坯均热度", width: 112 },
+  { field: "nOutPlateCenterTemp", headerName: "出钢时板坯中心热度", width: 112 },
+  { field: "nOutAvgTemp", headerName: "抽出平均温度", width: 112 },
+  { field: "dInStoveTime", headerName: "在炉内时间(min)", width: 112 },
+  { field: "dOutStoveTime", headerName: "出炉时刻", width: 112 },
+  { field: "cProdCode", headerName: "品名", width: 112 },
+  { field: "dYrSlabEvenHeatTemp", headerName: "预热段入口的板坯均热温度", width: 112 },
+  { field: "dYrSlabAvgTemp", headerName: "预热段入口的平均板坯温度", width: 112 },
+  { field: "dYrSlabCenterTemp", headerName: "预热段入口的板坯中心温度", width: 112 },
+  { field: "dYrAvgTemp", headerName: "在预热段时的平均温度", width: 112 },
+  { field: "dYrInStoveTime", headerName: "预热段在炉时间(min)", width: 112 },
+  { field: "dHeatRkSlabAvgTemp1", headerName: "加热段1入口板坯平均温度", width: 112 },
+  { field: "dHeatSlabFaceTemp1", headerName: "加热段1入口板坯表面温度", width: 112 },
+  { field: "dHeatSlabCenterTemp1", headerName: "加热段1入口板坯中心温度", width: 112 },
+  { field: "dHeatSlabAvgTemp1", headerName: "在加热段1时的平均温度", width: 112 },
+  { field: "dHeatInStoveTime1", headerName: "加热段1在炉时段(min)", width: 112 },
+  { field: "dHeatRkSlabAvgTemp2", headerName: "加热段2入口板坯平均温度", width: 112 },
+  { field: "dHeatSlabCenterTemp2", headerName: "加热段2入口板坯中心温度", width: 112 },
+  { field: "dHeatSlabFaceTemp2", headerName: "加热段2入口板坯表面温度", width: 112 },
+  { field: "dHeatSlabAvgTemp2", headerName: "在加热段2时的平均温度", width: 112 },
+  { field: "dHeatInStoveTime2", headerName: "加热段2在炉时段(min)", width: 112 },
+  { field: "dHeatAvgTemp", headerName: "均热段时的平均温度", width: 112 },
+  { field: "dHeatInStoveTime", headerName: "均热段在炉时段(min)", width: 112 },
+  { field: "dEvenHeatAvgTemp", headerName: "均热段入口板坯平均温度", width: 112 },
+  { field: "dEvenHeatCenterTemp", headerName: "均热段入口板坯中心温度", width: 112 },
+  { field: "dEvenHeatFaceTemp", headerName: "均热段入口板坯表面温度", width: 112 },
+  { field: "createTime", headerName: "创建时间", width: 112, hide: true },
 ];
 /** Selected（选择）列 = 原勾选列（AllowSyncRowStateToCheckboxSelection）：ui-rules §7 以 hide:true 隐藏，勾选由 row-selection 复选框承担 */
-const colDefs = ref<ColDef[]>(rawCols.map((c) =>
-  c.field === "selected" ? { ...c, hide: true } : c,
-));
+const colDefs = ref<ColDef[]>(rawCols.map((c) => (c.field === "selected" ? { ...c, hide: true } : c)));
 
-function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
+function onGridReady(e: GridReadyEvent) {
+  gridApi.value = e.api;
+}
 
 async function onQuery() {
   querying.value = true;
@@ -212,18 +212,39 @@ async function onQuery() {
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">班次</label>
-        <Select v-model="query.cShiftNo" :options="shiftOptions" option-label="label" option-value="value"
-          show-clear placeholder="请选择" class="min-w-0 flex-1" />
+        <Select
+          v-model="query.cShiftNo"
+          :options="shiftOptions"
+          option-label="label"
+          option-value="value"
+          show-clear
+          placeholder="请选择"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">班组</label>
-        <Select v-model="query.cShiftGroup" :options="shiftGroupOptions" option-label="label" option-value="value"
-          show-clear placeholder="请选择" class="min-w-0 flex-1" />
+        <Select
+          v-model="query.cShiftGroup"
+          :options="shiftGroupOptions"
+          option-label="label"
+          option-value="value"
+          show-clear
+          placeholder="请选择"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="col-span-2 flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">装炉时间</label>
-        <DatePicker v-model="query.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-          show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+        <DatePicker
+          v-model="query.dates"
+          selection-mode="range"
+          :manual-input="false"
+          date-format="yy-mm-dd"
+          show-icon
+          placeholder="开始 至 结束"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">订货厚</label>
@@ -244,10 +265,25 @@ async function onQuery() {
 
     <!-- 主表（gridControl1 / gridView1，绑定实体 Ti1010Dto） -->
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :pagination="false" :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows"
-        :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-        :loading="querying" @grid-ready="onGridReady" @first-data-rendered="autoSizeOnFirstData" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :pagination="false"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="rows"
+        :row-selection="{
+          mode: 'multiRow',
+          checkboxes: true,
+          headerCheckbox: true,
+          enableClickSelection: true,
+          enableSelectionWithoutKeys: true,
+        }"
+        :loading="querying"
+        @grid-ready="onGridReady"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
   </div>
 </template>

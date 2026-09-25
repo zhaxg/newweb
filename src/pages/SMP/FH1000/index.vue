@@ -17,12 +17,7 @@ import type { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { hmxDefaultColDef, makeHmxGridTheme, autoSizeOnFirstData } from "@/lib/agGrid";
 import { systemKeyValueApi } from "@/api/admin/request";
-import {
-  fh2000Api,
-  type Fh1000,
-  type Fh1002,
-  type InputFh2000Dto,
-} from "@/api/mes4ddh/smp.swagger";
+import { fh2000Api, type Fh1000, type Fh1002, type InputFh2000Dto } from "@/api/mes4ddh/smp.swagger";
 import { useToast } from "@/composables/useToast";
 
 const { toast } = useToast();
@@ -386,13 +381,29 @@ onMounted(() => {
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">装车状态</label>
-        <Select v-model="q.nZcStatus" :options="ZC_STATUS_OPTIONS" option-label="label" option-value="value"
-          show-clear placeholder="全部" class="min-w-0 flex-1" />
+        <Select
+          v-model="q.nZcStatus"
+          :options="ZC_STATUS_OPTIONS"
+          option-label="label"
+          option-value="value"
+          show-clear
+          placeholder="全部"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="col-span-2 flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">装车时间</label>
-        <DatePicker v-model="q.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-          show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+        <DatePicker
+          v-model="q.dates"
+          selection-mode="range"
+          :manual-input="false"
+          date-format="yy-mm-dd"
+          show-time
+          hour-format="24"
+          show-icon
+          placeholder="开始 至 结束"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="flex items-center">
         <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="querying" @click="onQuery">
@@ -405,12 +416,27 @@ onMounted(() => {
     <Splitter class="min-h-0 flex-1" layout="vertical">
       <SplitterPanel :size="45" :minSize="20" class="flex flex-col overflow-hidden">
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="mainColDefs"
-            :default-col-def="hmxDefaultColDef" :row-data="rows" :locale-text="AG_GRID_LOCALE_CN"
-            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-            :pagination="false" :animate-rows="false" :loading="querying"
-            @grid-ready="onMainReady" @selection-changed="onMainSelectionChanged"
-            @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :column-defs="mainColDefs"
+            :default-col-def="hmxDefaultColDef"
+            :row-data="rows"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :row-selection="{
+              mode: 'multiRow',
+              checkboxes: true,
+              headerCheckbox: true,
+              enableClickSelection: true,
+              enableSelectionWithoutKeys: true,
+            }"
+            :pagination="false"
+            :animate-rows="false"
+            :loading="querying"
+            @grid-ready="onMainReady"
+            @selection-changed="onMainSelectionChanged"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
 
@@ -429,8 +455,16 @@ onMounted(() => {
             <IconTrash class="h-3 w-3" />删除材料
           </Button>
           <label class="ml-2 shrink-0 text-xs text-muted-foreground">质保书模板</label>
-          <Select v-model="zbsModel" :options="zbsModelOptions" option-label="label" option-value="value" show-clear
-            filter placeholder="选择模板" class="w-48 shrink-0" />
+          <Select
+            v-model="zbsModel"
+            :options="zbsModelOptions"
+            option-label="label"
+            option-value="value"
+            show-clear
+            filter
+            placeholder="选择模板"
+            class="w-48 shrink-0"
+          />
           <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onPrint">
             <IconPrinter class="h-3 w-3" />打印质保书
           </Button>
@@ -439,11 +473,25 @@ onMounted(() => {
         </div>
 
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="detailColDefs"
-            :default-col-def="hmxDefaultColDef" :row-data="detailRows" :locale-text="AG_GRID_LOCALE_CN"
-            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-            :pagination="false" :animate-rows="false"
-            @grid-ready="onDetailReady" @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :column-defs="detailColDefs"
+            :default-col-def="hmxDefaultColDef"
+            :row-data="detailRows"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :row-selection="{
+              mode: 'multiRow',
+              checkboxes: true,
+              headerCheckbox: true,
+              enableClickSelection: true,
+              enableSelectionWithoutKeys: true,
+            }"
+            :pagination="false"
+            :animate-rows="false"
+            @grid-ready="onDetailReady"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
     </Splitter>

@@ -19,7 +19,12 @@ import { useMenuQuery } from "@/lib/menuQuery";
 type Row = Record<string, any>;
 
 const { json: menuJson } = useMenuQuery();
-const qsLine = typeof menuJson.LineCode === "string" ? menuJson.LineCode : typeof menuJson.lineCode === "string" ? menuJson.lineCode : "";
+const qsLine =
+  typeof menuJson.LineCode === "string"
+    ? menuJson.LineCode
+    : typeof menuJson.lineCode === "string"
+      ? menuJson.lineCode
+      : "";
 const lineCode = ref(qsLine);
 
 const theme = makeHmxGridTheme();
@@ -43,30 +48,30 @@ const deBegDate = ref<Date | null>(addDays(-7));
 const deEndDate = ref<Date | null>(addDays(1));
 
 const colDefs = ref<ColDef[]>([
-        { field: "cIntrusionSign", headerName: "倒罐标识", width: 112 },
-      { field: "cIntrusionType", headerName: "倒罐类型", width: 112 },
-      { field: "nIntrusionWgt", headerName: "倒罐重量吨", width: 83 },
-      { field: "cTsId", headerName: "铁水数据id", width: 104 },
-      { field: "cIronNo", headerName: "铁次号", width: 83 },
-      { field: "cPotNo", headerName: "罐号", width: 86 },
-      { field: "cCarNo", headerName: "车号", width: 86 },
-      { field: "dTeamDate", headerName: "虚拟或占用炉号班次日期", width: 72 },
-      { field: "cShift", headerName: "班次", width: 86 },
-      { field: "cTeam", headerName: "班组", width: 86 },
-      { field: "cBackup", headerName: "备注", width: 86 },
-      { field: "creator", headerName: "创建人", width: 99 },
-      { field: "createTime", headerName: "创建时间", width: 112 },
-      { field: "id", headerName: "主键", hide: true },
-      { field: "cTimestamp", headerName: "时间戳", hide: true },
-      { field: "lastModifier", headerName: "最后修改人", hide: true },
-      { field: "lastModifyTime", headerName: "最后修改时间", hide: true },
-      { field: "cSw01", headerName: "备用字段1", hide: true },
-      { field: "cSw02", headerName: "备用字段2", hide: true },
-      { field: "cSw03", headerName: "备用字段3", hide: true },
-      { field: "cSw04", headerName: "备用字段4", hide: true },
-      { field: "cSw05", headerName: "备用字段5", hide: true },
-      { field: "cSw06", headerName: "备用字段6", hide: true },
-      { field: "selected", headerName: "选择", hide: true },
+  { field: "cIntrusionSign", headerName: "倒罐标识", width: 112 },
+  { field: "cIntrusionType", headerName: "倒罐类型", width: 112 },
+  { field: "nIntrusionWgt", headerName: "倒罐重量吨", width: 83 },
+  { field: "cTsId", headerName: "铁水数据id", width: 104 },
+  { field: "cIronNo", headerName: "铁次号", width: 83 },
+  { field: "cPotNo", headerName: "罐号", width: 86 },
+  { field: "cCarNo", headerName: "车号", width: 86 },
+  { field: "dTeamDate", headerName: "虚拟或占用炉号班次日期", width: 72 },
+  { field: "cShift", headerName: "班次", width: 86 },
+  { field: "cTeam", headerName: "班组", width: 86 },
+  { field: "cBackup", headerName: "备注", width: 86 },
+  { field: "creator", headerName: "创建人", width: 99 },
+  { field: "createTime", headerName: "创建时间", width: 112 },
+  { field: "id", headerName: "主键", hide: true },
+  { field: "cTimestamp", headerName: "时间戳", hide: true },
+  { field: "lastModifier", headerName: "最后修改人", hide: true },
+  { field: "lastModifyTime", headerName: "最后修改时间", hide: true },
+  { field: "cSw01", headerName: "备用字段1", hide: true },
+  { field: "cSw02", headerName: "备用字段2", hide: true },
+  { field: "cSw03", headerName: "备用字段3", hide: true },
+  { field: "cSw04", headerName: "备用字段4", hide: true },
+  { field: "cSw05", headerName: "备用字段5", hide: true },
+  { field: "cSw06", headerName: "备用字段6", hide: true },
+  { field: "selected", headerName: "选择", hide: true },
 ]);
 
 function onGridReady(e: GridReadyEvent) {
@@ -77,11 +82,12 @@ function onGridReady(e: GridReadyEvent) {
 async function onQuery() {
   querying.value = true;
   try {
-    rows.value = (await frmMS2010Api.getIntrusionDatas({
-      lineCode: lineCode.value || undefined,
-      begDate: fmt(deBegDate.value),
-      endDate: fmt(deEndDate.value),
-    })) ?? [];
+    rows.value =
+      (await frmMS2010Api.getIntrusionDatas({
+        lineCode: lineCode.value || undefined,
+        begDate: fmt(deBegDate.value),
+        endDate: fmt(deEndDate.value),
+      })) ?? [];
     requestAnimationFrame(() => gridApi.value?.autoSizeAllColumns());
   } finally {
     querying.value = false;

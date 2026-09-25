@@ -80,10 +80,14 @@ const colorOf = (t: MscBasicTableType) => {
 
 <template>
   <div class="h-full min-h-0 overflow-auto py-1">
-    <div v-for="(r, i) in rows" :key="r.node.id + '-' + i"
+    <div
+      v-for="(r, i) in rows"
+      :key="r.node.id + '-' + i"
       class="flex h-6 cursor-pointer select-none items-center gap-1 px-1 text-xs hover:bg-accent"
-      :class="r.node.id === props.selectedId ? 'bg-accent' : ''" :style="{ paddingLeft: `${r.depth * 14 + 4}px` }"
-      @click="emit('select', r.node)">
+      :class="r.node.id === props.selectedId ? 'bg-accent' : ''"
+      :style="{ paddingLeft: `${r.depth * 14 + 4}px` }"
+      @click="emit('select', r.node)"
+    >
       <span class="inline-flex h-3 w-3 shrink-0 items-center justify-center" @click.stop="r.hasChildren && toggle(r)">
         <IconChevronDown v-if="r.hasChildren && r.expanded" class="h-3 w-3" />
         <IconChevronRight v-else-if="r.hasChildren" class="h-3 w-3" />

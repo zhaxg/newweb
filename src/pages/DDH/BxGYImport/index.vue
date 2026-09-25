@@ -14,7 +14,12 @@ import type { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { hmxDefaultColDef, makeHmxGridTheme, autoSizeOnFirstData } from "@/lib/agGrid";
 import { useMenuQuery } from "@/lib/menuQuery";
-import { tableConfigApi, type TsTablePro, type TsTableProValDto, type TsTableSettingDto } from "@/api/mes4ddh/ddh.swagger";
+import {
+  tableConfigApi,
+  type TsTablePro,
+  type TsTableProValDto,
+  type TsTableSettingDto,
+} from "@/api/mes4ddh/ddh.swagger";
 import { DataStatusEnum, ValidFlag, type TsTableProVal } from "@/api/mes4ddh/sqm.swagger";
 import { TrackableList } from "@/api/common/trackableList";
 import { NextStrId } from "@/lib/yitIdHelper";
@@ -56,7 +61,9 @@ function buildColumns(s: TsTableSettingDto) {
   ];
   colDefs.value = [...valueCols, ...auditCols];
 }
-function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
+function onGridReady(e: GridReadyEvent) {
+  gridApi.value = e.api;
+}
 
 async function bindData() {
   querying.value = true;
@@ -224,7 +231,13 @@ async function onJsonFile(e: Event) {
       <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onDelete">
         <IconTrash class="h-3 w-3" />删除
       </Button>
-      <Button variant="outlined" class="shrink-0 whitespace-nowrap" :disabled="!saveEnabled" :loading="saving" @click="onSave">
+      <Button
+        variant="outlined"
+        class="shrink-0 whitespace-nowrap"
+        :disabled="!saveEnabled"
+        :loading="saving"
+        @click="onSave"
+      >
         <IconDeviceFloppy class="h-3 w-3" />保存
       </Button>
       <span class="mx-1 h-4 w-px bg-border" />
@@ -236,17 +249,37 @@ async function onJsonFile(e: Event) {
     </div>
 
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="trackList"
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="trackList"
         :get-row-id="(p: any) => String(p.data.id)"
-        :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-        :pagination="false" :animate-rows="false" :loading="querying"
-        @grid-ready="onGridReady" @first-data-rendered="autoSizeOnFirstData" />
+        :row-selection="{
+          mode: 'multiRow',
+          checkboxes: true,
+          headerCheckbox: true,
+          enableClickSelection: true,
+          enableSelectionWithoutKeys: true,
+        }"
+        :pagination="false"
+        :animate-rows="false"
+        :loading="querying"
+        @grid-ready="onGridReady"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
 
     <!-- 确认（对应原 MsgBox.ShowYesNo） -->
-    <Dialog :visible="confirmOpen" modal header="确认" :style="{ width: 'min(30rem, calc(100vw - 2rem))' }"
-      @update:visible="confirmOpen = $event">
+    <Dialog
+      :visible="confirmOpen"
+      modal
+      header="确认"
+      :style="{ width: 'min(30rem, calc(100vw - 2rem))' }"
+      @update:visible="confirmOpen = $event"
+    >
       <p class="text-xs">{{ confirmMsg }}</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />

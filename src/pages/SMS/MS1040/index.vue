@@ -21,7 +21,14 @@ import Splitter from "primevue/splitter";
 import SplitterPanel from "primevue/splitterpanel";
 import { IconDeviceFloppy, IconPlus, IconSearch } from "@tabler/icons-vue";
 import { AgGridVue } from "ag-grid-vue3";
-import type { ColDef, GridApi, GridReadyEvent, RowDragEndEvent, ValueGetterParams, ValueSetterParams } from "ag-grid-community";
+import type {
+  ColDef,
+  GridApi,
+  GridReadyEvent,
+  RowDragEndEvent,
+  ValueGetterParams,
+  ValueSetterParams,
+} from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
 import { useMenuQuery } from "@/lib/menuQuery";
@@ -311,7 +318,11 @@ async function onSave() {
   if (!p) return;
   querying.value = true;
   try {
-    await uCCustomPLCPointShowInfoApi.save({ lineCode: p.lineCode, machineCode: p.machineCode, datas: showItems.value });
+    await uCCustomPLCPointShowInfoApi.save({
+      lineCode: p.lineCode,
+      machineCode: p.machineCode,
+      datas: showItems.value,
+    });
     toast("保存成功！", 2000, "success");
     await query();
   } catch {
@@ -358,8 +369,16 @@ onMounted(async () => {
       <label class="shrink-0 text-xs text-muted-foreground">产线</label>
       <InputText :model-value="lineText" disabled class="w-32 shrink-0" />
       <label class="shrink-0 text-xs text-muted-foreground">机台</label>
-      <Select v-model="machineCode" :options="machineOptions" option-label="label" option-value="value" show-clear
-        placeholder="请选择" class="w-36 shrink-0" @value-change="onMachineChange" />
+      <Select
+        v-model="machineCode"
+        :options="machineOptions"
+        option-label="label"
+        option-value="value"
+        show-clear
+        placeholder="请选择"
+        class="w-36 shrink-0"
+        @value-change="onMachineChange"
+      />
       <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="querying" @click="query">
         <IconSearch class="h-3 w-3" />查询
       </Button>
@@ -377,10 +396,19 @@ onMounted(async () => {
     <Splitter layout="horizontal" class="min-h-0 flex-1">
       <SplitterPanel :size="45" :minSize="25" class="flex min-h-0 flex-col overflow-hidden">
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows" :pagination="false"
-            :loading="querying" :row-drag-managed="false"
-            @grid-ready="onGridReady" @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="colDefs"
+            :row-data="rows"
+            :pagination="false"
+            :loading="querying"
+            :row-drag-managed="false"
+            @grid-ready="onGridReady"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
       <SplitterPanel :minSize="30" class="flex min-h-0 flex-col overflow-hidden">
@@ -391,12 +419,21 @@ onMounted(async () => {
               选择并拖拽需要显示的PLC点位信息到该区域内。注意：尽量将要展示的内容向左上角靠拢！
             </span>
           </div>
-          <div ref="showPanel" class="relative min-h-0 flex-1 overflow-auto bg-muted/20" @dragover.prevent
-            @drop.prevent="onPanelDrop">
-            <span v-for="it in showItems" :key="String(it.id)" draggable="true"
+          <div
+            ref="showPanel"
+            class="relative min-h-0 flex-1 overflow-auto bg-muted/20"
+            @dragover.prevent
+            @drop.prevent="onPanelDrop"
+          >
+            <span
+              v-for="it in showItems"
+              :key="String(it.id)"
+              draggable="true"
               class="absolute cursor-move whitespace-nowrap text-xs text-foreground"
               :style="{ left: `${Number(it.nPointX ?? 0)}px`, top: `${Number(it.nPointY ?? 0)}px` }"
-              @dragstart="onItemDragStart(String(it.id))">{{ it.cText }}</span>
+              @dragstart="onItemDragStart(String(it.id))"
+              >{{ it.cText }}</span
+            >
             <span v-if="!showItems.length" class="absolute left-2 top-2 text-xs text-muted-foreground">
               （从左侧网格拖入点位，或用「固定显示内容」添加）
             </span>

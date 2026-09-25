@@ -62,7 +62,9 @@ const detailRows = ref<Row[]>([]);
 const focusedPlan = ref<Row | null>(null);
 const focusedStorage = ref<Row | null>(null);
 
-function W(h: string) { return h.length * 13 + 60; }
+function W(h: string) {
+  return h.length * 13 + 60;
+}
 function num(v: unknown): number {
   const n = Number(v);
   return Number.isFinite(n) ? n : 0;
@@ -228,14 +230,21 @@ const statusOptions = [
 const machineOptions = ref<{ label: string; value: string }[]>([]);
 
 type MachRaw = {
-  machineCode?: string; machineName?: string; lineCode?: string;
-  cCode?: string; cName?: string;
+  machineCode?: string;
+  machineName?: string;
+  lineCode?: string;
+  cCode?: string;
+  cName?: string;
 };
 async function loadMachines() {
   try {
     const list = ((await publicFactoryLineAreaMachineApi.getFactoryLineAreaMachine_LG()) ?? []) as MachRaw[];
     let opts = list
-      .map((x) => ({ value: x.machineCode ?? x.cCode ?? "", label: x.machineName ?? x.cName ?? x.machineCode ?? x.cCode ?? "", lineCode: x.lineCode }))
+      .map((x) => ({
+        value: x.machineCode ?? x.cCode ?? "",
+        label: x.machineName ?? x.cName ?? x.machineCode ?? x.cCode ?? "",
+        lineCode: x.lineCode,
+      }))
       .filter((o) => o.value)
       .filter((o) => !(qsDto.LineCode && o.lineCode != null) || o.lineCode === qsDto.LineCode)
       .sort((a, b) => a.value.localeCompare(b.value));
@@ -246,7 +255,9 @@ async function loadMachines() {
     }
     machineOptions.value = opts;
     sq.machine = opts[0]?.value ?? null; /* SelectedIndex=0 */
-  } catch { /* 拦截层已 toast */ }
+  } catch {
+    /* 拦截层已 toast */
+  }
 }
 
 function isoLocal(d: Date): string {
@@ -261,12 +272,24 @@ function decRange(lo: number | null, hi: number | null): DecimalRange {
   return { min: lo, max: hi };
 }
 
-function readyPlan(e: GridReadyEvent) { planApi.value = e.api; }
-function readyStorage(e: GridReadyEvent) { storageApi.value = e.api; }
-function readyDetail(e: GridReadyEvent) { detailApi.value = e.api; }
-function autosize(api: GridApi | null) { requestAnimationFrame(() => api?.autoSizeAllColumns()); }
-function onPlanRowClicked(e: { data?: Row }) { if (e.data) focusedPlan.value = e.data; }
-function onStorageRowClicked(e: { data?: Row }) { if (e.data) focusedStorage.value = e.data; }
+function readyPlan(e: GridReadyEvent) {
+  planApi.value = e.api;
+}
+function readyStorage(e: GridReadyEvent) {
+  storageApi.value = e.api;
+}
+function readyDetail(e: GridReadyEvent) {
+  detailApi.value = e.api;
+}
+function autosize(api: GridApi | null) {
+  requestAnimationFrame(() => api?.autoSizeAllColumns());
+}
+function onPlanRowClicked(e: { data?: Row }) {
+  if (e.data) focusedPlan.value = e.data;
+}
+function onStorageRowClicked(e: { data?: Row }) {
+  if (e.data) focusedStorage.value = e.data;
+}
 
 /** 原 IsFullMatch（实体计算属性；后端缺省时按公式兜底） */
 function isFullMatch(r: Row): boolean {
@@ -570,13 +593,28 @@ onMounted(() => {
               </div>
               <div class="flex min-w-0 items-center gap-1.5">
                 <label class="w-16 shrink-0 text-xs text-muted-foreground">计划状态</label>
-                <Select v-model="pq.status" :options="statusOptions" option-label="label" option-value="value"
-                  show-clear placeholder="全部" class="min-w-0 flex-1" />
+                <Select
+                  v-model="pq.status"
+                  :options="statusOptions"
+                  option-label="label"
+                  option-value="value"
+                  show-clear
+                  placeholder="全部"
+                  class="min-w-0 flex-1"
+                />
               </div>
               <div class="col-span-2 flex min-w-0 items-center gap-1.5">
                 <label class="w-16 shrink-0 text-xs text-muted-foreground">时间</label>
-                <DatePicker v-model="pq.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-                  show-time hour-format="24" show-icon class="min-w-0 flex-1" />
+                <DatePicker
+                  v-model="pq.dates"
+                  selection-mode="range"
+                  :manual-input="false"
+                  date-format="yy-mm-dd"
+                  show-time
+                  hour-format="24"
+                  show-icon
+                  class="min-w-0 flex-1"
+                />
               </div>
               <div class="flex min-w-0 items-center gap-1.5">
                 <label class="w-12 shrink-0 text-xs text-muted-foreground">计划号</label>
@@ -627,8 +665,16 @@ onMounted(() => {
             <div class="grid shrink-0 grid-cols-6 items-center gap-x-3 gap-y-1.5 border-b border-border/60 px-2 py-1.5">
               <div class="col-span-2 flex min-w-0 items-center gap-1.5">
                 <label class="w-16 shrink-0 text-xs text-muted-foreground">产出时间</label>
-                <DatePicker v-model="sq.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-                  show-time hour-format="24" show-icon class="min-w-0 flex-1" />
+                <DatePicker
+                  v-model="sq.dates"
+                  selection-mode="range"
+                  :manual-input="false"
+                  date-format="yy-mm-dd"
+                  show-time
+                  hour-format="24"
+                  show-icon
+                  class="min-w-0 flex-1"
+                />
               </div>
               <div class="flex min-w-0 items-center gap-1.5">
                 <label class="w-12 shrink-0 text-xs text-muted-foreground">炉号</label>
@@ -656,13 +702,26 @@ onMounted(() => {
               </div>
               <div class="flex min-w-0 items-center gap-1.5">
                 <label class="w-12 shrink-0 text-xs text-muted-foreground">机台</label>
-                <Select v-model="sq.machine" :options="machineOptions" option-label="label" option-value="value"
-                  show-clear placeholder="请选择" class="min-w-0 flex-1" @change="onMachineChange" />
+                <Select
+                  v-model="sq.machine"
+                  :options="machineOptions"
+                  option-label="label"
+                  option-value="value"
+                  show-clear
+                  placeholder="请选择"
+                  class="min-w-0 flex-1"
+                  @change="onMachineChange"
+                />
               </div>
             </div>
             <!-- 坯料工具栏（原 stackPanel3 11 按钮） + 表标题（gvStorage.ViewCaption=坯料信息） -->
             <div class="flex h-9 shrink-0 items-center gap-1 overflow-x-auto border-b border-border/60 px-2">
-              <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="storageLoading" @click="loadStorage">
+              <Button
+                variant="outlined"
+                class="shrink-0 whitespace-nowrap"
+                :loading="storageLoading"
+                @click="loadStorage"
+              >
                 <IconSearch class="h-3 w-3" />查询
               </Button>
               <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="queryByPlan">按计划查</Button>
@@ -688,7 +747,13 @@ onMounted(() => {
                 :row-data="storageRows"
                 :pagination="false"
                 :loading="storageLoading"
-                :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
+                :row-selection="{
+                  mode: 'multiRow',
+                  checkboxes: true,
+                  headerCheckbox: true,
+                  enableClickSelection: true,
+                  enableSelectionWithoutKeys: true,
+                }"
                 @grid-ready="readyStorage"
                 @row-clicked="onStorageRowClicked"
                 @first-data-rendered="autoSizeOnFirstData"

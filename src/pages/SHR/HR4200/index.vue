@@ -71,8 +71,12 @@ const matRows = ref<Thr3010[]>([]);
 const loading = ref(false);
 const planApi = ref<GridApi | null>(null);
 const matApi = ref<GridApi | null>(null);
-function onPlanReady(e: GridReadyEvent) { planApi.value = e.api; }
-function onMatReady(e: GridReadyEvent) { matApi.value = e.api; }
+function onPlanReady(e: GridReadyEvent) {
+  planApi.value = e.api;
+}
+function onMatReady(e: GridReadyEvent) {
+  matApi.value = e.api;
+}
 const planColDefs: ColDef[] = [
   /*  { colId: "selected", field: "selected", headerName: "选择", width: 150 },
   { colId: "cLineCode", field: "cLineCode", headerName: "产线代码", width: 150 },
@@ -827,7 +831,9 @@ const activeTab = ref(0);
 const tabRows = ref<unknown[][]>(tabs.map(() => []));
 const tabApis = ref<(GridApi | null)[]>(tabs.map(() => null));
 const tabLoading = ref(false);
-function onTabReady(i: number, e: GridReadyEvent) { tabApis.value[i] = e.api; }
+function onTabReady(i: number, e: GridReadyEvent) {
+  tabApis.value[i] = e.api;
+}
 
 function baseDto(): DtoQueryL2 {
   const m = currentMat!;
@@ -842,7 +848,10 @@ function baseDto(): DtoQueryL2 {
 }
 
 async function loadTab(i: number) {
-  if (!currentMat) { tabRows.value[i] = []; return; }
+  if (!currentMat) {
+    tabRows.value[i] = [];
+    return;
+  }
   const t = tabs[i];
   let dto: DtoQueryL2;
   if (t.special === "batchOrder") {
@@ -866,7 +875,10 @@ async function loadTab(i: number) {
 async function onMatSelected() {
   const row = (matApi.value?.getSelectedRows()[0] as Thr3010 | undefined) ?? null;
   currentMat = row;
-  if (!row) { for (const arr of tabRows.value) arr.splice(0); return; }
+  if (!row) {
+    for (const arr of tabRows.value) arr.splice(0);
+    return;
+  }
   await loadTab(activeTab.value);
 }
 
@@ -915,8 +927,13 @@ onMounted(async () => {
     <div class="grid shrink-0 grid-cols-6 items-center gap-x-3 gap-y-1.5 border-b border-border/60 px-3 py-2">
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">产线代码</label>
-        <Select v-model="lineCode" :options="lineOptions" option-label="label" option-value="value"
-          class="min-w-0 flex-1" />
+        <Select
+          v-model="lineCode"
+          :options="lineOptions"
+          option-label="label"
+          option-value="value"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">批号</label>
@@ -940,8 +957,17 @@ onMounted(async () => {
       </div>
       <div class="col-span-2 flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">组批时间</label>
-        <DatePicker v-model="input.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-          show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+        <DatePicker
+          v-model="input.dates"
+          selection-mode="range"
+          :manual-input="false"
+          date-format="yy-mm-dd"
+          show-time
+          hour-format="24"
+          show-icon
+          placeholder="开始 至 结束"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="col-span-3 flex min-w-0 items-center gap-1">
         <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="loading" @click="query">
@@ -959,11 +985,21 @@ onMounted(async () => {
             <span class="text-xs font-medium text-muted-foreground">组批计划</span>
           </div>
           <div class="min-h-0 flex-1 overflow-hidden">
-            <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-              :default-col-def="hmxDefaultColDef" :column-defs="planColDefs" :row-data="planRows"
+            <AgGridVue
+              class="hmx-ag-grid h-full w-full"
+              :theme="theme"
+              :locale-text="AG_GRID_LOCALE_CN"
+              :default-col-def="hmxDefaultColDef"
+              :column-defs="planColDefs"
+              :row-data="planRows"
               :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
-              :pagination="false" :animate-rows="false" :loading="loading" @grid-ready="onPlanReady"
-              @selection-changed="onPlanSelected" @first-data-rendered="autoSizeOnFirstData" />
+              :pagination="false"
+              :animate-rows="false"
+              :loading="loading"
+              @grid-ready="onPlanReady"
+              @selection-changed="onPlanSelected"
+              @first-data-rendered="autoSizeOnFirstData"
+            />
           </div>
         </SplitterPanel>
         <SplitterPanel :size="50" :minSize="20" class="flex min-h-0 flex-col overflow-hidden">
@@ -971,27 +1007,49 @@ onMounted(async () => {
             <span class="text-xs font-medium text-muted-foreground">计划材料明细</span>
           </div>
           <div class="min-h-0 flex-1 overflow-hidden">
-            <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-              :default-col-def="hmxDefaultColDef" :column-defs="matColDefs" :row-data="matRows"
+            <AgGridVue
+              class="hmx-ag-grid h-full w-full"
+              :theme="theme"
+              :locale-text="AG_GRID_LOCALE_CN"
+              :default-col-def="hmxDefaultColDef"
+              :column-defs="matColDefs"
+              :row-data="matRows"
               :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
-              :pagination="false" :animate-rows="false" @grid-ready="onMatReady"
-              @selection-changed="onMatSelected" @first-data-rendered="autoSizeOnFirstData" />
+              :pagination="false"
+              :animate-rows="false"
+              @grid-ready="onMatReady"
+              @selection-changed="onMatSelected"
+              @first-data-rendered="autoSizeOnFirstData"
+            />
           </div>
         </SplitterPanel>
       </Splitter>
     </div>
 
     <!-- 下：23 个接口页签 -->
-    <Tabs :value="activeTab" class="flex min-h-0 flex-[5] flex-col border-t border-border/60" @update:value="onTabChange">
+    <Tabs
+      :value="activeTab"
+      class="flex min-h-0 flex-[5] flex-col border-t border-border/60"
+      @update:value="onTabChange"
+    >
       <TabList class="flex-wrap">
         <Tab v-for="(t, i) in tabs" :key="i" :value="i">{{ t.label }}</Tab>
       </TabList>
       <TabPanels class="min-h-0 flex-1">
         <TabPanel v-for="(t, i) in tabs" :key="i" :value="i" class="h-full p-0">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="tabCols[i] ?? []" :row-data="tabRows[i]"
-            :pagination="false" :animate-rows="false" :loading="tabLoading"
-            @grid-ready="(e: GridReadyEvent) => onTabReady(i, e)" @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="tabCols[i] ?? []"
+            :row-data="tabRows[i]"
+            :pagination="false"
+            :animate-rows="false"
+            :loading="tabLoading"
+            @grid-ready="(e: GridReadyEvent) => onTabReady(i, e)"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </TabPanel>
       </TabPanels>
     </Tabs>

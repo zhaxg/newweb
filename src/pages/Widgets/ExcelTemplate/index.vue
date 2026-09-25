@@ -29,7 +29,9 @@ const colDefs: ColDef[] = [
   { field: "CTemplateData", headerName: "模板数据", width: 250 },
 ];
 
-function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
+function onGridReady(e: GridReadyEvent) {
+  gridApi.value = e.api;
+}
 
 async function onQuery() {
   querying.value = true;
@@ -40,10 +42,18 @@ async function onQuery() {
     querying.value = false;
   }
 }
-function onAddTemplate() { /* TODO */ }
-function onDeleteTemplate() { /* TODO */ }
-function onTemplateDesign() { /* TODO */ }
-function onSave() { /* TODO */ }
+function onAddTemplate() {
+  /* TODO */
+}
+function onDeleteTemplate() {
+  /* TODO */
+}
+function onTemplateDesign() {
+  /* TODO */
+}
+function onSave() {
+  /* TODO */
+}
 </script>
 
 <template>
@@ -76,11 +86,26 @@ function onSave() { /* TODO */ }
           <span class="text-xs font-medium text-muted-foreground">模板列表</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows"
-            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-            :pagination="false" :animate-rows="false" :loading="querying"
-            @grid-ready="onGridReady" @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="colDefs"
+            :row-data="rows"
+            :row-selection="{
+              mode: 'multiRow',
+              checkboxes: true,
+              headerCheckbox: true,
+              enableClickSelection: true,
+              enableSelectionWithoutKeys: true,
+            }"
+            :pagination="false"
+            :animate-rows="false"
+            :loading="querying"
+            @grid-ready="onGridReady"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
 

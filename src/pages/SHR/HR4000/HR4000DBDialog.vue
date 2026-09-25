@@ -225,8 +225,13 @@ onMounted(() => {
 </script>
 
 <template>
-  <Dialog :visible="visible" modal header="装车调拨入库" :style="{ width: 'min(72rem, calc(100vw - 2rem))' }"
-    @update:visible="emit('update:visible', $event)">
+  <Dialog
+    :visible="visible"
+    modal
+    header="装车调拨入库"
+    :style="{ width: 'min(72rem, calc(100vw - 2rem))' }"
+    @update:visible="emit('update:visible', $event)"
+  >
     <!-- 顶部字段（原 stackPanel1：目标库区只读 + 车辆信息 + 备注） -->
     <div class="mb-2 grid grid-cols-3 items-center gap-x-3 gap-y-1.5">
       <div class="flex min-w-0 items-center gap-1.5">
@@ -235,8 +240,14 @@ onMounted(() => {
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">车辆信息</label>
-        <Select v-model="carValue" :options="carOptions" :filter="true" editable placeholder="车辆信息"
-          class="min-w-0 flex-1" />
+        <Select
+          v-model="carValue"
+          :options="carOptions"
+          :filter="true"
+          editable
+          placeholder="车辆信息"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">备注</label>
@@ -246,10 +257,19 @@ onMounted(() => {
 
     <!-- 待调拨数据（原 gridControl1 / Thr4000Dto 入参行，勾选后创建调拨单） -->
     <div class="h-[24rem] overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows" :pagination="false"
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="rows"
+        :pagination="false"
         :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableSelectionWithoutKeys: true }"
-        :animate-rows="false" @grid-ready="onGridReady" @first-data-rendered="autoSizeOnFirstData" />
+        :animate-rows="false"
+        @grid-ready="onGridReady"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
 
     <template #footer>
@@ -259,8 +279,13 @@ onMounted(() => {
   </Dialog>
 
   <!-- 确认（对应原 MsgBox.ShowYesNo($"确认创建调拨单？数量{data.Count}")） -->
-  <Dialog :visible="confirming" modal header="确认" :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
-    @update:visible="confirming = $event">
+  <Dialog
+    :visible="confirming"
+    modal
+    header="确认"
+    :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
+    @update:visible="confirming = $event"
+  >
     <p class="text-xs">{{ confirmMsg }}</p>
     <template #footer>
       <Button label="取消" variant="outlined" @click="confirming = false" />

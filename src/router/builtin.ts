@@ -16,7 +16,12 @@ import type { RouteRecordRaw } from "vue-router";
 export const rootRedirectRoute: RouteRecordRaw = { path: "/", redirect: "/home" };
 
 /** 登录页：唯一公开路由，已登录访问由守卫拦回 /home */
-export const loginRoute: RouteRecordRaw = { path: "/login", name: "login", component: LoginPage, meta: { public: true } };
+export const loginRoute: RouteRecordRaw = {
+  path: "/login",
+  name: "login",
+  component: LoginPage,
+  meta: { public: true },
+};
 
 /** 壳层首页：pageId "home"，与动态注册页同一 URL 约定（/<pageId>）；菜单首位节点（icon 走 tabler Home） */
 export const homeRoute: RouteRecordRaw = {

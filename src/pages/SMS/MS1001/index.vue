@@ -14,7 +14,14 @@ import InputText from "primevue/inputtext";
 import Select from "primevue/select";
 import { IconDeviceFloppy, IconPlus, IconSearch, IconTrash } from "@tabler/icons-vue";
 import { AgGridVue } from "ag-grid-vue3";
-import type { ColDef, GridApi, GridReadyEvent, SelectionChangedEvent, ValueGetterParams, ValueSetterParams } from "ag-grid-community";
+import type {
+  ColDef,
+  GridApi,
+  GridReadyEvent,
+  SelectionChangedEvent,
+  ValueGetterParams,
+  ValueSetterParams,
+} from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
 import { useMenuQuery } from "@/lib/menuQuery";
@@ -55,7 +62,13 @@ const colDefs = ref<ColDef[]>(
     { field: "CMachineNameS", headerName: "源机台名称", width: 83, editable: true },
     { field: "CLineNameT", headerName: "目标产线名称", width: 95, editable: true },
     { field: "CMachineNameT", headerName: "目标机台名称", width: 95, editable: true },
-    { field: "NUseTime", headerName: "产线机台间转运耗时(分钟)", width: 165, editable: true, cellEditor: "agNumberCellEditor" },
+    {
+      field: "NUseTime",
+      headerName: "产线机台间转运耗时(分钟)",
+      width: 165,
+      editable: true,
+      cellEditor: "agNumberCellEditor",
+    },
     { field: "Id", headerName: "主键", width: 120, hide: true },
     { field: "CFactoryCodeS", headerName: "源工厂", width: 120, hide: true },
     { field: "CFactoryNameS", headerName: "源工厂名称", width: 120, hide: true },
@@ -153,10 +166,7 @@ async function loadMachines() {
 
 /** GetParamDto(check)：check=true 时源/目标产线与机台均不得为空 */
 function paramDto(check: boolean) {
-  if (
-    check &&
-    (!lineCodeS.value || !lineCodeT.value || !machineCodeS.value || !machineCodeT.value)
-  ) {
+  if (check && (!lineCodeS.value || !lineCodeT.value || !machineCodeS.value || !machineCodeT.value)) {
     toast("禁止操作，源和目标的产线和机台均不得为空！", 3000, "warn");
     return null;
   }
@@ -264,13 +274,29 @@ onMounted(async () => {
       <label class="shrink-0 text-xs text-muted-foreground">源产线</label>
       <InputText :model-value="lineTextS" disabled class="w-28 shrink-0" />
       <label class="shrink-0 text-xs text-muted-foreground">源机台</label>
-      <Select v-model="machineCodeS" :options="machineOptionsS" option-label="label" option-value="value" show-clear
-        placeholder="请选择" class="w-32 shrink-0" @value-change="onMachineChange" />
+      <Select
+        v-model="machineCodeS"
+        :options="machineOptionsS"
+        option-label="label"
+        option-value="value"
+        show-clear
+        placeholder="请选择"
+        class="w-32 shrink-0"
+        @value-change="onMachineChange"
+      />
       <label class="shrink-0 text-xs text-muted-foreground">目标产线</label>
       <InputText :model-value="lineTextT" disabled class="w-28 shrink-0" />
       <label class="shrink-0 text-xs text-muted-foreground">目标机台</label>
-      <Select v-model="machineCodeT" :options="machineOptionsT" option-label="label" option-value="value" show-clear
-        placeholder="请选择" class="w-32 shrink-0" @value-change="onMachineChange" />
+      <Select
+        v-model="machineCodeT"
+        :options="machineOptionsT"
+        option-label="label"
+        option-value="value"
+        show-clear
+        placeholder="请选择"
+        class="w-32 shrink-0"
+        @value-change="onMachineChange"
+      />
       <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="querying" @click="query">
         <IconSearch class="h-3 w-3" />查询
       </Button>
@@ -286,10 +312,20 @@ onMounted(async () => {
     </div>
 
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows" :pagination="false"
-        :loading="querying" :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
-        @grid-ready="onGridReady" @selection-changed="onSelectionChanged" @first-data-rendered="autoSizeOnFirstData" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="rows"
+        :pagination="false"
+        :loading="querying"
+        :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
+        @grid-ready="onGridReady"
+        @selection-changed="onSelectionChanged"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
   </div>
 </template>

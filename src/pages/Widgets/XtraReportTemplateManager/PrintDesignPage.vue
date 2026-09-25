@@ -70,10 +70,7 @@ watch(designId, () => void loadTarget(), { immediate: true });
       :initial-schema="schema"
       @update:open="onClose"
     />
-    <div
-      v-else-if="designId"
-      class="flex h-full items-center justify-center text-sm text-muted-foreground"
-    >
+    <div v-else-if="designId" class="flex h-full items-center justify-center text-sm text-muted-foreground">
       正在打开设计器…
     </div>
     <div v-else class="flex h-full items-center justify-center text-sm text-muted-foreground">

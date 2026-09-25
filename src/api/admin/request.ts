@@ -71,13 +71,10 @@ export const adminApi = {
     });
   },
   getUserRoleList(userId?: string) {
-    return requestClient.request<HmxRole[]>(
-      `${API_BASE}/admin/getUserRoleList`,
-      {
-        method: "post",
-        params: { userId },
-      },
-    );
+    return requestClient.request<HmxRole[]>(`${API_BASE}/admin/getUserRoleList`, {
+      method: "post",
+      params: { userId },
+    });
   },
   updateUserRoleList(data: UpdateUserRoleListInput) {
     return requestClient.request<any>(`${API_BASE}/admin/updateUserRoleList`, {
@@ -86,12 +83,9 @@ export const adminApi = {
     });
   },
   getResourceNamespaceList() {
-    return requestClient.request<HmxKv[]>(
-      `${API_BASE}/admin/getResourceNamespaceList`,
-      {
-        method: "post",
-      },
-    );
+    return requestClient.request<HmxKv[]>(`${API_BASE}/admin/getResourceNamespaceList`, {
+      method: "post",
+    });
   },
   getResources(ns?: string) {
     return requestClient.request<HmxRes[]>(`${API_BASE}/admin/getResources`, {
@@ -107,12 +101,9 @@ export const adminApi = {
     });
   },
   getAllUserRoles() {
-    return requestClient.request<HmxUserRole[]>(
-      `${API_BASE}/admin/getAllUserRoles`,
-      {
-        method: "post",
-      },
-    );
+    return requestClient.request<HmxUserRole[]>(`${API_BASE}/admin/getAllUserRoles`, {
+      method: "post",
+    });
   },
   deleteResource(id?: string) {
     return requestClient.request<any>(`${API_BASE}/admin/deleteResource`, {
@@ -121,31 +112,22 @@ export const adminApi = {
     });
   },
   addOrEditResource(data: HmxRes) {
-    return requestClient.request<HmxRes>(
-      `${API_BASE}/admin/addOrEditResource`,
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<HmxRes>(`${API_BASE}/admin/addOrEditResource`, {
+      method: "post",
+      data,
+    });
   },
   queryButtonsResc(parentRescId?: string) {
-    return requestClient.request<HmxRes[]>(
-      `${API_BASE}/admin/queryButtonsResc`,
-      {
-        method: "post",
-        params: { parentRescId },
-      },
-    );
+    return requestClient.request<HmxRes[]>(`${API_BASE}/admin/queryButtonsResc`, {
+      method: "post",
+      params: { parentRescId },
+    });
   },
   queryUserListForRole(roleid?: string) {
-    return requestClient.request<RoleUserDto[]>(
-      `${API_BASE}/admin/queryUserListForRole`,
-      {
-        method: "post",
-        params: { roleid },
-      },
-    );
+    return requestClient.request<RoleUserDto[]>(`${API_BASE}/admin/queryUserListForRole`, {
+      method: "post",
+      params: { roleid },
+    });
   },
   saveUserListForRole(roleid?: string, data?: RoleUserDto[]) {
     return requestClient.request<any>(`${API_BASE}/admin/saveUserListForRole`, {
@@ -161,31 +143,22 @@ export const adminApi = {
     });
   },
   checkBeforeRemoveRole(roleId?: string) {
-    return requestClient.request<any>(
-      `${API_BASE}/admin/checkBeforeRemoveRole`,
-      {
-        method: "post",
-        params: { roleId },
-      },
-    );
+    return requestClient.request<any>(`${API_BASE}/admin/checkBeforeRemoveRole`, {
+      method: "post",
+      params: { roleId },
+    });
   },
   getRescByRole(roleId?: string, nsResc?: string) {
-    return requestClient.request<RoleEditRescTreeItem[]>(
-      `${API_BASE}/admin/getRescByRole`,
-      {
-        method: "post",
-        params: { roleId, nsResc },
-      },
-    );
+    return requestClient.request<RoleEditRescTreeItem[]>(`${API_BASE}/admin/getRescByRole`, {
+      method: "post",
+      params: { roleId, nsResc },
+    });
   },
   updatePermissionByRole(data: RoleEditRescInput) {
-    return requestClient.request<any>(
-      `${API_BASE}/admin/updatePermissionByRole`,
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>(`${API_BASE}/admin/updatePermissionByRole`, {
+      method: "post",
+      data,
+    });
   },
   queryRolePermissionOfViewAndWidgets(data: RolePermissionInput) {
     return requestClient.request<RolePermissionOfViewAndWidgets[]>(
@@ -197,13 +170,10 @@ export const adminApi = {
     );
   },
   saveRolePermissionOfViewAndWidgets(data: SaveRolePermissionInput) {
-    return requestClient.request<any>(
-      `${API_BASE}/admin/saveRolePermissionOfViewAndWidgets`,
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>(`${API_BASE}/admin/saveRolePermissionOfViewAndWidgets`, {
+      method: "post",
+      data,
+    });
   },
   addOrEditRole(data: HmxRole) {
     return requestClient.request<any>(`${API_BASE}/admin/addOrEditRole`, {
@@ -218,22 +188,16 @@ export const adminApi = {
     });
   },
   getAllKeyvalueLevelone(keywords?: string) {
-    return requestClient.request<HmxKv[]>(
-      `${API_BASE}/admin/getAllKeyvalueLevelone`,
-      {
-        method: "post",
-        params: { keywords },
-      },
-    );
+    return requestClient.request<HmxKv[]>(`${API_BASE}/admin/getAllKeyvalueLevelone`, {
+      method: "post",
+      params: { keywords },
+    });
   },
   getAllKeyvalueItems(parentId?: string) {
-    return requestClient.request<HmxKv[]>(
-      `${API_BASE}/admin/getAllKeyvalueItems`,
-      {
-        method: "post",
-        params: { parentId },
-      },
-    );
+    return requestClient.request<HmxKv[]>(`${API_BASE}/admin/getAllKeyvalueItems`, {
+      method: "post",
+      params: { parentId },
+    });
   },
   addOrEditKeyValue(data: HmxKv) {
     return requestClient.request<HmxKv>(`${API_BASE}/admin/addOrEditKeyValue`, {
@@ -248,13 +212,10 @@ export const adminApi = {
     });
   },
   queryButtons(resourceId?: string) {
-    return requestClient.request<ResetButtonRoleDto>(
-      `${API_BASE}/admin/queryButtons`,
-      {
-        method: "post",
-        params: { resourceId },
-      },
-    );
+    return requestClient.request<ResetButtonRoleDto>(`${API_BASE}/admin/queryButtons`, {
+      method: "post",
+      params: { resourceId },
+    });
   },
   setButtonRoles(data: ResetButtonRoleDto) {
     return requestClient.request<any>(`${API_BASE}/admin/setButtonRoles`, {
@@ -285,13 +246,10 @@ export const authApi = {
     });
   },
   getUserInfo(token?: string) {
-    return requestClient.request<HmxUserSession>(
-      `${API_BASE}/auth/getUserInfo`,
-      {
-        method: "post",
-        params: { token },
-      },
-    );
+    return requestClient.request<HmxUserSession>(`${API_BASE}/auth/getUserInfo`, {
+      method: "post",
+      params: { token },
+    });
   },
   getUserRescList(data: GetUserResourceListInput) {
     return requestClient.request<HmxRes[]>(`${API_BASE}/auth/getUserRescList`, {
@@ -300,41 +258,29 @@ export const authApi = {
     });
   },
   getCaptchaImage() {
-    return requestClient.request<CaptchaInfo>(
-      `${API_BASE}/auth/getCaptchaImage`,
-      {
-        method: "post",
-      },
-    );
+    return requestClient.request<CaptchaInfo>(`${API_BASE}/auth/getCaptchaImage`, {
+      method: "post",
+    });
   },
   getCaptchaChallenge() {
-    return requestClient.request<CaptchaInfo>(
-      `${API_BASE}/auth/getCaptchaChallenge`,
-      {
-        method: "post",
-      },
-    );
+    return requestClient.request<CaptchaInfo>(`${API_BASE}/auth/getCaptchaChallenge`, {
+      method: "post",
+    });
   },
 };
 
 export const codeGenApi = {
   generatedCode(data: GenerateInput) {
-    return requestClient.request<GenerateOutput[]>(
-      `${API_BASE}/codeGen/generatedCode`,
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<GenerateOutput[]>(`${API_BASE}/codeGen/generatedCode`, {
+      method: "post",
+      data,
+    });
   },
   generateVueFiles(swaggerJsonUri?: string) {
-    return requestClient.request<GenerateOutput[]>(
-      `${API_BASE}/codeGen/generateVueFiles`,
-      {
-        method: "post",
-        params: { swaggerJsonUri },
-      },
-    );
+    return requestClient.request<GenerateOutput[]>(`${API_BASE}/codeGen/generateVueFiles`, {
+      method: "post",
+      params: { swaggerJsonUri },
+    });
   },
 };
 
@@ -369,12 +315,9 @@ export const demoApi = {
 
 export const departmentApi = {
   queryAllDepartments() {
-    return requestClient.request<HmxDept[]>(
-      `${API_BASE}/department/queryAllDepartments`,
-      {
-        method: "post",
-      },
-    );
+    return requestClient.request<HmxDept[]>(`${API_BASE}/department/queryAllDepartments`, {
+      method: "post",
+    });
   },
   save(data: HmxDept) {
     return requestClient.request<any>(`${API_BASE}/department/save`, {
@@ -392,70 +335,49 @@ export const departmentApi = {
 
 export const notificationApi = {
   queryMyRecv(userId?: string) {
-    return requestClient.request<HmxNotify[]>(
-      `${API_BASE}/notification/queryMyRecv`,
-      {
-        method: "post",
-        params: { userId },
-      },
-    );
+    return requestClient.request<HmxNotify[]>(`${API_BASE}/notification/queryMyRecv`, {
+      method: "post",
+      params: { userId },
+    });
   },
   queryMyLastestRecv(userId?: string) {
-    return requestClient.request<HmxNotify>(
-      `${API_BASE}/notification/queryMyLastestRecv`,
-      {
-        method: "post",
-        params: { userId },
-      },
-    );
+    return requestClient.request<HmxNotify>(`${API_BASE}/notification/queryMyLastestRecv`, {
+      method: "post",
+      params: { userId },
+    });
   },
   queryMySended(userId?: string) {
-    return requestClient.request<HmxNotify[]>(
-      `${API_BASE}/notification/queryMySended`,
-      {
-        method: "post",
-        params: { userId },
-      },
-    );
+    return requestClient.request<HmxNotify[]>(`${API_BASE}/notification/queryMySended`, {
+      method: "post",
+      params: { userId },
+    });
   },
   updateToReaded(userId?: string, data?: any) {
-    return requestClient.request<any>(
-      `${API_BASE}/notification/updateToReaded`,
-      {
-        method: "post",
-        params: { userId },
-        data,
-      },
-    );
+    return requestClient.request<any>(`${API_BASE}/notification/updateToReaded`, {
+      method: "post",
+      params: { userId },
+      data,
+    });
   },
   sendNewNotification(data: SendNewNotificationInput) {
-    return requestClient.request<any>(
-      `${API_BASE}/notification/sendNewNotification`,
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>(`${API_BASE}/notification/sendNewNotification`, {
+      method: "post",
+      data,
+    });
   },
 };
 
 export const quartzNetApi = {
   insertOrReplaceBackgroudJob(data: HmxBackgroudJobInfo) {
-    return requestClient.request<any>(
-      `${API_BASE}/quartzNet/insertOrReplaceBackgroudJob`,
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>(`${API_BASE}/quartzNet/insertOrReplaceBackgroudJob`, {
+      method: "post",
+      data,
+    });
   },
   getSchedulerStatus() {
-    return requestClient.request<HmxSchedulerStatusInfo>(
-      `${API_BASE}/quartzNet/getSchedulerStatus`,
-      {
-        method: "post",
-      },
-    );
+    return requestClient.request<HmxSchedulerStatusInfo>(`${API_BASE}/quartzNet/getSchedulerStatus`, {
+      method: "post",
+    });
   },
   manualExcuteJob(data: HmxBackgroudJobInfo) {
     return requestClient.request<any>(`${API_BASE}/quartzNet/manualExcuteJob`, {
@@ -464,21 +386,15 @@ export const quartzNetApi = {
     });
   },
   queryAllBackgroudJobs() {
-    return requestClient.request<HmxBackgroudJobInfo[]>(
-      `${API_BASE}/quartzNet/queryAllBackgroudJobs`,
-      {
-        method: "post",
-      },
-    );
+    return requestClient.request<HmxBackgroudJobInfo[]>(`${API_BASE}/quartzNet/queryAllBackgroudJobs`, {
+      method: "post",
+    });
   },
   removeBackgroudJob(data: HmxBackgroudJobInfo) {
-    return requestClient.request<any>(
-      `${API_BASE}/quartzNet/removeBackgroudJob`,
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>(`${API_BASE}/quartzNet/removeBackgroudJob`, {
+      method: "post",
+      data,
+    });
   },
   startScheduler() {
     return requestClient.request<any>(`${API_BASE}/quartzNet/startScheduler`, {
@@ -491,71 +407,50 @@ export const quartzNetApi = {
     });
   },
   getAvaliableBackgroudJobs() {
-    return requestClient.request<HmxBackgroundJobTypeInfo[]>(
-      `${API_BASE}/quartzNet/getAvaliableBackgroudJobs`,
-      {
-        method: "post",
-      },
-    );
+    return requestClient.request<HmxBackgroundJobTypeInfo[]>(`${API_BASE}/quartzNet/getAvaliableBackgroudJobs`, {
+      method: "post",
+    });
   },
   getNextCronTimes(cronExp?: string, times?: string) {
-    return requestClient.request<any>(
-      `${API_BASE}/quartzNet/getNextCronTimes`,
-      {
-        method: "post",
-        params: { cronExp, times },
-      },
-    );
+    return requestClient.request<any>(`${API_BASE}/quartzNet/getNextCronTimes`, {
+      method: "post",
+      params: { cronExp, times },
+    });
   },
 };
 
 export const restrictDataApi = {
   queryRestrictData(roleIds?: string, data?: RestrictDataResouce) {
-    return requestClient.request<RolePermissionOfRestrictDataItem[]>(
-      `${API_BASE}/restrictData/queryRestrictData`,
-      {
-        method: "post",
-        params: { roleIds },
-        data,
-      },
-    );
+    return requestClient.request<RolePermissionOfRestrictDataItem[]>(`${API_BASE}/restrictData/queryRestrictData`, {
+      method: "post",
+      params: { roleIds },
+      data,
+    });
   },
   queryDataGroupsNew(keywords?: string) {
-    return requestClient.request<RestrictDataResource[]>(
-      `${API_BASE}/restrictData/queryDataGroupsNew`,
-      {
-        method: "post",
-        params: { keywords },
-      },
-    );
+    return requestClient.request<RestrictDataResource[]>(`${API_BASE}/restrictData/queryDataGroupsNew`, {
+      method: "post",
+      params: { keywords },
+    });
   },
   anyAssignedPermissionForResource(resourceId?: string) {
-    return requestClient.request<boolean>(
-      `${API_BASE}/restrictData/anyAssignedPermissionForResource`,
-      {
-        method: "post",
-        params: { resourceId },
-      },
-    );
+    return requestClient.request<boolean>(`${API_BASE}/restrictData/anyAssignedPermissionForResource`, {
+      method: "post",
+      params: { resourceId },
+    });
   },
   deleeteAllAssignedPermissionForResource(resourceCode?: string) {
-    return requestClient.request<any>(
-      `${API_BASE}/restrictData/deleeteAllAssignedPermissionForResource`,
-      {
-        method: "post",
-        params: { resourceCode },
-      },
-    );
+    return requestClient.request<any>(`${API_BASE}/restrictData/deleeteAllAssignedPermissionForResource`, {
+      method: "post",
+      params: { resourceCode },
+    });
   },
   queryRestrictColumn(entityTypeFullName?: string, data?: any) {
-    return requestClient.request<any>(
-      `${API_BASE}/restrictData/queryRestrictColumn`,
-      {
-        method: "post",
-        params: { entityTypeFullName },
-        data,
-      },
-    );
+    return requestClient.request<any>(`${API_BASE}/restrictData/queryRestrictColumn`, {
+      method: "post",
+      params: { entityTypeFullName },
+      data,
+    });
   },
   saveRoleRestrictDataItem(
     roleId?: string,
@@ -564,175 +459,118 @@ export const restrictDataApi = {
     checkedState?: string,
     data?: RbacRescType,
   ) {
-    return requestClient.request<any>(
-      `${API_BASE}/restrictData/saveRoleRestrictDataItem`,
-      {
-        method: "post",
-        params: { roleId, dataId, resourceCode, checkedState },
-        data,
-      },
-    );
+    return requestClient.request<any>(`${API_BASE}/restrictData/saveRoleRestrictDataItem`, {
+      method: "post",
+      params: { roleId, dataId, resourceCode, checkedState },
+      data,
+    });
   },
   queryRestrictDataResource() {
-    return requestClient.request<RestrictDataResouce[]>(
-      `${API_BASE}/restrictData/queryRestrictDataResource`,
-      {
-        method: "post",
-      },
-    );
+    return requestClient.request<RestrictDataResouce[]>(`${API_BASE}/restrictData/queryRestrictDataResource`, {
+      method: "post",
+    });
   },
   insertNewRestrictDataResouce(data: RestrictDataResouce) {
-    return requestClient.request<any>(
-      `${API_BASE}/restrictData/insertNewRestrictDataResouce`,
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>(`${API_BASE}/restrictData/insertNewRestrictDataResouce`, {
+      method: "post",
+      data,
+    });
   },
   queryRestrictColumnAssignedCount(resourceId?: string) {
-    return requestClient.request<number>(
-      `${API_BASE}/restrictData/queryRestrictColumnAssignedCount`,
-      {
-        method: "post",
-        params: { resourceId },
-      },
-    );
+    return requestClient.request<number>(`${API_BASE}/restrictData/queryRestrictColumnAssignedCount`, {
+      method: "post",
+      params: { resourceId },
+    });
   },
   removeRestrictColumn(resourceId?: string) {
-    return requestClient.request<any>(
-      `${API_BASE}/restrictData/removeRestrictColumn`,
-      {
-        method: "post",
-        params: { resourceId },
-      },
-    );
+    return requestClient.request<any>(`${API_BASE}/restrictData/removeRestrictColumn`, {
+      method: "post",
+      params: { resourceId },
+    });
   },
 };
 
 export const systemKeyValueApi = {
   getSysKvListByGroup(group?: string) {
-    return requestClient.request<HmxKv[]>(
-      `${API_BASE}/systemKeyValue/getSysKvListByGroup`,
-      {
-        method: "post",
-        params: { group },
-      },
-    );
+    return requestClient.request<HmxKv[]>(`${API_BASE}/systemKeyValue/getSysKvListByGroup`, {
+      method: "post",
+      params: { group },
+    });
   },
   initializeSysKvList(pcode?: string) {
-    return requestClient.request<HmxKv[]>(
-      `${API_BASE}/systemKeyValue/initializeSysKvList`,
-      {
-        method: "post",
-        params: { pcode },
-      },
-    );
+    return requestClient.request<HmxKv[]>(`${API_BASE}/systemKeyValue/initializeSysKvList`, {
+      method: "post",
+      params: { pcode },
+    });
   },
   querySysKvList(root?: string, code?: string, name?: string) {
-    return requestClient.request<HmxKv[]>(
-      `${API_BASE}/systemKeyValue/querySysKvList`,
-      {
-        method: "post",
-        params: { root, code, name },
-      },
-    );
+    return requestClient.request<HmxKv[]>(`${API_BASE}/systemKeyValue/querySysKvList`, {
+      method: "post",
+      params: { root, code, name },
+    });
   },
   querySysKvItemList(parentCode?: string) {
-    return requestClient.request<HmxKv[]>(
-      `${API_BASE}/systemKeyValue/querySysKvItemList`,
-      {
-        method: "post",
-        params: { parentCode },
-      },
-    );
+    return requestClient.request<HmxKv[]>(`${API_BASE}/systemKeyValue/querySysKvItemList`, {
+      method: "post",
+      params: { parentCode },
+    });
   },
   querySystemSettingInfos() {
-    return requestClient.request<HmxKv[]>(
-      `${API_BASE}/systemKeyValue/querySystemSettingInfos`,
-      {
-        method: "post",
-      },
-    );
+    return requestClient.request<HmxKv[]>(`${API_BASE}/systemKeyValue/querySystemSettingInfos`, {
+      method: "post",
+    });
   },
   querySystemSettingInfosV2() {
-    return requestClient.request<SystemSettingInfo>(
-      `${API_BASE}/systemKeyValue/querySystemSettingInfosV2`,
-      {
-        method: "post",
-      },
-    );
+    return requestClient.request<SystemSettingInfo>(`${API_BASE}/systemKeyValue/querySystemSettingInfosV2`, {
+      method: "post",
+    });
   },
   saveSystemSettingInfosV2(data: SystemSettingInfo) {
-    return requestClient.request<any>(
-      `${API_BASE}/systemKeyValue/saveSystemSettingInfosV2`,
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>(`${API_BASE}/systemKeyValue/saveSystemSettingInfosV2`, {
+      method: "post",
+      data,
+    });
   },
   saveChangesOfSystemSettingInfos(data: HmxKv[]) {
-    return requestClient.request<any>(
-      `${API_BASE}/systemKeyValue/saveChangesOfSystemSettingInfos`,
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>(`${API_BASE}/systemKeyValue/saveChangesOfSystemSettingInfos`, {
+      method: "post",
+      data,
+    });
   },
   prepareNewKvEditInput() {
-    return requestClient.request<KvEditInput>(
-      `${API_BASE}/systemKeyValue/prepareNewKvEditInput`,
-      {
-        method: "post",
-      },
-    );
+    return requestClient.request<KvEditInput>(`${API_BASE}/systemKeyValue/prepareNewKvEditInput`, {
+      method: "post",
+    });
   },
   insertOrUpdateParentKvItem(data: KvEditInput) {
-    return requestClient.request<HmxKv>(
-      `${API_BASE}/systemKeyValue/insertOrUpdateParentKvItem`,
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<HmxKv>(`${API_BASE}/systemKeyValue/insertOrUpdateParentKvItem`, {
+      method: "post",
+      data,
+    });
   },
   insertOrUpdateKvFileds(key?: string, data?: KvFiledItem[]) {
-    return requestClient.request<any>(
-      `${API_BASE}/systemKeyValue/insertOrUpdateKvFileds`,
-      {
-        method: "post",
-        params: { key },
-        data,
-      },
-    );
+    return requestClient.request<any>(`${API_BASE}/systemKeyValue/insertOrUpdateKvFileds`, {
+      method: "post",
+      params: { key },
+      data,
+    });
   },
   queryKvFileds(key?: string) {
-    return requestClient.request<KvFiledItem[]>(
-      `${API_BASE}/systemKeyValue/queryKvFileds`,
-      {
-        method: "post",
-        params: { key },
-      },
-    );
+    return requestClient.request<KvFiledItem[]>(`${API_BASE}/systemKeyValue/queryKvFileds`, {
+      method: "post",
+      params: { key },
+    });
   },
   removeParentKvItem(kvItemId?: string) {
-    return requestClient.request<any>(
-      `${API_BASE}/systemKeyValue/removeParentKvItem`,
-      {
-        method: "post",
-        params: { kvItemId },
-      },
-    );
+    return requestClient.request<any>(`${API_BASE}/systemKeyValue/removeParentKvItem`, {
+      method: "post",
+      params: { kvItemId },
+    });
   },
   saveChangesForChildKvItems(data: HmxKv[]) {
-    return requestClient.request<any>(
-      `${API_BASE}/systemKeyValue/saveChangesForChildKvItems`,
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>(`${API_BASE}/systemKeyValue/saveChangesForChildKvItems`, {
+      method: "post",
+      data,
+    });
   },
 };

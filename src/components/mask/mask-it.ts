@@ -1,7 +1,12 @@
 /* eslint-disable no-unmodified-loop-condition */
-import type { TokenType } from './tokens';
+import type { TokenType } from "./tokens";
 
-export type MaskItType = (value: string, mask: string, tokens: { [key: string]: TokenType }, masked?: boolean) => string;
+export type MaskItType = (
+  value: string,
+  mask: string,
+  tokens: { [key: string]: TokenType },
+  masked?: boolean,
+) => string;
 
 export const maskIt: MaskItType = (
   value: string,
@@ -9,11 +14,11 @@ export const maskIt: MaskItType = (
   tokens: { [key: string]: TokenType },
   masked = true,
 ): string => {
-  value = value || '';
-  mask = mask || '';
+  value = value || "";
+  mask = mask || "";
   let iMask = 0;
   let iValue = 0;
-  let output = '';
+  let output = "";
   while (iMask < mask.length && iValue < value.length) {
     let cMask = mask[iMask];
     const masker = tokens[cMask];
@@ -29,16 +34,20 @@ export const maskIt: MaskItType = (
         iMask++;
         cMask = mask[iMask];
       }
-      if (masked) {output += cMask;}
-      if (cValue === cMask) {iValue++;}
+      if (masked) {
+        output += cMask;
+      }
+      if (cValue === cMask) {
+        iValue++;
+      }
       iMask++;
     }
   }
-  let restOutput = '';
+  let restOutput = "";
   while (iMask < mask.length && masked) {
     const cMask = mask[iMask];
     if (tokens[cMask]) {
-      restOutput = '';
+      restOutput = "";
       break;
     }
     restOutput += cMask;

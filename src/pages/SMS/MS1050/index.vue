@@ -16,7 +16,14 @@ import Button from "primevue/button";
 import Select from "primevue/select";
 import { IconPlus, IconSearch, IconTrash, IconPencil } from "@tabler/icons-vue";
 import { AgGridVue } from "ag-grid-vue3";
-import type { ColDef, GridApi, GridReadyEvent, SelectionChangedEvent, ValueGetterParams, ValueSetterParams } from "ag-grid-community";
+import type {
+  ColDef,
+  GridApi,
+  GridReadyEvent,
+  SelectionChangedEvent,
+  ValueGetterParams,
+  ValueSetterParams,
+} from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
 import { useMenuQuery } from "@/lib/menuQuery";
@@ -172,8 +179,16 @@ onMounted(async () => {
     <!-- stackPanel1：轧制产线 + 查询/添加/编辑/删除（顺序照 Controls.Add；Load 末尾自动查询一次） -->
     <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
       <label class="shrink-0 text-xs text-muted-foreground">轧制产线</label>
-      <Select v-model="zgLine" :options="zgOptions" option-label="label" option-value="value" show-clear
-        placeholder="请选择" class="w-36 shrink-0" @value-change="query" />
+      <Select
+        v-model="zgLine"
+        :options="zgOptions"
+        option-label="label"
+        option-value="value"
+        show-clear
+        placeholder="请选择"
+        class="w-36 shrink-0"
+        @value-change="query"
+      />
       <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="querying" @click="query">
         <IconSearch class="h-3 w-3" />查询
       </Button>
@@ -189,10 +204,20 @@ onMounted(async () => {
     </div>
 
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows" :pagination="false"
-        :loading="querying" :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
-        @grid-ready="onGridReady" @selection-changed="onSelectionChanged" @first-data-rendered="autoSizeOnFirstData" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="rows"
+        :pagination="false"
+        :loading="querying"
+        :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
+        @grid-ready="onGridReady"
+        @selection-changed="onSelectionChanged"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
   </div>
 </template>

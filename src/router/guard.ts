@@ -66,10 +66,18 @@ export function setupRouterGuards(
     }
     // 安全兜底：强制移除 Vue Transition 残留类（transitionend 在部分环境不触发导致 opacity=0）
     requestAnimationFrame(() => {
-      document.querySelectorAll(".screen-enter-from, .screen-enter-active, .screen-leave-from, .screen-leave-active").forEach((el) => {
-        el.classList.remove("screen-enter-from", "screen-enter-active", "screen-enter-to",
-          "screen-leave-from", "screen-leave-active", "screen-leave-to");
-      });
+      document
+        .querySelectorAll(".screen-enter-from, .screen-enter-active, .screen-leave-from, .screen-leave-active")
+        .forEach((el) => {
+          el.classList.remove(
+            "screen-enter-from",
+            "screen-enter-active",
+            "screen-enter-to",
+            "screen-leave-from",
+            "screen-leave-active",
+            "screen-leave-to",
+          );
+        });
     });
     if (!to.meta.pageId) return;
     const tabs = useTabsStore();

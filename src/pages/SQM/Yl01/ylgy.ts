@@ -187,9 +187,7 @@ export const YlgyTemplateRepo = {
   /** C# GetCqzb：分组 CQZB 的指标 */
   async getCqzb(): Promise<YlgyTemplate[]> {
     const idxes = await YlgyTemplateRepo.getIndexes();
-    return idxes
-      .filter((x) => x.classCode === CQZB_GRP)
-      .map((x) => ({ code: x.code, name: x.name, seq: x.seq }));
+    return idxes.filter((x) => x.classCode === CQZB_GRP).map((x) => ({ code: x.code, name: x.name, seq: x.seq }));
   },
 
   async getAll(): Promise<YlgyTemplate[]> {
@@ -221,9 +219,7 @@ export const YlgyTemplateRepo = {
                 (x.classCode ?? "").startsWith(p.classCode ?? ""),
             )
             .map((x) => {
-              const t = templs.find(
-                (w) => w.proc === p.proc && w.cls === p.classCode && w.code === x.code,
-              );
+              const t = templs.find((w) => w.proc === p.proc && w.cls === p.classCode && w.code === x.code);
               return {
                 id: t?.id ?? NextStrId(),
                 proc: p.proc,
@@ -375,7 +371,7 @@ export class YlgyGx {
     const grps = await YlgyTemplateRepo.getGrps();
     if (values == null) throw new Error("values 不能为空");
     const cloned = [...values].map((v) => ({
-      ...JSON.parse(JSON.stringify(v)) as Tqmyl04,
+      ...(JSON.parse(JSON.stringify(v)) as Tqmyl04),
       id: NextStrId(),
       cTqmyl01Code: this.data.cGyCode,
       cTqmyl01Id: this.data.cTqmyl01Id,
@@ -390,10 +386,7 @@ export class YlgyGx {
           new Tqmyl04Grp(
             x.classCode ?? "",
             x.classDesc ?? "",
-            cloned.filter(
-              (w) =>
-                (w.cClass ?? "").startsWith(x.classCode ?? "") && w.cClassDesc === x.classDesc,
-            ),
+            cloned.filter((w) => (w.cClass ?? "").startsWith(x.classCode ?? "") && w.cClassDesc === x.classDesc),
           ),
       );
   }
@@ -532,8 +525,7 @@ export class Ylgy {
     let groupStart = index;
     while (groupStart > 0 && (this.gylj[groupStart - 1].data.nSeq ?? 0) === seq) groupStart--;
     let groupEnd = index;
-    while (groupEnd < this.gylj.length - 1 && (this.gylj[groupEnd + 1].data.nSeq ?? 0) === seq)
-      groupEnd++;
+    while (groupEnd < this.gylj.length - 1 && (this.gylj[groupEnd + 1].data.nSeq ?? 0) === seq) groupEnd++;
     if (groupStart === groupEnd) return;
 
     const TEMP = Number.MAX_SAFE_INTEGER;

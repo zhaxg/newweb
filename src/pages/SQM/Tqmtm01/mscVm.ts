@@ -77,7 +77,9 @@ export class IdxDetailValues {
     return this.values.filter((r) => r.tableCode === TABLE_P0);
   }
   getTsTableVal(): TsTableProValIdxTable[] {
-    return this.values.filter((r) => r.tableCode !== TABLE_T1 && r.tableCode !== TABLE_P0 && isSlotRow(r)) as TsTableProValIdxTable[];
+    return this.values.filter(
+      (r) => r.tableCode !== TABLE_T1 && r.tableCode !== TABLE_P0 && isSlotRow(r),
+    ) as TsTableProValIdxTable[];
   }
   getMacRows(): IdxRow[] {
     return this.values.filter((r) => r.tableCode === TABLE_MAC && !isSlotRow(r));
@@ -157,7 +159,12 @@ export class MSCIdx extends MSCNode {
     idx.data = t04;
     return idx;
   }
-  static async createWith(t04: Tqmtm04, tm04s: Tqmtm04[] | undefined, parent: MSCNode, rows: IdxRow[]): Promise<MSCIdx> {
+  static async createWith(
+    t04: Tqmtm04,
+    tm04s: Tqmtm04[] | undefined,
+    parent: MSCNode,
+    rows: IdxRow[],
+  ): Promise<MSCIdx> {
     const idx = MSCIdx.create(t04, parent);
     await idx.initIdxData(rows, tm04s);
     return idx;
@@ -278,9 +285,7 @@ export class MSCSubIdx extends MSCIdx {
         : new MSCSubIdx(parent, a as Tqmtm04, b);
     }
     const row = a as IdxRow;
-    return row.tableCode === TABLE_T1
-      ? new MSCTestItemNode(parent, null, row)
-      : new MSCSubIdx(parent, null, row);
+    return row.tableCode === TABLE_T1 ? new MSCTestItemNode(parent, null, row) : new MSCSubIdx(parent, null, row);
   }
   protected initTm04() {
     const data = { ...(this.parent.data as Tqmtm04) } as Tqmtm04;
@@ -396,11 +401,21 @@ function setCopiedParentData(data: Tqmtm04, parent: MSCNode) {
   if (parent instanceof MSCIdx) setCopiedParentData(data, parent.parent);
 }
 function setCopiedDetail(idx: MSCIdx, parent: MSCNode) {
-  let msc: MSC | null = null, line: MSCLine | null = null, proc: MSCProc | null = null;
+  let msc: MSC | null = null,
+    line: MSCLine | null = null,
+    proc: MSCProc | null = null;
   if (parent instanceof MSC) msc = parent;
-  else if (parent instanceof MSCLine) { line = parent; msc = parent.msc; }
-  else if (parent instanceof MSCProc) { proc = parent; line = parent.line; msc = parent.line.msc; }
-  else if (parent instanceof MSCIdx) { setCopiedDetail(idx, parent.parent); return; }
+  else if (parent instanceof MSCLine) {
+    line = parent;
+    msc = parent.msc;
+  } else if (parent instanceof MSCProc) {
+    proc = parent;
+    line = parent.line;
+    msc = parent.line.msc;
+  } else if (parent instanceof MSCIdx) {
+    setCopiedDetail(idx, parent.parent);
+    return;
+  }
   for (const detail of idx.idxDetails.values) {
     detail.id = uid();
     detail.idxNo = idx.idxNo;
@@ -409,7 +424,10 @@ function setCopiedDetail(idx: MSCIdx, parent: MSCNode) {
     item.idxData.id = uid();
     const d = item.data as Tqmtm04;
     d.id = uid();
-    if (msc) { d.cMsc = msc.data.cMsc; d.cTqmtm01Id = msc.id; }
+    if (msc) {
+      d.cMsc = msc.data.cMsc;
+      d.cTqmtm01Id = msc.id;
+    }
     d.cTqmtm02Id = line?.id ?? null;
     d.cTqmtm03Id = proc?.id ?? null;
     item.updateIdxNo(item.id);
@@ -581,7 +599,10 @@ export class MSCLine extends MSCNode {
     );
     this.data.cWholeBacklog = sorted.map((x) => x.data.cWholeBacklogCode ?? "").join("-");
     this.data.cWholeBacklogDesc = sorted
-      .map((x) => procKvList.get(x.data.cWholeBacklogCode ?? "") ?? x.data.cWholeBacklogName ?? x.data.cWholeBacklogCode ?? "")
+      .map(
+        (x) =>
+          procKvList.get(x.data.cWholeBacklogCode ?? "") ?? x.data.cWholeBacklogName ?? x.data.cWholeBacklogCode ?? "",
+      )
       .join("-");
   }
   async copy(msc: MSC): Promise<MSCLine> {
@@ -860,16 +881,19 @@ export class MscVm {
 
   /** 原 btnRefreshBaseTable（更新基表）：按 Tqmtm08 补齐各层级缺失的基表索引 */
   addNotExistsIdxTabs(msc: MSC) {
-    let tm04s = this.getTm04s(MscBasicTableType.A, msc.data.cProdCode)
-      .filter((w) => !msc.idxes.some((x) => x.data.cBasicTableCode === w.cBasicTableCode));
+    let tm04s = this.getTm04s(MscBasicTableType.A, msc.data.cProdCode).filter(
+      (w) => !msc.idxes.some((x) => x.data.cBasicTableCode === w.cBasicTableCode),
+    );
     msc.addIdxes(tm04s);
     for (const line of msc.lines) {
-      tm04s = this.getTm04s(MscBasicTableType.B, msc.data.cProdCode)
-        .filter((w) => !line.idxes.some((x) => x.data.cBasicTableCode === w.cBasicTableCode));
+      tm04s = this.getTm04s(MscBasicTableType.B, msc.data.cProdCode).filter(
+        (w) => !line.idxes.some((x) => x.data.cBasicTableCode === w.cBasicTableCode),
+      );
       line.addIdxes(tm04s);
       for (const proc of line.procs) {
-        tm04s = this.getTm04s(MscBasicTableType.C, msc.data.cProdCode, proc.data.cWholeBacklogCode)
-          .filter((w) => !proc.idxes.some((x) => x.data.cBasicTableCode === w.cBasicTableCode));
+        tm04s = this.getTm04s(MscBasicTableType.C, msc.data.cProdCode, proc.data.cWholeBacklogCode).filter(
+          (w) => !proc.idxes.some((x) => x.data.cBasicTableCode === w.cBasicTableCode),
+        );
         proc.addIdxes(tm04s);
       }
     }
@@ -903,10 +927,7 @@ export class MscVm {
   }
   updateProc(proc: MSCProc, dto: EditProcDto): MSCProc {
     if (proc.data.cWholeBacklogCode !== dto.procCd) {
-      proc.updateProcNo(
-        dto.procCd ?? "",
-        this.getTm04s(MscBasicTableType.C, proc.line.msc.data.cProdCode, dto.procCd),
-      );
+      proc.updateProcNo(dto.procCd ?? "", this.getTm04s(MscBasicTableType.C, proc.line.msc.data.cProdCode, dto.procCd));
     }
     applyProcData(dto, proc);
     return proc;
@@ -969,14 +990,18 @@ export async function initMsc(item: MSCDto): Promise<MSC> {
     const line = new MSCLine(msc);
     line.data = lx;
     msc.lines.push(line);
-    for (const x of tm04s.filter((y) => y.cBasicTableTypeCode === MscBasicTableType.B).filter((y) => y.cTqmtm02Id === line.id)) {
+    for (const x of tm04s
+      .filter((y) => y.cBasicTableTypeCode === MscBasicTableType.B)
+      .filter((y) => y.cTqmtm02Id === line.id)) {
       line.idxes.push(await MSCIdx.createWith(x, tm04s, line, rows));
     }
     for (const px of (item.tqmtm03s ?? []).filter((y) => y.cTqmtm02Id === line.id)) {
       const proc = new MSCProc(line);
       proc.data = px;
       line.procs.push(proc);
-      for (const x of tm04s.filter((y) => y.cBasicTableTypeCode === MscBasicTableType.C).filter((y) => y.cTqmtm03Id === proc.id)) {
+      for (const x of tm04s
+        .filter((y) => y.cBasicTableTypeCode === MscBasicTableType.C)
+        .filter((y) => y.cTqmtm03Id === proc.id)) {
         proc.idxes.push(await MSCIdx.createWith(x, tm04s, proc, rows));
       }
     }
@@ -993,7 +1018,9 @@ async function toDto(msc: MSC): Promise<MSCDto> {
   const idxGroups = [...msc.idxes, ...msc.lines.flatMap((l) => l.idxes), ...proc.flatMap((p) => p.idxes)].map(
     (i) => i.idxDetails,
   );
-  const testItemDetails = idxGroups.flatMap((g) => g.subIdxes.filter((s) => s instanceof MSCTestItemNode)).map((s) => s.idxDetails);
+  const testItemDetails = idxGroups
+    .flatMap((g) => g.subIdxes.filter((s) => s instanceof MSCTestItemNode))
+    .map((s) => s.idxDetails);
 
   const idxData: TsTableProValIdxTable[] = [];
   for (const g of idxGroups) {

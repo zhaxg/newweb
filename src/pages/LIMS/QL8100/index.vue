@@ -15,12 +15,7 @@ import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, ColGroupDef, GridApi, GridReadyEvent } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { hmxDefaultColDef, makeHmxGridTheme, autoSizeOnFirstData } from "@/lib/agGrid";
-import {
-  frmQL8100Api,
-  SampleJudgeResult,
-  type FrmQL8100Dto,
-  type TimeRange,
-} from "@/api/mes4ddh/lims.swagger";
+import { frmQL8100Api, SampleJudgeResult, type FrmQL8100Dto, type TimeRange } from "@/api/mes4ddh/lims.swagger";
 import type { FrmQL8100QueryInputDto } from "@/api/mes4ddh/shr.swagger";
 import { testItemApi } from "@/api/mes4ddh/sqm.swagger";
 
@@ -84,7 +79,9 @@ const rows = ref<FrmQL8100Dto[]>([]);
 const querying = ref(false);
 const gridApi = ref<GridApi | null>(null);
 const colDefs = ref<(ColDef | ColGroupDef)[]>([staticGroup]);
-function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
+function onGridReady(e: GridReadyEvent) {
+  gridApi.value = e.api;
+}
 
 /* ---------- 动态列（原 InitColumns + CustomUnboundColumnData + RowCellStyle） ---------- */
 function resultOf(row: FrmQL8100Dto | undefined | null, code: string) {
@@ -142,9 +139,7 @@ function buildGroups(list: FrmQL8100Dto[]): ColGroupDef[] {
   }
   order.sort((a, b) => (a.typeCode < b.typeCode ? -1 : a.typeCode > b.typeCode ? 1 : 0));
   return order.map((g) => ({
-    headerName: g.testItem
-      ? (testItemNameMap.value.get(g.testItem) || g.testItem)
-      : " ",
+    headerName: g.testItem ? testItemNameMap.value.get(g.testItem) || g.testItem : " ",
     children: [...g.subs]
       .sort((a, b) => (a.code < b.code ? -1 : a.code > b.code ? 1 : 0))
       .map((s) => dynCol(g.testItem, s.code, s.name)),
@@ -164,10 +159,7 @@ async function onQuery() {
       completeTime: toTimeRange(query.dates),
     };
     const list = (await frmQL8100Api.query(input)) ?? [];
-    const [testItems, subItems] = await Promise.all([
-      testItemApi.queryTestItems(),
-      testItemApi.querySubItems(),
-    ]);
+    const [testItems, subItems] = await Promise.all([testItemApi.queryTestItems(), testItemApi.querySubItems()]);
     testItemNameMap.value = new Map((testItems ?? []).map((t) => [t.testItemCode ?? "", t.testItemName ?? ""]));
     subItemNameMap.value = new Map((subItems ?? []).map((s) => [s.testSubItemCode ?? "", s.testSubItemName ?? ""]));
     rows.value = list;
@@ -208,8 +200,14 @@ async function onQuery() {
         </div>
         <div class="col-span-2 flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">检验时间</label>
-          <DatePicker v-model="query.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-            show-icon class="min-w-0 flex-1" />
+          <DatePicker
+            v-model="query.dates"
+            selection-mode="range"
+            :manual-input="false"
+            date-format="yy-mm-dd"
+            show-icon
+            class="min-w-0 flex-1"
+          />
         </div>
       </div>
     </div>
@@ -222,10 +220,20 @@ async function onQuery() {
     </div>
 
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows"
-        :suppress-column-virtualisation="true" :pagination="false" :animate-rows="false" :loading="querying"
-        @grid-ready="onGridReady" @first-data-rendered="autoSizeOnFirstData" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="rows"
+        :suppress-column-virtualisation="true"
+        :pagination="false"
+        :animate-rows="false"
+        :loading="querying"
+        @grid-ready="onGridReady"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
   </div>
 </template>

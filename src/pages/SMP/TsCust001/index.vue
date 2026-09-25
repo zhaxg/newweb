@@ -36,8 +36,20 @@ const txtCustName = ref("");
 
 // 右侧「基本信息」表单（原 dataLayoutControl1 绑定 bscCustInfo）
 function emptyInfo(): TsCust001 {
-  return { selected: false, id: null, creator: null, createTime: null, lastModifier: null, lastModifyTime: null,
-    cCustEname: null, cInboundNo: null, cRemark: null, cCustNo: null, cStatus: null, cCustFlow: null };
+  return {
+    selected: false,
+    id: null,
+    creator: null,
+    createTime: null,
+    lastModifier: null,
+    lastModifyTime: null,
+    cCustEname: null,
+    cInboundNo: null,
+    cRemark: null,
+    cCustNo: null,
+    cStatus: null,
+    cCustFlow: null,
+  };
 }
 const info = reactive<TsCust001>(emptyInfo());
 
@@ -159,7 +171,11 @@ async function editCust(isAdd: boolean) {
 async function loadCustOptions() {
   try {
     const list = (await tsCustomerApi.getTsCustomerList()) ?? [];
-    custOptions.value = list.map((x) => ({ label: x.cCustName ?? "", value: x.cCustName ?? "", code: x.cCustCode ?? "" }));
+    custOptions.value = list.map((x) => ({
+      label: x.cCustName ?? "",
+      value: x.cCustName ?? "",
+      code: x.cCustCode ?? "",
+    }));
   } catch {
     /* 拦截层已 toast */
   }
@@ -199,7 +215,13 @@ onMounted(async () => {
             :column-defs="colDefs"
             :row-data="rows"
             :get-row-id="getRowId"
-            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
+            :row-selection="{
+              mode: 'multiRow',
+              checkboxes: true,
+              headerCheckbox: true,
+              enableClickSelection: true,
+              enableSelectionWithoutKeys: true,
+            }"
             :suppress-column-virtualisation="true"
             :pagination="false"
             :animate-rows="false"
@@ -250,8 +272,15 @@ onMounted(async () => {
               </div>
               <div class="flex min-w-0 flex-col gap-1">
                 <label class="text-xs text-muted-foreground">状态</label>
-                <Select v-model="info.cStatus" :options="statusOptions" option-label="label" option-value="value"
-                  show-clear placeholder="请选择" class="min-w-0 flex-1" />
+                <Select
+                  v-model="info.cStatus"
+                  :options="statusOptions"
+                  option-label="label"
+                  option-value="value"
+                  show-clear
+                  placeholder="请选择"
+                  class="min-w-0 flex-1"
+                />
               </div>
               <div class="flex min-w-0 flex-col gap-1">
                 <label class="text-xs text-muted-foreground">客户流向</label>
@@ -259,8 +288,17 @@ onMounted(async () => {
               </div>
               <div class="flex min-w-0 flex-col gap-1">
                 <label class="text-xs text-muted-foreground">客户名称</label>
-                <Select v-model="info.cCustEname" :options="custOptions" option-label="label" option-value="value"
-                  filter show-clear placeholder="请选择" class="min-w-0 flex-1" @change="onCustChange" />
+                <Select
+                  v-model="info.cCustEname"
+                  :options="custOptions"
+                  option-label="label"
+                  option-value="value"
+                  filter
+                  show-clear
+                  placeholder="请选择"
+                  class="min-w-0 flex-1"
+                  @change="onCustChange"
+                />
               </div>
             </div>
           </div>

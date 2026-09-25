@@ -139,16 +139,32 @@ const groups: FieldGroup[] = [
           </div>
           <div class="mt-3 grid grid-cols-2 gap-x-10 gap-y-1">
             <div v-for="f in g.fields" :key="f.key" class="flex min-w-0 items-center gap-3 py-1.5">
-              <label class="min-w-0 flex-1 truncate text-xs text-muted-foreground" :title="f.label">{{ f.label
+              <label class="min-w-0 flex-1 truncate text-xs text-muted-foreground" :title="f.label">{{
+                f.label
               }}</label>
-              <ToggleSwitch v-if="f.kind === 'switch'" :model-value="formData[f.key] as unknown as boolean"
-                @update:model-value="formData[f.key] = $event as never" />
-              <InputNumber v-else-if="f.kind === 'number'" :model-value="formData[f.key] as unknown as number" :min="0"
-                :show-buttons="false" :use-grouping="false" class="w-full min-w-0 flex-1"
-                @update:model-value="formData[f.key] = ($event ?? 0) as never" />
-              <InputText v-else :model-value="formData[f.key] as unknown as string" :placeholder="f.ph"
-                autocapitalize="off" spellcheck="false" class="min-w-0 flex-1"
-                @update:model-value="formData[f.key] = $event as never" />
+              <ToggleSwitch
+                v-if="f.kind === 'switch'"
+                :model-value="formData[f.key] as unknown as boolean"
+                @update:model-value="formData[f.key] = $event as never"
+              />
+              <InputNumber
+                v-else-if="f.kind === 'number'"
+                :model-value="formData[f.key] as unknown as number"
+                :min="0"
+                :show-buttons="false"
+                :use-grouping="false"
+                class="w-full min-w-0 flex-1"
+                @update:model-value="formData[f.key] = ($event ?? 0) as never"
+              />
+              <InputText
+                v-else
+                :model-value="formData[f.key] as unknown as string"
+                :placeholder="f.ph"
+                autocapitalize="off"
+                spellcheck="false"
+                class="min-w-0 flex-1"
+                @update:model-value="formData[f.key] = $event as never"
+              />
             </div>
           </div>
         </section>

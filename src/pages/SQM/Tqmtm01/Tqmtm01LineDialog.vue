@@ -24,8 +24,13 @@ function onOk() {
 </script>
 
 <template>
-  <Dialog :visible="props.visible" modal header="产线" :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
-    @update:visible="emit('update:visible', $event)">
+  <Dialog
+    :visible="props.visible"
+    modal
+    header="产线"
+    :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
+    @update:visible="emit('update:visible', $event)"
+  >
     <div class="grid grid-cols-1 items-start gap-y-2">
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-20 shrink-0 text-xs text-muted-foreground">产线号</label>

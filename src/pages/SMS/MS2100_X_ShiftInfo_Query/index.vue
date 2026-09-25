@@ -175,8 +175,16 @@ onMounted(async () => {
       <label class="shrink-0 text-xs text-muted-foreground">产线</label>
       <InputText :model-value="lineText" disabled class="w-32 shrink-0" />
       <label class="shrink-0 text-xs text-muted-foreground">机台</label>
-      <Select v-model="machineCode" :options="machineOptions" option-label="label" option-value="value" show-clear
-        placeholder="请选择" class="w-36 shrink-0" @value-change="onMachineChange" />
+      <Select
+        v-model="machineCode"
+        :options="machineOptions"
+        option-label="label"
+        option-value="value"
+        show-clear
+        placeholder="请选择"
+        class="w-36 shrink-0"
+        @value-change="onMachineChange"
+      />
       <label class="shrink-0 text-xs text-muted-foreground">日期</label>
       <DatePicker v-model="begDate" :manual-input="false" date-format="yy-mm-dd" show-icon class="shrink-0" />
       <label class="shrink-0 text-xs text-muted-foreground">≤日期≤</label>
@@ -187,9 +195,18 @@ onMounted(async () => {
     </div>
 
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows" :pagination="false"
-        :loading="querying" @grid-ready="onGridReady" @first-data-rendered="autoSizeOnFirstData" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="rows"
+        :pagination="false"
+        :loading="querying"
+        @grid-ready="onGridReady"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
   </div>
 </template>

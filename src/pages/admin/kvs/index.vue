@@ -180,13 +180,36 @@ const EnableCheckboxCell = defineComponent({
 });
 
 const childColumns: ColDef[] = [
-  { colId: "cCode", field: "cCode", headerName: "编码", width: 96, editable: true, sortable: false, cellClass: () => ORANGE_CELL },
+  {
+    colId: "cCode",
+    field: "cCode",
+    headerName: "编码",
+    width: 96,
+    editable: true,
+    sortable: false,
+    cellClass: () => ORANGE_CELL,
+  },
   { colId: "cName", field: "cName", headerName: "名称", width: 180, editable: true, sortable: false },
   { colId: "cDesc", field: "cDesc", headerName: "描述", width: 140, editable: true, sortable: false },
   { colId: "cGroup", field: "cGroup", headerName: "分组", width: 90, editable: true, sortable: false },
   { colId: "cValue", field: "cValue", headerName: "扩展值", width: 100, editable: true, sortable: false },
-  { colId: "cOrder", field: "cOrder", headerName: "排序", width: 60, editable: true, sortable: false, cellEditor: "number" },
-  { colId: "cEnable", field: "cEnable", headerName: "启用", width: 60, sortable: false, cellRenderer: EnableCheckboxCell },
+  {
+    colId: "cOrder",
+    field: "cOrder",
+    headerName: "排序",
+    width: 60,
+    editable: true,
+    sortable: false,
+    cellEditor: "number",
+  },
+  {
+    colId: "cEnable",
+    field: "cEnable",
+    headerName: "启用",
+    width: 60,
+    sortable: false,
+    cellRenderer: EnableCheckboxCell,
+  },
   { colId: "cSw01", field: "cSw01", headerName: "扩展1", width: 90, editable: true, sortable: false },
   { colId: "cSw02", field: "cSw02", headerName: "扩展2", width: 90, editable: true, sortable: false },
   { colId: "cSw03", field: "cSw03", headerName: "扩展3", width: 90, editable: true, sortable: false, flex: 1 },
@@ -223,7 +246,7 @@ async function openMasterEdit(target: HmxKv | null) {
     editForm.clsA = m?.[1] ?? "";
     editForm.clsB = m?.[2] ?? "";
     editForm.clsC = m?.[3] ?? "";
-    editForm.code = m ? m[4] : target.cCode ?? "";
+    editForm.code = m ? m[4] : (target.cCode ?? "");
     editForm.name = target.cName ?? "";
   } else {
     // 新增：向「服务端」取默认分类（对应 hmx_web prepareNewKvEditInput）
@@ -344,10 +367,24 @@ onMounted(onQuery);
   <div class="flex min-h-0 flex-1 flex-col">
     <!-- 顶部条件行（对应原 panelControl1 + simpleButton 查询/添加/编辑/删除） -->
     <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
-      <InputText v-model="queryCode" maxlength="100" placeholder="编码" autocapitalize="off" spellcheck="false"
-        class="w-40 shrink-0" @keydown.enter="onQuery" />
-      <InputText v-model="queryName" maxlength="100" placeholder="描述" autocapitalize="off" spellcheck="false"
-        class="w-40 shrink-0" @keydown.enter="onQuery" />
+      <InputText
+        v-model="queryCode"
+        maxlength="100"
+        placeholder="编码"
+        autocapitalize="off"
+        spellcheck="false"
+        class="w-40 shrink-0"
+        @keydown.enter="onQuery"
+      />
+      <InputText
+        v-model="queryName"
+        maxlength="100"
+        placeholder="描述"
+        autocapitalize="off"
+        spellcheck="false"
+        class="w-40 shrink-0"
+        @keydown.enter="onQuery"
+      />
       <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onQuery">
         <IconSearch class="h-3 w-3" />查询
       </Button>
@@ -367,11 +404,22 @@ onMounted(onQuery);
     <Splitter :gutter-size="1" class="min-h-0 flex-1">
       <SplitterPanel :size="35" :min-size="15">
         <div class="flex h-full min-h-0 flex-col overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="masterColumns"
-            :default-col-def="hmxDefaultColDef" :row-data="masters" :get-row-id="masterRowId"
-            :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }" :loading="mastersLoading" :pagination="false" :animate-rows="false"
-            :locale-text="AG_GRID_LOCALE_CN" @grid-ready="onMasterGridReady" @selection-changed="onMasterSelectionChanged"
-            @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :column-defs="masterColumns"
+            :default-col-def="hmxDefaultColDef"
+            :row-data="masters"
+            :get-row-id="masterRowId"
+            :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
+            :loading="mastersLoading"
+            :pagination="false"
+            :animate-rows="false"
+            :locale-text="AG_GRID_LOCALE_CN"
+            @grid-ready="onMasterGridReady"
+            @selection-changed="onMasterSelectionChanged"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
 
@@ -391,23 +439,42 @@ onMounted(onQuery);
             <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onChildSave">
               <IconDeviceFloppy class="h-3 w-3" />保存
             </Button>
-            <span class="ml-auto text-xs text-muted-foreground">{{ selectedMaster ? `子键值对（${selectedMaster.cName} ${children.length}）` : "子键值对" }}</span>
+            <span class="ml-auto text-xs text-muted-foreground">{{
+              selectedMaster ? `子键值对（${selectedMaster.cName} ${children.length}）` : "子键值对"
+            }}</span>
           </div>
 
           <div class="min-h-0 flex-1 overflow-hidden">
-            <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="childColumns"
-              :default-col-def="hmxDefaultColDef" :row-data="children" :get-row-id="childRowId"
-              :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }" :loading="childrenLoading" :pagination="false" :animate-rows="false"
-              :locale-text="AG_GRID_LOCALE_CN" @grid-ready="onChildGridReady" @selection-changed="onChildSelectionChanged"
-              @cell-value-changed="onChildCellValueChanged" @first-data-rendered="autoSizeOnFirstData" />
+            <AgGridVue
+              class="hmx-ag-grid h-full w-full"
+              :theme="theme"
+              :column-defs="childColumns"
+              :default-col-def="hmxDefaultColDef"
+              :row-data="children"
+              :get-row-id="childRowId"
+              :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
+              :loading="childrenLoading"
+              :pagination="false"
+              :animate-rows="false"
+              :locale-text="AG_GRID_LOCALE_CN"
+              @grid-ready="onChildGridReady"
+              @selection-changed="onChildSelectionChanged"
+              @cell-value-changed="onChildCellValueChanged"
+              @first-data-rendered="autoSizeOnFirstData"
+            />
           </div>
         </div>
       </SplitterPanel>
     </Splitter>
 
     <!-- 父项编辑弹窗（对应原 HmxKvEdit 分类 + 编码/名称） -->
-    <Dialog :visible="editOpen" modal :header="editTarget ? '编辑键值对' : '添加键值对'"
-      :style="{ width: 'min(28rem, calc(100vw - 2rem))' }" @update:visible="editOpen = $event">
+    <Dialog
+      :visible="editOpen"
+      modal
+      :header="editTarget ? '编辑键值对' : '添加键值对'"
+      :style="{ width: 'min(28rem, calc(100vw - 2rem))' }"
+      @update:visible="editOpen = $event"
+    >
       <div class="min-w-0 space-y-4 py-1">
         <div class="flex items-center gap-3">
           <label class="text-xs font-medium text-muted-foreground">使用分类</label>
@@ -416,24 +483,67 @@ onMounted(onQuery);
         <div class="grid grid-cols-3 gap-x-3 gap-y-3">
           <div class="min-w-0 space-y-1">
             <label class="text-xs font-medium text-muted-foreground">分类A</label>
-            <InputText v-model="editForm.clsA" :disabled="!!editTarget || !editForm.useClass" placeholder="A-Z" maxlength="1" autocapitalize="off" spellcheck="false" class="w-full min-w-0" />
+            <InputText
+              v-model="editForm.clsA"
+              :disabled="!!editTarget || !editForm.useClass"
+              placeholder="A-Z"
+              maxlength="1"
+              autocapitalize="off"
+              spellcheck="false"
+              class="w-full min-w-0"
+            />
           </div>
           <div class="min-w-0 space-y-1">
             <label class="text-xs font-medium text-muted-foreground">分类B</label>
-            <InputText v-model="editForm.clsB" :disabled="!!editTarget || !editForm.useClass" placeholder="两位数字" maxlength="2" autocapitalize="off" spellcheck="false" class="w-full min-w-0" />
+            <InputText
+              v-model="editForm.clsB"
+              :disabled="!!editTarget || !editForm.useClass"
+              placeholder="两位数字"
+              maxlength="2"
+              autocapitalize="off"
+              spellcheck="false"
+              class="w-full min-w-0"
+            />
           </div>
           <div class="min-w-0 space-y-1">
             <label class="text-xs font-medium text-muted-foreground">分类C</label>
-            <InputText v-model="editForm.clsC" :disabled="!!editTarget || !editForm.useClass" placeholder="两位数字" maxlength="2" autocapitalize="off" spellcheck="false" class="w-full min-w-0" />
+            <InputText
+              v-model="editForm.clsC"
+              :disabled="!!editTarget || !editForm.useClass"
+              placeholder="两位数字"
+              maxlength="2"
+              autocapitalize="off"
+              spellcheck="false"
+              class="w-full min-w-0"
+            />
           </div>
         </div>
         <div class="min-w-0 space-y-1">
-          <label class="text-xs font-medium text-muted-foreground">编码<span class="ml-0.5 text-destructive">*</span></label>
-          <InputText v-model="editForm.code" :disabled="!!editTarget" placeholder="请输入键值对编码" autocapitalize="off" spellcheck="false" class="w-full min-w-0" @keydown.enter="onMasterSave" />
+          <label class="text-xs font-medium text-muted-foreground"
+            >编码<span class="ml-0.5 text-destructive">*</span></label
+          >
+          <InputText
+            v-model="editForm.code"
+            :disabled="!!editTarget"
+            placeholder="请输入键值对编码"
+            autocapitalize="off"
+            spellcheck="false"
+            class="w-full min-w-0"
+            @keydown.enter="onMasterSave"
+          />
         </div>
         <div class="min-w-0 space-y-1">
-          <label class="text-xs font-medium text-muted-foreground">名称<span class="ml-0.5 text-destructive">*</span></label>
-          <InputText v-model="editForm.name" placeholder="请输入键值对名称" autocapitalize="off" spellcheck="false" class="w-full min-w-0" @keydown.enter="onMasterSave" />
+          <label class="text-xs font-medium text-muted-foreground"
+            >名称<span class="ml-0.5 text-destructive">*</span></label
+          >
+          <InputText
+            v-model="editForm.name"
+            placeholder="请输入键值对名称"
+            autocapitalize="off"
+            spellcheck="false"
+            class="w-full min-w-0"
+            @keydown.enter="onMasterSave"
+          />
         </div>
       </div>
       <template #footer>
@@ -443,9 +553,20 @@ onMounted(onQuery);
     </Dialog>
 
     <!-- 父项删除确认（有子项时连带删除） -->
-    <Dialog :visible="confirmOpen" modal header="删除确认" :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
-      @update:visible="confirmOpen = $event">
-      <p class="text-xs">{{ confirmHasChildren ? `该键值对[${confirmTarget?.cName}]存在多个子项，是否确定直接删除？` : `是否确定删除当前项「${confirmTarget?.cName}」？` }}</p>
+    <Dialog
+      :visible="confirmOpen"
+      modal
+      header="删除确认"
+      :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
+      @update:visible="confirmOpen = $event"
+    >
+      <p class="text-xs">
+        {{
+          confirmHasChildren
+            ? `该键值对[${confirmTarget?.cName}]存在多个子项，是否确定直接删除？`
+            : `是否确定删除当前项「${confirmTarget?.cName}」？`
+        }}
+      </p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />
         <Button label="删除" severity="danger" variant="outlined" @click="confirmDelete" />

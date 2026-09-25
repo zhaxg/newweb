@@ -12,7 +12,17 @@ import Select from "primevue/select";
 import SelectButton from "primevue/selectbutton";
 import Splitter from "primevue/splitter";
 import SplitterPanel from "primevue/splitterpanel";
-import { IconCheck, IconCopy, IconList, IconPencil, IconPlus, IconRefresh, IconSearch, IconTrash, IconX } from "@tabler/icons-vue";
+import {
+  IconCheck,
+  IconCopy,
+  IconList,
+  IconPencil,
+  IconPlus,
+  IconRefresh,
+  IconSearch,
+  IconTrash,
+  IconX,
+} from "@tabler/icons-vue";
 import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, GridApi, GridReadyEvent, ValueFormatterParams } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
@@ -43,7 +53,9 @@ const activeTab = ref(tabModes[0]);
 
 const rows = ref<any[]>([]);
 const gridApi = ref<GridApi | null>(null);
-function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
+function onGridReady(e: GridReadyEvent) {
+  gridApi.value = e.api;
+}
 
 /* ---------- 下栏三页签：左=候选字典、右=已选明细（画面态，数据一律空；
  *  原左候选 OptionsFind.AlwaysVisible 查找栏按需求裁撤，不迁 quick-filter） ---------- */
@@ -57,7 +69,16 @@ const qyRows = ref<any[]>([]);
 /** 行转移按钮列（原 Unbound 列 ">>" / "<<"），仅画面占位 */
 function xferCol(dir: "in" | "out"): ColDef {
   const caption = dir === "in" ? ">>" : "<<";
-  return { colId: `xfer-${dir}`, headerName: caption, width: 52, minWidth: 52, sortable: false, resizable: false, filter: false, cellRenderer: () => caption };
+  return {
+    colId: `xfer-${dir}`,
+    headerName: caption,
+    width: 52,
+    minWidth: 52,
+    sortable: false,
+    resizable: false,
+    filter: false,
+    cellRenderer: () => caption,
+  };
 }
 
 /* 主表：UCTqmtd10View gridView1，按 VisibleIndex 0~15；Id/内控钢种原为隐藏列 */
@@ -243,14 +264,30 @@ async function onQuery() {
     querying.value = false;
   }
 }
-function onAdd() { toast("画面迁移：添加逻辑待接入", 2000, "warn"); }
-function onEdit() { toast("画面迁移：编辑逻辑待接入", 2000, "warn"); }
-function onCopy() { toast("画面迁移：复制逻辑待接入", 2000, "warn"); }
-function onDelete() { toast("画面迁移：删除逻辑待接入", 2000, "warn"); }
-function onCheck() { toast("画面迁移：审核生效逻辑待接入", 2000, "warn"); }
-function onDisable() { toast("画面迁移：禁用逻辑待接入", 2000, "warn"); }
-function onQueryRecord() { toast("画面迁移：修改履历逻辑待接入", 2000, "warn"); }
-function onUpdateTestItem() { toast("画面迁移：更新检验项目逻辑待接入", 2000, "warn"); }
+function onAdd() {
+  toast("画面迁移：添加逻辑待接入", 2000, "warn");
+}
+function onEdit() {
+  toast("画面迁移：编辑逻辑待接入", 2000, "warn");
+}
+function onCopy() {
+  toast("画面迁移：复制逻辑待接入", 2000, "warn");
+}
+function onDelete() {
+  toast("画面迁移：删除逻辑待接入", 2000, "warn");
+}
+function onCheck() {
+  toast("画面迁移：审核生效逻辑待接入", 2000, "warn");
+}
+function onDisable() {
+  toast("画面迁移：禁用逻辑待接入", 2000, "warn");
+}
+function onQueryRecord() {
+  toast("画面迁移：修改履历逻辑待接入", 2000, "warn");
+}
+function onUpdateTestItem() {
+  toast("画面迁移：更新检验项目逻辑待接入", 2000, "warn");
+}
 </script>
 
 <template>
@@ -268,8 +305,15 @@ function onUpdateTestItem() { toast("画面迁移：更新检验项目逻辑待�
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">状态</label>
-          <Select v-model="input.nStatus" :options="statusOptions" option-label="label" option-value="value" show-clear
-            placeholder="全部" class="min-w-0 flex-1" />
+          <Select
+            v-model="input.nStatus"
+            :options="statusOptions"
+            option-label="label"
+            option-value="value"
+            show-clear
+            placeholder="全部"
+            class="min-w-0 flex-1"
+          />
         </div>
       </div>
     </div>
@@ -279,24 +323,14 @@ function onUpdateTestItem() { toast("画面迁移：更新检验项目逻辑待�
       <Button text class="shrink-0 whitespace-nowrap" :loading="querying" @click="onQuery">
         <IconSearch class="h-3 w-3" />查询
       </Button>
-      <Button text class="shrink-0 whitespace-nowrap" @click="onAdd">
-        <IconPlus class="h-3 w-3" />添加
-      </Button>
-      <Button text class="shrink-0 whitespace-nowrap" @click="onEdit">
-        <IconPencil class="h-3 w-3" />编辑
-      </Button>
-      <Button text class="shrink-0 whitespace-nowrap" @click="onCopy">
-        <IconCopy class="h-3 w-3" />复制
-      </Button>
+      <Button text class="shrink-0 whitespace-nowrap" @click="onAdd"> <IconPlus class="h-3 w-3" />添加 </Button>
+      <Button text class="shrink-0 whitespace-nowrap" @click="onEdit"> <IconPencil class="h-3 w-3" />编辑 </Button>
+      <Button text class="shrink-0 whitespace-nowrap" @click="onCopy"> <IconCopy class="h-3 w-3" />复制 </Button>
       <Button text severity="danger" class="shrink-0 whitespace-nowrap" @click="onDelete">
         <IconTrash class="h-3 w-3" />删除
       </Button>
-      <Button text class="shrink-0 whitespace-nowrap" @click="onCheck">
-        <IconCheck class="h-3 w-3" />审核生效
-      </Button>
-      <Button text class="shrink-0 whitespace-nowrap" @click="onDisable">
-        <IconX class="h-3 w-3" />禁用
-      </Button>
+      <Button text class="shrink-0 whitespace-nowrap" @click="onCheck"> <IconCheck class="h-3 w-3" />审核生效 </Button>
+      <Button text class="shrink-0 whitespace-nowrap" @click="onDisable"> <IconX class="h-3 w-3" />禁用 </Button>
       <Button text class="shrink-0 whitespace-nowrap" @click="onQueryRecord">
         <IconList class="h-3 w-3" />修改履历
       </Button>
@@ -310,12 +344,21 @@ function onUpdateTestItem() { toast("画面迁移：更新检验项目逻辑待�
     <Splitter class="min-h-0 flex-1" layout="vertical">
       <SplitterPanel :size="49" :minSize="20" class="flex flex-col overflow-hidden">
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="masterColDefs" :row-data="rows"
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="masterColDefs"
+            :row-data="rows"
             :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
             :suppress-column-virtualisation="true"
-            :pagination="false" :animate-rows="false" :loading="querying"
-            @grid-ready="onGridReady" @first-data-rendered="autoSizeOnFirstData" />
+            :pagination="false"
+            :animate-rows="false"
+            :loading="querying"
+            @grid-ready="onGridReady"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
 
@@ -332,18 +375,34 @@ function onUpdateTestItem() { toast("画面迁移：更新检验项目逻辑待�
             <Splitter class="h-full min-h-0">
               <SplitterPanel :size="27" :minSize="14" class="flex flex-col overflow-hidden">
                 <div class="min-h-0 flex-1 overflow-hidden">
-                  <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                    :default-col-def="hmxDefaultColDef" :column-defs="cfLeftColDefs" :row-data="cfLeftRows"
+                  <AgGridVue
+                    class="hmx-ag-grid h-full w-full"
+                    :theme="theme"
+                    :locale-text="AG_GRID_LOCALE_CN"
+                    :default-col-def="hmxDefaultColDef"
+                    :column-defs="cfLeftColDefs"
+                    :row-data="cfLeftRows"
                     :suppress-column-virtualisation="true"
-                    :pagination="false" :animate-rows="false" @first-data-rendered="autoSizeOnFirstData" />
+                    :pagination="false"
+                    :animate-rows="false"
+                    @first-data-rendered="autoSizeOnFirstData"
+                  />
                 </div>
               </SplitterPanel>
               <SplitterPanel :minSize="30" class="flex flex-col overflow-hidden">
                 <div class="min-h-0 flex-1 overflow-hidden">
-                  <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                    :default-col-def="hmxDefaultColDef" :column-defs="cfColDefs" :row-data="cfRows"
+                  <AgGridVue
+                    class="hmx-ag-grid h-full w-full"
+                    :theme="theme"
+                    :locale-text="AG_GRID_LOCALE_CN"
+                    :default-col-def="hmxDefaultColDef"
+                    :column-defs="cfColDefs"
+                    :row-data="cfRows"
                     :suppress-column-virtualisation="true"
-                    :pagination="false" :animate-rows="false" @first-data-rendered="autoSizeOnFirstData" />
+                    :pagination="false"
+                    :animate-rows="false"
+                    @first-data-rendered="autoSizeOnFirstData"
+                  />
                 </div>
               </SplitterPanel>
             </Splitter>
@@ -354,18 +413,34 @@ function onUpdateTestItem() { toast("画面迁移：更新检验项目逻辑待�
             <Splitter class="h-full min-h-0">
               <SplitterPanel :size="33" :minSize="14" class="flex flex-col overflow-hidden">
                 <div class="min-h-0 flex-1 overflow-hidden">
-                  <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                    :default-col-def="hmxDefaultColDef" :column-defs="xnLeftColDefs" :row-data="xnLeftRows"
+                  <AgGridVue
+                    class="hmx-ag-grid h-full w-full"
+                    :theme="theme"
+                    :locale-text="AG_GRID_LOCALE_CN"
+                    :default-col-def="hmxDefaultColDef"
+                    :column-defs="xnLeftColDefs"
+                    :row-data="xnLeftRows"
                     :suppress-column-virtualisation="true"
-                    :pagination="false" :animate-rows="false" @first-data-rendered="autoSizeOnFirstData" />
+                    :pagination="false"
+                    :animate-rows="false"
+                    @first-data-rendered="autoSizeOnFirstData"
+                  />
                 </div>
               </SplitterPanel>
               <SplitterPanel :minSize="30" class="flex flex-col overflow-hidden">
                 <div class="min-h-0 flex-1 overflow-hidden">
-                  <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                    :default-col-def="hmxDefaultColDef" :column-defs="xnColDefs" :row-data="xnRows"
+                  <AgGridVue
+                    class="hmx-ag-grid h-full w-full"
+                    :theme="theme"
+                    :locale-text="AG_GRID_LOCALE_CN"
+                    :default-col-def="hmxDefaultColDef"
+                    :column-defs="xnColDefs"
+                    :row-data="xnRows"
                     :suppress-column-virtualisation="true"
-                    :pagination="false" :animate-rows="false" @first-data-rendered="autoSizeOnFirstData" />
+                    :pagination="false"
+                    :animate-rows="false"
+                    @first-data-rendered="autoSizeOnFirstData"
+                  />
                 </div>
               </SplitterPanel>
             </Splitter>
@@ -376,18 +451,34 @@ function onUpdateTestItem() { toast("画面迁移：更新检验项目逻辑待�
             <Splitter class="h-full min-h-0">
               <SplitterPanel :size="27" :minSize="14" class="flex flex-col overflow-hidden">
                 <div class="min-h-0 flex-1 overflow-hidden">
-                  <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                    :default-col-def="hmxDefaultColDef" :column-defs="qyLeftColDefs" :row-data="qyLeftRows"
+                  <AgGridVue
+                    class="hmx-ag-grid h-full w-full"
+                    :theme="theme"
+                    :locale-text="AG_GRID_LOCALE_CN"
+                    :default-col-def="hmxDefaultColDef"
+                    :column-defs="qyLeftColDefs"
+                    :row-data="qyLeftRows"
                     :suppress-column-virtualisation="true"
-                    :pagination="false" :animate-rows="false" @first-data-rendered="autoSizeOnFirstData" />
+                    :pagination="false"
+                    :animate-rows="false"
+                    @first-data-rendered="autoSizeOnFirstData"
+                  />
                 </div>
               </SplitterPanel>
               <SplitterPanel :minSize="30" class="flex flex-col overflow-hidden">
                 <div class="min-h-0 flex-1 overflow-hidden">
-                  <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                    :default-col-def="hmxDefaultColDef" :column-defs="qyColDefs" :row-data="qyRows"
+                  <AgGridVue
+                    class="hmx-ag-grid h-full w-full"
+                    :theme="theme"
+                    :locale-text="AG_GRID_LOCALE_CN"
+                    :default-col-def="hmxDefaultColDef"
+                    :column-defs="qyColDefs"
+                    :row-data="qyRows"
                     :suppress-column-virtualisation="true"
-                    :pagination="false" :animate-rows="false" @first-data-rendered="autoSizeOnFirstData" />
+                    :pagination="false"
+                    :animate-rows="false"
+                    @first-data-rendered="autoSizeOnFirstData"
+                  />
                 </div>
               </SplitterPanel>
             </Splitter>

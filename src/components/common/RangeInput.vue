@@ -102,8 +102,14 @@ function clear() {
 <template>
   <div class="flex min-w-0 items-center">
     <!-- 触发框：只读显示范围文本 -->
-    <InputText :model-value="displayText" :placeholder="placeholder" readonly class="w-full cursor-pointer"
-      :disabled="disabled" @click="toggle" />
+    <InputText
+      :model-value="displayText"
+      :placeholder="placeholder"
+      readonly
+      class="w-full cursor-pointer"
+      :disabled="disabled"
+      @click="toggle"
+    />
 
     <!-- 弹层面板：双 InputNumber 编辑 -->
     <Popover ref="op" class="w-72">

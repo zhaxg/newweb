@@ -1,5 +1,5 @@
-export { GanttChart } from './chart'
-export type { GanttEventHandlers, GanttOptions } from './chart'
+export { GanttChart } from "./chart";
+export type { GanttEventHandlers, GanttOptions } from "./chart";
 
 export {
   EditState,
@@ -9,17 +9,11 @@ export {
   newAppointmentId,
   newGroupId,
   yearMonthCode,
-} from './model'
-export type {
-  AppointmentObject,
-  CellStyle,
-  GridLine,
-  PointObject,
-  ResourceObject,
-} from './model'
+} from "./model";
+export type { AppointmentObject, CellStyle, GridLine, PointObject, ResourceObject } from "./model";
 
-export { createDefaultStyle, CJK_FONT_STACK, fontLineHeight, fontPixelSize } from './style'
-export type { GanttStyle } from './style'
+export { createDefaultStyle, CJK_FONT_STACK, fontLineHeight, fontPixelSize } from "./style";
+export type { GanttStyle } from "./style";
 
 export {
   appointmentEnd,
@@ -47,8 +41,8 @@ export {
   totalHours,
   worldXAt,
   worldXAtClient,
-} from './geometry'
-export type { LayoutView, Rect, ScrollMetrics } from './geometry'
+} from "./geometry";
+export type { LayoutView, Rect, ScrollMetrics } from "./geometry";
 
 export {
   assertNoActualTime,
@@ -58,5 +52,5 @@ export {
   moveSelectedVertically,
   renumberRelationIds,
   resolveAppointmentColor,
-} from './rules'
-export type { RuleContext } from './rules'
+} from "./rules";
+export type { RuleContext } from "./rules";

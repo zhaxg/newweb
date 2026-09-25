@@ -41,11 +41,7 @@ export function ok<T>(config: InternalAxiosRequestConfig, data: T): AxiosRespons
   return respond(config, 200, envelope(true, 0, "", data));
 }
 
-export function fail(
-  config: InternalAxiosRequestConfig,
-  code: number,
-  message: string,
-): AxiosResponse<Result<null>> {
+export function fail(config: InternalAxiosRequestConfig, code: number, message: string): AxiosResponse<Result<null>> {
   return respond(config, 200, envelope(false, code, message, null));
 }
 
@@ -53,5 +49,9 @@ export function fail(
 export function matchKeyword(row: Record<string, any>, keywords: string | undefined, fields: string[]): boolean {
   const kw = (keywords ?? "").trim().toLowerCase();
   if (!kw) return true;
-  return fields.some((f) => String(row[f] ?? "").toLowerCase().includes(kw));
+  return fields.some((f) =>
+    String(row[f] ?? "")
+      .toLowerCase()
+      .includes(kw),
+  );
 }

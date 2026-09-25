@@ -169,15 +169,30 @@ function onReady(e: GridReadyEvent) {
 
 <template>
   <div class="min-h-0 flex-1 overflow-hidden">
-    <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="colDefs"
-      :default-col-def="hmxDefaultColDef" :row-data="props.rows" :locale-text="AG_GRID_LOCALE_CN"
+    <AgGridVue
+      class="hmx-ag-grid h-full w-full"
+      :theme="theme"
+      :column-defs="colDefs"
+      :default-col-def="hmxDefaultColDef"
+      :row-data="props.rows"
+      :locale-text="AG_GRID_LOCALE_CN"
       :row-selection="
         props.mode === 'singleRow'
           ? { mode: 'singleRow', checkboxes: true, enableClickSelection: true }
-          : { mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }
+          : {
+              mode: 'multiRow',
+              checkboxes: true,
+              headerCheckbox: true,
+              enableClickSelection: true,
+              enableSelectionWithoutKeys: true,
+            }
       "
-      :pagination="false" :animate-rows="false" :loading="props.loading"
-      @grid-ready="onReady" @selection-changed="emit('selectionChanged')"
-      @first-data-rendered="autoSizeOnFirstData" />
+      :pagination="false"
+      :animate-rows="false"
+      :loading="props.loading"
+      @grid-ready="onReady"
+      @selection-changed="emit('selectionChanged')"
+      @first-data-rendered="autoSizeOnFirstData"
+    />
   </div>
 </template>

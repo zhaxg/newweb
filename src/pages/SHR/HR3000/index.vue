@@ -19,13 +19,7 @@ import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { hmxDefaultColDef, makeHmxGridTheme, autoSizeOnFirstData } from "@/lib/agGrid";
 import { useMenuQuery } from "@/lib/menuQuery";
 import { useToast } from "@/composables/useToast";
-import {
-  hR2000Api,
-  hR3000Api,
-  Thr2000StatusEnum,
-  type Thr2000Dto,
-  type TimeRange,
-} from "@/api/mes4ddh/shr.swagger";
+import { hR2000Api, hR3000Api, Thr2000StatusEnum, type Thr2000Dto, type TimeRange } from "@/api/mes4ddh/shr.swagger";
 import type { Tyd2000 } from "@/api/mes4ddh/syd.swagger";
 
 const { toast } = useToast();
@@ -68,7 +62,9 @@ const planRows = ref<Thr2000Dto[]>([]);
 const planLoading = ref(false);
 const planApi = ref<GridApi | null>(null);
 const planCurrent = ref<Thr2000Dto | null>(null);
-function onPlanReady(e: GridReadyEvent) { planApi.value = e.api; }
+function onPlanReady(e: GridReadyEvent) {
+  planApi.value = e.api;
+}
 function onPlanSelectionChanged() {
   const row = (planApi.value?.getSelectedRows()[0] as Thr2000Dto | undefined) ?? null;
   planCurrent.value = row;
@@ -79,13 +75,20 @@ function onPlanSelectionChanged() {
 const slabRows = ref<Tyd2000[]>([]);
 const slabLoading = ref(false);
 const slabApi = ref<GridApi | null>(null);
-function onSlabReady(e: GridReadyEvent) { slabApi.value = e.api; }
+function onSlabReady(e: GridReadyEvent) {
+  slabApi.value = e.api;
+}
 
 /* ---------- 列定义（列集/顺序按 Designer VisibleIndex） ---------- */
 const coolFmt = (p: ValueFormatterParams) =>
   (({ N: "热坯", Y: "冷坯" }) as Record<string, string>)[String(p.value)] ?? "";
 const statusFmt = (p: ValueFormatterParams) =>
-  (({ [String(Thr2000StatusEnum.Open)]: "已开启", [String(Thr2000StatusEnum.Close)]: "已关闭" }) as Record<string, string>)[String(p.value)] ?? "";
+  (
+    ({ [String(Thr2000StatusEnum.Open)]: "已开启", [String(Thr2000StatusEnum.Close)]: "已关闭" }) as Record<
+      string,
+      string
+    >
+  )[String(p.value)] ?? "";
 
 const planColDefs: ColDef[] = [
   { colId: "cLineCode", field: "cLineCode", headerName: "产线代码", width: 112 },
@@ -234,13 +237,14 @@ const slabColDefs: ColDef[] = [
 async function queryPlan() {
   planLoading.value = true;
   try {
-    const list = (await hR2000Api.queryThr2000Dtos({
-      cLineCode,
-      cOrderNo: planInput.cOrderNo.trim().toUpperCase() || undefined,
-      nStatus: Thr2000StatusEnum.Open,
-      cSgCode: planInput.cSgCode.trim() || undefined,
-      dTimeRange: toTimeRange(planInput.dates),
-    })) ?? [];
+    const list =
+      (await hR2000Api.queryThr2000Dtos({
+        cLineCode,
+        cOrderNo: planInput.cOrderNo.trim().toUpperCase() || undefined,
+        nStatus: Thr2000StatusEnum.Open,
+        cSgCode: planInput.cSgCode.trim() || undefined,
+        dTimeRange: toTimeRange(planInput.dates),
+      })) ?? [];
     planRows.value = list;
     planCurrent.value = null;
     requestAnimationFrame(() => planApi.value?.autoSizeAllColumns());
@@ -254,14 +258,15 @@ async function queryPlan() {
 async function querySlab(dto: { cStove?: string; cSgCode?: string; cSpec?: string; cOrderNo?: string }) {
   slabLoading.value = true;
   try {
-    const list = (await hR3000Api.getSlabs({
-      cLineCode,
-      cStoreCode,
-      cStove: dto.cStove || undefined,
-      cSgCode: dto.cSgCode || undefined,
-      cSpec: dto.cSpec || undefined,
-      cOrderNo: dto.cOrderNo || undefined,
-    })) ?? [];
+    const list =
+      (await hR3000Api.getSlabs({
+        cLineCode,
+        cStoreCode,
+        cStove: dto.cStove || undefined,
+        cSgCode: dto.cSgCode || undefined,
+        cSpec: dto.cSpec || undefined,
+        cOrderNo: dto.cOrderNo || undefined,
+      })) ?? [];
     slabRows.value = list;
     requestAnimationFrame(() => slabApi.value?.autoSizeAllColumns());
   } catch {
@@ -350,8 +355,17 @@ async function onConfirmOk() {
         <!-- stackPanel1：创建时间/订单号/钢种 + 查询 -->
         <div class="flex h-9 shrink-0 items-center gap-1.5 border-b border-border/60 px-2">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">创建时间</label>
-          <DatePicker v-model="planInput.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-            show-time hour-format="24" show-icon placeholder="开始 至 结束" class="w-72 shrink-0" />
+          <DatePicker
+            v-model="planInput.dates"
+            selection-mode="range"
+            :manual-input="false"
+            date-format="yy-mm-dd"
+            show-time
+            hour-format="24"
+            show-icon
+            placeholder="开始 至 结束"
+            class="w-72 shrink-0"
+          />
           <label class="shrink-0 text-xs text-muted-foreground">订单号</label>
           <InputText v-model="planInput.cOrderNo" class="w-36 shrink-0" @keydown.enter="queryPlan" />
           <label class="shrink-0 text-xs text-muted-foreground">钢种</label>
@@ -361,12 +375,21 @@ async function onConfirmOk() {
           </Button>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="planColDefs" :row-data="planRows"
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="planColDefs"
+            :row-data="planRows"
             :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
-            :pagination="false" :animate-rows="false" :loading="planLoading"
-            @grid-ready="onPlanReady" @selection-changed="onPlanSelectionChanged"
-            @first-data-rendered="autoSizeOnFirstData" />
+            :pagination="false"
+            :animate-rows="false"
+            :loading="planLoading"
+            @grid-ready="onPlanReady"
+            @selection-changed="onPlanSelectionChanged"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
 
@@ -382,27 +405,58 @@ async function onConfirmOk() {
           <InputText v-model="slabInput.cSgCode" class="w-36 shrink-0" @keydown.enter="querySlabByInput" />
           <label class="shrink-0 text-xs text-muted-foreground">规格</label>
           <InputText v-model="slabInput.cSpec" class="w-36 shrink-0" @keydown.enter="querySlabByInput" />
-          <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="slabLoading" @click="querySlabByInput">
+          <Button
+            variant="outlined"
+            class="shrink-0 whitespace-nowrap"
+            :loading="slabLoading"
+            @click="querySlabByInput"
+          >
             <IconSearch class="h-3 w-3" />查询
           </Button>
           <label class="ml-3 shrink-0 text-xs text-muted-foreground">装炉方式</label>
-          <Select v-model="nFurType" :options="furOptions" option-label="label" option-value="value" class="w-28 shrink-0" />
+          <Select
+            v-model="nFurType"
+            :options="furOptions"
+            option-label="label"
+            option-value="value"
+            class="w-28 shrink-0"
+          />
           <label class="shrink-0 text-xs text-muted-foreground">备注</label>
           <InputText v-model="zpRemark" class="w-36 shrink-0" />
           <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="btnZp">组批</Button>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="slabColDefs" :row-data="slabRows"
-            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-            :pagination="false" :animate-rows="false" :loading="slabLoading"
-            @grid-ready="onSlabReady" @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="slabColDefs"
+            :row-data="slabRows"
+            :row-selection="{
+              mode: 'multiRow',
+              checkboxes: true,
+              headerCheckbox: true,
+              enableClickSelection: true,
+              enableSelectionWithoutKeys: true,
+            }"
+            :pagination="false"
+            :animate-rows="false"
+            :loading="slabLoading"
+            @grid-ready="onSlabReady"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
     </Splitter>
 
-    <Dialog :visible="confirmOpen" modal header="确认" :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
-      @update:visible="confirmOpen = $event">
+    <Dialog
+      :visible="confirmOpen"
+      modal
+      header="确认"
+      :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
+      @update:visible="confirmOpen = $event"
+    >
       <p class="text-xs">{{ confirmMsg }}</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />

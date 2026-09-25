@@ -112,7 +112,6 @@ export enum ZcStatusEnum {
 
 /* ---------- 类型 ---------- */
 
-
 export interface ApiCarMessage {
   code?: string | null;
   message?: string | null;
@@ -2552,729 +2551,572 @@ export interface SgCodeAndStdDto {
 
 export const castStoveApi = {
   getUnitWgt(data?: SlabPcDto) {
-    return requestClient.request<number>(
-      "/dDH.Service.SMP.Services/castStove/getUnitWgt",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<number>("/dDH.Service.SMP.Services/castStove/getUnitWgt", {
+      method: "post",
+      data,
+    });
   },
   getSlabOrderList(data?: InputTmp2010Dto) {
-    return requestClient.request<SlabPcDto[]>(
-      "/dDH.Service.SMP.Services/castStove/getSlabOrderList",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<SlabPcDto[]>("/dDH.Service.SMP.Services/castStove/getSlabOrderList", {
+      method: "post",
+      data,
+    });
   },
   getLcList(data?: InputPlanDto) {
-    return requestClient.request<Tmp2040Dto[]>(
-      "/dDH.Service.SMP.Services/castStove/getLcList",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Tmp2040Dto[]>("/dDH.Service.SMP.Services/castStove/getLcList", {
+      method: "post",
+      data,
+    });
   },
   getLcOrderList(lcId?: string) {
-    return requestClient.request<Tmp2042[]>(
-      "/dDH.Service.SMP.Services/castStove/getLcOrderList",
-      {
-        method: "post",
-        params: { lcId },
-      },
-    );
+    return requestClient.request<Tmp2042[]>("/dDH.Service.SMP.Services/castStove/getLcOrderList", {
+      method: "post",
+      params: { lcId },
+    });
   },
   deleteLc(data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/castStove/deleteLc",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/castStove/deleteLc", {
+      method: "post",
+      data,
+    });
   },
   addLc(ccmCode?: string, numLs?: number, wgtLc?: number, numZs?: number, data?: SlabPcDto[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/castStove/addLc",
-      {
-        method: "post",
-        params: { ccmCode, numLs, wgtLc, numZs },
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/castStove/addLc", {
+      method: "post",
+      params: { ccmCode, numLs, wgtLc, numZs },
+      data,
+    });
   },
   addLcNew(ccmCode?: string, numLs?: number, data?: SlabPcDto[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/castStove/addLcNew",
-      {
-        method: "post",
-        params: { ccmCode, numLs },
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/castStove/addLcNew", {
+      method: "post",
+      params: { ccmCode, numLs },
+      data,
+    });
   },
   creatJc(data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/castStove/creatJc",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/castStove/creatJc", {
+      method: "post",
+      data,
+    });
   },
   getJcList(data?: InputPlanDto) {
-    return requestClient.request<Tmp2030Dto[]>(
-      "/dDH.Service.SMP.Services/castStove/getJcList",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Tmp2030Dto[]>("/dDH.Service.SMP.Services/castStove/getJcList", {
+      method: "post",
+      data,
+    });
   },
   getLcListByJc(jcNo?: string) {
-    return requestClient.request<Tmp2040Dto[]>(
-      "/dDH.Service.SMP.Services/castStove/getLcListByJc",
-      {
-        method: "post",
-        params: { jcNo },
-      },
-    );
+    return requestClient.request<Tmp2040Dto[]>("/dDH.Service.SMP.Services/castStove/getLcListByJc", {
+      method: "post",
+      params: { jcNo },
+    });
   },
   deleteJc(jcId?: string) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/castStove/deleteJc",
-      {
-        method: "post",
-        params: { jcId },
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/castStove/deleteJc", {
+      method: "post",
+      params: { jcId },
+    });
   },
   downJc(jcId?: string) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/castStove/downJc",
-      {
-        method: "post",
-        params: { jcId },
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/castStove/downJc", {
+      method: "post",
+      params: { jcId },
+    });
   },
   updateSort(data?: Tmp2030Dto[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/castStove/updateSort",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/castStove/updateSort", {
+      method: "post",
+      data,
+    });
   },
   generateJcNo(staCode?: string, num?: number) {
-    return requestClient.request<string[]>(
-      "/dDH.Service.SMP.Services/castStove/generateJcNo",
-      {
-        method: "post",
-        params: { staCode, num },
-      },
-    );
+    return requestClient.request<string[]>("/dDH.Service.SMP.Services/castStove/generateJcNo", {
+      method: "post",
+      params: { staCode, num },
+    });
   },
   getSelectSlabOrderList(data?: InputTmp2010Dto) {
-    return requestClient.request<SlabPcDto[]>(
-      "/dDH.Service.SMP.Services/castStove/getSelectSlabOrderList",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<SlabPcDto[]>("/dDH.Service.SMP.Services/castStove/getSelectSlabOrderList", {
+      method: "post",
+      data,
+    });
   },
   /** 浇次作废前校验（原 CheckJCInvalid，MP2050） */
   checkJCInvalid(jcId?: string) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/castStove/checkJCInvalid",
-      {
-        method: "post",
-        params: { jcId },
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/castStove/checkJCInvalid", {
+      method: "post",
+      params: { jcId },
+    });
   },
   /** 浇次作废（原 JCInvalid，MP2050） */
   jCInvalid(jcId?: string) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/castStove/jCInvalid",
-      {
-        method: "post",
-        params: { jcId },
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/castStove/jCInvalid", {
+      method: "post",
+      params: { jcId },
+    });
   },
 };
 
 export const fh2000Api = {
   getCarLst(data?: InputFh2000Dto) {
-    return requestClient.request<QueryCarDto[]>(
-      "/dDH.Service.SMP.Services/fh2000/getCarLst",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<QueryCarDto[]>("/dDH.Service.SMP.Services/fh2000/getCarLst", {
+      method: "post",
+      data,
+    });
   },
   getFhJl2000Lst(data?: InputFh2000Dto) {
-    return requestClient.request<QueryFhJl2000Dto[]>(
-      "/dDH.Service.SMP.Services/fh2000/getFhJl2000Lst",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<QueryFhJl2000Dto[]>("/dDH.Service.SMP.Services/fh2000/getFhJl2000Lst", {
+      method: "post",
+      data,
+    });
   },
   getFhTyd2000(data?: InputFh2000Dto) {
-    return requestClient.request<QueryFhTyd2000Dto[]>(
-      "/dDH.Service.SMP.Services/fh2000/getFhTyd2000",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<QueryFhTyd2000Dto[]>("/dDH.Service.SMP.Services/fh2000/getFhTyd2000", {
+      method: "post",
+      data,
+    });
   },
   getFh1000Lst(data?: InputFh2000Dto) {
-    return requestClient.request<Fh1000[]>(
-      "/dDH.Service.SMP.Services/fh2000/getFh1000Lst",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Fh1000[]>("/dDH.Service.SMP.Services/fh2000/getFh1000Lst", {
+      method: "post",
+      data,
+    });
   },
   getFh1002Lst(data?: InputFh2000Dto) {
-    return requestClient.request<Fh1002[]>(
-      "/dDH.Service.SMP.Services/fh2000/getFh1002Lst",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Fh1002[]>("/dDH.Service.SMP.Services/fh2000/getFh1002Lst", {
+      method: "post",
+      data,
+    });
   },
   addFhMat(data?: InputFh1000Dto) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/fh2000/addFhMat",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/fh2000/addFhMat", {
+      method: "post",
+      data,
+    });
   },
   delMat(data?: Fh1002[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/fh2000/delMat",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/fh2000/delMat", {
+      method: "post",
+      data,
+    });
   },
   getJLSeqID() {
-    return requestClient.request<string>(
-      "/dDH.Service.SMP.Services/fh2000/getJLSeqID",
-      {
-        method: "post",
-      },
-    );
+    return requestClient.request<string>("/dDH.Service.SMP.Services/fh2000/getJLSeqID", {
+      method: "post",
+    });
   },
   sendJL(data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/fh2000/sendJL",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/fh2000/sendJL", {
+      method: "post",
+      data,
+    });
   },
   sendJLCancel(data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/fh2000/sendJLCancel",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/fh2000/sendJLCancel", {
+      method: "post",
+      data,
+    });
   },
   sendJLSync() {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/fh2000/sendJLSync",
-      {
-        method: "post",
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/fh2000/sendJLSync", {
+      method: "post",
+    });
   },
   /** 装车明细/质保书材料（原 GetZcDetailLst，FH3030/FH3031） */
   getZcDetailLst(data?: InputFh2000Dto) {
-    return requestClient.request<QueryMatOutDto[]>(
-      "/dDH.Service.SMP.Services/fh2000/getZcDetailLst",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<QueryMatOutDto[]>("/dDH.Service.SMP.Services/fh2000/getZcDetailLst", {
+      method: "post",
+      data,
+    });
   },
   /** 质保书打印记录（原 GetZbsDetailLst） */
   getZbsDetailLst(cPieceNo?: string) {
-    return requestClient.request<ZbsPrintDto[]>(
-      "/dDH.Service.SMP.Services/fh2000/getZbsDetailLst",
-      {
-        method: "post",
-        params: { cPieceNo },
-      },
-    );
+    return requestClient.request<ZbsPrintDto[]>("/dDH.Service.SMP.Services/fh2000/getZbsDetailLst", {
+      method: "post",
+      params: { cPieceNo },
+    });
   },
   /** 异常处理计量材料号（原 SendJL2，FH1000 simpleButton1） */
   sendJL2(data?: string[]) {
-    return requestClient.request<number>(
-      "/dDH.Service.SMP.Services/fh2000/sendJL2",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<number>("/dDH.Service.SMP.Services/fh2000/sendJL2", {
+      method: "post",
+      data,
+    });
   },
   /** 装车异常日志（原 GetTsd1000Log，FH3010） */
   getTsd1000Log(data?: InputFh2000Dto) {
-    return requestClient.request<Tsd1000Log[]>(
-      "/dDH.Service.SMP.Services/fh2000/getTsd1000Log",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Tsd1000Log[]>("/dDH.Service.SMP.Services/fh2000/getTsd1000Log", {
+      method: "post",
+      data,
+    });
   },
   /** 退货记录查询（原 GetTsd3000Lst，FH4000） */
   getTsd3000Lst(data?: QueryTsd3000Dto) {
-    return requestClient.request<QueryTsd3000Dto[]>(
-      "/dDH.Service.SMP.Services/fh2000/getTsd3000Lst",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<QueryTsd3000Dto[]>("/dDH.Service.SMP.Services/fh2000/getTsd3000Lst", {
+      method: "post",
+      data,
+    });
   },
   /** 确认退货（原 InsertTsd3000，FH4000） */
   insertTsd3000(data?: QueryTsd3000Dto[], remark?: string) {
-    return requestClient.request<number>(
-      "/dDH.Service.SMP.Services/fh2000/insertTsd3000",
-      {
-        method: "post",
-        data,
-        params: { remark },
-      },
-    );
+    return requestClient.request<number>("/dDH.Service.SMP.Services/fh2000/insertTsd3000", {
+      method: "post",
+      data,
+      params: { remark },
+    });
   },
 };
 
 export const jLApi = {
   deliveryItem(data?: ApiJL2000Dto[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.Interface.Services.JL/jL/deliveryItem",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.Interface.Services.JL/jL/deliveryItem", {
+      method: "post",
+      data,
+    });
   },
   vehicleResult(data?: ApiJL2001Dto[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.Interface.Services.JL/jL/vehicleResult",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.Interface.Services.JL/jL/vehicleResult", {
+      method: "post",
+      data,
+    });
   },
   getCard(data?: ApiCardDto) {
-    return requestClient.request<ApiCarMessage>(
-      "/dDH.Service.Interface.Services.JL/jL/getCard",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<ApiCarMessage>("/dDH.Service.Interface.Services.JL/jL/getCard", {
+      method: "post",
+      data,
+    });
   },
   checkCardID(data?: ApiCardDto) {
-    return requestClient.request<any>(
-      "/dDH.Service.Interface.Services.JL/jL/checkCardID",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.Interface.Services.JL/jL/checkCardID", {
+      method: "post",
+      data,
+    });
   },
   setCard(data?: ApiCardDto) {
-    return requestClient.request<any>(
-      "/dDH.Service.Interface.Services.JL/jL/setCard",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.Interface.Services.JL/jL/setCard", {
+      method: "post",
+      data,
+    });
   },
   getSendCarItem(data?: ApiCardDto) {
-    return requestClient.request<LSendcarItemTDto[]>(
-      "/dDH.Service.Interface.Services.JL/jL/getSendCarItem",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<LSendcarItemTDto[]>("/dDH.Service.Interface.Services.JL/jL/getSendCarItem", {
+      method: "post",
+      data,
+    });
   },
   getJLSeqID() {
-    return requestClient.request<string>(
-      "/dDH.Service.Interface.Services.JL/jL/getJLSeqID",
-      {
-        method: "post",
-      },
-    );
+    return requestClient.request<string>("/dDH.Service.Interface.Services.JL/jL/getJLSeqID", {
+      method: "post",
+    });
   },
   setTaskCard(data?: ApiCardInput) {
-    return requestClient.request<any>(
-      "/dDH.Service.Interface.Services.JL/jL/setTaskCard",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.Interface.Services.JL/jL/setTaskCard", {
+      method: "post",
+      data,
+    });
   },
   getMatchId(operatype?: string) {
-    return requestClient.request<string>(
-      "/dDH.Service.Interface.Services.JL/jL/getMatchId",
-      {
-        method: "post",
-        params: { operatype },
-      },
-    );
+    return requestClient.request<string>("/dDH.Service.Interface.Services.JL/jL/getMatchId", {
+      method: "post",
+      params: { operatype },
+    });
   },
 };
 
 export const tLApi = {
   generateTlOrderNo(matType?: string, num?: number) {
-    return requestClient.request<string[]>(
-      "/dDH.Service.SMP.Services/tL/generateTlOrderNo",
-      {
-        method: "post",
-        params: { matType, num },
-      },
-    );
+    return requestClient.request<string[]>("/dDH.Service.SMP.Services/tL/generateTlOrderNo", {
+      method: "post",
+      params: { matType, num },
+    });
   },
   queryOrder(data?: InputTmp2010Dto) {
-    return requestClient.request<Tmp2010Dto[]>(
-      "/dDH.Service.SMP.Services/tL/queryOrder",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Tmp2010Dto[]>("/dDH.Service.SMP.Services/tL/queryOrder", {
+      method: "post",
+      data,
+    });
   },
   queryOrderNew(data?: InputTmp2010Dto) {
-    return requestClient.request<Tmp2005Dto[]>(
-      "/dDH.Service.SMP.Services/tL/queryOrderNew",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Tmp2005Dto[]>("/dDH.Service.SMP.Services/tL/queryOrderNew", {
+      method: "post",
+      data,
+    });
   },
-  updateTl(Id?: string, NThickPlan?: number, NWidthPlan?: number, NPlanBoarLen?: number, CSgCode?: string, CSgStd?: string, NSlabThick?: number, NSlabWidth?: number, NSlabLenMin?: number, NSlabLenMax?: number, NWgtUnit?: number, NSlabQua?: number, NSlabWgt?: number, CSlabSource?: string, CSlabRemark?: string, CTlName?: string, DTlTime?: string, NWgtMeter?: number, tLType?: string, data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tL/updateTl",
-      {
-        method: "post",
-        params: { Id, NThickPlan, NWidthPlan, NPlanBoarLen, CSgCode, CSgStd, NSlabThick, NSlabWidth, NSlabLenMin, NSlabLenMax, NWgtUnit, NSlabQua, NSlabWgt, CSlabSource, CSlabRemark, CTlName, DTlTime, NWgtMeter, tLType },
-        data,
+  updateTl(
+    Id?: string,
+    NThickPlan?: number,
+    NWidthPlan?: number,
+    NPlanBoarLen?: number,
+    CSgCode?: string,
+    CSgStd?: string,
+    NSlabThick?: number,
+    NSlabWidth?: number,
+    NSlabLenMin?: number,
+    NSlabLenMax?: number,
+    NWgtUnit?: number,
+    NSlabQua?: number,
+    NSlabWgt?: number,
+    CSlabSource?: string,
+    CSlabRemark?: string,
+    CTlName?: string,
+    DTlTime?: string,
+    NWgtMeter?: number,
+    tLType?: string,
+    data?: string[],
+  ) {
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tL/updateTl", {
+      method: "post",
+      params: {
+        Id,
+        NThickPlan,
+        NWidthPlan,
+        NPlanBoarLen,
+        CSgCode,
+        CSgStd,
+        NSlabThick,
+        NSlabWidth,
+        NSlabLenMin,
+        NSlabLenMax,
+        NWgtUnit,
+        NSlabQua,
+        NSlabWgt,
+        CSlabSource,
+        CSlabRemark,
+        CTlName,
+        DTlTime,
+        NWgtMeter,
+        tLType,
       },
-    );
+      data,
+    });
   },
   checkedTl(lineCode?: string, data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tL/checkedTl",
-      {
-        method: "post",
-        params: { lineCode },
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tL/checkedTl", {
+      method: "post",
+      params: { lineCode },
+      data,
+    });
   },
   checkedTlNew(lineCode?: string, data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tL/checkedTlNew",
-      {
-        method: "post",
-        params: { lineCode },
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tL/checkedTlNew", {
+      method: "post",
+      params: { lineCode },
+      data,
+    });
   },
   cancleCheckedTl(data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tL/cancleCheckedTl",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tL/cancleCheckedTl", {
+      method: "post",
+      data,
+    });
   },
   cancleCheckedTlNew(data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tL/cancleCheckedTlNew",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tL/cancleCheckedTlNew", {
+      method: "post",
+      data,
+    });
   },
   delTl(data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tL/delTl",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tL/delTl", {
+      method: "post",
+      data,
+    });
   },
   cancleCheckedTlOld(data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tL/cancleCheckedTl_old",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tL/cancleCheckedTl_old", {
+      method: "post",
+      data,
+    });
   },
   cancleTl(data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tL/cancleTl",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tL/cancleTl", {
+      method: "post",
+      data,
+    });
   },
   setLength(data?: Tmp2010Dto[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tL/setLength",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tL/setLength", {
+      method: "post",
+      data,
+    });
   },
   orderCF(cOrderNo?: string, data?: Tmp2010Dto[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tL/orderCF",
-      {
-        method: "post",
-        params: { cOrderNo },
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tL/orderCF", {
+      method: "post",
+      params: { cOrderNo },
+      data,
+    });
   },
   importTl2000(data?: ImportTL2000Dto[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tL/importTl2000",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tL/importTl2000", {
+      method: "post",
+      data,
+    });
   },
   hbTl(data?: TLDto) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tL/hbTl",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tL/hbTl", {
+      method: "post",
+      data,
+    });
   },
-  setSlabSize(Id?: string, CCode?: string, CDesc?: string, CEnable?: string, CGroup?: string, CName?: string, COrder?: string, CPid?: string, CSw01?: string, CSw02?: string, CSw03?: string, CSw04?: string, CSw05?: string, CValue?: string, Selected?: boolean, data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tL/setSlabSize",
-      {
-        method: "post",
-        params: { Id, CCode, CDesc, CEnable, CGroup, CName, COrder, CPid, CSw01, CSw02, CSw03, CSw04, CSw05, CValue, Selected },
-        data,
+  setSlabSize(
+    Id?: string,
+    CCode?: string,
+    CDesc?: string,
+    CEnable?: string,
+    CGroup?: string,
+    CName?: string,
+    COrder?: string,
+    CPid?: string,
+    CSw01?: string,
+    CSw02?: string,
+    CSw03?: string,
+    CSw04?: string,
+    CSw05?: string,
+    CValue?: string,
+    Selected?: boolean,
+    data?: string[],
+  ) {
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tL/setSlabSize", {
+      method: "post",
+      params: {
+        Id,
+        CCode,
+        CDesc,
+        CEnable,
+        CGroup,
+        CName,
+        COrder,
+        CPid,
+        CSw01,
+        CSw02,
+        CSw03,
+        CSw04,
+        CSw05,
+        CValue,
+        Selected,
       },
-    );
+      data,
+    });
   },
   autoMatched(data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tL/autoMatched",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tL/autoMatched", {
+      method: "post",
+      data,
+    });
   },
   existOrderNoS(data?: ImportTL2000Dto[]) {
-    return requestClient.request<string[]>(
-      "/dDH.Service.SMP.Services/tL/existOrderNoS",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<string[]>("/dDH.Service.SMP.Services/tL/existOrderNoS", {
+      method: "post",
+      data,
+    });
   },
   importTl2000New(data?: ImportTL2000Dto[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tL/importTl2000New",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tL/importTl2000New", {
+      method: "post",
+      data,
+    });
   },
   importTmp2005(data?: ImportTL2000Dto[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tL/importTmp2005",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tL/importTmp2005", {
+      method: "post",
+      data,
+    });
   },
   /** 订单提料查询（原 GetOrderLst2，TL2000/MP2016） */
   getOrderLst2(data?: InputTmp2000Dto) {
-    return requestClient.request<QueryTmp2000Dto[]>(
-      "/dDH.Service.SMP.Services/tL/getOrderLst2",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<QueryTmp2000Dto[]>("/dDH.Service.SMP.Services/tL/getOrderLst2", {
+      method: "post",
+      data,
+    });
   },
   /** 提料生产关闭（原 TLProdClose，TL2000/TL2000DG） */
   tlProdClose(data?: Tmp2005Dto[]) {
-    return requestClient.request<number>(
-      "/dDH.Service.SMP.Services/tL/tlProdClose",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<number>("/dDH.Service.SMP.Services/tL/tlProdClose", {
+      method: "post",
+      data,
+    });
   },
 };
 
 /** 库存坯料挂单/转挂（原 ITLZG02AppService） */
 export const tLZG02Api = {
   getSlabCodeList() {
-    return requestClient.request<TLSlabDto[]>(
-      "/dDH.Service.SMP.Services/tLZG02/getSlabCodeList",
-      {
-        method: "post",
-      },
-    );
+    return requestClient.request<TLSlabDto[]>("/dDH.Service.SMP.Services/tLZG02/getSlabCodeList", {
+      method: "post",
+    });
   },
   insertTLZG02(data?: InsertTlZG02Dto, lst?: string[]) {
-    return requestClient.request<number>(
-      "/dDH.Service.SMP.Services/tLZG02/insertTLZG02",
-      {
-        method: "post",
-        params: { lst },
-        data,
-      },
-    );
+    return requestClient.request<number>("/dDH.Service.SMP.Services/tLZG02/insertTLZG02", {
+      method: "post",
+      params: { lst },
+      data,
+    });
   },
   checkedTlNew(data?: string[]) {
-    return requestClient.request<number>(
-      "/dDH.Service.SMP.Services/tLZG02/checkedTlNew",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<number>("/dDH.Service.SMP.Services/tLZG02/checkedTlNew", {
+      method: "post",
+      data,
+    });
   },
   cancleCheckedTlNew(data?: string[]) {
-    return requestClient.request<number>(
-      "/dDH.Service.SMP.Services/tLZG02/cancleCheckedTlNew",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<number>("/dDH.Service.SMP.Services/tLZG02/cancleCheckedTlNew", {
+      method: "post",
+      data,
+    });
   },
   delTl(data?: string[]) {
-    return requestClient.request<number>(
-      "/dDH.Service.SMP.Services/tLZG02/delTl",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<number>("/dDH.Service.SMP.Services/tLZG02/delTl", {
+      method: "post",
+      data,
+    });
   },
 };
 
 /** 中厚板计划排产（原 IFrmMP2033AppService） */
 export const frmMP2033Api = {
   getSlabOrderList(data?: QueryParamDto) {
-    return requestClient.request<FrmMS2033Dto_PlanInfo[]>(
-      "/dDH.Service.SMP.Services/frmMP2033/getSlabOrderList",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<FrmMS2033Dto_PlanInfo[]>("/dDH.Service.SMP.Services/frmMP2033/getSlabOrderList", {
+      method: "post",
+      data,
+    });
   },
   getGPWidthInfo(data?: QueryParamDto) {
-    return requestClient.request<number[]>(
-      "/dDH.Service.SMP.Services/frmMP2033/getGPWidthInfo",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<number[]>("/dDH.Service.SMP.Services/frmMP2033/getGPWidthInfo", {
+      method: "post",
+      data,
+    });
   },
   checkCreateStoveCunInfo(data?: QueryParamDto) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/frmMP2033/checkCreateStoveCunInfo",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/frmMP2033/checkCreateStoveCunInfo", {
+      method: "post",
+      data,
+    });
   },
   createStoveCunInfo(data?: QueryParamDto) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/frmMP2033/createStoveCunInfo",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/frmMP2033/createStoveCunInfo", {
+      method: "post",
+      data,
+    });
   },
   calcuateNewData(data?: FrmMS2033Dto_AddOrRemovePieceDto) {
-    return requestClient.request<FrmMS2033Dto_StoveCutInfoAll>(
-      "/dDH.Service.SMP.Services/frmMP2033/calcuateNewData",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<FrmMS2033Dto_StoveCutInfoAll>("/dDH.Service.SMP.Services/frmMP2033/calcuateNewData", {
+      method: "post",
+      data,
+    });
   },
   checkRemoveStoveCunInfo(data?: QueryParamDto) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/frmMP2033/checkRemoveStoveCunInfo",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/frmMP2033/checkRemoveStoveCunInfo", {
+      method: "post",
+      data,
+    });
   },
   removeStoveCunInfo(data?: QueryParamDto) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/frmMP2033/removeStoveCunInfo",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/frmMP2033/removeStoveCunInfo", {
+      method: "post",
+      data,
+    });
   },
   queryStoveCutInfo(data?: QueryParamDto) {
     return requestClient.request<FrmMS2033Dto_StoveCutInfoAll>(
@@ -3286,359 +3128,405 @@ export const frmMP2033Api = {
     );
   },
   createStoveCutData(data?: FrmMS2033Dto_AddPieceParamDto) {
-    return requestClient.request<FrmMS2033Dto_StoveCutInfo>(
-      "/dDH.Service.SMP.Services/frmMP2033/createStoveCutData",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<FrmMS2033Dto_StoveCutInfo>("/dDH.Service.SMP.Services/frmMP2033/createStoveCutData", {
+      method: "post",
+      data,
+    });
   },
   updateStoveSgCodeInfo(stoveInfo?: FrmMS2033Dto_StoveCutInfo, sgCodeInfo?: SgCodeAndStdDto) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/frmMP2033/updateStoveSgCodeInfo",
-      {
-        method: "post",
-        params: { sgCodeInfo },
-        data: stoveInfo,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/frmMP2033/updateStoveSgCodeInfo", {
+      method: "post",
+      params: { sgCodeInfo },
+      data: stoveInfo,
+    });
   },
   saveDatas(data?: SaveDataDto) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/frmMP2033/saveDatas",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/frmMP2033/saveDatas", {
+      method: "post",
+      data,
+    });
   },
 };
 
 export const tmp1220Api = {
   queryTmp1220() {
-    return requestClient.request<Tmp1220[]>(
-      "/dDH.Service.SMP.Services/tmp1220/queryTmp1220",
-      {
-        method: "post",
-      },
-    );
+    return requestClient.request<Tmp1220[]>("/dDH.Service.SMP.Services/tmp1220/queryTmp1220", {
+      method: "post",
+    });
   },
   changeTmp1220(data?: Tmp1220SaveChangesData) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tmp1220/changeTmp1220",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tmp1220/changeTmp1220", {
+      method: "post",
+      data,
+    });
   },
 };
 
 export const tmp2000Api = {
   getOrderTqmtd10Lst(cLineCode?: string) {
-    return requestClient.request<QueryOrderTqmtd10Dto[]>(
-      "/dDH.Service.SMP.Services/tmp2000/getOrderTqmtd10Lst",
-      {
-        method: "post",
-        params: { cLineCode },
-      },
-    );
+    return requestClient.request<QueryOrderTqmtd10Dto[]>("/dDH.Service.SMP.Services/tmp2000/getOrderTqmtd10Lst", {
+      method: "post",
+      params: { cLineCode },
+    });
   },
   getSaleDept() {
-    return requestClient.request<HmxDept[]>(
-      "/dDH.Service.SMP.Services/tmp2000/getSaleDept",
-      {
-        method: "post",
-      },
-    );
+    return requestClient.request<HmxDept[]>("/dDH.Service.SMP.Services/tmp2000/getSaleDept", {
+      method: "post",
+    });
   },
   getCustomer() {
-    return requestClient.request<QueryCustDto[]>(
-      "/dDH.Service.SMP.Services/tmp2000/getCustomer",
-      {
-        method: "post",
-      },
-    );
+    return requestClient.request<QueryCustDto[]>("/dDH.Service.SMP.Services/tmp2000/getCustomer", {
+      method: "post",
+    });
   },
   getOrderLst(data?: InputTmp2000Dto) {
-    return requestClient.request<QueryTmp2000Dto[]>(
-      "/dDH.Service.SMP.Services/tmp2000/getOrderLst",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<QueryTmp2000Dto[]>("/dDH.Service.SMP.Services/tmp2000/getOrderLst", {
+      method: "post",
+      data,
+    });
   },
   getOrderLst2(data?: InputTmp2000Dto) {
-    return requestClient.request<QueryTmp2000Dto[]>(
-      "/dDH.Service.SMP.Services/tmp2000/getOrderLst2",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<QueryTmp2000Dto[]>("/dDH.Service.SMP.Services/tmp2000/getOrderLst2", {
+      method: "post",
+      data,
+    });
   },
   saveOrder(flag?: string, data?: QueryTmp2000Dto) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tmp2000/saveOrder",
-      {
-        method: "post",
-        params: { flag },
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tmp2000/saveOrder", {
+      method: "post",
+      params: { flag },
+      data,
+    });
   },
   delOrder(data?: QueryTmp2000Dto[]) {
-    return requestClient.request<number>(
-      "/dDH.Service.SMP.Services/tmp2000/delOrder",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<number>("/dDH.Service.SMP.Services/tmp2000/delOrder", {
+      method: "post",
+      data,
+    });
   },
   importTmp2000(data?: ImportTmp2000FlagDto) {
-    return requestClient.request<number>(
-      "/dDH.Service.SMP.Services/tmp2000/importTmp2000",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<number>("/dDH.Service.SMP.Services/tmp2000/importTmp2000", {
+      method: "post",
+      data,
+    });
   },
   importByBx(data?: BxOrder[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tmp2000/importByBx",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tmp2000/importByBx", {
+      method: "post",
+      data,
+    });
   },
   getConNo(line?: string) {
-    return requestClient.request<string>(
-      "/dDH.Service.SMP.Services/tmp2000/getConNo",
-      {
-        method: "post",
-        params: { line },
-      },
-    );
+    return requestClient.request<string>("/dDH.Service.SMP.Services/tmp2000/getConNo", {
+      method: "post",
+      params: { line },
+    });
   },
   fillVacancy2(serNum?: string) {
-    return requestClient.request<string>(
-      "/dDH.Service.SMP.Services/tmp2000/fillVacancy2",
-      {
-        method: "post",
-        params: { serNum },
-      },
-    );
+    return requestClient.request<string>("/dDH.Service.SMP.Services/tmp2000/fillVacancy2", {
+      method: "post",
+      params: { serNum },
+    });
   },
   fillVacancy3(serNum?: string) {
-    return requestClient.request<string>(
-      "/dDH.Service.SMP.Services/tmp2000/fillVacancy3",
-      {
-        method: "post",
-        params: { serNum },
-      },
-    );
+    return requestClient.request<string>("/dDH.Service.SMP.Services/tmp2000/fillVacancy3", {
+      method: "post",
+      params: { serNum },
+    });
   },
   downOrderPlan(data?: QueryTmp2000Dto[]) {
-    return requestClient.request<number>(
-      "/dDH.Service.SMP.Services/tmp2000/downOrderPlan",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<number>("/dDH.Service.SMP.Services/tmp2000/downOrderPlan", {
+      method: "post",
+      data,
+    });
   },
   pushOrderPlan(data?: string[]) {
-    return requestClient.request<number>(
-      "/dDH.Service.SMP.Services/tmp2000/pushOrderPlan",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<number>("/dDH.Service.SMP.Services/tmp2000/pushOrderPlan", {
+      method: "post",
+      data,
+    });
   },
-  addYLOrder(Selected?: boolean, Id?: string, COrderNo?: string, NStatus?: OrderStatusEnum, COrderCustNo?: string, COrderCustCname?: string, CSteelType?: string, CSgCode?: string, NThick?: number, NThickMin?: number, NThickMax?: number, NWidth?: number, NWidthMin?: number, NWidthMax?: number, NWidthWgt?: number, CLengthType?: LengthTypeEnum, NLenMin?: number, NLenMax?: number, CDelivyStatusCode?: string, CDelivyStatusDesc?: string, NNum?: number, NWgt?: number, CTrimFlag?: string, COverstepBl?: string, CDelivyQtyFlag?: string, CTol?: string, CFlawDesc?: string, CConNo?: string, CSgStd?: string, DJhqTime?: string, CDelivyAddress?: string, CSpecialMarkGy?: string, NWtMax?: number, NWtMin?: number, CSpec?: string, CConRemark?: string, CInboundNo?: string, NThickTolMin?: number, NThickTolMax?: number, NWidthTolMin?: number, NWidthTolMax?: number, NLenTolMin?: number, NLenTolMax?: number, DTimeShipment?: string, CSgCodeNk?: string, CJrzzgyCode?: string, CJqgyCode?: string, CExitem1?: string, Creator?: string, CreateTime?: string, LastModifier?: string, LastModifyTime?: string, CLineCode?: string, CDeptCode?: string, COrderProcFlag?: number, COrderProcUserId?: string, DOrderProcTime?: string, CZgGyCode?: string, CSendUserId?: string, DSendTime?: string, CPushUserId?: string, DPushTime?: string, NSfpj?: OrderReviewEnum, CPjName?: string, NFlag?: OrderFlagEnum, data?: ImportTmp2000FlagDto) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tmp2000/addYLOrder",
-      {
-        method: "post",
-        params: { Selected, Id, COrderNo, NStatus, COrderCustNo, COrderCustCname, CSteelType, CSgCode, NThick, NThickMin, NThickMax, NWidth, NWidthMin, NWidthMax, NWidthWgt, CLengthType, NLenMin, NLenMax, CDelivyStatusCode, CDelivyStatusDesc, NNum, NWgt, CTrimFlag, COverstepBl, CDelivyQtyFlag, CTol, CFlawDesc, CConNo, CSgStd, DJhqTime, CDelivyAddress, CSpecialMarkGy, NWtMax, NWtMin, CSpec, CConRemark, CInboundNo, NThickTolMin, NThickTolMax, NWidthTolMin, NWidthTolMax, NLenTolMin, NLenTolMax, DTimeShipment, CSgCodeNk, CJrzzgyCode, CJqgyCode, CExitem1, Creator, CreateTime, LastModifier, LastModifyTime, CLineCode, CDeptCode, COrderProcFlag, COrderProcUserId, DOrderProcTime, CZgGyCode, CSendUserId, DSendTime, CPushUserId, DPushTime, NSfpj, CPjName, NFlag },
-        data,
+  addYLOrder(
+    Selected?: boolean,
+    Id?: string,
+    COrderNo?: string,
+    NStatus?: OrderStatusEnum,
+    COrderCustNo?: string,
+    COrderCustCname?: string,
+    CSteelType?: string,
+    CSgCode?: string,
+    NThick?: number,
+    NThickMin?: number,
+    NThickMax?: number,
+    NWidth?: number,
+    NWidthMin?: number,
+    NWidthMax?: number,
+    NWidthWgt?: number,
+    CLengthType?: LengthTypeEnum,
+    NLenMin?: number,
+    NLenMax?: number,
+    CDelivyStatusCode?: string,
+    CDelivyStatusDesc?: string,
+    NNum?: number,
+    NWgt?: number,
+    CTrimFlag?: string,
+    COverstepBl?: string,
+    CDelivyQtyFlag?: string,
+    CTol?: string,
+    CFlawDesc?: string,
+    CConNo?: string,
+    CSgStd?: string,
+    DJhqTime?: string,
+    CDelivyAddress?: string,
+    CSpecialMarkGy?: string,
+    NWtMax?: number,
+    NWtMin?: number,
+    CSpec?: string,
+    CConRemark?: string,
+    CInboundNo?: string,
+    NThickTolMin?: number,
+    NThickTolMax?: number,
+    NWidthTolMin?: number,
+    NWidthTolMax?: number,
+    NLenTolMin?: number,
+    NLenTolMax?: number,
+    DTimeShipment?: string,
+    CSgCodeNk?: string,
+    CJrzzgyCode?: string,
+    CJqgyCode?: string,
+    CExitem1?: string,
+    Creator?: string,
+    CreateTime?: string,
+    LastModifier?: string,
+    LastModifyTime?: string,
+    CLineCode?: string,
+    CDeptCode?: string,
+    COrderProcFlag?: number,
+    COrderProcUserId?: string,
+    DOrderProcTime?: string,
+    CZgGyCode?: string,
+    CSendUserId?: string,
+    DSendTime?: string,
+    CPushUserId?: string,
+    DPushTime?: string,
+    NSfpj?: OrderReviewEnum,
+    CPjName?: string,
+    NFlag?: OrderFlagEnum,
+    data?: ImportTmp2000FlagDto,
+  ) {
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tmp2000/addYLOrder", {
+      method: "post",
+      params: {
+        Selected,
+        Id,
+        COrderNo,
+        NStatus,
+        COrderCustNo,
+        COrderCustCname,
+        CSteelType,
+        CSgCode,
+        NThick,
+        NThickMin,
+        NThickMax,
+        NWidth,
+        NWidthMin,
+        NWidthMax,
+        NWidthWgt,
+        CLengthType,
+        NLenMin,
+        NLenMax,
+        CDelivyStatusCode,
+        CDelivyStatusDesc,
+        NNum,
+        NWgt,
+        CTrimFlag,
+        COverstepBl,
+        CDelivyQtyFlag,
+        CTol,
+        CFlawDesc,
+        CConNo,
+        CSgStd,
+        DJhqTime,
+        CDelivyAddress,
+        CSpecialMarkGy,
+        NWtMax,
+        NWtMin,
+        CSpec,
+        CConRemark,
+        CInboundNo,
+        NThickTolMin,
+        NThickTolMax,
+        NWidthTolMin,
+        NWidthTolMax,
+        NLenTolMin,
+        NLenTolMax,
+        DTimeShipment,
+        CSgCodeNk,
+        CJrzzgyCode,
+        CJqgyCode,
+        CExitem1,
+        Creator,
+        CreateTime,
+        LastModifier,
+        LastModifyTime,
+        CLineCode,
+        CDeptCode,
+        COrderProcFlag,
+        COrderProcUserId,
+        DOrderProcTime,
+        CZgGyCode,
+        CSendUserId,
+        DSendTime,
+        CPushUserId,
+        DPushTime,
+        NSfpj,
+        CPjName,
+        NFlag,
       },
-    );
+      data,
+    });
   },
   delYLOrderPlan(data?: string[]) {
-    return requestClient.request<number>(
-      "/dDH.Service.SMP.Services/tmp2000/delYLOrderPlan",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<number>("/dDH.Service.SMP.Services/tmp2000/delYLOrderPlan", {
+      method: "post",
+      data,
+    });
   },
   getTmp2000Log(data?: Tmp2000Log) {
-    return requestClient.request<Tmp2000Log[]>(
-      "/dDH.Service.SMP.Services/tmp2000/getTmp2000Log",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Tmp2000Log[]>("/dDH.Service.SMP.Services/tmp2000/getTmp2000Log", {
+      method: "post",
+      data,
+    });
   },
   queryOrdersForDesign(data?: QueryOrdersForDesignInputParameter) {
-    return requestClient.request<Tmp2000[]>(
-      "/dDH.Service.SMP.Services/tmp2000/queryOrdersForDesign",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Tmp2000[]>("/dDH.Service.SMP.Services/tmp2000/queryOrdersForDesign", {
+      method: "post",
+      data,
+    });
   },
   getTmp2010(data?: InputTmp2000Dto) {
-    return requestClient.request<QueryCptTmp2010Dto[]>(
-      "/dDH.Service.SMP.Services/tmp2000/getTmp2010",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<QueryCptTmp2010Dto[]>("/dDH.Service.SMP.Services/tmp2000/getTmp2010", {
+      method: "post",
+      data,
+    });
   },
   /** 试验料订单查询（原 GetSylOrderLst，SD2000SYL） */
   getSylOrderLst(data?: InputTmp2000Dto) {
-    return requestClient.request<QueryTmp2000Dto[]>(
-      "/dDH.Service.SMP.Services/tmp2000/getSylOrderLst",
-      { method: "post", data },
-    );
+    return requestClient.request<QueryTmp2000Dto[]>("/dDH.Service.SMP.Services/tmp2000/getSylOrderLst", {
+      method: "post",
+      data,
+    });
   },
   /** 商品坯订单删除（原 DelGPOrder，SD2000DG_SYL） */
   delGPOrder(data?: QueryTmp2000Dto[]) {
-    return requestClient.request<number>(
-      "/dDH.Service.SMP.Services/tmp2000/delGPOrder",
-      { method: "post", data },
-    );
+    return requestClient.request<number>("/dDH.Service.SMP.Services/tmp2000/delGPOrder", { method: "post", data });
   },
   /** 退回排产（原 BackOrderPlan，SD2000） */
   backOrderPlan(data?: QueryTmp2000Dto[]) {
-    return requestClient.request<number>(
-      "/dDH.Service.SMP.Services/tmp2000/backOrderPlan",
-      { method: "post", data },
-    );
+    return requestClient.request<number>("/dDH.Service.SMP.Services/tmp2000/backOrderPlan", { method: "post", data });
   },
   /** 商品坯计划下发（原 PushSlabOrderPlan，SD2020GP） */
   pushSlabOrderPlan(data?: string[]) {
-    return requestClient.request<number>(
-      "/dDH.Service.SMP.Services/tmp2000/pushSlabOrderPlan",
-      { method: "post", data },
-    );
+    return requestClient.request<number>("/dDH.Service.SMP.Services/tmp2000/pushSlabOrderPlan", {
+      method: "post",
+      data,
+    });
   },
   /** 退回销售订单（原 BackSaleOrder，SD2020 系列） */
   backSaleOrder(data?: string[]) {
-    return requestClient.request<number>(
-      "/dDH.Service.SMP.Services/tmp2000/backSaleOrder",
-      { method: "post", data },
-    );
+    return requestClient.request<number>("/dDH.Service.SMP.Services/tmp2000/backSaleOrder", { method: "post", data });
   },
   /** 退回销售订单2（原 BackSaleOrder2，SD2020GP） */
   backSaleOrder2(data?: string[]) {
-    return requestClient.request<number>(
-      "/dDH.Service.SMP.Services/tmp2000/backSaleOrder2",
-      { method: "post", data },
-    );
+    return requestClient.request<number>("/dDH.Service.SMP.Services/tmp2000/backSaleOrder2", { method: "post", data });
   },
   /** 订单结案/取消结案（原 FinishOrder，flag=Y/N） */
   finishOrder(flag?: string, data?: string[]) {
-    return requestClient.request<number>(
-      "/dDH.Service.SMP.Services/tmp2000/finishOrder",
-      { method: "post", params: { flag }, data },
-    );
+    return requestClient.request<number>("/dDH.Service.SMP.Services/tmp2000/finishOrder", {
+      method: "post",
+      params: { flag },
+      data,
+    });
   },
   /** 未提料长度查询（原 GetTmp2010Len，SD2050） */
   getTmp2010Len(data?: InputTmp2000Dto) {
-    return requestClient.request<QueryCptTmp2010Dto[]>(
-      "/dDH.Service.SMP.Services/tmp2000/getTmp2010Len",
-      { method: "post", data },
-    );
+    return requestClient.request<QueryCptTmp2010Dto[]>("/dDH.Service.SMP.Services/tmp2000/getTmp2010Len", {
+      method: "post",
+      data,
+    });
   },
   /** 板长变更申请列表（原 GetTmp2010ApplyLen，SD2050Check） */
   getTmp2010ApplyLen() {
-    return requestClient.request<QueryCptTmp2010Dto[]>(
-      "/dDH.Service.SMP.Services/tmp2000/getTmp2010ApplyLen",
-      { method: "post" },
-    );
+    return requestClient.request<QueryCptTmp2010Dto[]>("/dDH.Service.SMP.Services/tmp2000/getTmp2010ApplyLen", {
+      method: "post",
+    });
   },
   /** 提交板长变更（原 InsertOrderLenPlan，SD2050） */
   insertOrderLenPlan(data?: string[]) {
-    return requestClient.request<number>(
-      "/dDH.Service.SMP.Services/tmp2000/insertOrderLenPlan",
-      { method: "post", data },
-    );
+    return requestClient.request<number>("/dDH.Service.SMP.Services/tmp2000/insertOrderLenPlan", {
+      method: "post",
+      data,
+    });
   },
   /** 板长变更审核（原 CheckTmp2010ApplyLen，SD2050Check） */
   checkTmp2010ApplyLen(checkApply?: number, data?: QueryCptTmp2010Dto[]) {
-    return requestClient.request<number>(
-      "/dDH.Service.SMP.Services/tmp2000/checkTmp2010ApplyLen",
-      { method: "post", params: { checkApply }, data },
-    );
+    return requestClient.request<number>("/dDH.Service.SMP.Services/tmp2000/checkTmp2010ApplyLen", {
+      method: "post",
+      params: { checkApply },
+      data,
+    });
   },
   /** 拆分订单列表（原 GetOrderCF，SD2020CheckCf） */
   getOrderCF() {
-    return requestClient.request<QueryTmp2000Dto[]>(
-      "/dDH.Service.SMP.Services/tmp2000/getOrderCF",
-      { method: "post" },
-    );
+    return requestClient.request<QueryTmp2000Dto[]>("/dDH.Service.SMP.Services/tmp2000/getOrderCF", { method: "post" });
   },
   /** 拆分订单审核（原 CheckOrderCFApply，SD2020CheckCf） */
   checkOrderCFApply(checkApply?: number, data?: string[]) {
-    return requestClient.request<number>(
-      "/dDH.Service.SMP.Services/tmp2000/checkOrderCFApply",
-      { method: "post", params: { checkApply }, data },
-    );
+    return requestClient.request<number>("/dDH.Service.SMP.Services/tmp2000/checkOrderCFApply", {
+      method: "post",
+      params: { checkApply },
+      data,
+    });
   },
   /** 提料计划订单（原 GetTmp2005，MP3100） */
   getTmp2005(data?: InputTmp2000Dto) {
-    return requestClient.request<Tmp2005Dto[]>(
-      "/dDH.Service.SMP.Services/tmp2000/getTmp2005",
-      { method: "post", data },
-    );
+    return requestClient.request<Tmp2005Dto[]>("/dDH.Service.SMP.Services/tmp2000/getTmp2005", {
+      method: "post",
+      data,
+    });
   },
   /** 炉次库存件次（原 GetTmp2005Storages，MP3100） */
   getTmp2005Storages(data?: InputTmp2010Dto) {
-    return requestClient.request<Tyd2000Dto[]>(
-      "/dDH.Service.SMP.Services/tmp2000/getTmp2005Storages",
-      { method: "post", data },
-    );
+    return requestClient.request<Tyd2000Dto[]>("/dDH.Service.SMP.Services/tmp2000/getTmp2005Storages", {
+      method: "post",
+      data,
+    });
   },
   /** 浇次产出坯料（原 GetCptJc，MP3100） */
   getCptJc(data?: InputTmp2000Dto) {
-    return requestClient.request<QueryCptJC[]>(
-      "/dDH.Service.SMP.Services/tmp2000/getCptJc",
-      { method: "post", data },
-    );
+    return requestClient.request<QueryCptJC[]>("/dDH.Service.SMP.Services/tmp2000/getCptJc", { method: "post", data });
   },
   /** 成品库存资源调配（原 GetStockList，SD2061/SD3010） */
   getStockList(data?: InputStockDto) {
-    return requestClient.request<QueryTyd2000Dto[]>(
-      "/dDH.Service.SMP.Services/tmp2000/getStockList",
-      { method: "post", data },
-    );
+    return requestClient.request<QueryTyd2000Dto[]>("/dDH.Service.SMP.Services/tmp2000/getStockList", {
+      method: "post",
+      data,
+    });
   },
   /** 确认资源调配（原 UpdateStockAllocation，SD2061） */
   updateStockAllocation(cSettleCust?: string, cInboundNo?: string, data?: InputStockDto) {
-    return requestClient.request<number>(
-      "/dDH.Service.SMP.Services/tmp2000/updateStockAllocation",
-      { method: "post", params: { cSettleCust, cInboundNo }, data },
-    );
+    return requestClient.request<number>("/dDH.Service.SMP.Services/tmp2000/updateStockAllocation", {
+      method: "post",
+      params: { cSettleCust, cInboundNo },
+      data,
+    });
   },
   /** 取消订单匹配（原 CancelMatchOrder，SD2061/SD3010） */
   cancelMatchOrder(data?: string[]) {
-    return requestClient.request<number>(
-      "/dDH.Service.SMP.Services/tmp2000/cancelMatchOrder",
-      { method: "post", data },
-    );
+    return requestClient.request<number>("/dDH.Service.SMP.Services/tmp2000/cancelMatchOrder", {
+      method: "post",
+      data,
+    });
   },
   /** 资源调配日志（原 GetTyd2000AllocationLogsAsync，SD3000） */
   getTyd2000AllocationLogsAsync(data?: InputTyd2000AllocationDto) {
@@ -3649,10 +3537,10 @@ export const tmp2000Api = {
   },
   /** 生成销售预约单模板（原 GenerateOrderTemplate，SD2061） */
   generateOrderTemplate(data?: QueryTyd2000Dto[]) {
-    return requestClient.request<OrderTemplateDto[]>(
-      "/dDH.Service.SMP.Services/tmp2000/generateOrderTemplate",
-      { method: "post", data },
-    );
+    return requestClient.request<OrderTemplateDto[]>("/dDH.Service.SMP.Services/tmp2000/generateOrderTemplate", {
+      method: "post",
+      data,
+    });
   },
   /** 批量修改订单（原 BatchUpdateOrder，SD2000） */
   batchUpdateOrder(
@@ -3662,17 +3550,19 @@ export const tmp2000Api = {
     cSgStd?: string,
     data?: QueryTmp2000Dto[],
   ) {
-    return requestClient.request<number>(
-      "/dDH.Service.SMP.Services/tmp2000/batchUpdateOrder",
-      { method: "post", params: { dJhqTime, cInboundNo, cOrderCustEname, cSgStd }, data },
-    );
+    return requestClient.request<number>("/dDH.Service.SMP.Services/tmp2000/batchUpdateOrder", {
+      method: "post",
+      params: { dJhqTime, cInboundNo, cOrderCustEname, cSgStd },
+      data,
+    });
   },
   /** 冶金规范钢种匹配（原 MatchNkSgCode，SD2000DG_SYL） */
   matchNkSgCode(cLineCode?: string, data?: string[]) {
-    return requestClient.request<number>(
-      "/dDH.Service.SMP.Services/tmp2000/matchNkSgCode",
-      { method: "post", params: { cLineCode }, data },
-    );
+    return requestClient.request<number>("/dDH.Service.SMP.Services/tmp2000/matchNkSgCode", {
+      method: "post",
+      params: { cLineCode },
+      data,
+    });
   },
 
   getCptSlabNo(data?: unknown) {
@@ -3680,444 +3570,310 @@ export const tmp2000Api = {
       method: "post",
       data,
     });
-  },};
+  },
+};
 
 export const tmp2010Api = {
   queryOrder(data?: InputTmp2010Dto) {
-    return requestClient.request<Tmp2010Dto[]>(
-      "/dDH.Service.SMP.Services/tmp2010/queryOrder",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Tmp2010Dto[]>("/dDH.Service.SMP.Services/tmp2010/queryOrder", {
+      method: "post",
+      data,
+    });
   },
   reviewOrder(data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tmp2010/reviewOrder",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tmp2010/reviewOrder", {
+      method: "post",
+      data,
+    });
   },
   cancleReviewOrder(data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tmp2010/cancleReviewOrder",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tmp2010/cancleReviewOrder", {
+      method: "post",
+      data,
+    });
   },
   setStaCode(code?: string, data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tmp2010/setStaCode",
-      {
-        method: "post",
-        params: { code },
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tmp2010/setStaCode", {
+      method: "post",
+      params: { code },
+      data,
+    });
   },
   /** 更新规格（原 UpdateSpec，MP2010） */
   updateSpec(data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tmp2010/updateSpec",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tmp2010/updateSpec", {
+      method: "post",
+      data,
+    });
   },
   /** 修改计划日期（原 ChangePlanDate，MP2010） */
   changePlanDate(cPlanTime?: string, data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tmp2010/changePlanDate",
-      {
-        method: "post",
-        params: { cPlanTime },
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tmp2010/changePlanDate", {
+      method: "post",
+      params: { cPlanTime },
+      data,
+    });
   },
 };
 
 export const tmp2016Api = {
   queryTmp2016(data?: QueryTmp2016Dto) {
-    return requestClient.request<Tmp2016Dto[]>(
-      "/dDH.Service.SMP.Services/tmp2016/queryTmp2016",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Tmp2016Dto[]>("/dDH.Service.SMP.Services/tmp2016/queryTmp2016", {
+      method: "post",
+      data,
+    });
   },
 };
 
 export const tmp2020Api = {
   queryOrder(data?: InputTmp2010Dto) {
-    return requestClient.request<ZgPlanDto[]>(
-      "/dDH.Service.SMP.Services/tmp2020/queryOrder",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<ZgPlanDto[]>("/dDH.Service.SMP.Services/tmp2020/queryOrder", {
+      method: "post",
+      data,
+    });
   },
   queryPlanOrder(cOrderNo?: string) {
-    return requestClient.request<Tmp2016[]>(
-      "/dDH.Service.SMP.Services/tmp2020/queryPlanOrder",
-      {
-        method: "post",
-        params: { cOrderNo },
-      },
-    );
+    return requestClient.request<Tmp2016[]>("/dDH.Service.SMP.Services/tmp2020/queryPlanOrder", {
+      method: "post",
+      params: { cOrderNo },
+    });
   },
   queryPlanJQ(cOrderNo?: string) {
-    return requestClient.request<Tmp2021[]>(
-      "/dDH.Service.SMP.Services/tmp2020/queryPlanJQ",
-      {
-        method: "post",
-        params: { cOrderNo },
-      },
-    );
+    return requestClient.request<Tmp2021[]>("/dDH.Service.SMP.Services/tmp2020/queryPlanJQ", {
+      method: "post",
+      params: { cOrderNo },
+    });
   },
   queryPlans(data?: InputTmp2020Dto) {
-    return requestClient.request<ZgPlanDto[]>(
-      "/dDH.Service.SMP.Services/tmp2020/queryPlans",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<ZgPlanDto[]>("/dDH.Service.SMP.Services/tmp2020/queryPlans", {
+      method: "post",
+      data,
+    });
   },
   addTmp2020s(data?: InsertPlanDto) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tmp2020/addTmp2020s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tmp2020/addTmp2020s", {
+      method: "post",
+      data,
+    });
   },
   deleteTmp2020s(data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tmp2020/deleteTmp2020s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tmp2020/deleteTmp2020s", {
+      method: "post",
+      data,
+    });
   },
   downTmp2020s(cLineCode?: string, data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tmp2020/downTmp2020s",
-      {
-        method: "post",
-        params: { cLineCode },
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tmp2020/downTmp2020s", {
+      method: "post",
+      params: { cLineCode },
+      data,
+    });
   },
   /** 下发计划关闭（原 CloseDownPlan，MP2021） */
   closeDownPlan(data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tmp2020/closeDownPlan",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tmp2020/closeDownPlan", {
+      method: "post",
+      data,
+    });
   },
   closeTmp2020s(reason?: string, data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tmp2020/closeTmp2020s",
-      {
-        method: "post",
-        params: { reason },
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tmp2020/closeTmp2020s", {
+      method: "post",
+      params: { reason },
+      data,
+    });
   },
   updateTmp2010s(data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tmp2020/updateTmp2010s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tmp2020/updateTmp2010s", {
+      method: "post",
+      data,
+    });
   },
   checkJQ(ListOrder?: Tmp2021[], data?: Tmp2010) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tmp2020/checkJQ",
-      {
-        method: "post",
-        params: { ListOrder },
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tmp2020/checkJQ", {
+      method: "post",
+      params: { ListOrder },
+      data,
+    });
   },
 };
 
 export const tmp3000Api = {
   queryTmp2010Dtos(data?: InputTmp2010Dto) {
-    return requestClient.request<Tmp2010Dto[]>(
-      "/dDH.Service.SMP.Services/tmp3000/queryTmp2010Dtos",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Tmp2010Dto[]>("/dDH.Service.SMP.Services/tmp3000/queryTmp2010Dtos", {
+      method: "post",
+      data,
+    });
   },
   queryTms3000s(CLineCode?: string, COrderNo?: string) {
-    return requestClient.request<Tms3000[]>(
-      "/dDH.Service.SMP.Services/tmp3000/queryTms3000s",
-      {
-        method: "post",
-        params: { CLineCode, COrderNo },
-      },
-    );
+    return requestClient.request<Tms3000[]>("/dDH.Service.SMP.Services/tmp3000/queryTms3000s", {
+      method: "post",
+      params: { CLineCode, COrderNo },
+    });
   },
   queryThr4000s(data?: DtoQuerySlabs) {
-    return requestClient.request<Thr4000[]>(
-      "/dDH.Service.SMP.Services/tmp3000/queryThr4000s",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<Thr4000[]>("/dDH.Service.SMP.Services/tmp3000/queryThr4000s", {
+      method: "post",
+      data,
+    });
   },
 };
 
 export const tsAVersionApi = {
   queryByVersion(creator?: string) {
-    return requestClient.request<TsAppVersion[]>(
-      "/dDH.Service.Widgets.Services/tsAVersion/queryByVersion",
-      {
-        method: "post",
-        params: { creator },
-      },
-    );
+    return requestClient.request<TsAppVersion[]>("/dDH.Service.Widgets.Services/tsAVersion/queryByVersion", {
+      method: "post",
+      params: { creator },
+    });
   },
   insert(data?: TsAppVersion) {
-    return requestClient.request<any>(
-      "/dDH.Service.Widgets.Services/tsAVersion/insert",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.Widgets.Services/tsAVersion/insert", {
+      method: "post",
+      data,
+    });
   },
   update(data?: TsAppVersion) {
-    return requestClient.request<any>(
-      "/dDH.Service.Widgets.Services/tsAVersion/update",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.Widgets.Services/tsAVersion/update", {
+      method: "post",
+      data,
+    });
   },
   delete(Id?: string) {
-    return requestClient.request<any>(
-      "/dDH.Service.Widgets.Services/tsAVersion/delete",
-      {
-        method: "post",
-        params: { Id },
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.Widgets.Services/tsAVersion/delete", {
+      method: "post",
+      params: { Id },
+    });
   },
   getMaxNCode() {
-    return requestClient.request<number>(
-      "/dDH.Service.Widgets.Services/tsAVersion/getMaxNCode",
-      {
-        method: "post",
-      },
-    );
+    return requestClient.request<number>("/dDH.Service.Widgets.Services/tsAVersion/getMaxNCode", {
+      method: "post",
+    });
   },
   getMaxNCodeByNType(ntype?: number) {
-    return requestClient.request<number>(
-      "/dDH.Service.Widgets.Services/tsAVersion/getMaxNCodeByNType",
-      {
-        method: "post",
-        params: { ntype },
-      },
-    );
+    return requestClient.request<number>("/dDH.Service.Widgets.Services/tsAVersion/getMaxNCodeByNType", {
+      method: "post",
+      params: { ntype },
+    });
   },
   existsByNTypeAndNCode(ntype?: number, ncode?: number) {
-    return requestClient.request<boolean>(
-      "/dDH.Service.Widgets.Services/tsAVersion/existsByNTypeAndNCode",
-      {
-        method: "post",
-        params: { ntype, ncode },
-      },
-    );
+    return requestClient.request<boolean>("/dDH.Service.Widgets.Services/tsAVersion/existsByNTypeAndNCode", {
+      method: "post",
+      params: { ntype, ncode },
+    });
   },
 };
 
 export const tsCust001Api = {
   custQuery(CustNo?: string, CustName?: string) {
-    return requestClient.request<TsCust001[]>(
-      "/dDH.Service.SMP.Services/tsCust001/custQuery",
-      {
-        method: "post",
-        params: { CustNo, CustName },
-      },
-    );
+    return requestClient.request<TsCust001[]>("/dDH.Service.SMP.Services/tsCust001/custQuery", {
+      method: "post",
+      params: { CustNo, CustName },
+    });
   },
   deleteCust(data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tsCust001/deleteCust",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tsCust001/deleteCust", {
+      method: "post",
+      data,
+    });
   },
 };
 
 export const tsCustomerApi = {
   syncCust(data?: TsCustomer) {
-    return requestClient.request<number>(
-      "/dDH.Service.SMP.Services/tsCustomer/syncCust",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<number>("/dDH.Service.SMP.Services/tsCustomer/syncCust", {
+      method: "post",
+      data,
+    });
   },
   addTsCustomer(data?: TsCustomer) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tsCustomer/addTsCustomer",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tsCustomer/addTsCustomer", {
+      method: "post",
+      data,
+    });
   },
   addTsCustFl(data?: TsCustFl) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tsCustomer/addTsCustFl",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tsCustomer/addTsCustFl", {
+      method: "post",
+      data,
+    });
   },
   updateTsCustomer(data?: TsCustomer) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tsCustomer/updateTsCustomer",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tsCustomer/updateTsCustomer", {
+      method: "post",
+      data,
+    });
   },
   updateTsCustFl(data?: TsCustFl) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tsCustomer/updateTsCustFl",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tsCustomer/updateTsCustFl", {
+      method: "post",
+      data,
+    });
   },
   getTsCustomerList(data?: TsCustomer) {
-    return requestClient.request<TsCustomer[]>(
-      "/dDH.Service.SMP.Services/tsCustomer/getTsCustomerList",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<TsCustomer[]>("/dDH.Service.SMP.Services/tsCustomer/getTsCustomerList", {
+      method: "post",
+      data,
+    });
   },
   getTsCustFlList(code?: string, keywords?: string) {
-    return requestClient.request<TsCustFl[]>(
-      "/dDH.Service.SMP.Services/tsCustomer/getTsCustFlList",
-      {
-        method: "post",
-        params: { code, keywords },
-      },
-    );
+    return requestClient.request<TsCustFl[]>("/dDH.Service.SMP.Services/tsCustomer/getTsCustFlList", {
+      method: "post",
+      params: { code, keywords },
+    });
   },
   removeTsCustomer(data?: TsCustomer) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tsCustomer/removeTsCustomer",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tsCustomer/removeTsCustomer", {
+      method: "post",
+      data,
+    });
   },
   removeTsCustFl(data?: TsCustFl) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tsCustomer/removeTsCustFl",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tsCustomer/removeTsCustFl", {
+      method: "post",
+      data,
+    });
   },
 };
 
 export const tsMatrlApi = {
   queryMatrl(data?: TsMatrl) {
-    return requestClient.request<TsMatrl[]>(
-      "/dDH.Service.SMP.Services/tsMatrl/queryMatrl",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<TsMatrl[]>("/dDH.Service.SMP.Services/tsMatrl/queryMatrl", {
+      method: "post",
+      data,
+    });
   },
   syncMatrl() {
-    return requestClient.request<any>(
-      "/dDH.Service.SMP.Services/tsMatrl/syncMatrl",
-      {
-        method: "post",
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMP.Services/tsMatrl/syncMatrl", {
+      method: "post",
+    });
   },
 };
 
 export const xSApi = {
   getMatrl(data?: ApiXSMatrlDto[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.Interface.Services.XS/xS/getMatrl",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.Interface.Services.XS/xS/getMatrl", {
+      method: "post",
+      data,
+    });
   },
   getTruckLoading(billofLadingNo?: string) {
-    return requestClient.request<ApiVehicleResultDto>(
-      "/dDH.Service.Interface.Services.XS/xS/getTruckLoading",
-      {
-        method: "post",
-        params: { billofLadingNo },
-      },
-    );
+    return requestClient.request<ApiVehicleResultDto>("/dDH.Service.Interface.Services.XS/xS/getTruckLoading", {
+      method: "post",
+      params: { billofLadingNo },
+    });
   },
   getCust(data?: ApiCustDto[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.Interface.Services.XS/xS/getCust",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.Interface.Services.XS/xS/getCust", {
+      method: "post",
+      data,
+    });
   },
   /** 派车/提货单计划明细（原 GetBillDetailList，FH3000） */
   getBillDetailList(data?: ApiBillDetailInput) {
-    return requestClient.request<ApiBillDetail[]>(
-      "/dDH.Service.Interface.Services.XS/xS/getBillDetailList",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<ApiBillDetail[]>("/dDH.Service.Interface.Services.XS/xS/getBillDetailList", {
+      method: "post",
+      data,
+    });
   },
 };
 

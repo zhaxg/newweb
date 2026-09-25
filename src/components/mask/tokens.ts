@@ -5,12 +5,12 @@ export interface TokenType {
 }
 
 export const tokens: { [key: string]: TokenType } = {
-  '#': { pattern: /\d/ },
+  "#": { pattern: /\d/ },
   X: { pattern: /[0-9a-z]/i },
   S: { pattern: /[a-z]/i },
   A: { pattern: /[a-z]/i, transform: (v: string) => v.toLocaleUpperCase() },
   a: { pattern: /[a-z]/i, transform: (v: string) => v.toLocaleLowerCase() },
-  '!': { escape: true },
+  "!": { escape: true },
 };
 
 // https://github.com/fernandofleury/vanilla-masker/blob/master/lib/vanilla-masker.js

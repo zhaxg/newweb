@@ -62,37 +62,41 @@ function day(offset: number) {
 }
 const q = reactive({ beg: day(-3), end: day(3) });
 
-const colDefs = ref<ColDef[]>(bridge([
-{ field: "CLineDesc", headerName: "产线描述", width: 80 },
-      { field: "CMachineDesc", headerName: "机台描述", width: 80 },
-      { field: "CPono", headerName: "制造命令号", width: 93 },
-      { field: "CStoveNo", headerName: "炉号", width: 64 },
-      { field: "CReason", headerName: "强制原因", width: 80 },
-      { field: "CSgCode", headerName: "钢种", width: 64 },
-      { field: "CSgStd", headerName: "执行标准", width: 80 },
-      { field: "Creator", headerName: "创建人", width: 67 },
-      { field: "CreateTime", headerName: "创建时间", width: 80 },
-      { field: "Id", headerName: "主键", width: 64, hide: true },
-      { field: "CLineCode", headerName: "产线", width: 64, hide: true },
-      { field: "CMachineCode", headerName: "机台编码", width: 80, hide: true },
-      { field: "CMachineStationCode", headerName: "机台工位编码", width: 106, hide: true },
-      { field: "CMachineStationDesc", headerName: "机台工位描述", width: 106, hide: true },
-      { field: "CGsId", headerName: "钢水id", width: 64, hide: true },
-      { field: "CEnable", headerName: "启用", width: 64, hide: true },
-      { field: "CBackup", headerName: "备注", width: 64, hide: true },
-      { field: "CTimestamp", headerName: "时间戳", width: 67, hide: true },
-      { field: "LastModifier", headerName: "最后修改人", width: 93, hide: true },
-      { field: "LastModifyTime", headerName: "最后修改时间", width: 106, hide: true },
-      { field: "CSw01", headerName: "备用字段1", width: 87, hide: true },
-      { field: "CSw02", headerName: "备用字段2", width: 87, hide: true },
-      { field: "CSw03", headerName: "备用字段3", width: 87, hide: true },
-      { field: "CSw04", headerName: "备用字段4", width: 87, hide: true },
-      { field: "CSw05", headerName: "备用字段5", width: 87, hide: true },
-      { field: "CSw06", headerName: "备用字段6", width: 87, hide: true },
-      { field: "Selected", headerName: "选择", width: 64, hide: true },
-]));
+const colDefs = ref<ColDef[]>(
+  bridge([
+    { field: "CLineDesc", headerName: "产线描述", width: 80 },
+    { field: "CMachineDesc", headerName: "机台描述", width: 80 },
+    { field: "CPono", headerName: "制造命令号", width: 93 },
+    { field: "CStoveNo", headerName: "炉号", width: 64 },
+    { field: "CReason", headerName: "强制原因", width: 80 },
+    { field: "CSgCode", headerName: "钢种", width: 64 },
+    { field: "CSgStd", headerName: "执行标准", width: 80 },
+    { field: "Creator", headerName: "创建人", width: 67 },
+    { field: "CreateTime", headerName: "创建时间", width: 80 },
+    { field: "Id", headerName: "主键", width: 64, hide: true },
+    { field: "CLineCode", headerName: "产线", width: 64, hide: true },
+    { field: "CMachineCode", headerName: "机台编码", width: 80, hide: true },
+    { field: "CMachineStationCode", headerName: "机台工位编码", width: 106, hide: true },
+    { field: "CMachineStationDesc", headerName: "机台工位描述", width: 106, hide: true },
+    { field: "CGsId", headerName: "钢水id", width: 64, hide: true },
+    { field: "CEnable", headerName: "启用", width: 64, hide: true },
+    { field: "CBackup", headerName: "备注", width: 64, hide: true },
+    { field: "CTimestamp", headerName: "时间戳", width: 67, hide: true },
+    { field: "LastModifier", headerName: "最后修改人", width: 93, hide: true },
+    { field: "LastModifyTime", headerName: "最后修改时间", width: 106, hide: true },
+    { field: "CSw01", headerName: "备用字段1", width: 87, hide: true },
+    { field: "CSw02", headerName: "备用字段2", width: 87, hide: true },
+    { field: "CSw03", headerName: "备用字段3", width: 87, hide: true },
+    { field: "CSw04", headerName: "备用字段4", width: 87, hide: true },
+    { field: "CSw05", headerName: "备用字段5", width: 87, hide: true },
+    { field: "CSw06", headerName: "备用字段6", width: 87, hide: true },
+    { field: "Selected", headerName: "选择", width: 64, hide: true },
+  ]),
+);
 
-function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
+function onGridReady(e: GridReadyEvent) {
+  gridApi.value = e.api;
+}
 
 async function onQuery() {
   querying.value = true;
@@ -101,7 +105,9 @@ async function onQuery() {
     rows.value = Array.isArray(list) ? list : [];
     await nextTick();
     gridApi.value?.autoSizeAllColumns();
-  } catch { /* 拦截层已 toast */ } finally {
+  } catch {
+    /* 拦截层已 toast */
+  } finally {
     querying.value = false;
   }
 }
@@ -121,10 +127,25 @@ async function onQuery() {
       </Button>
     </div>
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows"
-        :pagination="false" :loading="querying" :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-        @grid-ready="onGridReady" @first-data-rendered="autoSizeOnFirstData" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="rows"
+        :pagination="false"
+        :loading="querying"
+        :row-selection="{
+          mode: 'multiRow',
+          checkboxes: true,
+          headerCheckbox: true,
+          enableClickSelection: true,
+          enableSelectionWithoutKeys: true,
+        }"
+        @grid-ready="onGridReady"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
   </div>
 </template>

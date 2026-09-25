@@ -59,7 +59,20 @@ const activeTab = ref("");
 
 function langOf(title: string): string {
   const ext = title.split(".").pop()?.toLowerCase() ?? "";
-  return (({ cs: "csharp", ts: "typescript", js: "typescript", vue: "xml", html: "xml", xml: "xml", sql: "sql", json: "json" }) as Record<string, string>)[ext] ?? "";
+  return (
+    (
+      {
+        cs: "csharp",
+        ts: "typescript",
+        js: "typescript",
+        vue: "xml",
+        html: "xml",
+        xml: "xml",
+        sql: "sql",
+        json: "json",
+      } as Record<string, string>
+    )[ext] ?? ""
+  );
 }
 
 function escapeHtml(s: string): string {
@@ -151,24 +164,48 @@ async function btnCopy() {
 
       <div v-if="mode === '按表结构'" class="flex flex-wrap items-center gap-x-2 gap-y-2">
         <span class="text-xs text-muted-foreground">数据库Key</span>
-        <InputText v-model="databaseKey" class="w-32 shrink-0" autocapitalize="off" spellcheck="false"
-          @keydown.enter="btnCodeGen" />
+        <InputText
+          v-model="databaseKey"
+          class="w-32 shrink-0"
+          autocapitalize="off"
+          spellcheck="false"
+          @keydown.enter="btnCodeGen"
+        />
         <span class="text-xs text-muted-foreground">表名</span>
-        <InputText v-model="tableName" class="w-40 shrink-0" autocapitalize="off" spellcheck="false"
-          @keydown.enter="btnCodeGen" />
+        <InputText
+          v-model="tableName"
+          class="w-40 shrink-0"
+          autocapitalize="off"
+          spellcheck="false"
+          @keydown.enter="btnCodeGen"
+        />
         <span class="text-xs text-muted-foreground">命名空间</span>
-        <InputText v-model="namespace" class="w-64 min-w-0 grow basis-48" autocapitalize="off" spellcheck="false"
-          @keydown.enter="btnCodeGen" />
+        <InputText
+          v-model="namespace"
+          class="w-64 min-w-0 grow basis-48"
+          autocapitalize="off"
+          spellcheck="false"
+          @keydown.enter="btnCodeGen"
+        />
       </div>
       <div v-else class="flex items-center gap-2">
         <span class="shrink-0 text-xs text-muted-foreground">Swagger</span>
-        <InputText v-model="swagger" placeholder="接口文档地址，如 http://host/swagger/xxx/swagger.json" autocapitalize="off"
-          spellcheck="false" class="min-w-0 flex-1" @keydown.enter="btnCodeGen" />
+        <InputText
+          v-model="swagger"
+          placeholder="接口文档地址，如 http://host/swagger/xxx/swagger.json"
+          autocapitalize="off"
+          spellcheck="false"
+          class="min-w-0 flex-1"
+          @keydown.enter="btnCodeGen"
+        />
       </div>
     </div>
 
     <!-- 结果区：未生成 = 引导空态；生成中 = 遮罩；已生成 = 文件页签 + 行号 + 高亮 -->
-    <div v-if="!lstTabInfo.length" class="flex min-h-0 flex-1 flex-col items-center justify-center gap-3 text-muted-foreground">
+    <div
+      v-if="!lstTabInfo.length"
+      class="flex min-h-0 flex-1 flex-col items-center justify-center gap-3 text-muted-foreground"
+    >
       <component :is="IconLoader" v-if="loading" class="h-9 w-9 animate-spin opacity-60" />
       <component :is="IconCode" v-else class="h-9 w-9 opacity-40" />
       <div class="text-sm">{{ loading ? "正在生成代码…" : "选择数据源并点击「生成代码」，结果将展示在此处" }}</div>
@@ -185,8 +222,10 @@ async function btnCopy() {
           </Tab>
         </TabList>
         <div class="mr-2 flex shrink-0 items-center gap-2">
-          <span v-if="activeView?.lang"
-            class="rounded bg-muted px-1.5 py-0.5 font-mono text-xs uppercase text-muted-foreground">
+          <span
+            v-if="activeView?.lang"
+            class="rounded bg-muted px-1.5 py-0.5 font-mono text-xs uppercase text-muted-foreground"
+          >
             {{ activeView.lang }}
           </span>
           <span v-if="activeView" class="text-xs tabular-nums text-muted-foreground">{{ activeView.lines }} 行</span>
@@ -196,7 +235,10 @@ async function btnCopy() {
             {{ copied ? "已复制" : "复制当前页代码" }}
           </Button>
         </div>
-        <div v-if="loading" class="absolute inset-0 flex items-center justify-center bg-background/60 backdrop-blur-[1px]">
+        <div
+          v-if="loading"
+          class="absolute inset-0 flex items-center justify-center bg-background/60 backdrop-blur-[1px]"
+        >
           <component :is="IconLoader" class="h-5 w-5 animate-spin text-muted-foreground" />
         </div>
       </div>
@@ -204,8 +246,10 @@ async function btnCopy() {
       <TabPanels class="min-h-0 flex-1 overflow-hidden !p-0">
         <TabPanel v-for="view in views" :key="view.name" :value="view.name" class="h-full overflow-auto p-0">
           <div class="code-view flex min-h-full font-mono text-xs leading-5">
-            <div aria-hidden="true"
-              class="sticky left-0 z-10 shrink-0 select-none border-r border-border/40 bg-muted/40 px-2 py-2 text-right text-xs tabular-nums text-muted-foreground/70 backdrop-blur">
+            <div
+              aria-hidden="true"
+              class="sticky left-0 z-10 shrink-0 select-none border-r border-border/40 bg-muted/40 px-2 py-2 text-right text-xs tabular-nums text-muted-foreground/70 backdrop-blur"
+            >
               <div v-for="n in view.lines" :key="n">{{ n }}</div>
             </div>
             <pre class="m-0 min-w-0 flex-1 py-2 pl-3"><code v-html="view.html"></code></pre>

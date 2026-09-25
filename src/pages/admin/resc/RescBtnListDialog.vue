@@ -21,7 +21,7 @@ import { TrackableList } from "@/api/common/trackableList";
 
 const props = defineProps<{
   open: boolean;
-  
+
   node: HmxRes | null;
 }>();
 
@@ -139,13 +139,27 @@ const columns: ColDef[] = [
   { colId: "cCode", field: "cCode", headerName: "编码", width: 130, editable: true, sortable: false },
   { colId: "cTitle", field: "cTitle", headerName: "名称", flex: 1, editable: true, sortable: false },
   { colId: "cResSubPath", field: "cResSubPath", headerName: "动作", width: 150, editable: true, sortable: false },
-  { colId: "cOrder", field: "cOrder", headerName: "排序", width: 70, editable: true, sortable: false, cellEditor: "number" },
+  {
+    colId: "cOrder",
+    field: "cOrder",
+    headerName: "排序",
+    width: 70,
+    editable: true,
+    sortable: false,
+    cellEditor: "number",
+  },
 ];
 </script>
 
 <template>
-  <Dialog :visible="open" modal :header="`子级功能点维护 — ${node?.cTitle ?? ''}`" class="resc-btn-dialog"
-    :style="{ width: 'min(56rem, calc(100vw - 2rem))', height: '50vh' }" @update:visible="emit('update:open', $event)">
+  <Dialog
+    :visible="open"
+    modal
+    :header="`子级功能点维护 — ${node?.cTitle ?? ''}`"
+    class="resc-btn-dialog"
+    :style="{ width: 'min(56rem, calc(100vw - 2rem))', height: '50vh' }"
+    @update:visible="emit('update:open', $event)"
+  >
     <!-- 对话框内工具栏（对应 hmx_web sub-resc-edit：加载/新增/删除/保存 + 用法提示） -->
     <div class="mb-2 flex shrink-0 items-center gap-1">
       <Button variant="outlined" class="shrink-0 whitespace-nowrap" autofocus @click="reload">
@@ -160,17 +174,32 @@ const columns: ColDef[] = [
       <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="saving" @click="onSave()">
         <IconDeviceFloppy class="h-3 w-3" />保存
       </Button>
-      <span class="ml-auto flex items-center gap-1 text-xs text-muted-foreground" title="参考用法：&lt;t-button v-hp='btnAdd'&gt;新增&lt;/t-button&gt;">
+      <span
+        class="ml-auto flex items-center gap-1 text-xs text-muted-foreground"
+        title="参考用法：&lt;t-button v-hp='btnAdd'&gt;新增&lt;/t-button&gt;"
+      >
         <IconClick class="h-3 w-3" />v-hp=&quot;btnAdd&quot;
       </span>
     </div>
 
     <div class="min-h-0 flex-1 overflow-hidden rounded-md border border-border/60">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="columns"
-        :default-col-def="hmxDefaultColDef" :row-data="trackList" :get-row-id="rowId" :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
-        :loading="loading" :pagination="false" :animate-rows="false" :locale-text="AG_GRID_LOCALE_CN"
-        overlay-no-rows-template="暂无功能点，点击「新增」" @grid-ready="onGridReady"
-        @cell-value-changed="onCellValueChanged" @first-data-rendered="autoSizeOnFirstData" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :column-defs="columns"
+        :default-col-def="hmxDefaultColDef"
+        :row-data="trackList"
+        :get-row-id="rowId"
+        :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
+        :loading="loading"
+        :pagination="false"
+        :animate-rows="false"
+        :locale-text="AG_GRID_LOCALE_CN"
+        overlay-no-rows-template="暂无功能点，点击「新增」"
+        @grid-ready="onGridReady"
+        @cell-value-changed="onCellValueChanged"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
 
     <template #footer>

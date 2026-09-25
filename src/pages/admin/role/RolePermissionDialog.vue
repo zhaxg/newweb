@@ -111,7 +111,10 @@ async function loadNamespaceOptions() {
   if (namespaces.value.length) return;
   try {
     const list = await adminApi.getResourceNamespaceList();
-    namespaces.value = ((list ?? []) as HmxKv[]).map((k) => ({ label: k.cName ?? k.cCode ?? "", value: k.cCode ?? "" }));
+    namespaces.value = ((list ?? []) as HmxKv[]).map((k) => ({
+      label: k.cName ?? k.cCode ?? "",
+      value: k.cCode ?? "",
+    }));
     if (namespaces.value.length && !namespaces.value.some((n) => n.value === currentNs.value)) {
       currentNs.value = namespaces.value[0]!.value;
     }
@@ -171,15 +174,26 @@ function onSave() {
 </script>
 
 <template>
-  <Dialog :visible="open" modal :header="`分配权限 [ ${role?.cRoleName} ]`"
-    :style="{ width: 'min(34rem, calc(100vw - 2rem))' }" @update:visible="emit('update:open', $event)">
+  <Dialog
+    :visible="open"
+    modal
+    :header="`分配权限 [ ${role?.cRoleName} ]`"
+    :style="{ width: 'min(34rem, calc(100vw - 2rem))' }"
+    @update:visible="emit('update:open', $event)"
+  >
     <div class="mb-2 flex items-center gap-2">
       <span class="text-xs text-muted-foreground">命名空间</span>
       <Select v-model="currentNs" :options="namespaces" option-label="label" class="w-48" @change="reload" />
     </div>
     <div class="min-h-0 max-h-[55vh] overflow-y-auto rounded-md border border-border/60 py-1">
-      <Tree selection-mode="checkbox" :value="treeNodes" :selection-keys="selectionKeys"
-        v-model:expanded-keys="expandedKeys" @node-select="onNodeSelect" @node-unselect="onNodeUnselect" />
+      <Tree
+        selection-mode="checkbox"
+        :value="treeNodes"
+        :selection-keys="selectionKeys"
+        v-model:expanded-keys="expandedKeys"
+        @node-select="onNodeSelect"
+        @node-unselect="onNodeUnselect"
+      />
       <div v-if="!loading && treeNodes.length === 0" class="px-3 py-6 text-center text-xs text-muted-foreground">
         该命名空间下暂无可分配资源
       </div>

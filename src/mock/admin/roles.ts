@@ -1,12 +1,4 @@
-import {
-  formatNow,
-  loadAllUsersLite,
-  loadRescs,
-  loadRoles,
-  loadUserRoles,
-  saveRoles,
-  saveUserRoles,
-} from "./store";
+import { formatNow, loadAllUsersLite, loadRescs, loadRoles, loadUserRoles, saveRoles, saveUserRoles } from "./store";
 import type { HmxKv, HmxRole, RolePermissionOfViewAndWidgets, RoleUserDto } from "@/api/admin/types";
 import { RbacRescType } from "@/api/admin/enums";
 import { API_BASE, fail, getBody, getParams, matchKeyword, ok, type RouteMap } from "./core";
@@ -34,7 +26,10 @@ export const roleRoutes: RouteMap = {
       matchKeyword(r as unknown as Record<string, any>, keywords, ["id", "cRoleName", "cDescription"]),
     );
     // 查询回显一律重置勾选态（同旧 toApi 转换语义）
-    return ok(config, rows.map((r) => ({ ...r, selected: false })));
+    return ok(
+      config,
+      rows.map((r) => ({ ...r, selected: false })),
+    );
   },
   [`post ${P}/addOrEditRole`]: (config) => {
     const body = getBody<Partial<HmxRole>>(config);
@@ -97,15 +92,25 @@ export const roleRoutes: RouteMap = {
     return ok(config, null);
   },
   [`post ${P}/getResourceNamespaceList`]: (config) => {
-    const ns = new Set<string>(loadRescs().map((r) => r.cNsCode ?? "").filter(Boolean));
-    const list: HmxKv[] = [...ns].sort().map((code, i) => ({ selected: false, id: `ns-${i}`, cCode: code, cName: code }));
+    const ns = new Set<string>(
+      loadRescs()
+        .map((r) => r.cNsCode ?? "")
+        .filter(Boolean),
+    );
+    const list: HmxKv[] = [...ns]
+      .sort()
+      .map((code, i) => ({ selected: false, id: `ns-${i}`, cCode: code, cName: code }));
     return ok(config, list);
   },
   [`post ${P}/queryRolePermissionOfViewAndWidgets`]: (config) => {
     const { roleId, groupId } = getBody<{ roleId?: string; groupId?: string }>(config);
     const perms = new Set(roleId ? (loadRoleRescPerms()[roleId] ?? []) : []);
     const nodes: RolePermissionOfViewAndWidgets[] = loadRescs()
-      .filter((r) => (!groupId || r.cNsCode === groupId) && (r.cResType === RbacRescType.Menu || r.cResType === RbacRescType.Widget))
+      .filter(
+        (r) =>
+          (!groupId || r.cNsCode === groupId) &&
+          (r.cResType === RbacRescType.Menu || r.cResType === RbacRescType.Widget),
+      )
       .map((r) => ({
         selected: perms.has(r.id ?? ""),
         id: r.id,
@@ -118,7 +123,9 @@ export const roleRoutes: RouteMap = {
     return ok(config, nodes);
   },
   [`post ${P}/saveRolePermissionOfViewAndWidgets`]: (config) => {
-    const { roleId, permissions } = getBody<{ roleId?: string; permissions?: RolePermissionOfViewAndWidgets[] }>(config);
+    const { roleId, permissions } = getBody<{ roleId?: string; permissions?: RolePermissionOfViewAndWidgets[] }>(
+      config,
+    );
     if (!roleId) return fail(config, 1001, "缺少参数 roleId");
     const ids = (permissions ?? []).map((p) => p.id ?? "").filter(Boolean);
     const map = loadRoleRescPerms();

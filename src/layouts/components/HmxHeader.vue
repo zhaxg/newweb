@@ -1,8 +1,16 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import {
-  IconBook, IconChevronDown, IconDots, IconEraser, IconKey,
-  IconLogout, IconMaximize, IconMinimize, IconSettings, IconUserCircle
+  IconBook,
+  IconChevronDown,
+  IconDots,
+  IconEraser,
+  IconKey,
+  IconLogout,
+  IconMaximize,
+  IconMinimize,
+  IconSettings,
+  IconUserCircle,
 } from "@tabler/icons-vue";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
@@ -56,7 +64,10 @@ const userItems: MenuItem[] = [
   { label: "退出", command: () => (logoutConfirmOpen.value = true) },
 ];
 const userIcons: Record<string, unknown> = {
-  帮助文档: IconBook, 修改密码: IconKey, 清除缓存: IconEraser, 退出: IconLogout,
+  帮助文档: IconBook,
+  修改密码: IconKey,
+  清除缓存: IconEraser,
+  退出: IconLogout,
 };
 
 /* 帮助文档：新标签打开 VITE_HELP_URL，带当前页资源行的 id/code 供文档站定位本页。
@@ -137,7 +148,11 @@ onBeforeUnmount(() => document.removeEventListener("fullscreenchange", onFullscr
       <!-- logo：点击切换侧栏收起/展开（与侧栏钮同行为） -->
       <div
         class="flex h-7 w-7 shrink-0 cursor-pointer select-none items-center justify-center rounded-md bg-primary text-sm font-bold text-primary-foreground shadow-sm"
-        title="收起/展开侧栏" @click="emit('toggleSidebar')">H</div>
+        title="收起/展开侧栏"
+        @click="emit('toggleSidebar')"
+      >
+        H
+      </div>
       <!-- 标题：点击回首页（走父级 openPage 统一导航通道） -->
       <div class="min-w-0 cursor-pointer select-none" title="返回首页" @click="emit('openPage', HOME_NODE)">
         <div class="truncate text-sm font-semibold leading-tight text-foreground">HiMind工业互联网平台</div>
@@ -155,21 +170,27 @@ onBeforeUnmount(() => document.removeEventListener("fullscreenchange", onFullscr
     </div>
     <div class="flex shrink-0 items-center gap-1">
       <!-- 与 ThemeToggle 同款圆形图标钮，保持右侧视觉统一 -->
-      <button type="button" :title="isFullscreen ? '退出全屏' : '全屏'"
+      <button
+        type="button"
+        :title="isFullscreen ? '退出全屏' : '全屏'"
         class="inline-flex size-8 items-center justify-center rounded-full text-base text-current transition-colors hover:bg-black/5 active:bg-black/10 dark:hover:bg-white/20 dark:active:bg-white/30"
-        @click="toggleFullscreen">
+        @click="toggleFullscreen"
+      >
         <IconMinimize v-if="isFullscreen" class="size-[1em]" />
         <IconMaximize v-else class="size-[1em]" />
       </button>
-      <button type="button" title="系统设置"
+      <button
+        type="button"
+        title="系统设置"
         class="inline-flex size-8 items-center justify-center rounded-full text-base text-current transition-colors hover:bg-black/5 active:bg-black/10 dark:hover:bg-white/20 dark:active:bg-white/30"
-        @click="emit('openSettings')">
+        @click="emit('openSettings')"
+      >
         <IconSettings class="size-[1em]" />
       </button>
       <ThemeToggle :is-dark="isDark" size="sm" :duration="600" title="主题切换" @toggle="toggleTheme" />
       <Button severity="secondary" variant="outlined" rounded class="gap-1.5" @click="userMenu?.toggle($event)">
         <span class="flex items-center gap-1.5">
-          <IconUserCircle stroke={1.5} class="text-primary" />
+          <IconUserCircle stroke="{1.5}" class="text-primary" />
           <span class="hidden text-xs text-foreground sm:inline">{{ auth.session?.userName ?? "" }}</span>
           <IconChevronDown class="h-3.5 w-3.5 text-muted-foreground" />
         </span>
@@ -183,14 +204,19 @@ onBeforeUnmount(() => document.removeEventListener("fullscreenchange", onFullscr
     </div>
 
     <!-- 清除缓存确认：文案先讲清范围（含登录态与个性化数据）再讲后果（刷新重登、不可恢复） -->
-    <Dialog :visible="clearCacheOpen" modal header="清除缓存" autofocus
-      :style="{ width: 'min(26rem, calc(100vw - 2rem))' }" @update:visible="clearCacheOpen = $event">
+    <Dialog
+      :visible="clearCacheOpen"
+      modal
+      header="清除缓存"
+      autofocus
+      :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
+      @update:visible="clearCacheOpen = $event"
+    >
       <p class="text-xs leading-relaxed">
-        将清空本浏览器保存的全部本地数据：登录状态、界面偏好（主题 / 字体 / 侧栏宽度）以及库位图、打印模板等本地留存数据。
+        将清空本浏览器保存的全部本地数据：登录状态、界面偏好（主题 / 字体 /
+        侧栏宽度）以及库位图、打印模板等本地留存数据。
       </p>
-      <p class="text-xs leading-relaxed">
-        清除后页面自动刷新并需要重新登录，且数据无法恢复。是否继续？
-      </p>
+      <p class="text-xs leading-relaxed">清除后页面自动刷新并需要重新登录，且数据无法恢复。是否继续？</p>
       <template #footer>
         <Button label="取消" severity="text" @click="clearCacheOpen = false" />
         <Button label="清除缓存" severity="danger" autofocus @click="clearLocalCache" />
@@ -198,12 +224,26 @@ onBeforeUnmount(() => document.removeEventListener("fullscreenchange", onFullscr
     </Dialog>
 
     <!-- 退出确认（拦截误点）；autofocus 标记 → Dialog 动画结束后焦点落在"退出"按钮 -->
-    <Dialog :visible="logoutConfirmOpen" modal header="退出确认" autofocus
-      :style="{ width: 'min(26rem, calc(100vw - 2rem))' }" @update:visible="logoutConfirmOpen = $event">
+    <Dialog
+      :visible="logoutConfirmOpen"
+      modal
+      header="退出确认"
+      autofocus
+      :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
+      @update:visible="logoutConfirmOpen = $event"
+    >
       <p class="text-xs">是否确定退出系统？</p>
       <template #footer>
         <Button label="取消" severity="text" @click="logoutConfirmOpen = false" />
-        <Button label="退出" severity="danger" autofocus @click="logoutConfirmOpen = false; emit('logout')" />
+        <Button
+          label="退出"
+          severity="danger"
+          autofocus
+          @click="
+            logoutConfirmOpen = false;
+            emit('logout');
+          "
+        />
       </template>
     </Dialog>
   </header>

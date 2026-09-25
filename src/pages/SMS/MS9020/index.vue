@@ -228,9 +228,15 @@ function num(v: unknown): number {
   return Number.isFinite(n) ? n : 0;
 }
 
-function onStorageReady(e: GridReadyEvent) { storageApi.value = e.api; }
-function onSjReady(e: GridReadyEvent) { sjApi.value = e.api; }
-function autosize(api: GridApi | null) { requestAnimationFrame(() => api?.autoSizeAllColumns()); }
+function onStorageReady(e: GridReadyEvent) {
+  storageApi.value = e.api;
+}
+function onSjReady(e: GridReadyEvent) {
+  sjApi.value = e.api;
+}
+function autosize(api: GridApi | null) {
+  requestAnimationFrame(() => api?.autoSizeAllColumns());
+}
 
 /** 原 UcStorage1_FocusedRowObjectChanged：焦点行 MapTo→bscCutItemDto（长度1~3 归零） */
 function onStorageRowClicked(e: { data?: Record<string, unknown> }) {
@@ -367,7 +373,13 @@ onMounted(() => {
                 :default-col-def="hmxDefaultColDef"
                 :column-defs="storageCols"
                 :row-data="storageRows"
-                :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
+                :row-selection="{
+                  mode: 'multiRow',
+                  checkboxes: true,
+                  headerCheckbox: true,
+                  enableClickSelection: true,
+                  enableSelectionWithoutKeys: true,
+                }"
                 :pagination="false"
                 :loading="querying"
                 @grid-ready="onStorageReady"
@@ -389,7 +401,13 @@ onMounted(() => {
               </div>
               <div class="flex min-w-0 items-center gap-1.5">
                 <label class="w-14 shrink-0 text-xs text-muted-foreground">长度1</label>
-                <InputNumber v-model="cut.nLen1" :show-buttons="false" fluid class="min-w-0 flex-1" @update:model-value="onLen1Change" />
+                <InputNumber
+                  v-model="cut.nLen1"
+                  :show-buttons="false"
+                  fluid
+                  class="min-w-0 flex-1"
+                  @update:model-value="onLen1Change"
+                />
               </div>
               <div class="flex min-w-0 items-center gap-1.5">
                 <label class="w-14 shrink-0 text-xs text-muted-foreground">长度2</label>
@@ -437,7 +455,12 @@ onMounted(() => {
           <label class="shrink-0 text-xs text-muted-foreground">炉号</label>
           <InputText v-model="sjQ.cStove" placeholder="输入炉号查询" class="w-32 shrink-0" @keydown.enter="loadSj" />
           <label class="shrink-0 text-xs text-muted-foreground">件次号</label>
-          <InputText v-model="sjQ.cPieceNo" placeholder="输入件次号查询" class="w-36 shrink-0" @keydown.enter="loadSj" />
+          <InputText
+            v-model="sjQ.cPieceNo"
+            placeholder="输入件次号查询"
+            class="w-36 shrink-0"
+            @keydown.enter="loadSj"
+          />
           <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="sjQuerying" @click="loadSj">
             <IconSearch class="h-3 w-3" />查询
           </Button>
@@ -452,7 +475,13 @@ onMounted(() => {
             :default-col-def="hmxDefaultColDef"
             :column-defs="storageCols"
             :row-data="sjRows"
-            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
+            :row-selection="{
+              mode: 'multiRow',
+              checkboxes: true,
+              headerCheckbox: true,
+              enableClickSelection: true,
+              enableSelectionWithoutKeys: true,
+            }"
             :pagination="false"
             :loading="sjQuerying"
             @grid-ready="onSjReady"

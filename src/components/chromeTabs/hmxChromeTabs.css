@@ -98,12 +98,12 @@
   isolation: isolate;
 }
 
-.tab-scroll-button[data-direction='left'] {
+.tab-scroll-button[data-direction="left"] {
   left: 0;
   box-shadow: 4px 0 8px rgb(60 64 67 / 12%);
 }
 
-.tab-scroll-button[data-direction='right'] {
+.tab-scroll-button[data-direction="right"] {
   right: 0;
   box-shadow: -4px 0 8px rgb(60 64 67 / 12%);
 }
@@ -117,7 +117,7 @@
 }
 
 .tab-scroll-button::before {
-  content: '';
+  content: "";
   position: absolute;
   z-index: -1;
   width: 28px;
@@ -164,12 +164,12 @@
 
 /* 内容宽度模式：标签宽度 = 左右边距(4+6)×2 + 标题文字 + 关闭按钮(18) + 富余(8)，
    仍受 min/max-width 夹逼；不收缩，超出即横向滚动 */
-:host([data-width-mode='content']) .chrome-tab {
+:host([data-width-mode="content"]) .chrome-tab {
   flex: 0 0 auto;
   width: auto;
 }
 
-:host([data-width-mode='content']) .chrome-tab-content {
+:host([data-width-mode="content"]) .chrome-tab-content {
   position: relative;
   inset: auto;
   width: auto;
@@ -178,7 +178,7 @@
 }
 
 /* 关闭按钮在内容模式下参与流式布局并恒常占位（18px + 8px 富余），避免 hover 时宽度跳动 */
-:host([data-width-mode='content']) .chrome-tab-close {
+:host([data-width-mode="content"]) .chrome-tab-close {
   position: relative;
   right: auto;
   flex: 0 0 16px;
@@ -209,7 +209,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-
   .chrome-tab[data-entering],
   .chrome-tab[data-closing] {
     animation-duration: 1ms;
@@ -220,9 +219,9 @@
   opacity: 0.45;
 }
 
-.chrome-tab[data-drop-position='before']::before,
-.chrome-tab[data-drop-position='after']::after {
-  content: '';
+.chrome-tab[data-drop-position="before"]::before,
+.chrome-tab[data-drop-position="after"]::after {
+  content: "";
   position: absolute;
   z-index: 4;
   top: 5px;
@@ -232,16 +231,16 @@
   background: var(--chrome-tabs-accent-color);
 }
 
-.chrome-tab[data-drop-position='before']::before {
+.chrome-tab[data-drop-position="before"]::before {
   left: 0;
 }
 
-.chrome-tab[data-drop-position='after']::after {
+.chrome-tab[data-drop-position="after"]::after {
   right: 0;
 }
 
 .chrome-tab-dividers::after {
-  content: '';
+  content: "";
   position: absolute;
   z-index: 1;
   top: 50%;
@@ -290,7 +289,7 @@
 
 .chrome-tab[data-active] .chrome-tab-background::before,
 .chrome-tab[data-active] .chrome-tab-background::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   width: calc(var(--chrome-tab-radius) + 2px);
@@ -320,14 +319,12 @@
 }
 
 .chrome-tab-content::after {
-  content: '';
+  content: "";
   position: absolute;
   right: 4px;
   width: 30px;
   height: 18px;
-  background: linear-gradient(90deg,
-      transparent,
-      var(--chrome-tab-hover-background) 45%);
+  background: linear-gradient(90deg, transparent, var(--chrome-tab-hover-background) 45%);
   opacity: 0;
   pointer-events: none;
 }
@@ -354,7 +351,7 @@
   white-space: nowrap;
 }
 
-:host([data-width-mode='content']) .chrome-tab-title {
+:host([data-width-mode="content"]) .chrome-tab-title {
   flex: 0 1 auto;
 }
 
@@ -372,7 +369,7 @@
   color: var(--chrome-tab-active-text-color);
 }
 
-.chrome-tab-icon>* {
+.chrome-tab-icon > * {
   display: block;
   width: 100%;
   height: 100%;
@@ -400,7 +397,7 @@
 
 .chrome-tab-close::before,
 .chrome-tab-close::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 50%;
   left: 50%;
@@ -500,7 +497,7 @@
   display: none;
 }
 
-.tab-popover[data-kind='tooltip'] {
+.tab-popover[data-kind="tooltip"] {
   max-width: min(360px, calc(100vw - 16px));
   padding: 8px 12px;
   border-color: var(--chrome-tabs-tooltip-border-color);
@@ -509,7 +506,7 @@
   box-shadow: var(--chrome-tabs-tooltip-shadow);
 }
 
-.tab-popover[data-kind='tooltip'][data-moving] {
+.tab-popover[data-kind="tooltip"][data-moving] {
   transition: left 140ms ease-out;
 }
 
@@ -521,7 +518,7 @@
   white-space: normal;
 }
 
-.tab-popover[data-kind='overflow'] {
+.tab-popover[data-kind="overflow"] {
   width: min(240px, calc(100vw - 16px));
   max-height: min(320px, calc(100vh - 16px));
   padding: 6px;
@@ -553,7 +550,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .tab-popover[data-kind='tooltip'][data-moving] {
+  .tab-popover[data-kind="tooltip"][data-moving] {
     transition: none;
   }
 }

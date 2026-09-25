@@ -86,11 +86,23 @@ const selColDefs: ColDef[] = [
   { field: "testSubItemName", headerName: "试验子项目名称", width: 151 },
   { field: "displayText", headerName: "项目说明", width: 112, editable: true },
   { field: "valueMin", headerName: "检验标准下限", width: 138, editable: true },
-  { field: "interval", headerName: "开闭区间", width: 112, editable: false, valueFormatter: ENUM_NAME({ 1: "Default", 2: "LeftOpen", 4: "RightOpen", 6: "Open" }) },
+  {
+    field: "interval",
+    headerName: "开闭区间",
+    width: 112,
+    editable: false,
+    valueFormatter: ENUM_NAME({ 1: "Default", 2: "LeftOpen", 4: "RightOpen", 6: "Open" }),
+  },
   { field: "valueMax", headerName: "检验标准上限", width: 138, editable: true },
   { field: "targetValue", headerName: "目标值", width: 112, editable: true },
   { colId: "formula", field: "formula", headerName: "计算公式/验证条件", width: 177, editable: false },
-  { field: "decideMode", headerName: "判定模式", width: 112, editable: false, valueFormatter: ENUM_NAME(Object.fromEntries(Object.entries(DecideMode).map(([k, v]) => [v, k]))) },
+  {
+    field: "decideMode",
+    headerName: "判定模式",
+    width: 112,
+    editable: false,
+    valueFormatter: ENUM_NAME(Object.fromEntries(Object.entries(DecideMode).map(([k, v]) => [v, k]))),
+  },
   { field: "decimals", headerName: "小数位数", width: 112, editable: true },
   { field: "itemAccuracy", headerName: "精度", width: 99, editable: true },
   { field: "testSubItemUnit", headerName: "试验子项目单位", width: 151 },
@@ -134,7 +146,11 @@ async function loadCandidates() {
     /* 拦截层已 toast */
   }
 }
-watch(() => props.node, () => void loadCandidates(), { immediate: true });
+watch(
+  () => props.node,
+  () => void loadCandidates(),
+  { immediate: true },
+);
 
 /** 原 Add(TestSubItem)：父节点试验项目信息 + 子项信息 → Tqmtmp0 行 */
 function addRow(item: TestSubItem) {
@@ -213,11 +229,19 @@ defineExpose({ refresh });
           <IconChevronRight class="ml-auto h-3 w-3 text-muted-foreground" />
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="candColDefs" :row-data="candidates"
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="candColDefs"
+            :row-data="candidates"
             :get-row-id="(p: any) => String(p.data.id ?? p.data.testSubItemCode)"
             :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
-            :pagination="false" @grid-ready="onGridReady('l')" @first-data-rendered="autoSizeOnFirstData" />
+            :pagination="false"
+            @grid-ready="onGridReady('l')"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </div>
       <div class="bg-border" />
@@ -227,12 +251,21 @@ defineExpose({ refresh });
           <span class="text-xs text-muted-foreground">{{ title }}</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="selColDefs" :row-data="selected"
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="selColDefs"
+            :row-data="selected"
             :get-row-id="(p: any) => String(p.data.id)"
             :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
-            :pagination="false" @grid-ready="onGridReady('r')" @first-data-rendered="autoSizeOnFirstData"
-            @cell-value-changed="onValueChanged" @cell-clicked="onCellClicked" />
+            :pagination="false"
+            @grid-ready="onGridReady('r')"
+            @first-data-rendered="autoSizeOnFirstData"
+            @cell-value-changed="onValueChanged"
+            @cell-clicked="onCellClicked"
+          />
         </div>
       </div>
     </div>

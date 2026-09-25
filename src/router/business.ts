@@ -27,8 +27,11 @@ export const businessRoutes: RouteRecordRaw[] = [
         name: "page:help/vue",
         redirect: { name: "forbidden" },
         meta: {
-          title: "VUE开发手册", icon: "FileCode",
-          url: "https://cn.vuejs.org/guide/quick-start.html", external: true, hidden: true
+          title: "VUE开发手册",
+          icon: "FileCode",
+          url: "https://cn.vuejs.org/guide/quick-start.html",
+          external: true,
+          hidden: true,
         },
       },
       {
@@ -47,7 +50,12 @@ export const businessRoutes: RouteRecordRaw[] = [
         path: "ag-grid",
         name: "page:help/ag-grid",
         redirect: { name: "forbidden" },
-        meta: { title: "ag-grid文档", icon: "Table", url: "https://www.ag-grid.com/vue-data-grid/getting-started/", external: true },
+        meta: {
+          title: "ag-grid文档",
+          icon: "Table",
+          url: "https://www.ag-grid.com/vue-data-grid/getting-started/",
+          external: true,
+        },
       },
     ],
   },

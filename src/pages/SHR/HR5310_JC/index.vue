@@ -111,14 +111,18 @@ function clearOrdersDialog() {
 const matRows = ref<QueryHR5310JCDto[]>([]);
 const matLoading = ref(false);
 const matApi = ref<GridApi | null>(null);
-function onMatReady(e: GridReadyEvent) { matApi.value = e.api; }
+function onMatReady(e: GridReadyEvent) {
+  matApi.value = e.api;
+}
 
 /* ---------- 下表：日计划（gridView2 / Thr2000Dto，聚焦行=单选） ---------- */
 const dayRows = ref<Thr2000Dto[]>([]);
 const dayLoading = ref(false);
 const dayApi = ref<GridApi | null>(null);
 const dayCurrent = ref<Thr2000Dto | null>(null);
-function onDayReady(e: GridReadyEvent) { dayApi.value = e.api; }
+function onDayReady(e: GridReadyEvent) {
+  dayApi.value = e.api;
+}
 function onDaySelectionChanged() {
   dayCurrent.value = (dayApi.value?.getSelectedRows()[0] as Thr2000Dto | undefined) ?? null;
 }
@@ -225,17 +229,18 @@ const dayColDefs: ColDef[] = [
 async function dataBindThr3010() {
   matLoading.value = true;
   try {
-    const list = (await hR5310JCApi.getThr3010s({
-      cLineCode: lineCode.value || undefined,
-      cStove: matQuery.cStove.trim() || undefined,
-      cOrderNo: matQuery.cOrderNo.trim() || undefined,
-      cSgCode: matQuery.cSgCode.trim() || undefined,
-      cSgStd: matQuery.cSgStd.trim() || undefined,
-      slabNo: matQuery.slabNo.trim() || undefined,
-      cBatchNo: matQuery.cBatchNo.trim() || undefined,
-      nStatus: (matQuery.nStatus ?? undefined) as Thr5400Status | undefined,
-      dCreateTimeRange: toTimeRange(matQuery.dates),
-    })) ?? [];
+    const list =
+      (await hR5310JCApi.getThr3010s({
+        cLineCode: lineCode.value || undefined,
+        cStove: matQuery.cStove.trim() || undefined,
+        cOrderNo: matQuery.cOrderNo.trim() || undefined,
+        cSgCode: matQuery.cSgCode.trim() || undefined,
+        cSgStd: matQuery.cSgStd.trim() || undefined,
+        slabNo: matQuery.slabNo.trim() || undefined,
+        cBatchNo: matQuery.cBatchNo.trim() || undefined,
+        nStatus: (matQuery.nStatus ?? undefined) as Thr5400Status | undefined,
+        dCreateTimeRange: toTimeRange(matQuery.dates),
+      })) ?? [];
     matRows.value = list;
     requestAnimationFrame(() => matApi.value?.autoSizeAllColumns());
   } catch {
@@ -249,12 +254,13 @@ async function btnQueryDay() {
   dayLoading.value = true;
   try {
     const orders = parseOrderList(dayQuery.orders);
-    const list = (await hR2000Api.queryThr2000Dtos({
-      cLineCode: lineCode.value || undefined,
-      cOrderNo: dayQuery.cOrderNo.trim() || undefined,
-      cOrderNos: orders.length ? orders : undefined,
-      dTimeRange: toTimeRange(dayQuery.dates),
-    })) ?? [];
+    const list =
+      (await hR2000Api.queryThr2000Dtos({
+        cLineCode: lineCode.value || undefined,
+        cOrderNo: dayQuery.cOrderNo.trim() || undefined,
+        cOrderNos: orders.length ? orders : undefined,
+        dTimeRange: toTimeRange(dayQuery.dates),
+      })) ?? [];
     dayRows.value = list;
     dayCurrent.value = null;
     requestAnimationFrame(() => dayApi.value?.autoSizeAllColumns());
@@ -337,8 +343,13 @@ onMounted(async () => {
         <div class="grid shrink-0 grid-cols-6 items-center gap-x-3 gap-y-1.5 border-b border-border/60 px-3 py-2">
           <div class="flex min-w-0 items-center gap-1.5">
             <label class="w-16 shrink-0 text-xs text-muted-foreground">产线代码</label>
-            <Select v-model="lineCode" :options="lineOptions" option-label="label" option-value="value"
-              class="min-w-0 flex-1" />
+            <Select
+              v-model="lineCode"
+              :options="lineOptions"
+              option-label="label"
+              option-value="value"
+              class="min-w-0 flex-1"
+            />
           </div>
           <div class="flex min-w-0 items-center gap-1.5">
             <label class="w-16 shrink-0 text-xs text-muted-foreground">执行标准</label>
@@ -358,13 +369,29 @@ onMounted(async () => {
           </div>
           <div class="col-span-2 flex min-w-0 items-center gap-1.5">
             <label class="w-16 shrink-0 text-xs text-muted-foreground">时间范围</label>
-            <DatePicker v-model="matQuery.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-              show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+            <DatePicker
+              v-model="matQuery.dates"
+              selection-mode="range"
+              :manual-input="false"
+              date-format="yy-mm-dd"
+              show-time
+              hour-format="24"
+              show-icon
+              placeholder="开始 至 结束"
+              class="min-w-0 flex-1"
+            />
           </div>
           <div class="flex min-w-0 items-center gap-1.5">
             <label class="w-16 shrink-0 text-xs text-muted-foreground">状态</label>
-            <Select v-model="matQuery.nStatus" :options="statusOptions" option-label="label" option-value="value"
-              show-clear placeholder="全部" class="min-w-0 flex-1" />
+            <Select
+              v-model="matQuery.nStatus"
+              :options="statusOptions"
+              option-label="label"
+              option-value="value"
+              show-clear
+              placeholder="全部"
+              class="min-w-0 flex-1"
+            />
           </div>
           <div class="flex min-w-0 items-center gap-1.5">
             <label class="w-16 shrink-0 text-xs text-muted-foreground">炉号</label>
@@ -377,18 +404,32 @@ onMounted(async () => {
         </div>
         <!-- 工具栏在条件区下面：查询靠左，材料明细靠右 -->
         <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
-          <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="matLoading"
-            @click="dataBindThr3010">
+          <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="matLoading" @click="dataBindThr3010">
             <IconSearch class="h-3 w-3" />查询
           </Button>
           <span class="ml-auto text-xs font-medium text-muted-foreground">材料明细</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="matColDefs" :row-data="matRows"
-            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-            :pagination="false" :animate-rows="false" :loading="matLoading"
-            @grid-ready="onMatReady" @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="matColDefs"
+            :row-data="matRows"
+            :row-selection="{
+              mode: 'multiRow',
+              checkboxes: true,
+              headerCheckbox: true,
+              enableClickSelection: true,
+              enableSelectionWithoutKeys: true,
+            }"
+            :pagination="false"
+            :animate-rows="false"
+            :loading="matLoading"
+            @grid-ready="onMatReady"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
 
@@ -402,8 +443,13 @@ onMounted(async () => {
           <div class="col-span-2 flex min-w-0 items-center gap-1.5">
             <label class="w-20 shrink-0 text-xs text-muted-foreground">批量计划号</label>
             <div class="flex min-w-0 flex-1 items-center gap-0.5">
-              <InputText :model-value="ordersDisplay" readonly class="min-w-0 flex-1" placeholder="批量录入…"
-                @click="openOrdersDialog" />
+              <InputText
+                :model-value="ordersDisplay"
+                readonly
+                class="min-w-0 flex-1"
+                placeholder="批量录入…"
+                @click="openOrdersDialog"
+              />
               <Button text class="shrink-0 px-1" aria-label="批量录入计划号" @click="openOrdersDialog">
                 <IconChevronDown class="h-3 w-3" />
               </Button>
@@ -411,8 +457,17 @@ onMounted(async () => {
           </div>
           <div class="col-span-2 flex min-w-0 items-center gap-1.5">
             <label class="w-20 shrink-0 text-xs text-muted-foreground">时间区间</label>
-            <DatePicker v-model="dayQuery.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-              show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+            <DatePicker
+              v-model="dayQuery.dates"
+              selection-mode="range"
+              :manual-input="false"
+              date-format="yy-mm-dd"
+              show-time
+              hour-format="24"
+              show-icon
+              placeholder="开始 至 结束"
+              class="min-w-0 flex-1"
+            />
           </div>
         </div>
         <!-- 条件区下工具栏：查询日计划/组批靠左，日计划列表靠右 -->
@@ -424,19 +479,33 @@ onMounted(async () => {
           <span class="ml-auto text-xs font-medium text-muted-foreground">日计划列表</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="dayColDefs" :row-data="dayRows"
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="dayColDefs"
+            :row-data="dayRows"
             :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
-            :pagination="false" :animate-rows="false" :loading="dayLoading"
-            @grid-ready="onDayReady" @selection-changed="onDaySelectionChanged"
-            @first-data-rendered="autoSizeOnFirstData" />
+            :pagination="false"
+            :animate-rows="false"
+            :loading="dayLoading"
+            @grid-ready="onDayReady"
+            @selection-changed="onDaySelectionChanged"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
     </Splitter>
 
     <!-- 批量计划号（原 MemoExEdit 弹出编辑）：逗号/换行分隔 -->
-    <Dialog :visible="ordersDialogOpen" modal header="批量计划号"
-      :style="{ width: 'min(32rem, calc(100vw - 2rem))' }" @update:visible="ordersDialogOpen = $event">
+    <Dialog
+      :visible="ordersDialogOpen"
+      modal
+      header="批量计划号"
+      :style="{ width: 'min(32rem, calc(100vw - 2rem))' }"
+      @update:visible="ordersDialogOpen = $event"
+    >
       <div class="flex flex-col gap-2">
         <p class="text-xs text-muted-foreground">粘贴或输入多个计划号，用逗号或换行分隔（共 {{ ordersCount }} 个）</p>
         <Textarea v-model="ordersDraft" rows="8" class="w-full" placeholder="例如：&#10;JH001,JH002,JH003&#10;JH004" />
@@ -449,8 +518,13 @@ onMounted(async () => {
     </Dialog>
 
     <!-- ShowYesNo 受控确认 -->
-    <Dialog :visible="confirmOpen" modal header="确认" :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
-      @update:visible="confirmOpen = $event">
+    <Dialog
+      :visible="confirmOpen"
+      modal
+      header="确认"
+      :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
+      @update:visible="confirmOpen = $event"
+    >
       <p class="text-xs">{{ confirmMsg }}</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />

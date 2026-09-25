@@ -110,8 +110,13 @@ watch(
 </script>
 
 <template>
-  <Dialog :visible="visible" modal header="添加实绩" :style="{ width: 'min(56rem, calc(100vw - 2rem))' }"
-    @update:visible="emit('update:visible', $event)">
+  <Dialog
+    :visible="visible"
+    modal
+    header="添加实绩"
+    :style="{ width: 'min(56rem, calc(100vw - 2rem))' }"
+    @update:visible="emit('update:visible', $event)"
+  >
     <!-- 表单（原 dataLayoutControl1：14 个可见项，坯料件次号 HiddenItems 不渲染） -->
     <div class="grid grid-cols-4 items-center gap-x-3 gap-y-2">
       <div class="flex min-w-0 items-center gap-1.5">
@@ -132,8 +137,14 @@ watch(
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-20 shrink-0 text-xs text-muted-foreground">钢种</label>
-        <Select :model-value="form.cSgCode" :options="sgOptions" :filter="true" placeholder="钢种"
-          class="min-w-0 flex-1" @update:model-value="onSgChange" />
+        <Select
+          :model-value="form.cSgCode"
+          :options="sgOptions"
+          :filter="true"
+          placeholder="钢种"
+          class="min-w-0 flex-1"
+          @update:model-value="onSgChange"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-20 shrink-0 text-xs text-muted-foreground">执行标准</label>
@@ -161,8 +172,13 @@ watch(
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-20 shrink-0 text-xs text-muted-foreground">切边方式</label>
-        <Select v-model="form.cTrimFlag" :options="cutFlagOptions" :filter="true" placeholder="切边方式"
-          class="min-w-0 flex-1" />
+        <Select
+          v-model="form.cTrimFlag"
+          :options="cutFlagOptions"
+          :filter="true"
+          placeholder="切边方式"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-20 shrink-0 text-xs text-muted-foreground">入库标识</label>
@@ -181,8 +197,13 @@ watch(
   </Dialog>
 
   <!-- 确认（对应原 MsgBox.ShowYesNo("是否确认保存？")） -->
-  <Dialog :visible="confirming" modal header="确认" :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
-    @update:visible="confirming = $event">
+  <Dialog
+    :visible="confirming"
+    modal
+    header="确认"
+    :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
+    @update:visible="confirming = $event"
+  >
     <p class="text-xs">是否确认保存？</p>
     <template #footer>
       <Button label="取消" variant="outlined" @click="confirming = false" />

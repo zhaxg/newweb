@@ -43,9 +43,7 @@ const activeGx = computed(() => {
   return props.model.gylj[Number(outerTab.value.slice(3))] ?? null;
 });
 
-const innerTabs = computed(() =>
-  (activeGx.value?.valueGrps ?? []).map((g) => ({ value: g.grp, label: g.grpName })),
-);
+const innerTabs = computed(() => (activeGx.value?.valueGrps ?? []).map((g) => ({ value: g.grp, label: g.grpName })));
 const activeGrp = computed(() => {
   const gx = activeGx.value;
   if (!gx) return null;
@@ -100,8 +98,12 @@ function onCopyFromCurrentProc() {
         </TabPanel>
 
         <!-- 第 1 层 · 工序页（原 ucProcPage1 挂入的动态页） -->
-        <TabPanel v-for="(gxItem, i) in model?.gylj ?? []" :key="`gx-${i}`" :value="`gx-${i}`"
-          class="h-full overflow-hidden">
+        <TabPanel
+          v-for="(gxItem, i) in model?.gylj ?? []"
+          :key="`gx-${i}`"
+          :value="`gx-${i}`"
+          class="h-full overflow-hidden"
+        >
           <div v-if="outerTab === `gx-${i}`" class="flex h-full min-h-0 flex-col">
             <!-- 第 2 层 · UCProcPage.stackPanel1(Dock Top) -->
             <div v-if="editable" class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
@@ -123,8 +125,13 @@ function onCopyFromCurrentProc() {
               <TabPanels class="min-h-0 flex-1 overflow-hidden !p-0">
                 <!-- 第 3 层 · 每个分组页 → UCIndexValueEditView（BindData(gx, grp, model)） -->
                 <TabPanel v-for="g in innerTabs" :key="g.value" :value="g.value" class="h-full overflow-hidden">
-                  <IndexValueView v-if="activeGrp?.grp === g.value" :model="model" :gx="activeGx" :grp="activeGrp"
-                    :editable="editable" />
+                  <IndexValueView
+                    v-if="activeGrp?.grp === g.value"
+                    :model="model"
+                    :gx="activeGx"
+                    :grp="activeGrp"
+                    :editable="editable"
+                  />
                 </TabPanel>
                 <TabPanel v-if="!innerTabs.length" value="__empty" class="h-full overflow-hidden">
                   <div class="p-3 text-xs text-muted-foreground">该工序暂无指标分组</div>

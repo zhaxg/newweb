@@ -30,10 +30,29 @@ import type { Tyd2000Dto } from "@/api/mes4ddh/syd.swagger";
 const { toast } = useToast();
 const theme = makeHmxGridTheme();
 const { json: menuJson } = useMenuQuery();
-const cLineCode = typeof menuJson.CLineCode === "string" ? menuJson.CLineCode : typeof menuJson.cLineCode === "string" ? menuJson.cLineCode : "ZG01";
-const cStoreCode = typeof menuJson.CStoreCode === "string" ? menuJson.CStoreCode : typeof menuJson.cStoreCode === "string" ? menuJson.cStoreCode : undefined;
-const cStoreCodes = Array.isArray(menuJson.CStoreCodes) ? (menuJson.CStoreCodes as string[]) : Array.isArray(menuJson.cStoreCodes) ? (menuJson.cStoreCodes as string[]) : undefined;
-const nStatus = typeof menuJson.NStatus === "number" ? menuJson.NStatus : typeof menuJson.nStatus === "number" ? menuJson.nStatus : undefined;
+const cLineCode =
+  typeof menuJson.CLineCode === "string"
+    ? menuJson.CLineCode
+    : typeof menuJson.cLineCode === "string"
+      ? menuJson.cLineCode
+      : "ZG01";
+const cStoreCode =
+  typeof menuJson.CStoreCode === "string"
+    ? menuJson.CStoreCode
+    : typeof menuJson.cStoreCode === "string"
+      ? menuJson.cStoreCode
+      : undefined;
+const cStoreCodes = Array.isArray(menuJson.CStoreCodes)
+  ? (menuJson.CStoreCodes as string[])
+  : Array.isArray(menuJson.cStoreCodes)
+    ? (menuJson.cStoreCodes as string[])
+    : undefined;
+const nStatus =
+  typeof menuJson.NStatus === "number"
+    ? menuJson.NStatus
+    : typeof menuJson.nStatus === "number"
+      ? menuJson.nStatus
+      : undefined;
 
 /* ---------- 时间 ---------- */
 function isoLocal(d: Date): string {
@@ -98,7 +117,9 @@ const slabRows = ref<Tyd2000Dto[]>([]);
 const slabLoading = ref(false);
 const slabApi = ref<GridApi | null>(null);
 const slabCurrent = ref<Tyd2000Dto | null>(null);
-function onSlabReady(e: GridReadyEvent) { slabApi.value = e.api; }
+function onSlabReady(e: GridReadyEvent) {
+  slabApi.value = e.api;
+}
 function onSlabSelectionChanged() {
   slabCurrent.value = (slabApi.value?.getSelectedRows()[0] as Tyd2000Dto | undefined) ?? null;
 }
@@ -108,7 +129,9 @@ const orderRows = ref<Thr2000Dto[]>([]);
 const orderLoading = ref(false);
 const orderApi = ref<GridApi | null>(null);
 const orderCurrent = ref<Thr2000Dto | null>(null);
-function onOrderReady(e: GridReadyEvent) { orderApi.value = e.api; }
+function onOrderReady(e: GridReadyEvent) {
+  orderApi.value = e.api;
+}
 function onOrderSelectionChanged() {
   orderCurrent.value = (orderApi.value?.getSelectedRows()[0] as Thr2000Dto | undefined) ?? null;
 }
@@ -328,19 +351,20 @@ const orderColDefs: ColDef[] = [
 async function querySlab() {
   slabLoading.value = true;
   try {
-    const list = (await hR2200Api.getSlabs({
-      cLineCode,
-      cStoreCode,
-      cStoreCodes,
-      nStatus: nStatus ?? undefined,
-      cOrderNo: slabInput.cOrderNo.trim() || undefined,
-      cBatchNo: slabInput.cBatchNo.trim() || undefined,
-      cPieceNo: slabInput.cPieceNo.trim() || undefined,
-      cStove: slabInput.cStove.trim() || undefined,
-      cSgCode: slabInput.cSgCode.trim() || undefined,
-      cSpec: slabInput.cSpec.trim() || undefined,
-      dProTime: toTimeRange(slabInput.dates),
-    })) ?? [];
+    const list =
+      (await hR2200Api.getSlabs({
+        cLineCode,
+        cStoreCode,
+        cStoreCodes,
+        nStatus: nStatus ?? undefined,
+        cOrderNo: slabInput.cOrderNo.trim() || undefined,
+        cBatchNo: slabInput.cBatchNo.trim() || undefined,
+        cPieceNo: slabInput.cPieceNo.trim() || undefined,
+        cStove: slabInput.cStove.trim() || undefined,
+        cSgCode: slabInput.cSgCode.trim() || undefined,
+        cSpec: slabInput.cSpec.trim() || undefined,
+        dProTime: toTimeRange(slabInput.dates),
+      })) ?? [];
     slabRows.value = list;
     slabCurrent.value = null;
     requestAnimationFrame(() => slabApi.value?.autoSizeAllColumns());
@@ -358,20 +382,30 @@ async function queryOrder() {
       .split(/[\r\n]/)
       .map((s) => s.trim())
       .filter(Boolean);
-    const list = (await hR2000Api.queryThr2000Dtos({
-      cLineCode,
-      cOrderNo: orderInput.cOrderNo.trim() || undefined,
-      cOrderNos: orders.length ? orders : [],
-      cPieceNo: orderInput.cPieceNo.trim() || undefined,
-      nStatus: orderInput.nStatus,
-      nThick: orderInput.nThick ?? undefined,
-      nWidth: orderInput.nWidth ?? undefined,
-      nLen: orderInput.nLen ?? undefined,
-      nThickRange: orderInput.thickMin != null || orderInput.thickMax != null ? { min: orderInput.thickMin, max: orderInput.thickMax } : undefined,
-      nWthRange: orderInput.widthMin != null || orderInput.widthMax != null ? { min: orderInput.widthMin, max: orderInput.widthMax } : undefined,
-      nLenRange: orderInput.lenMin != null || orderInput.lenMax != null ? { min: orderInput.lenMin, max: orderInput.lenMax } : undefined,
-      dTimeRange: toTimeRange(orderInput.dates),
-    })) ?? [];
+    const list =
+      (await hR2000Api.queryThr2000Dtos({
+        cLineCode,
+        cOrderNo: orderInput.cOrderNo.trim() || undefined,
+        cOrderNos: orders.length ? orders : [],
+        cPieceNo: orderInput.cPieceNo.trim() || undefined,
+        nStatus: orderInput.nStatus,
+        nThick: orderInput.nThick ?? undefined,
+        nWidth: orderInput.nWidth ?? undefined,
+        nLen: orderInput.nLen ?? undefined,
+        nThickRange:
+          orderInput.thickMin != null || orderInput.thickMax != null
+            ? { min: orderInput.thickMin, max: orderInput.thickMax }
+            : undefined,
+        nWthRange:
+          orderInput.widthMin != null || orderInput.widthMax != null
+            ? { min: orderInput.widthMin, max: orderInput.widthMax }
+            : undefined,
+        nLenRange:
+          orderInput.lenMin != null || orderInput.lenMax != null
+            ? { min: orderInput.lenMin, max: orderInput.lenMax }
+            : undefined,
+        dTimeRange: toTimeRange(orderInput.dates),
+      })) ?? [];
     orderRows.value = list;
     orderCurrent.value = null;
     requestAnimationFrame(() => orderApi.value?.autoSizeAllColumns());
@@ -459,8 +493,17 @@ function btnSave() {
           </div>
           <div class="col-span-2 flex min-w-0 items-center gap-1.5">
             <label class="w-16 shrink-0 text-xs text-muted-foreground">产出时间</label>
-            <DatePicker v-model="slabInput.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-              show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+            <DatePicker
+              v-model="slabInput.dates"
+              selection-mode="range"
+              :manual-input="false"
+              date-format="yy-mm-dd"
+              show-time
+              hour-format="24"
+              show-icon
+              placeholder="开始 至 结束"
+              class="min-w-0 flex-1"
+            />
           </div>
           <div class="col-span-2 flex min-w-0 items-center gap-1">
             <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="slabLoading" @click="querySlab">
@@ -469,12 +512,21 @@ function btnSave() {
           </div>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="slabColDefs" :row-data="slabRows"
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="slabColDefs"
+            :row-data="slabRows"
             :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
-            :pagination="false" :animate-rows="false" :loading="slabLoading"
-            @grid-ready="onSlabReady" @selection-changed="onSlabSelectionChanged"
-            @first-data-rendered="autoSizeOnFirstData" />
+            :pagination="false"
+            :animate-rows="false"
+            :loading="slabLoading"
+            @grid-ready="onSlabReady"
+            @selection-changed="onSlabSelectionChanged"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
 
@@ -498,26 +550,58 @@ function btnSave() {
           </div>
           <div class="flex min-w-0 items-center gap-1.5">
             <label class="w-16 shrink-0 text-xs text-muted-foreground">计划状态</label>
-            <Select v-model="orderInput.nStatus" :options="statusOptions" option-label="label" option-value="value"
-              class="min-w-0 flex-1" />
+            <Select
+              v-model="orderInput.nStatus"
+              :options="statusOptions"
+              option-label="label"
+              option-value="value"
+              class="min-w-0 flex-1"
+            />
           </div>
           <div class="col-span-2 flex min-w-0 items-center gap-1.5">
             <label class="w-16 shrink-0 text-xs text-muted-foreground">时间区间</label>
-            <DatePicker v-model="orderInput.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-              show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+            <DatePicker
+              v-model="orderInput.dates"
+              selection-mode="range"
+              :manual-input="false"
+              date-format="yy-mm-dd"
+              show-time
+              hour-format="24"
+              show-icon
+              placeholder="开始 至 结束"
+              class="min-w-0 flex-1"
+            />
           </div>
           <div class="flex min-w-0 items-center gap-1.5">
             <!-- fluid：非 fluid 时内部 input 吃 intrinsic 宽(~170px)、不认外层 flex-1，会溢出单元格 -->
             <label class="w-16 shrink-0 text-xs text-muted-foreground">厚度</label>
-            <InputNumber v-model="orderInput.nThick" :show-buttons="false" :use-grouping="false" fluid class="min-w-0 flex-1" />
+            <InputNumber
+              v-model="orderInput.nThick"
+              :show-buttons="false"
+              :use-grouping="false"
+              fluid
+              class="min-w-0 flex-1"
+            />
           </div>
           <div class="flex min-w-0 items-center gap-1.5">
             <label class="w-16 shrink-0 text-xs text-muted-foreground">宽度</label>
-            <InputNumber v-model="orderInput.nWidth" :show-buttons="false" :use-grouping="false" fluid class="min-w-0 flex-1" />
+            <InputNumber
+              v-model="orderInput.nWidth"
+              :show-buttons="false"
+              :use-grouping="false"
+              fluid
+              class="min-w-0 flex-1"
+            />
           </div>
           <div class="flex min-w-0 items-center gap-1.5">
             <label class="w-16 shrink-0 text-xs text-muted-foreground">长度</label>
-            <InputNumber v-model="orderInput.nLen" :show-buttons="false" :use-grouping="false" fluid class="min-w-0 flex-1" />
+            <InputNumber
+              v-model="orderInput.nLen"
+              :show-buttons="false"
+              :use-grouping="false"
+              fluid
+              class="min-w-0 flex-1"
+            />
           </div>
           <div class="flex min-w-0 items-center gap-1.5">
             <label class="w-16 shrink-0 text-xs text-muted-foreground">厚度区间</label>
@@ -540,18 +624,32 @@ function btnSave() {
           <span class="ml-auto text-xs font-medium text-muted-foreground">订单信息</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="orderColDefs" :row-data="orderRows"
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="orderColDefs"
+            :row-data="orderRows"
             :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
-            :pagination="false" :animate-rows="false" :loading="orderLoading"
-            @grid-ready="onOrderReady" @selection-changed="onOrderSelectionChanged"
-            @first-data-rendered="autoSizeOnFirstData" />
+            :pagination="false"
+            :animate-rows="false"
+            :loading="orderLoading"
+            @grid-ready="onOrderReady"
+            @selection-changed="onOrderSelectionChanged"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
     </Splitter>
 
-    <Dialog :visible="confirmOpen" modal header="确认" :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
-      @update:visible="confirmOpen = $event">
+    <Dialog
+      :visible="confirmOpen"
+      modal
+      header="确认"
+      :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
+      @update:visible="confirmOpen = $event"
+    >
       <p class="text-xs">{{ confirmMsg }}</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />

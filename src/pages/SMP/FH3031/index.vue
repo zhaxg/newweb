@@ -16,12 +16,7 @@ import type { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { hmxDefaultColDef, makeHmxGridTheme, autoSizeOnFirstData } from "@/lib/agGrid";
 import { systemKeyValueApi } from "@/api/admin/request";
-import {
-  fh2000Api,
-  type InputFh2000Dto,
-  type QueryMatOutDto,
-  type ZbsPrintDto,
-} from "@/api/mes4ddh/smp.swagger";
+import { fh2000Api, type InputFh2000Dto, type QueryMatOutDto, type ZbsPrintDto } from "@/api/mes4ddh/smp.swagger";
 import { useToast } from "@/composables/useToast";
 
 const { toast } = useToast();
@@ -268,8 +263,17 @@ onMounted(() => {
       </div>
       <div class="col-span-2 flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">开始时间</label>
-        <DatePicker v-model="q.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-          show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+        <DatePicker
+          v-model="q.dates"
+          selection-mode="range"
+          :manual-input="false"
+          date-format="yy-mm-dd"
+          show-time
+          hour-format="24"
+          show-icon
+          placeholder="开始 至 结束"
+          class="min-w-0 flex-1"
+        />
       </div>
     </div>
 
@@ -279,8 +283,16 @@ onMounted(() => {
         <IconSearch class="h-3 w-3" />查 询
       </Button>
       <label class="ml-3 shrink-0 text-xs text-muted-foreground">质保书模板</label>
-      <Select v-model="zbsModel" :options="zbsModelOptions" option-label="label" option-value="value"
-        show-clear filter placeholder="选择模板" class="w-56 shrink-0" />
+      <Select
+        v-model="zbsModel"
+        :options="zbsModelOptions"
+        option-label="label"
+        option-value="value"
+        show-clear
+        filter
+        placeholder="选择模板"
+        class="w-56 shrink-0"
+      />
       <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onPrint">
         <IconPrinter class="h-3 w-3" />打印质保书
       </Button>
@@ -293,12 +305,27 @@ onMounted(() => {
           <span class="text-xs font-medium text-muted-foreground">装车材料明细</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows"
-            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-            :pagination="false" :animate-rows="false" :loading="loading"
-            @grid-ready="onGridReady" @selection-changed="onSelectionChanged"
-            @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="colDefs"
+            :row-data="rows"
+            :row-selection="{
+              mode: 'multiRow',
+              checkboxes: true,
+              headerCheckbox: true,
+              enableClickSelection: true,
+              enableSelectionWithoutKeys: true,
+            }"
+            :pagination="false"
+            :animate-rows="false"
+            :loading="loading"
+            @grid-ready="onGridReady"
+            @selection-changed="onSelectionChanged"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
 
@@ -307,10 +334,18 @@ onMounted(() => {
           <span class="text-xs font-medium text-muted-foreground">质保书记录</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="zbsColDefs" :row-data="zbsRows"
-            :pagination="false" :animate-rows="false"
-            @grid-ready="onZbsReady" @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="zbsColDefs"
+            :row-data="zbsRows"
+            :pagination="false"
+            :animate-rows="false"
+            @grid-ready="onZbsReady"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
     </Splitter>

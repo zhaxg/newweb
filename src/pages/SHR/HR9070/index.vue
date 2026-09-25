@@ -51,10 +51,12 @@ const input = reactive({
 const rows = shallowRef<Thr3010Dto[]>([]);
 const loading = ref(false);
 const api = ref<GridApi | null>(null);
-function onReady(e: GridReadyEvent) { api.value = e.api; }
+function onReady(e: GridReadyEvent) {
+  api.value = e.api;
+}
 
 const colDefs: ColDef[] = [
-    { colId: "nOrder", field: "nOrder", headerName: "生产顺序号", width: 150 },
+  { colId: "nOrder", field: "nOrder", headerName: "生产顺序号", width: 150 },
   { colId: "cOrderNo", field: "cOrderNo", headerName: "提料计划号", width: 150 },
   { colId: "cBatchNo", field: "cBatchNo", headerName: "批号", width: 150 },
   { colId: "cStove", field: "cStove", headerName: "炉号", width: 150 },
@@ -270,9 +272,9 @@ const colDefs: ColDef[] = [
 function rowRed(p: RowClassParams<Thr3010Dto>) {
   const r = p.data;
   if (!r) return undefined;
-  const hit = [r.cOrderNo1, r.cOrderNo2, r.cOrderNo3, r.cOrderNo4].some(
-    (x) => String(x ?? "").includes("-B"),
-  ) || String(r.cConRemark ?? "").includes("加急");
+  const hit =
+    [r.cOrderNo1, r.cOrderNo2, r.cOrderNo3, r.cOrderNo4].some((x) => String(x ?? "").includes("-B")) ||
+    String(r.cConRemark ?? "").includes("加急");
   return hit ? { backgroundColor: "#fee2e2", color: "#b91c1c" } : undefined;
 }
 
@@ -347,8 +349,17 @@ function onRowDblClick() {
       </div>
       <div class="col-span-2 flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">出炉时间</label>
-        <DatePicker v-model="input.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-          show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+        <DatePicker
+          v-model="input.dates"
+          selection-mode="range"
+          :manual-input="false"
+          date-format="yy-mm-dd"
+          show-time
+          hour-format="24"
+          show-icon
+          placeholder="开始 至 结束"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="col-span-3 flex min-w-0 items-center gap-1">
         <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="loading" @click="query">
@@ -357,11 +368,22 @@ function onRowDblClick() {
       </div>
     </div>
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows"
-        :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }" :pagination="false"
-        :animate-rows="false" :loading="loading" :get-row-style="rowRed" @grid-ready="onReady"
-        @row-double-clicked="onRowDblClick" @first-data-rendered="autoSizeOnFirstData" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="rows"
+        :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
+        :pagination="false"
+        :animate-rows="false"
+        :loading="loading"
+        :get-row-style="rowRed"
+        @grid-ready="onReady"
+        @row-double-clicked="onRowDblClick"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
     <div class="flex h-7 shrink-0 items-center gap-2 border-t border-border/60 px-3">
       <span class="text-xs text-muted-foreground">加权平均：{{ weightedAvg }}</span>

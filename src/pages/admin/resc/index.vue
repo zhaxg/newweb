@@ -3,14 +3,32 @@
  *  画面迁移，逻辑不迁移到 */
 
 import { computed, defineComponent, h, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
-import { IconChevronDown, IconChevronRight, IconClick, IconNetwork, IconPencil, IconPlus, IconRefresh, IconTrash } from "@tabler/icons-vue";
+import {
+  IconChevronDown,
+  IconChevronRight,
+  IconClick,
+  IconNetwork,
+  IconPencil,
+  IconPlus,
+  IconRefresh,
+  IconTrash,
+} from "@tabler/icons-vue";
 import type { Component } from "vue";
 
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import Select from "primevue/select";
 import { AgGridVue } from "ag-grid-vue3";
-import type { AutoGroupColumnDef, ColDef, GetRowIdParams, GridApi, GridReadyEvent, RowClickedEvent, RowNode, ValueFormatterParams } from "ag-grid-community";
+import type {
+  AutoGroupColumnDef,
+  ColDef,
+  GetRowIdParams,
+  GridApi,
+  GridReadyEvent,
+  RowClickedEvent,
+  RowNode,
+  ValueFormatterParams,
+} from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
 import { useToast } from "@/composables/useToast";
@@ -76,7 +94,13 @@ const columnDefs: ColDef[] = [
   { colId: "cResPath", field: "cResPath", headerName: "路由名称", width: 160, valueFormatter: nullFmt },
   { colId: "cResSubPath", field: "cResSubPath", headerName: "组件路径", width: 180, valueFormatter: nullFmt },
   { colId: "cQueryString", field: "cQueryString", headerName: "注入参数", width: 120, valueFormatter: nullFmt },
-  { colId: "cEnable", field: "cEnable", headerName: "状态", width: 70, valueFormatter: (p) => (p.value === "0" ? "禁用" : "启用") },
+  {
+    colId: "cEnable",
+    field: "cEnable",
+    headerName: "状态",
+    width: 70,
+    valueFormatter: (p) => (p.value === "0" ? "禁用" : "启用"),
+  },
   { colId: "creator", field: "creator", headerName: "创建人", width: 80, valueFormatter: nullFmt },
   { colId: "createTime", field: "createTime", headerName: "创建时间", width: 130, valueFormatter: nullFmt },
   { colId: "lastModifier", field: "lastModifier", headerName: "最后修改人", width: 100, valueFormatter: nullFmt },
@@ -124,7 +148,13 @@ const RescGroupCell = defineComponent({
       }
       const [icon, iconClass] = rowIcon(data);
       kids.push(h(icon, { class: ["h-3.5 w-3.5 shrink-0", iconClass] }));
-      kids.push(h("span", { class: "ml-1.5 min-w-0 truncate" }, data.cCode ? `${data.cCode}-${data.cTitle}` : data.cTitle ?? ""));
+      kids.push(
+        h(
+          "span",
+          { class: "ml-1.5 min-w-0 truncate" },
+          data.cCode ? `${data.cCode}-${data.cTitle}` : (data.cTitle ?? ""),
+        ),
+      );
       return h("div", { class: "flex min-w-0 items-center gap-0.5" }, kids);
     };
   },
@@ -230,7 +260,7 @@ function onRowDoubleClicked(e: { data?: RescGridRow }) {
   if (e.data) openEdit(e.data.id ?? null);
 }
 
-const currentRow = computed(() => (selectedId.value ? nodeById.value.get(selectedId.value) ?? null : null));
+const currentRow = computed(() => (selectedId.value ? (nodeById.value.get(selectedId.value) ?? null) : null));
 
 function requireSelection(): boolean {
   if (!currentRow.value) {
@@ -356,8 +386,14 @@ function onBtnList() {
     <!-- 工具栏（对应 hmx_web resc/index：分组下拉+刷新 | 新增/新增子级/编辑/删除/子级功能点） -->
     <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
       <span class="shrink-0 text-xs text-muted-foreground">分组</span>
-      <Select v-model="namespace" :options="nsOptions" option-label="label" option-value="value"
-        class="w-28 shrink-0" @change="query" />
+      <Select
+        v-model="namespace"
+        :options="nsOptions"
+        option-label="label"
+        option-value="value"
+        class="w-28 shrink-0"
+        @change="query"
+      />
       <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="query">
         <IconRefresh class="h-3 w-3" />刷新
       </Button>
@@ -382,13 +418,28 @@ function onBtnList() {
 
     <!-- 树形表格：ag-grid treeData（对应原 VTable 树列表，数据源 = convertToTree 后的 Menu 资源） -->
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="columnDefs"
-        :default-col-def="hmxDefaultColDef" :auto-group-column-def="autoGroupColumnDef" :row-data="gridRows"
-        :get-row-id="getRowId" :tree-data="true" :get-data-path="getDataPath" :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
-        :loading="querying" :pagination="false" :animate-rows="false" :locale-text="AG_GRID_LOCALE_CN"
-        @grid-ready="onGridReady" @selection-changed="onSelectionChanged" @row-clicked="onRowClicked"
-        @row-double-clicked="onRowDoubleClicked" @expander-changed="onExpanderChanged"
-        @first-data-rendered="autoSizeOnFirstData" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :column-defs="columnDefs"
+        :default-col-def="hmxDefaultColDef"
+        :auto-group-column-def="autoGroupColumnDef"
+        :row-data="gridRows"
+        :get-row-id="getRowId"
+        :tree-data="true"
+        :get-data-path="getDataPath"
+        :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
+        :loading="querying"
+        :pagination="false"
+        :animate-rows="false"
+        :locale-text="AG_GRID_LOCALE_CN"
+        @grid-ready="onGridReady"
+        @selection-changed="onSelectionChanged"
+        @row-clicked="onRowClicked"
+        @row-double-clicked="onRowDoubleClicked"
+        @expander-changed="onExpanderChanged"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
 
     <RescEditDialog v-model:open="editOpen" :node="editNode" @submit="onEditSubmit" />
@@ -396,8 +447,13 @@ function onBtnList() {
     <RescBtnListDialog v-model:open="btnOpen" :node="btnTarget" />
 
     <!-- 删除确认（对应原 DialogPlugin.confirm 警告框） -->
-    <Dialog :visible="confirmOpen" modal header="警告" :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
-      @update:visible="confirmOpen = $event">
+    <Dialog
+      :visible="confirmOpen"
+      modal
+      header="警告"
+      :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
+      @update:visible="confirmOpen = $event"
+    >
       <p class="text-sm">你确定删除当前选择的资源么: {{ confirmTarget?.cTitle }}</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />

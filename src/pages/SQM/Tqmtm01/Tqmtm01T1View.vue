@@ -61,7 +61,8 @@ const candColDefs: ColDef[] = [
   { field: "testItemType", headerName: "试验项目种类", width: 120 },
   leftAddCol,
 ];
-const kvFmt = (get: () => Map<string, string>) => (p: { value: unknown }) => get().get(String(p.value ?? "")) ?? String(p.value ?? "");
+const kvFmt = (get: () => Map<string, string>) => (p: { value: unknown }) =>
+  get().get(String(p.value ?? "")) ?? String(p.value ?? "");
 const selColDefs: ColDef[] = [
   rightRemoveCol,
   { field: "diaFrom", headerName: "外径起", width: 96 },
@@ -219,11 +220,19 @@ defineExpose({ refresh });
           <IconChevronRight class="ml-auto h-3 w-3 text-muted-foreground" />
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="candColDefs" :row-data="candidates"
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="candColDefs"
+            :row-data="candidates"
             :get-row-id="(p: any) => String(p.data.id ?? p.data.testItemCode)"
             :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
-            :pagination="false" @grid-ready="onGridReady('l')" @first-data-rendered="autoSizeOnFirstData" />
+            :pagination="false"
+            @grid-ready="onGridReady('l')"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </div>
       <div class="bg-border" />
@@ -233,12 +242,20 @@ defineExpose({ refresh });
           <span class="text-xs text-muted-foreground">已选试验项目要求</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="selColDefs" :row-data="selected"
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="selColDefs"
+            :row-data="selected"
             :get-row-id="(p: any) => String(p.data.id)"
             :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
-            :pagination="false" @grid-ready="onGridReady('r')" @first-data-rendered="autoSizeOnFirstData"
-            @cell-value-changed="onRightChanged" />
+            :pagination="false"
+            @grid-ready="onGridReady('r')"
+            @first-data-rendered="autoSizeOnFirstData"
+            @cell-value-changed="onRightChanged"
+          />
         </div>
       </div>
     </div>

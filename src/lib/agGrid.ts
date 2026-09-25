@@ -30,21 +30,21 @@ export function hmxGetContextMenuItems(params: GetContextMenuItemsParams): (Defa
   const advEnabled = !!params.api.getGridOption("enableAdvancedFilter");
   const advancedFilter: MenuItemDef = advEnabled
     ? {
-      name: "关闭高级筛选",
-      icon: '<span class="ag-icon ag-icon-filter" role="presentation"></span>',
-      action: () => {
-        params.api.hideAdvancedFilterBuilder();
-        params.api.setGridOption("enableAdvancedFilter", false);
-      },
-    }
+        name: "关闭高级筛选",
+        icon: '<span class="ag-icon ag-icon-filter" role="presentation"></span>',
+        action: () => {
+          params.api.hideAdvancedFilterBuilder();
+          params.api.setGridOption("enableAdvancedFilter", false);
+        },
+      }
     : {
-      name: "高级筛选",
-      icon: '<span class="ag-icon ag-icon-filter" role="presentation"></span>',
-      action: () => {
-        params.api.setGridOption("enableAdvancedFilter", true);
-        params.api.showAdvancedFilterBuilder();
-      },
-    };
+        name: "高级筛选",
+        icon: '<span class="ag-icon ag-icon-filter" role="presentation"></span>',
+        action: () => {
+          params.api.setGridOption("enableAdvancedFilter", true);
+          params.api.showAdvancedFilterBuilder();
+        },
+      };
   let isTree = false;
   params.api.forEachNode((n) => {
     if (n.group) isTree = true;
@@ -122,7 +122,12 @@ export function hmxColumnMenuItems(p: GetColumnMenuItemsParams): (DefaultColumnM
   return items;
 }
 
-export const hmxDefaultColDef: ColDef = { sortable: true, resizable: true, filter: true, columnMenuItems: hmxColumnMenuItems };
+export const hmxDefaultColDef: ColDef = {
+  sortable: true,
+  resizable: true,
+  filter: true,
+  columnMenuItems: hmxColumnMenuItems,
+};
 
 /** AG Grid 公共 GridOptions：禁用列虚拟化，确保 autoSizeAllColumns 能测到所有列内容 */
 export const hmxGridOptions = {
@@ -161,9 +166,7 @@ export function makeHmxGridTheme(): ComputedRef<Theme> {
       fontSize: "0.8125rem",
       /* 表格字体栈 = 用户英文字体（若有）→ 表字体（拉丁 tabular）→ 全站 --font-sans（含中/英文设置） */
       fontFamily: [
-        settingsStore.editorSettings.fontEnglishFamily
-          ? `"${settingsStore.editorSettings.fontEnglishFamily}"`
-          : null,
+        settingsStore.editorSettings.fontEnglishFamily ? `"${settingsStore.editorSettings.fontEnglishFamily}"` : null,
         `'${settingsStore.editorSettings.tableFontFamily}'`,
         "var(--font-sans)",
       ]

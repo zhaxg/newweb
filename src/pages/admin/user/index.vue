@@ -50,11 +50,23 @@ const resetNewPwd = ref("");
 const columnDefs: ColDef[] = [
   { colId: "id", field: "id", headerName: "登录名", width: 110 },
   { colId: "cUserName", field: "cUserName", headerName: "用户名", width: 90 },
-  { colId: "cUserType", field: "cUserType", headerName: "用户类型", width: 90, valueFormatter: (p) => USER_TYPE_LABELS[p.value as UserType] ?? String(p.value ?? "") },
+  {
+    colId: "cUserType",
+    field: "cUserType",
+    headerName: "用户类型",
+    width: 90,
+    valueFormatter: (p) => USER_TYPE_LABELS[p.value as UserType] ?? String(p.value ?? ""),
+  },
   { colId: "cPhone", field: "cPhone", headerName: "手机", width: 110 },
   { colId: "cSex", field: "cSex", headerName: "性别", width: 60 },
   { colId: "cEmail", field: "cEmail", headerName: "邮件", width: 160 },
-  { colId: "cStatus", field: "cStatus", headerName: "状态", width: 70, valueFormatter: (p) => (p.value === "0" ? "禁用" : "正常") },
+  {
+    colId: "cStatus",
+    field: "cStatus",
+    headerName: "状态",
+    width: 70,
+    valueFormatter: (p) => (p.value === "0" ? "禁用" : "正常"),
+  },
   { colId: "creator", field: "creator", headerName: "创建人", width: 80 },
   { colId: "createTime", field: "createTime", headerName: "创建时间", width: 140 },
   { colId: "lastModifier", field: "lastModifier", headerName: "最后修改人", width: 100 },
@@ -187,7 +199,14 @@ async function onSaveUser(user: HmxUser) {
   const now = formatNow();
   const editing = editTarget.value;
   const record: HmxUser = editing
-    ? { ...user, id: editing.id, creator: editing.creator, createTime: editing.createTime, lastModifier: "admin", lastModifyTime: now }
+    ? {
+        ...user,
+        id: editing.id,
+        creator: editing.creator,
+        createTime: editing.createTime,
+        lastModifier: "admin",
+        lastModifyTime: now,
+      }
     : { ...user, id: user.id || NextStrId(), creator: "admin", createTime: now, lastModifier: "", lastModifyTime: "" };
   try {
     await adminApi.addOrEditUser(record);
@@ -210,11 +229,16 @@ function onInvalid(message: string) {
   <div class="flex min-h-0 flex-1 flex-col">
     <!-- 工具栏（对应原 FrmUserList 工具栏：查询/添加/编辑/删除/角色维护/重置密码） -->
     <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
-      <InputText v-model="keyword" maxlength="100" placeholder="关键字" autocapitalize="off" spellcheck="false"
-        class="w-48 shrink-0" @keydown.enter="query" />
-      <Button class="shrink-0 whitespace-nowrap" @click="query">
-        <IconSearch class="h-3 w-3" />查询
-      </Button>
+      <InputText
+        v-model="keyword"
+        maxlength="100"
+        placeholder="关键字"
+        autocapitalize="off"
+        spellcheck="false"
+        class="w-48 shrink-0"
+        @keydown.enter="query"
+      />
+      <Button class="shrink-0 whitespace-nowrap" @click="query"> <IconSearch class="h-3 w-3" />查询 </Button>
       <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onAdd">
         <IconPlus class="h-3 w-3" />添加
       </Button>
@@ -235,21 +259,42 @@ function onInvalid(message: string) {
 
     <!-- 表格：ag-grid（单选行、双击编辑；右键菜单走全站默认 hmxGetContextMenuItems） -->
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="columnDefs"
-        :default-col-def="hmxDefaultColDef" :row-data="rows" :get-row-id="getRowId"
-        :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }" :loading="querying"
-        :pagination="false" :animate-rows="false" :locale-text="AG_GRID_LOCALE_CN" @grid-ready="onGridReady"
-        @selection-changed="onSelectionChanged" @row-double-clicked="onRowDoubleClicked"
-        @first-data-rendered="autoSizeOnFirstData" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :column-defs="columnDefs"
+        :default-col-def="hmxDefaultColDef"
+        :row-data="rows"
+        :get-row-id="getRowId"
+        :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
+        :loading="querying"
+        :pagination="false"
+        :animate-rows="false"
+        :locale-text="AG_GRID_LOCALE_CN"
+        @grid-ready="onGridReady"
+        @selection-changed="onSelectionChanged"
+        @row-double-clicked="onRowDoubleClicked"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
 
-    <UserEditDialog v-model:open="editOpen" :editing="editTarget" :preset-dept-id="editPresetDeptId" @save="onSaveUser"
-      @invalid="onInvalid" />
+    <UserEditDialog
+      v-model:open="editOpen"
+      :editing="editTarget"
+      :preset-dept-id="editPresetDeptId"
+      @save="onSaveUser"
+      @invalid="onInvalid"
+    />
     <UserRoleEditDialog v-model:open="roleOpen" :user-id="roleUserId" />
 
     <!-- 删除确认（对应原 MsgBox.ShowYesNo） -->
-    <Dialog :visible="deleteOpen" modal header="删除确认" :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
-      @update:visible="deleteOpen = $event">
+    <Dialog
+      :visible="deleteOpen"
+      modal
+      header="删除确认"
+      :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
+      @update:visible="deleteOpen = $event"
+    >
       <p class="text-xs">是否确定删除该用户[{{ deleteTarget?.id }}]（如果存在子级用户会级联删除），是否继续！</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="deleteOpen = false" />
@@ -258,8 +303,13 @@ function onInvalid(message: string) {
     </Dialog>
 
     <!-- 重置密码确认 -->
-    <Dialog :visible="resetOpen" modal header="重置密码" :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
-      @update:visible="resetOpen = $event">
+    <Dialog
+      :visible="resetOpen"
+      modal
+      header="重置密码"
+      :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
+      @update:visible="resetOpen = $event"
+    >
       <p class="text-xs">是否确定重置密码？</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="resetOpen = false" />
@@ -268,8 +318,13 @@ function onInvalid(message: string) {
     </Dialog>
 
     <!-- 重置密码结果（需用户确认知悉新密码，不自动消失） -->
-    <Dialog :visible="resetResultOpen" modal header="重置密码成功" :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
-      @update:visible="resetResultOpen = $event">
+    <Dialog
+      :visible="resetResultOpen"
+      modal
+      header="重置密码成功"
+      :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
+      @update:visible="resetResultOpen = $event"
+    >
       <p class="text-xs">
         密码已经重置为
         <span class="mx-1 select-all font-mono font-medium text-primary">{{ resetNewPwd }}</span>

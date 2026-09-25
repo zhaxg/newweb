@@ -1,0 +1,12 @@
+# 统一 LF：仓库 blob 本就是 LF（core.autocrlf=true），此处固定 checkout 端，
+# 使 oxfmt 的 endOfLine=lf 在所有机器上 --check 结果一致。
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.zip binary

@@ -18,18 +18,20 @@ import { IconSearch } from "@tabler/icons-vue";
 import BatchIdInput from "@/pages/Widgets/BatchIdInput/index.vue";
 import { parseBatchIds } from "@/pages/Widgets/BatchIdInput/parse";
 import { AgGridVue } from "ag-grid-vue3";
-import type { ColDef, GridApi, GridReadyEvent, RowClassParams, RowDragEndEvent, ValueFormatterParams } from "ag-grid-community";
+import type {
+  ColDef,
+  GridApi,
+  GridReadyEvent,
+  RowClassParams,
+  RowDragEndEvent,
+  ValueFormatterParams,
+} from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { hmxDefaultColDef, makeHmxGridTheme, autoSizeOnFirstData } from "@/lib/agGrid";
 import { useMenuQuery } from "@/lib/menuQuery";
 import { useToast } from "@/composables/useToast";
 import { tmp2020Api, type ZgPlanDto } from "@/api/mes4ddh/smp.swagger";
-import {
-  hR2000Api,
-  Thr2000StatusEnum,
-  type Thr2000Dto,
-  type TimeRange,
-} from "@/api/mes4ddh/shr.swagger";
+import { hR2000Api, Thr2000StatusEnum, type Thr2000Dto, type TimeRange } from "@/api/mes4ddh/shr.swagger";
 
 const { toast } = useToast();
 const theme = makeHmxGridTheme();
@@ -92,13 +94,17 @@ const tmpRows = ref<ZgPlanDto[]>([]);
 const tmpLoading = ref(false);
 const tmpApi = ref<GridApi | null>(null);
 let nOrderMin = 0;
-function onTmpReady(e: GridReadyEvent) { tmpApi.value = e.api; }
+function onTmpReady(e: GridReadyEvent) {
+  tmpApi.value = e.api;
+}
 
 /* 原 InitDrop：拖拽后按当前顺序从最小序号起重排 NOrder */
 function onTmpRowDragEnd(e: RowDragEndEvent) {
   const rows: ZgPlanDto[] = [];
   e.api.forEachNodeAfterFilterAndSort((n) => rows.push(n.data as ZgPlanDto));
-  rows.forEach((r, i) => { r.nOrder = nOrderMin + i; });
+  rows.forEach((r, i) => {
+    r.nOrder = nOrderMin + i;
+  });
   tmpRows.value = [...rows];
 }
 
@@ -106,19 +112,25 @@ function onTmpRowDragEnd(e: RowDragEndEvent) {
 const dayRows = ref<Thr2000Dto[]>([]);
 const dayLoading = ref(false);
 const dayApi = ref<GridApi | null>(null);
-function onDayReady(e: GridReadyEvent) { dayApi.value = e.api; }
+function onDayReady(e: GridReadyEvent) {
+  dayApi.value = e.api;
+}
 
 /* ---------- 列定义 ---------- */
 const planStatusFmt = (p: ValueFormatterParams) =>
   (({ 0: "未下发", 10: "已下发", 20: "已生成日计划", 40: "关闭" }) as Record<string, string>)[String(p.value)] ?? "";
 const dayStatusFmt = (p: ValueFormatterParams) =>
-  (({ [String(Thr2000StatusEnum.Open)]: "已开启", [String(Thr2000StatusEnum.Close)]: "已关闭" }) as Record<string, string>)[String(p.value)] ?? "";
+  (
+    ({ [String(Thr2000StatusEnum.Open)]: "已开启", [String(Thr2000StatusEnum.Close)]: "已关闭" }) as Record<
+      string,
+      string
+    >
+  )[String(p.value)] ?? "";
 const coolFmt = (p: ValueFormatterParams) =>
   (({ N: "热坯", Y: "冷坯" }) as Record<string, string>)[String(p.value)] ?? "";
 const lengthTypeFmt = (p: ValueFormatterParams) =>
   (({ F: "范围尺", D: "定尺" }) as Record<string, string>)[String(p.value)] ?? "";
-const orderRedClass = (p: { value: unknown }) =>
-  String(p.value ?? "").includes("-B") ? "cell-danger" : "";
+const orderRedClass = (p: { value: unknown }) => (String(p.value ?? "").includes("-B") ? "cell-danger" : "");
 
 const tmpColDefs: ColDef[] = [
   { colId: "selected", field: "selected", headerName: "选择", width: 112, hide: true },
@@ -293,8 +305,9 @@ const dayColDefs: ColDef[] = [
 function dayRowStyle(p: RowClassParams<Thr2000Dto>) {
   const r = p.data;
   if (!r) return undefined;
-  const hit = [r.cOrderNo1, r.cOrderNo2, r.cOrderNo3, r.cOrderNo4].some((v) => String(v ?? "").includes("-B"))
-    || String(r.cConRemark ?? "").includes("加急");
+  const hit =
+    [r.cOrderNo1, r.cOrderNo2, r.cOrderNo3, r.cOrderNo4].some((v) => String(v ?? "").includes("-B")) ||
+    String(r.cConRemark ?? "").includes("加急");
   return hit ? { backgroundColor: "#fee2e2", color: "#b91c1c" } : undefined;
 }
 
@@ -302,13 +315,14 @@ function dayRowStyle(p: RowClassParams<Thr2000Dto>) {
 async function queryTmp() {
   tmpLoading.value = true;
   try {
-    const list = (await tmp2020Api.queryPlans({
-      cLineCode,
-      cOrderNo: tmpInput.cOrderNo.trim() || undefined,
-      cSgCode: tmpInput.cSgCode.trim() || undefined,
-      nStatus: tmpInput.nStatus ?? undefined,
-      timeRange: toTimeRange(tmpInput.dates),
-    })) ?? [];
+    const list =
+      (await tmp2020Api.queryPlans({
+        cLineCode,
+        cOrderNo: tmpInput.cOrderNo.trim() || undefined,
+        cSgCode: tmpInput.cSgCode.trim() || undefined,
+        nStatus: tmpInput.nStatus ?? undefined,
+        timeRange: toTimeRange(tmpInput.dates),
+      })) ?? [];
     tmpRows.value = list;
     nOrderMin = list.length ? Math.min(...list.map((x) => x.nOrder ?? 0)) : 0;
     requestAnimationFrame(() => tmpApi.value?.autoSizeAllColumns());
@@ -323,14 +337,15 @@ async function queryDay() {
   dayLoading.value = true;
   try {
     const orders = parseOrderList(dayInput.orders);
-    const list = (await hR2000Api.queryThr2000Dtos({
-      cLineCode,
-      cOrderNo: dayInput.cOrderNo.trim() || undefined,
-      cOrderNos: orders.length ? orders : [],
-      cPieceNo: dayInput.cPieceNo.trim() || undefined,
-      nStatus: dayInput.nStatus,
-      dTimeRange: toTimeRange(dayInput.dates),
-    })) ?? [];
+    const list =
+      (await hR2000Api.queryThr2000Dtos({
+        cLineCode,
+        cOrderNo: dayInput.cOrderNo.trim() || undefined,
+        cOrderNos: orders.length ? orders : [],
+        cPieceNo: dayInput.cPieceNo.trim() || undefined,
+        nStatus: dayInput.nStatus,
+        dTimeRange: toTimeRange(dayInput.dates),
+      })) ?? [];
     dayRows.value = list;
     requestAnimationFrame(() => dayApi.value?.autoSizeAllColumns());
   } catch {
@@ -435,13 +450,27 @@ function btnImport() {
           </div>
           <div class="flex min-w-0 items-center gap-1.5">
             <label class="w-16 shrink-0 text-xs text-muted-foreground">状态</label>
-            <Select v-model="tmpInput.nStatus" :options="tmpStatusOptions" option-label="label" option-value="value"
-              class="min-w-0 flex-1" />
+            <Select
+              v-model="tmpInput.nStatus"
+              :options="tmpStatusOptions"
+              option-label="label"
+              option-value="value"
+              class="min-w-0 flex-1"
+            />
           </div>
           <div class="col-span-2 flex min-w-0 items-center gap-1.5">
             <label class="w-16 shrink-0 text-xs text-muted-foreground">时间区间</label>
-            <DatePicker v-model="tmpInput.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-              show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+            <DatePicker
+              v-model="tmpInput.dates"
+              selection-mode="range"
+              :manual-input="false"
+              date-format="yy-mm-dd"
+              show-time
+              hour-format="24"
+              show-icon
+              placeholder="开始 至 结束"
+              class="min-w-0 flex-1"
+            />
           </div>
         </div>
         <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
@@ -450,13 +479,28 @@ function btnImport() {
           </Button>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="tmpColDefs" :row-data="tmpRows"
-            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="tmpColDefs"
+            :row-data="tmpRows"
+            :row-selection="{
+              mode: 'multiRow',
+              checkboxes: true,
+              headerCheckbox: true,
+              enableClickSelection: true,
+              enableSelectionWithoutKeys: true,
+            }"
             :row-drag-multi-select="false"
-            :pagination="false" :animate-rows="false" :loading="tmpLoading"
-            @grid-ready="onTmpReady" @row-drag-end="onTmpRowDragEnd"
-            @first-data-rendered="autoSizeOnFirstData" />
+            :pagination="false"
+            :animate-rows="false"
+            :loading="tmpLoading"
+            @grid-ready="onTmpReady"
+            @row-drag-end="onTmpRowDragEnd"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
 
@@ -474,13 +518,27 @@ function btnImport() {
           </div>
           <div class="flex min-w-0 items-center gap-1.5">
             <label class="w-16 shrink-0 text-xs text-muted-foreground">计划状态</label>
-            <Select v-model="dayInput.nStatus" :options="dayStatusOptions" option-label="label" option-value="value"
-              class="min-w-0 flex-1" />
+            <Select
+              v-model="dayInput.nStatus"
+              :options="dayStatusOptions"
+              option-label="label"
+              option-value="value"
+              class="min-w-0 flex-1"
+            />
           </div>
           <div class="col-span-2 flex min-w-0 items-center gap-1.5">
             <label class="w-16 shrink-0 text-xs text-muted-foreground">时间区间</label>
-            <DatePicker v-model="dayInput.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-              show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+            <DatePicker
+              v-model="dayInput.dates"
+              selection-mode="range"
+              :manual-input="false"
+              date-format="yy-mm-dd"
+              show-time
+              hour-format="24"
+              show-icon
+              placeholder="开始 至 结束"
+              class="min-w-0 flex-1"
+            />
           </div>
         </div>
         <!-- 工具栏：查询/关闭+关闭原因 ｜ 添加+备注/订单导入 -->
@@ -490,7 +548,9 @@ function btnImport() {
           </Button>
           <label class="ml-2 shrink-0 text-xs text-muted-foreground">关闭原因</label>
           <InputText v-model="closeReason" class="w-40 shrink-0" />
-          <Button variant="outlined" severity="danger" class="shrink-0 whitespace-nowrap" @click="btnClose">关闭</Button>
+          <Button variant="outlined" severity="danger" class="shrink-0 whitespace-nowrap" @click="btnClose"
+            >关闭</Button
+          >
           <span class="mx-3 h-5 w-px shrink-0 bg-border/60" />
           <label class="shrink-0 text-xs text-muted-foreground">备注</label>
           <InputText v-model="addRemark" class="w-40 shrink-0" />
@@ -498,18 +558,38 @@ function btnImport() {
           <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="btnImport">订单导入</Button>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="dayColDefs" :row-data="dayRows"
-            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="dayColDefs"
+            :row-data="dayRows"
+            :row-selection="{
+              mode: 'multiRow',
+              checkboxes: true,
+              headerCheckbox: true,
+              enableClickSelection: true,
+              enableSelectionWithoutKeys: true,
+            }"
             :get-row-style="dayRowStyle"
-            :pagination="false" :animate-rows="false" :loading="dayLoading"
-            @grid-ready="onDayReady" @first-data-rendered="autoSizeOnFirstData" />
+            :pagination="false"
+            :animate-rows="false"
+            :loading="dayLoading"
+            @grid-ready="onDayReady"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
     </Splitter>
 
-    <Dialog :visible="confirmOpen" modal header="确认" :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
-      @update:visible="confirmOpen = $event">
+    <Dialog
+      :visible="confirmOpen"
+      modal
+      header="确认"
+      :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
+      @update:visible="confirmOpen = $event"
+    >
       <p class="text-xs">{{ confirmMsg }}</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />

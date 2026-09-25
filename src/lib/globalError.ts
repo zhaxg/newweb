@@ -21,5 +21,5 @@ export const hmxErrorPlugin: Plugin = {
     window.addEventListener("error", (e) => {
       console.error("[WindowError]", e.message, e.filename, e.lineno);
     });
-  }
+  },
 };

@@ -35,16 +35,30 @@ const colDefs: ColDef[] = [
   { field: "Id", headerName: "ID", width: 130 },
 ];
 
-function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
+function onGridReady(e: GridReadyEvent) {
+  gridApi.value = e.api;
+}
 
 async function onQuery() {
   querying.value = true;
-  try { rows.value = []; } finally { querying.value = false; }
+  try {
+    rows.value = [];
+  } finally {
+    querying.value = false;
+  }
 }
-function onAdd() { /* TODO */ }
-function onDelete() { /* TODO */ }
-function onSave() { /* TODO */ }
-function onRefresh() { /* TODO */ }
+function onAdd() {
+  /* TODO */
+}
+function onDelete() {
+  /* TODO */
+}
+function onSave() {
+  /* TODO */
+}
+function onRefresh() {
+  /* TODO */
+}
 </script>
 
 <template>
@@ -54,18 +68,14 @@ function onRefresh() { /* TODO */ }
       <Button text class="shrink-0 whitespace-nowrap" :loading="querying" @click="onQuery">
         <IconSearch class="h-3 w-3" />查询
       </Button>
-      <Button text class="shrink-0 whitespace-nowrap" @click="onAdd">
-        <IconPlus class="h-3 w-3" />添加
-      </Button>
+      <Button text class="shrink-0 whitespace-nowrap" @click="onAdd"> <IconPlus class="h-3 w-3" />添加 </Button>
       <Button text severity="danger" class="shrink-0 whitespace-nowrap" @click="onDelete">
         <IconTrash class="h-3 w-3" />删除
       </Button>
       <Button text class="shrink-0 whitespace-nowrap" @click="onSave">
         <IconDeviceFloppy class="h-3 w-3" />保存
       </Button>
-      <Button text class="shrink-0 whitespace-nowrap" @click="onRefresh">
-        <IconRefresh class="h-3 w-3" />刷新
-      </Button>
+      <Button text class="shrink-0 whitespace-nowrap" @click="onRefresh"> <IconRefresh class="h-3 w-3" />刷新 </Button>
       <span class="ml-auto text-xs text-muted-foreground">接口配置（{{ rows.length }}）</span>
     </div>
 
@@ -77,10 +87,20 @@ function onRefresh() { /* TODO */ }
           <span class="text-xs font-medium text-muted-foreground">接口列表</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows"
-            :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }" :pagination="false" :animate-rows="false" :loading="querying"
-            @grid-ready="onGridReady" @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="colDefs"
+            :row-data="rows"
+            :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
+            :pagination="false"
+            :animate-rows="false"
+            :loading="querying"
+            @grid-ready="onGridReady"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
 
@@ -92,13 +112,19 @@ function onRefresh() { /* TODO */ }
         <div class="flex min-h-0 flex-1 flex-col gap-2 overflow-auto p-3">
           <div class="flex items-start gap-2">
             <label class="w-16 shrink-0 text-xs text-muted-foreground">端点描述</label>
-            <textarea v-model="endpointDesc" rows="3"
-              class="min-w-0 flex-1 resize-y rounded border border-border bg-transparent px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-ring" />
+            <textarea
+              v-model="endpointDesc"
+              rows="3"
+              class="min-w-0 flex-1 resize-y rounded border border-border bg-transparent px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-ring"
+            />
           </div>
           <div class="flex items-start gap-2">
             <label class="w-16 shrink-0 text-xs text-muted-foreground">配置内容</label>
-            <textarea v-model="configJson" rows="5"
-              class="min-w-0 flex-1 resize-y rounded border border-border bg-transparent px-2 py-1 font-mono text-xs focus:outline-none focus:ring-1 focus:ring-ring" />
+            <textarea
+              v-model="configJson"
+              rows="5"
+              class="min-w-0 flex-1 resize-y rounded border border-border bg-transparent px-2 py-1 font-mono text-xs focus:outline-none focus:ring-1 focus:ring-ring"
+            />
           </div>
         </div>
       </SplitterPanel>

@@ -14,11 +14,7 @@ import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
-import {
-  tmp2000Api,
-  type QueryCptTmp2010Dto,
-  type Tmp2000Log,
-} from "@/api/mes4ddh/smp.swagger";
+import { tmp2000Api, type QueryCptTmp2010Dto, type Tmp2000Log } from "@/api/mes4ddh/smp.swagger";
 import { useToast } from "@/composables/useToast";
 
 const { toast } = useToast();
@@ -136,8 +132,7 @@ async function onSelectionChanged() {
     return;
   }
   try {
-    const list =
-      (await tmp2000Api.getTmp2000Log({ cOrderNo: row.cOrderNo ?? null, cSwlx: "changeLen" })) ?? [];
+    const list = (await tmp2000Api.getTmp2000Log({ cOrderNo: row.cOrderNo ?? null, cSwlx: "changeLen" })) ?? [];
     logRows.value = list;
     logApi.value?.setGridOption("rowData", list);
     requestAnimationFrame(() => logApi.value?.autoSizeAllColumns());
@@ -218,7 +213,13 @@ onMounted(() => {
             :default-col-def="hmxDefaultColDef"
             :column-defs="colDefs"
             :row-data="rows"
-            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
+            :row-selection="{
+              mode: 'multiRow',
+              checkboxes: true,
+              headerCheckbox: true,
+              enableClickSelection: true,
+              enableSelectionWithoutKeys: true,
+            }"
             :suppress-column-virtualisation="true"
             :pagination="false"
             :animate-rows="false"
@@ -242,7 +243,13 @@ onMounted(() => {
             :default-col-def="hmxDefaultColDef"
             :column-defs="logColDefs"
             :row-data="logRows"
-            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
+            :row-selection="{
+              mode: 'multiRow',
+              checkboxes: true,
+              headerCheckbox: true,
+              enableClickSelection: true,
+              enableSelectionWithoutKeys: true,
+            }"
             :suppress-column-virtualisation="true"
             :pagination="false"
             :animate-rows="false"

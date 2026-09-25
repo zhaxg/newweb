@@ -14,7 +14,7 @@
 // ; 165399880288699493     (运行1000年，等同普通雪花算法运行1年，长度：18)
 
 export function NextStrId(): string {
-  const BASE_TIME = new Date('2020-01-01T00:00:00Z').getTime();
+  const BASE_TIME = new Date("2020-01-01T00:00:00Z").getTime();
   const WORKER_ID = Math.floor(Math.random() * 64); // 6 bits
   const WORKER_ID_BIT_LENGTH = 6;
   const SEQ_BIT_LENGTH = 6;
@@ -24,7 +24,7 @@ export function NextStrId(): string {
   let sequence = 0;
 
   function padLeft(num: number | string, length: number): string {
-    return num.toString().padStart(length, '0');
+    return num.toString().padStart(length, "0");
   }
 
   return (() => {

@@ -15,9 +15,7 @@ function detectSoftwareRendering(): boolean {
     const gl = document.createElement("canvas").getContext("webgl");
     if (!gl) return true;
     const ext = gl.getExtension("WEBGL_debug_renderer_info");
-    const renderer = ext
-      ? String(gl.getParameter(ext.UNMASKED_RENDERER_WEBGL))
-      : String(gl.getParameter(gl.RENDERER));
+    const renderer = ext ? String(gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)) : String(gl.getParameter(gl.RENDERER));
     return /swiftshader|software|basic render|warp|llvmpipe/i.test(renderer);
   } catch {
     return true;

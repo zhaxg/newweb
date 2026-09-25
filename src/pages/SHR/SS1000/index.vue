@@ -189,16 +189,32 @@ function onSave() {
       </Button>
     </div>
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="trackList" :get-row-id="getRowId"
-        :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }" :pagination="false"
-        :animate-rows="false" :loading="querying" @grid-ready="onGridReady" @selection-changed="onSelectionChanged"
-        @first-data-rendered="autoSizeOnFirstData" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="trackList"
+        :get-row-id="getRowId"
+        :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
+        :pagination="false"
+        :animate-rows="false"
+        :loading="querying"
+        @grid-ready="onGridReady"
+        @selection-changed="onSelectionChanged"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
 
     <!-- 确认（对应原 MsgBox.ShowYesNo("是否确认保存修改？")） -->
-    <Dialog :visible="confirmOpen" modal header="确认" :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
-      @update:visible="confirmOpen = $event">
+    <Dialog
+      :visible="confirmOpen"
+      modal
+      header="确认"
+      :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
+      @update:visible="confirmOpen = $event"
+    >
       <p class="text-xs">{{ confirmMsg }}</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />

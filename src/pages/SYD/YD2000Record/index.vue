@@ -139,10 +139,7 @@ async function onQuery() {
       nThick: numRange(q.thickMin, q.thickMax),
       nWth: numRange(q.wthMin, q.wthMax),
       nLen: numRange(q.lenMin, q.lenMax),
-      dTime:
-        q.dates?.[0] && q.dates?.[1]
-          ? { min: isoDate(q.dates[0]), max: isoDate(q.dates[1]) }
-          : undefined,
+      dTime: q.dates?.[0] && q.dates?.[1] ? { min: isoDate(q.dates[0]), max: isoDate(q.dates[1]) } : undefined,
     };
     const list = ((await storageRecordApi.querySlabReocrds(input)) ?? []) as SlabRecordViewItemDto[];
     rows.value = list;
@@ -167,8 +164,16 @@ onMounted(() => {
     <div class="grid shrink-0 grid-cols-6 items-center gap-x-3 gap-y-1.5 border-b border-border/60 px-3 py-2">
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">库区</label>
-        <Select v-model="q.cStoreCode" :options="storeOptions" option-label="label" option-value="value" show-clear
-          filter placeholder="选择库区" class="min-w-0 flex-1" />
+        <Select
+          v-model="q.cStoreCode"
+          :options="storeOptions"
+          option-label="label"
+          option-value="value"
+          show-clear
+          filter
+          placeholder="选择库区"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">炉号</label>
@@ -192,38 +197,47 @@ onMounted(() => {
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">厚度</label>
-          <RangeInput
-            v-model:min="q.thickMin"
-            v-model:max="q.thickMax"
-            :min-fraction-digits="0"
-            :max-fraction-digits="2"
-            class="min-w-0 flex-1"
-          />
+        <RangeInput
+          v-model:min="q.thickMin"
+          v-model:max="q.thickMax"
+          :min-fraction-digits="0"
+          :max-fraction-digits="2"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">宽度</label>
-          <RangeInput
-            v-model:min="q.wthMin"
-            v-model:max="q.wthMax"
-            :min-fraction-digits="0"
-            :max-fraction-digits="2"
-            class="min-w-0 flex-1"
-          />
+        <RangeInput
+          v-model:min="q.wthMin"
+          v-model:max="q.wthMax"
+          :min-fraction-digits="0"
+          :max-fraction-digits="2"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">长度</label>
-          <RangeInput
-            v-model:min="q.lenMin"
-            v-model:max="q.lenMax"
-            :min-fraction-digits="0"
-            :max-fraction-digits="2"
-            class="min-w-0 flex-1"
-          />
+        <RangeInput
+          v-model:min="q.lenMin"
+          v-model:max="q.lenMax"
+          :min-fraction-digits="0"
+          :max-fraction-digits="2"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="col-span-2 flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">出入库时间</label>
-        <DatePicker v-model="q.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-          show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+        <DatePicker
+          v-model="q.dates"
+          selection-mode="range"
+          :manual-input="false"
+          date-format="yy-mm-dd"
+          show-time
+          hour-format="24"
+          show-icon
+          placeholder="开始 至 结束"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="flex items-center">
         <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="querying" @click="onQuery">
@@ -234,10 +248,19 @@ onMounted(() => {
 
     <!-- 单表（原 gridControl1 Dock.Fill） -->
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="colDefs"
-        :default-col-def="hmxDefaultColDef" :row-data="rows" :locale-text="AG_GRID_LOCALE_CN"
-        :pagination="false" :animate-rows="false" :loading="querying"
-        @grid-ready="onReady" @first-data-rendered="autoSizeOnFirstData" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :column-defs="colDefs"
+        :default-col-def="hmxDefaultColDef"
+        :row-data="rows"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :pagination="false"
+        :animate-rows="false"
+        :loading="querying"
+        @grid-ready="onReady"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
   </div>
 </template>

@@ -24,12 +24,7 @@ import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { hmxDefaultColDef, makeHmxGridTheme, autoSizeOnFirstData } from "@/lib/agGrid";
 import { useMenuQuery } from "@/lib/menuQuery";
 import { useToast } from "@/composables/useToast";
-import {
-  hR3010Api,
-  Thr3010FurStatusEnum,
-  type DtoThr3010,
-  type TimeRange,
-} from "@/api/mes4ddh/shr.swagger";
+import { hR3010Api, Thr3010FurStatusEnum, type DtoThr3010, type TimeRange } from "@/api/mes4ddh/shr.swagger";
 
 const { toast } = useToast();
 const theme = makeHmxGridTheme();
@@ -96,14 +91,18 @@ function fillStat(s: { qua: string; wgt: string; pj: string }, list: DtoThr3010[
 /* ---------- 聚焦/勾选 ---------- */
 const notInApi = ref<GridApi | null>(null);
 const notInCurrent = ref<DtoThr3010 | null>(null);
-function onNotInReady(e: GridReadyEvent) { notInApi.value = e.api; }
+function onNotInReady(e: GridReadyEvent) {
+  notInApi.value = e.api;
+}
 function onNotInSelectionChanged() {
   const rows = notInApi.value?.getSelectedRows() as DtoThr3010[] | undefined;
   notInCurrent.value = rows?.[0] ?? null;
 }
 const fur1InApi = ref<GridApi | null>(null);
 const fur1InCurrent = ref<DtoThr3010 | null>(null);
-function onFur1InReady(e: GridReadyEvent) { fur1InApi.value = e.api; }
+function onFur1InReady(e: GridReadyEvent) {
+  fur1InApi.value = e.api;
+}
 function onFur1InSelectionChanged() {
   const rows = fur1InApi.value?.getSelectedRows() as DtoThr3010[] | undefined;
   fur1InCurrent.value = rows?.[0] ?? null;
@@ -111,9 +110,15 @@ function onFur1InSelectionChanged() {
 const fur1OutApi = ref<GridApi | null>(null);
 const fur2InApi = ref<GridApi | null>(null);
 const fur2OutApi = ref<GridApi | null>(null);
-function onFur1OutReady(e: GridReadyEvent) { fur1OutApi.value = e.api; }
-function onFur2InReady(e: GridReadyEvent) { fur2InApi.value = e.api; }
-function onFur2OutReady(e: GridReadyEvent) { fur2OutApi.value = e.api; }
+function onFur1OutReady(e: GridReadyEvent) {
+  fur1OutApi.value = e.api;
+}
+function onFur2InReady(e: GridReadyEvent) {
+  fur2InApi.value = e.api;
+}
+function onFur2OutReady(e: GridReadyEvent) {
+  fur2OutApi.value = e.api;
+}
 
 /* ---------- 列定义 ---------- */
 const furStatusFmt = (p: ValueFormatterParams) => {
@@ -129,8 +134,7 @@ const furStatusFmt = (p: ValueFormatterParams) => {
   return m[String(p.value)] ?? "";
 };
 /** 订单号含 -B 标红（原 RowCellStyle） */
-const orderRedClass = (p: { value: unknown }) =>
-  String(p.value ?? "").includes("-B") ? "cell-danger" : "";
+const orderRedClass = (p: { value: unknown }) => (String(p.value ?? "").includes("-B") ? "cell-danger" : "");
 
 const notInColDefs: ColDef[] = [
   { colId: "selected", field: "selected", headerName: "选择", width: 112, hide: true },
@@ -238,7 +242,14 @@ function furColDefs(gcdFirst: boolean): ColDef[] {
     { colId: "cZpId", field: "cZpId", headerName: "THR3000主键", width: 150, hide: true },
     { colId: "cSlabId", field: "cSlabId", headerName: "TYD2000主键", width: 150, hide: true },
     { colId: "cFurCode", field: "cFurCode", headerName: "加热炉编号", width: 125, hide: true },
-    { colId: "nFurStatus", field: "nFurStatus", headerName: "加热炉状态", width: 125, hide: true, valueFormatter: furStatusFmt },
+    {
+      colId: "nFurStatus",
+      field: "nFurStatus",
+      headerName: "加热炉状态",
+      width: 125,
+      hide: true,
+      valueFormatter: furStatusFmt,
+    },
     { colId: "cPlateNo", field: "cPlateNo", headerName: "钢板号", width: 112, hide: true },
     { colId: "cSpecPlan", field: "cSpecPlan", headerName: "计划规格", width: 112, hide: true },
     { colId: "nOrderPlan", field: "nOrderPlan", headerName: "计划生产顺序", width: 138, hide: true },
@@ -267,17 +278,22 @@ async function onQuery() {
       dInTimeRange: toTimeRange(input.dates),
       listFurStatus: [Thr3010FurStatusEnum.Wait, Thr3010FurStatusEnum.EnterFur, Thr3010FurStatusEnum.ExitFur],
     };
-    const [list1, list] = await Promise.all([
-      hR3010Api.queryNotInSlabs(dto),
-      hR3010Api.querySlabs(dto),
-    ]);
+    const [list1, list] = await Promise.all([hR3010Api.queryNotInSlabs(dto), hR3010Api.querySlabs(dto)]);
     notInRows.value = list1 ?? [];
     notInCurrent.value = null;
     const byOrder = (a: DtoThr3010, b: DtoThr3010) => (a.nOrder ?? 0) - (b.nOrder ?? 0);
-    fur1In.value = (list ?? []).filter((x) => x.cFurCode === "1" && x.nFurStatus === Thr3010FurStatusEnum.EnterFur).sort(byOrder);
-    fur1Out.value = (list ?? []).filter((x) => x.cFurCode === "1" && x.nFurStatus === Thr3010FurStatusEnum.ExitFur).sort(byOrder);
-    fur2In.value = (list ?? []).filter((x) => x.cFurCode === "2" && x.nFurStatus === Thr3010FurStatusEnum.EnterFur).sort(byOrder);
-    fur2Out.value = (list ?? []).filter((x) => x.cFurCode === "2" && x.nFurStatus === Thr3010FurStatusEnum.ExitFur).sort(byOrder);
+    fur1In.value = (list ?? [])
+      .filter((x) => x.cFurCode === "1" && x.nFurStatus === Thr3010FurStatusEnum.EnterFur)
+      .sort(byOrder);
+    fur1Out.value = (list ?? [])
+      .filter((x) => x.cFurCode === "1" && x.nFurStatus === Thr3010FurStatusEnum.ExitFur)
+      .sort(byOrder);
+    fur2In.value = (list ?? [])
+      .filter((x) => x.cFurCode === "2" && x.nFurStatus === Thr3010FurStatusEnum.EnterFur)
+      .sort(byOrder);
+    fur2Out.value = (list ?? [])
+      .filter((x) => x.cFurCode === "2" && x.nFurStatus === Thr3010FurStatusEnum.ExitFur)
+      .sort(byOrder);
     fillStat(stat1, fur1In.value);
     fillStat(stat11, fur1Out.value);
     fillStat(stat2, fur2In.value);
@@ -402,7 +418,12 @@ function onElim() {
   const pieceNos = sel.map((x) => x.cPieceNo).join("\r\n");
   askConfirm(
     `是否确认吊销勾选的材料？\r\n${pieceNos}`,
-    () => doElim(sel.map((x) => x.id).filter((x): x is string => !!x), reason.value, Thr3010FurStatusEnum.RefuseBefore),
+    () =>
+      doElim(
+        sel.map((x) => x.id).filter((x): x is string => !!x),
+        reason.value,
+        Thr3010FurStatusEnum.RefuseBefore,
+      ),
     "警告：请确认已经在二级系统吊销后再操作！",
   );
 }
@@ -410,13 +431,17 @@ function onElim1() {
   if (fur1Out.value.length === 0) return;
   const cMxIds = selectedIds(fur1OutApi.value);
   if (cMxIds.length === 0) return;
-  askConfirm("是否确认吊销勾选的材料？", () => doElim(cMxIds, reason1.value, Thr3010FurStatusEnum.RefuseAfter, "1#SRF"));
+  askConfirm("是否确认吊销勾选的材料？", () =>
+    doElim(cMxIds, reason1.value, Thr3010FurStatusEnum.RefuseAfter, "1#SRF"),
+  );
 }
 function onElim2() {
   if (fur2Out.value.length === 0) return;
   const cMxIds = selectedIds(fur2OutApi.value);
   if (cMxIds.length === 0) return;
-  askConfirm("是否确认吊销勾选的材料？", () => doElim(cMxIds, reason2.value, Thr3010FurStatusEnum.RefuseAfter, "2#SRF"));
+  askConfirm("是否确认吊销勾选的材料？", () =>
+    doElim(cMxIds, reason2.value, Thr3010FurStatusEnum.RefuseAfter, "2#SRF"),
+  );
 }
 </script>
 
@@ -426,8 +451,17 @@ function onElim2() {
     <div class="grid shrink-0 grid-cols-6 items-center gap-x-3 gap-y-1.5 border-b border-border/60 px-3 py-2">
       <div class="col-span-2 flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">入炉时间</label>
-        <DatePicker v-model="input.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-          show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+        <DatePicker
+          v-model="input.dates"
+          selection-mode="range"
+          :manual-input="false"
+          date-format="yy-mm-dd"
+          show-time
+          hour-format="24"
+          show-icon
+          placeholder="开始 至 结束"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">订单号</label>
@@ -477,15 +511,32 @@ function onElim2() {
         <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
           <label class="w-8 shrink-0 text-xs text-muted-foreground">原因</label>
           <InputText v-model="reason" class="w-48 shrink-0" />
-          <Button variant="outlined" severity="danger" class="shrink-0 whitespace-nowrap" @click="onElim">炉前吊销</Button>
+          <Button variant="outlined" severity="danger" class="shrink-0 whitespace-nowrap" @click="onElim"
+            >炉前吊销</Button
+          >
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="notInColDefs" :row-data="notInRows"
-            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-            :pagination="false" :animate-rows="false" :loading="loading"
-            @grid-ready="onNotInReady" @selection-changed="onNotInSelectionChanged"
-            @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="notInColDefs"
+            :row-data="notInRows"
+            :row-selection="{
+              mode: 'multiRow',
+              checkboxes: true,
+              headerCheckbox: true,
+              enableClickSelection: true,
+              enableSelectionWithoutKeys: true,
+            }"
+            :pagination="false"
+            :animate-rows="false"
+            :loading="loading"
+            @grid-ready="onNotInReady"
+            @selection-changed="onNotInSelectionChanged"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
 
@@ -504,7 +555,9 @@ function onElim2() {
               <TabPanels class="min-h-0 flex-1 overflow-hidden !p-0">
                 <TabPanel value="in" class="flex h-full flex-col overflow-hidden !p-0">
                   <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
-                    <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onCancelEnter1">撤销入炉</Button>
+                    <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onCancelEnter1"
+                      >撤销入炉</Button
+                    >
                     <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onExit1">出炉</Button>
                     <span class="ml-2 shrink-0 text-xs text-muted-foreground">总支数</span>
                     <InputText v-model="stat1.qua" readonly class="w-20 shrink-0" />
@@ -514,12 +567,27 @@ function onElim2() {
                     <InputText v-model="stat1.pj" readonly class="w-24 shrink-0" />
                   </div>
                   <div class="min-h-0 flex-1 overflow-hidden">
-                    <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                      :default-col-def="hmxDefaultColDef" :column-defs="fur1InColDefs" :row-data="fur1In"
-                      :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-                      :pagination="false" :animate-rows="false" :loading="loading"
-                      @grid-ready="onFur1InReady" @selection-changed="onFur1InSelectionChanged"
-                      @first-data-rendered="autoSizeOnFirstData" />
+                    <AgGridVue
+                      class="hmx-ag-grid h-full w-full"
+                      :theme="theme"
+                      :locale-text="AG_GRID_LOCALE_CN"
+                      :default-col-def="hmxDefaultColDef"
+                      :column-defs="fur1InColDefs"
+                      :row-data="fur1In"
+                      :row-selection="{
+                        mode: 'multiRow',
+                        checkboxes: true,
+                        headerCheckbox: true,
+                        enableClickSelection: true,
+                        enableSelectionWithoutKeys: true,
+                      }"
+                      :pagination="false"
+                      :animate-rows="false"
+                      :loading="loading"
+                      @grid-ready="onFur1InReady"
+                      @selection-changed="onFur1InSelectionChanged"
+                      @first-data-rendered="autoSizeOnFirstData"
+                    />
                   </div>
                 </TabPanel>
                 <TabPanel value="out" class="flex h-full flex-col overflow-hidden !p-0">
@@ -534,14 +602,31 @@ function onElim2() {
                   <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
                     <label class="w-8 shrink-0 text-xs text-muted-foreground">原因</label>
                     <InputText v-model="reason1" class="w-48 shrink-0" />
-                    <Button variant="outlined" severity="danger" class="shrink-0 whitespace-nowrap" @click="onElim1">炉后吊销</Button>
+                    <Button variant="outlined" severity="danger" class="shrink-0 whitespace-nowrap" @click="onElim1"
+                      >炉后吊销</Button
+                    >
                   </div>
                   <div class="min-h-0 flex-1 overflow-hidden">
-                    <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                      :default-col-def="hmxDefaultColDef" :column-defs="fur1OutColDefs" :row-data="fur1Out"
-                      :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-                      :pagination="false" :animate-rows="false" :loading="loading"
-                      @grid-ready="onFur1OutReady" @first-data-rendered="autoSizeOnFirstData" />
+                    <AgGridVue
+                      class="hmx-ag-grid h-full w-full"
+                      :theme="theme"
+                      :locale-text="AG_GRID_LOCALE_CN"
+                      :default-col-def="hmxDefaultColDef"
+                      :column-defs="fur1OutColDefs"
+                      :row-data="fur1Out"
+                      :row-selection="{
+                        mode: 'multiRow',
+                        checkboxes: true,
+                        headerCheckbox: true,
+                        enableClickSelection: true,
+                        enableSelectionWithoutKeys: true,
+                      }"
+                      :pagination="false"
+                      :animate-rows="false"
+                      :loading="loading"
+                      @grid-ready="onFur1OutReady"
+                      @first-data-rendered="autoSizeOnFirstData"
+                    />
                   </div>
                 </TabPanel>
               </TabPanels>
@@ -560,7 +645,9 @@ function onElim2() {
               <TabPanels class="min-h-0 flex-1 overflow-hidden !p-0">
                 <TabPanel value="in" class="flex h-full flex-col overflow-hidden !p-0">
                   <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
-                    <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onCancelEnter2">撤销入炉</Button>
+                    <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onCancelEnter2"
+                      >撤销入炉</Button
+                    >
                     <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onExit2">出炉</Button>
                     <span class="ml-2 shrink-0 text-xs text-muted-foreground">总支数</span>
                     <InputText v-model="stat2.qua" readonly class="w-20 shrink-0" />
@@ -570,11 +657,26 @@ function onElim2() {
                     <InputText v-model="stat2.pj" readonly class="w-24 shrink-0" />
                   </div>
                   <div class="min-h-0 flex-1 overflow-hidden">
-                    <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                      :default-col-def="hmxDefaultColDef" :column-defs="fur2InColDefs" :row-data="fur2In"
-                      :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-                      :pagination="false" :animate-rows="false" :loading="loading"
-                      @grid-ready="onFur2InReady" @first-data-rendered="autoSizeOnFirstData" />
+                    <AgGridVue
+                      class="hmx-ag-grid h-full w-full"
+                      :theme="theme"
+                      :locale-text="AG_GRID_LOCALE_CN"
+                      :default-col-def="hmxDefaultColDef"
+                      :column-defs="fur2InColDefs"
+                      :row-data="fur2In"
+                      :row-selection="{
+                        mode: 'multiRow',
+                        checkboxes: true,
+                        headerCheckbox: true,
+                        enableClickSelection: true,
+                        enableSelectionWithoutKeys: true,
+                      }"
+                      :pagination="false"
+                      :animate-rows="false"
+                      :loading="loading"
+                      @grid-ready="onFur2InReady"
+                      @first-data-rendered="autoSizeOnFirstData"
+                    />
                   </div>
                 </TabPanel>
                 <TabPanel value="out" class="flex h-full flex-col overflow-hidden !p-0">
@@ -589,14 +691,31 @@ function onElim2() {
                   <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
                     <label class="w-8 shrink-0 text-xs text-muted-foreground">原因</label>
                     <InputText v-model="reason2" class="w-48 shrink-0" />
-                    <Button variant="outlined" severity="danger" class="shrink-0 whitespace-nowrap" @click="onElim2">炉后吊销</Button>
+                    <Button variant="outlined" severity="danger" class="shrink-0 whitespace-nowrap" @click="onElim2"
+                      >炉后吊销</Button
+                    >
                   </div>
                   <div class="min-h-0 flex-1 overflow-hidden">
-                    <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                      :default-col-def="hmxDefaultColDef" :column-defs="fur2OutColDefs" :row-data="fur2Out"
-                      :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-                      :pagination="false" :animate-rows="false" :loading="loading"
-                      @grid-ready="onFur2OutReady" @first-data-rendered="autoSizeOnFirstData" />
+                    <AgGridVue
+                      class="hmx-ag-grid h-full w-full"
+                      :theme="theme"
+                      :locale-text="AG_GRID_LOCALE_CN"
+                      :default-col-def="hmxDefaultColDef"
+                      :column-defs="fur2OutColDefs"
+                      :row-data="fur2Out"
+                      :row-selection="{
+                        mode: 'multiRow',
+                        checkboxes: true,
+                        headerCheckbox: true,
+                        enableClickSelection: true,
+                        enableSelectionWithoutKeys: true,
+                      }"
+                      :pagination="false"
+                      :animate-rows="false"
+                      :loading="loading"
+                      @grid-ready="onFur2OutReady"
+                      @first-data-rendered="autoSizeOnFirstData"
+                    />
                   </div>
                 </TabPanel>
               </TabPanels>
@@ -606,8 +725,13 @@ function onElim2() {
       </SplitterPanel>
     </Splitter>
 
-    <Dialog :visible="confirmOpen" modal :header="confirmCaption"
-      :style="{ width: 'min(30rem, calc(100vw - 2rem))' }" @update:visible="confirmOpen = $event">
+    <Dialog
+      :visible="confirmOpen"
+      modal
+      :header="confirmCaption"
+      :style="{ width: 'min(30rem, calc(100vw - 2rem))' }"
+      @update:visible="confirmOpen = $event"
+    >
       <p class="text-xs whitespace-pre-line">{{ confirmMsg }}</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />

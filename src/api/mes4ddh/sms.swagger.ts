@@ -102,44 +102,32 @@ export type { Tyd2000Dto };
 export const tms3000Api = {
   /** 删除坯料（原 DelSjByPieceNo，FrmYD2010 btnDeleteSJ） */
   delSjByPieceNo(data?: string[]) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMS.Services/tms3000/delSjByPieceNo",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMS.Services/tms3000/delSjByPieceNo", {
+      method: "post",
+      data,
+    });
   },
   /** 标记异常坯（原 SetException，FrmYD2010 btnSetException） */
   setException(data?: MS3000ExceptionDto) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMS.Services/tms3000/setException",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMS.Services/tms3000/setException", {
+      method: "post",
+      data,
+    });
   },
   /** 取消标记异常（原 CancelException，FrmYD2010 btnSetCancelException） */
   cancelException(data?: MS3000ExceptionDto) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMS.Services/tms3000/cancelException",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMS.Services/tms3000/cancelException", {
+      method: "post",
+      data,
+    });
   },
   /** 板坯导入入库（原 ImportSlab，FrmYD2010 simpleButton1） */
   importSlab(data?: SlabImportDto[], lineCode?: string, machineCode?: string, storeCode?: string) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMS.Services/tms3000/importSlab",
-      {
-        method: "post",
-        data,
-        params: { lineCode, machineCode, storeCode },
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMS.Services/tms3000/importSlab", {
+      method: "post",
+      data,
+      params: { lineCode, machineCode, storeCode },
+    });
   },
   /** 查询炼钢产出实绩（原 QueryList，MS9000） */
   queryList(data?: unknown) {
@@ -174,34 +162,25 @@ export const tms3000Api = {
 export const tms9001Api = {
   /** 取消匹配订单（原 CancelMathPlanAndZp，FrmYD2010 btnCancelOrder） */
   cancelMathPlanAndZp(data?: Tms9000MatchDto) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMS.Services/tms9001/cancelMathPlanAndZp",
-      {
-        method: "post",
-        data,
-      },
-    );
+    return requestClient.request<any>("/dDH.Service.SMS.Services/tms9001/cancelMathPlanAndZp", {
+      method: "post",
+      data,
+    });
   },
   /** 库存坯料查询（原 QueryStorages，MS9010 btnQueryStorage） */
   queryStorages(data?: MS3000SjInputDto) {
-    return requestClient.request<Tyd2000Dto[]>(
-      "/dDH.Service.SMS.Services/tms9001/queryStorages",
-      { method: "post", data },
-    );
+    return requestClient.request<Tyd2000Dto[]>("/dDH.Service.SMS.Services/tms9001/queryStorages", {
+      method: "post",
+      data,
+    });
   },
   /** 匹配计划（原 MathPlan，MS9010 btnMatch） */
   mathPlan(data?: Tms9000MatchDto) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMS.Services/tms9001/mathPlan",
-      { method: "post", data },
-    );
+    return requestClient.request<any>("/dDH.Service.SMS.Services/tms9001/mathPlan", { method: "post", data });
   },
   /** 取消匹配（原 CancelMathPlan，MS9010 btnCancelMatch） */
   cancelMathPlan(data?: Tms9000MatchDto) {
-    return requestClient.request<any>(
-      "/dDH.Service.SMS.Services/tms9001/cancelMathPlan",
-      { method: "post", data },
-    );
+    return requestClient.request<any>("/dDH.Service.SMS.Services/tms9001/cancelMathPlan", { method: "post", data });
   },
   /** 匹配计划+组批（原 MathPlanAndZp，MS9001/MS2141） */
   mathPlanAndZp(data?: unknown) {
@@ -229,10 +208,10 @@ export const tms9001Api = {
 /** 炼钢公共配置（原 IPublicKVAppService，MP2033/炼钢） */
 export const publicKVApi = {
   getMSConfig(code?: string, enable?: string) {
-    return requestClient.request<HmxKv[]>(
-      "/dDH.Service.SMS.Services.PublicInterface/publicKV/getMSConfig",
-      { method: "post", params: { code, enable } },
-    );
+    return requestClient.request<HmxKv[]>("/dDH.Service.SMS.Services.PublicInterface/publicKV/getMSConfig", {
+      method: "post",
+      params: { code, enable },
+    });
   },
   getKvInfo(data?: unknown) {
     return requestClient.request<any>("/dDH.Service.SMS.Services.PublicInterface/publicKV/getKvInfo", {
@@ -673,16 +652,22 @@ export const frmMS2030Api = {
 
 export const uCMSStoveInputInfoApi = {
   getStoveInputInfo(data?: unknown) {
-    return requestClient.request<any>("/dDH.Service.SMS.Services.SMSControlServices/uCMSStoveInputInfo/getStoveInputInfo", {
-      method: "post",
-      data,
-    });
+    return requestClient.request<any>(
+      "/dDH.Service.SMS.Services.SMSControlServices/uCMSStoveInputInfo/getStoveInputInfo",
+      {
+        method: "post",
+        data,
+      },
+    );
   },
   saveStoveInputInfo(data?: unknown) {
-    return requestClient.request<any>("/dDH.Service.SMS.Services.SMSControlServices/uCMSStoveInputInfo/saveStoveInputInfo", {
-      method: "post",
-      data,
-    });
+    return requestClient.request<any>(
+      "/dDH.Service.SMS.Services.SMSControlServices/uCMSStoveInputInfo/saveStoveInputInfo",
+      {
+        method: "post",
+        data,
+      },
+    );
   },
 };
 
@@ -1003,10 +988,13 @@ export const frmMS1050Api = {
 
 export const publicFactoryLineAreaMachineApi = {
   getFactoryLineAreaMachine_LG(data?: unknown) {
-    return requestClient.request<any>("/dDH.Service.SMS.Services.PublicInterface/publicFactoryLineAreaMachine/getFactoryLineAreaMachine_LG", {
-      method: "post",
-      data,
-    });
+    return requestClient.request<any>(
+      "/dDH.Service.SMS.Services.PublicInterface/publicFactoryLineAreaMachine/getFactoryLineAreaMachine_LG",
+      {
+        method: "post",
+        data,
+      },
+    );
   },
 };
 
@@ -1059,7 +1047,8 @@ export const frmMS2100XShiftInfoQueryApi = {
       method: "post",
       data,
     });
-  },};
+  },
+};
 
 export const frmMS2100ZLVirtualStoveNoApi = {
   getVirtualStoveNoDatas(data?: unknown) {
@@ -1069,10 +1058,13 @@ export const frmMS2100ZLVirtualStoveNoApi = {
     });
   },
   checkPreviewOrAddVirtualStoveNo(data?: unknown) {
-    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2100_ZL_VirtualStoveNo/checkPreviewOrAddVirtualStoveNo", {
-      method: "post",
-      data,
-    });
+    return requestClient.request<any>(
+      "/dDH.Service.SMS.Services/frmMS2100_ZL_VirtualStoveNo/checkPreviewOrAddVirtualStoveNo",
+      {
+        method: "post",
+        data,
+      },
+    );
   },
 };
 
@@ -1177,82 +1169,142 @@ export const frmMS2110LFFullApi = {
 
 export const frmMS2120RHFullApi = {
   queryRoutePlans(data?: unknown) {
-    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2120_RH/queryRoutePlans", { method: "post", data });
+    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2120_RH/queryRoutePlans", {
+      method: "post",
+      data,
+    });
   },
   checkStoveArrived(data?: unknown) {
-    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2120_RH/checkStoveArrived", { method: "post", data });
+    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2120_RH/checkStoveArrived", {
+      method: "post",
+      data,
+    });
   },
   stoveArrived(data?: unknown) {
     return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2120_RH/stoveArrived", { method: "post", data });
   },
   checkCancelStoveArrived(data?: unknown) {
-    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2120_RH/checkCancelStoveArrived", { method: "post", data });
+    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2120_RH/checkCancelStoveArrived", {
+      method: "post",
+      data,
+    });
   },
   cancelStoveArrived(data?: unknown) {
-    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2120_RH/cancelStoveArrived", { method: "post", data });
+    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2120_RH/cancelStoveArrived", {
+      method: "post",
+      data,
+    });
   },
   checkStoveLeave(data?: unknown) {
-    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2120_RH/checkStoveLeave", { method: "post", data });
+    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2120_RH/checkStoveLeave", {
+      method: "post",
+      data,
+    });
   },
   stoveLeave(data?: unknown) {
     return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2120_RH/stoveLeave", { method: "post", data });
   },
   getTms2013RHData(data?: unknown) {
-    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2120_RH/getTms2013RHData", { method: "post", data });
+    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2120_RH/getTms2013RHData", {
+      method: "post",
+      data,
+    });
   },
   saveTms2013RHData(data?: unknown) {
-    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2120_RH/saveTms2013RHData", { method: "post", data });
+    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2120_RH/saveTms2013RHData", {
+      method: "post",
+      data,
+    });
   },
 };
 
 export const frmMS2130LZFullApi = {
   queryRoutePlans(data?: unknown) {
-    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2130_LZ/queryRoutePlans", { method: "post", data });
+    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2130_LZ/queryRoutePlans", {
+      method: "post",
+      data,
+    });
   },
   checkStoveArrived(data?: unknown) {
-    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2130_LZ/checkStoveArrived", { method: "post", data });
+    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2130_LZ/checkStoveArrived", {
+      method: "post",
+      data,
+    });
   },
   stoveArrived(data?: unknown) {
     return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2130_LZ/stoveArrived", { method: "post", data });
   },
   checkCancelStoveArrived(data?: unknown) {
-    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2130_LZ/checkCancelStoveArrived", { method: "post", data });
+    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2130_LZ/checkCancelStoveArrived", {
+      method: "post",
+      data,
+    });
   },
   cancelStoveArrived(data?: unknown) {
-    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2130_LZ/cancelStoveArrived", { method: "post", data });
+    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2130_LZ/cancelStoveArrived", {
+      method: "post",
+      data,
+    });
   },
   checkStoveProBeg(data?: unknown) {
-    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2130_LZ/checkStoveProBeg", { method: "post", data });
+    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2130_LZ/checkStoveProBeg", {
+      method: "post",
+      data,
+    });
   },
   stoveProBeg(data?: unknown) {
     return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2130_LZ/stoveProBeg", { method: "post", data });
   },
   checkCancelStoveProBeg(data?: unknown) {
-    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2130_LZ/checkCancelStoveProBeg", { method: "post", data });
+    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2130_LZ/checkCancelStoveProBeg", {
+      method: "post",
+      data,
+    });
   },
   cancelStoveProBeg(data?: unknown) {
-    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2130_LZ/cancelStoveProBeg", { method: "post", data });
+    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2130_LZ/cancelStoveProBeg", {
+      method: "post",
+      data,
+    });
   },
   checkStoveProEnd(data?: unknown) {
-    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2130_LZ/checkStoveProEnd", { method: "post", data });
+    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2130_LZ/checkStoveProEnd", {
+      method: "post",
+      data,
+    });
   },
   stoveProEnd(data?: unknown) {
     return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2130_LZ/stoveProEnd", { method: "post", data });
   },
   checkCancelStoveProEnd(data?: unknown) {
-    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2130_LZ/checkCancelStoveProEnd", { method: "post", data });
+    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2130_LZ/checkCancelStoveProEnd", {
+      method: "post",
+      data,
+    });
   },
   cancelStoveProEnd(data?: unknown) {
-    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2130_LZ/cancelStoveProEnd", { method: "post", data });
+    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2130_LZ/cancelStoveProEnd", {
+      method: "post",
+      data,
+    });
   },
   getTms2014CCMData(data?: unknown) {
-    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2130_LZ/getTms2014CCMData", { method: "post", data });
+    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2130_LZ/getTms2014CCMData", {
+      method: "post",
+      data,
+    });
   },
   saveTms2014CCMData(data?: unknown) {
-    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2130_LZ/saveTms2014CCMData", { method: "post", data });
+    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2130_LZ/saveTms2014CCMData", {
+      method: "post",
+      data,
+    });
   },
   setTextEditShow(data?: unknown) {
-    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2130_LZ/setTextEditShow", { method: "post", data });
+    return requestClient.request<any>("/dDH.Service.SMS.Services/frmMS2130_LZ/setTextEditShow", {
+      method: "post",
+      data,
+    });
   },
 };
 

@@ -132,8 +132,12 @@ const q = reactive({
 });
 
 type MachRaw = {
-  machineCode?: string; machineName?: string; lineCode?: string; routeProcValue?: string;
-  cCode?: string; cName?: string;
+  machineCode?: string;
+  machineName?: string;
+  lineCode?: string;
+  routeProcValue?: string;
+  cCode?: string;
+  cName?: string;
 };
 const machineOptions = ref<{ label: string; value: string }[]>([]);
 
@@ -149,7 +153,9 @@ function decimalRange(lo: number | null, hi: number | null): DecimalRange {
   return { min: lo, max: hi };
 }
 
-function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
+function onGridReady(e: GridReadyEvent) {
+  gridApi.value = e.api;
+}
 
 /** 原 FrmMS9000_Load：机台下拉 = 产线命中 && RouteProcValue.StartsWith(Consts_MS.CCM="CCM")，按编码去重排序 */
 async function loadMachines() {
@@ -167,7 +173,9 @@ async function loadMachines() {
     machineOptions.value = [...map.entries()]
       .sort((a, b) => a[0].localeCompare(b[0]))
       .map(([value, label]) => ({ label, value }));
-  } catch { /* 拦截层已 toast */ }
+  } catch {
+    /* 拦截层已 toast */
+  }
 }
 
 /** 原 btnQuery_Click → Proxy.QueryList(_inputDto) */
@@ -192,7 +200,9 @@ async function onQuery() {
   }
 }
 
-onMounted(() => { void loadMachines(); });
+onMounted(() => {
+  void loadMachines();
+});
 </script>
 
 <template>
@@ -201,8 +211,15 @@ onMounted(() => { void loadMachines(); });
     <div class="grid shrink-0 grid-cols-6 items-center gap-x-3 gap-y-1.5 border-b border-border/60 px-2 py-1.5">
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-12 shrink-0 text-xs text-muted-foreground">机台</label>
-        <Select v-model="q.machine" :options="machineOptions" option-label="label" option-value="value"
-          show-clear placeholder="请选择" class="min-w-0 flex-1" />
+        <Select
+          v-model="q.machine"
+          :options="machineOptions"
+          option-label="label"
+          option-value="value"
+          show-clear
+          placeholder="请选择"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-12 shrink-0 text-xs text-muted-foreground">炉号</label>
@@ -230,8 +247,16 @@ onMounted(() => { void loadMachines(); });
       </div>
       <div class="col-span-2 flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">产出时间</label>
-        <DatePicker v-model="q.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-          show-time hour-format="24" show-icon class="min-w-0 flex-1" />
+        <DatePicker
+          v-model="q.dates"
+          selection-mode="range"
+          :manual-input="false"
+          date-format="yy-mm-dd"
+          show-time
+          hour-format="24"
+          show-icon
+          class="min-w-0 flex-1"
+        />
       </div>
     </div>
 
@@ -245,11 +270,19 @@ onMounted(() => { void loadMachines(); });
 
     <!-- 主表（gridControl1 / gridView1，绑定实体 Tms3000） -->
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows"
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="rows"
         grand-total-row="pinnedBottom"
-        :pagination="false" :loading="querying" @grid-ready="onGridReady"
-        @first-data-rendered="autoSizeOnFirstData" />
+        :pagination="false"
+        :loading="querying"
+        @grid-ready="onGridReady"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
   </div>
 </template>

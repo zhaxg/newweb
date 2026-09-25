@@ -46,7 +46,13 @@ const columnDefs: ColDef[] = [
   { colId: "createTime", field: "createTime", headerName: "创建时间", width: 130 },
   { colId: "lastModifier", field: "lastModifier", headerName: "最后修改人", width: 90 },
   { colId: "lastModifyTime", field: "lastModifyTime", headerName: "最后更新时间", width: 130 },
-  { colId: "cState", field: "cState", headerName: "状态", width: 70, valueFormatter: (p) => stateText(p.data as HmxRole) },
+  {
+    colId: "cState",
+    field: "cState",
+    headerName: "状态",
+    width: 70,
+    valueFormatter: (p) => stateText(p.data as HmxRole),
+  },
 ];
 
 async function query() {
@@ -184,8 +190,15 @@ function stateText(row: HmxRole | undefined): string {
   <div class="flex min-h-0 flex-1 flex-col">
     <!-- 工具栏（对应原 FrmRoleList stackPanel：查询/添加/删除/保存/编辑用户/菜单与功能权限） -->
     <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
-      <InputText v-model="keyword" maxlength="100" placeholder="关键字" autocapitalize="off" spellcheck="false"
-        class="w-48 shrink-0" @keydown.enter="query" />
+      <InputText
+        v-model="keyword"
+        maxlength="100"
+        placeholder="关键字"
+        autocapitalize="off"
+        spellcheck="false"
+        class="w-48 shrink-0"
+        @keydown.enter="query"
+      />
       <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="query">
         <IconSearch class="h-3 w-3" />查询
       </Button>
@@ -209,16 +222,32 @@ function stateText(row: HmxRole | undefined): string {
 
     <!-- 角色信息：ag-grid 行内编辑（双击或 F2 进入编辑，回车/失焦提交） -->
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="columnDefs"
-        :default-col-def="hmxDefaultColDef" :row-data="trackList" :get-row-id="getRowId" :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
-        :pagination="false" :animate-rows="false" :locale-text="AG_GRID_LOCALE_CN" @grid-ready="onGridReady"
-        @selection-changed="onSelectionChanged" @cell-value-changed="onCellValueChanged"
-        @first-data-rendered="autoSizeOnFirstData" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :column-defs="columnDefs"
+        :default-col-def="hmxDefaultColDef"
+        :row-data="trackList"
+        :get-row-id="getRowId"
+        :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
+        :pagination="false"
+        :animate-rows="false"
+        :locale-text="AG_GRID_LOCALE_CN"
+        @grid-ready="onGridReady"
+        @selection-changed="onSelectionChanged"
+        @cell-value-changed="onCellValueChanged"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
 
     <!-- 删除确认（对应原 MsgBox.ShowYesNo("是否确定删除角色「xxx」？")） -->
-    <Dialog :visible="confirmOpen" modal header="删除确认" :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
-      @update:visible="confirmOpen = $event">
+    <Dialog
+      :visible="confirmOpen"
+      modal
+      header="删除确认"
+      :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
+      @update:visible="confirmOpen = $event"
+    >
       <p class="text-xs">是否确定删除角色「{{ confirmTarget?.cRoleName }}」？</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />

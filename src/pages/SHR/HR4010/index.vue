@@ -73,8 +73,12 @@ const loading = ref(false);
 const saving = ref(false);
 const api = ref<GridApi | null>(null);
 const hzApi = ref<GridApi | null>(null);
-function onReady(e: GridReadyEvent) { api.value = e.api; }
-function onHzReady(e: GridReadyEvent) { hzApi.value = e.api; }
+function onReady(e: GridReadyEvent) {
+  api.value = e.api;
+}
+function onHzReady(e: GridReadyEvent) {
+  hzApi.value = e.api;
+}
 
 const colDefs: ColDef[] = [
   /*  { colId: "selected", field: "selected", headerName: "选择", width: 150 },
@@ -295,8 +299,13 @@ onMounted(async () => {
     <div class="grid shrink-0 grid-cols-6 items-center gap-x-3 gap-y-1.5 border-b border-border/60 px-3 py-2">
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">产线</label>
-        <Select v-model="lineCode" :options="lineOptions" option-label="label" option-value="value"
-          class="min-w-0 flex-1" />
+        <Select
+          v-model="lineCode"
+          :options="lineOptions"
+          option-label="label"
+          option-value="value"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">库区</label>
@@ -332,8 +341,17 @@ onMounted(async () => {
       </div>
       <div class="col-span-3 flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">产出时间</label>
-        <DatePicker v-model="input.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-          show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+        <DatePicker
+          v-model="input.dates"
+          selection-mode="range"
+          :manual-input="false"
+          date-format="yy-mm-dd"
+          show-time
+          hour-format="24"
+          show-icon
+          placeholder="开始 至 结束"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1">
         <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="loading" @click="query">
@@ -355,10 +373,20 @@ onMounted(async () => {
     </div>
 
     <div class="min-h-0 flex-[5] overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows"
-        :row-selection="{ mode: 'multiRow', checkboxes: true }" :pagination="false" :animate-rows="false"
-        :loading="loading" @grid-ready="onReady" @first-data-rendered="autoSizeOnFirstData" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="rows"
+        :row-selection="{ mode: 'multiRow', checkboxes: true }"
+        :pagination="false"
+        :animate-rows="false"
+        :loading="loading"
+        @grid-ready="onReady"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
 
     <Tabs :value="0" class="flex min-h-0 flex-[5] flex-col border-t border-border/60">
@@ -367,15 +395,29 @@ onMounted(async () => {
       </TabList>
       <TabPanels class="min-h-0 flex-1">
         <TabPanel :value="0" class="h-full p-0">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="hzColDefs" :row-data="hzRows" :pagination="false"
-            :animate-rows="false" @grid-ready="onHzReady" @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="hzColDefs"
+            :row-data="hzRows"
+            :pagination="false"
+            :animate-rows="false"
+            @grid-ready="onHzReady"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </TabPanel>
       </TabPanels>
     </Tabs>
 
-    <Dialog :visible="confirmOpen" modal header="确认" :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
-      @update:visible="confirmOpen = $event">
+    <Dialog
+      :visible="confirmOpen"
+      modal
+      header="确认"
+      :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
+      @update:visible="confirmOpen = $event"
+    >
       <p class="text-xs">{{ confirmMsg }}</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />

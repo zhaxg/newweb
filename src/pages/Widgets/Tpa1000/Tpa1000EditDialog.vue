@@ -43,14 +43,10 @@ const LEVEL_OPTIONS = [
 ];
 
 const lineOptions = computed(() =>
-  props.parents
-    .filter((p) => p.nLevel === 10)
-    .map((p) => ({ label: p.cName, value: p.cCode })),
+  props.parents.filter((p) => p.nLevel === 10).map((p) => ({ label: p.cName, value: p.cCode })),
 );
 
-const parentOptions = computed(() =>
-  props.parents.map((p) => ({ label: p.cName, value: p.cCode })),
-);
+const parentOptions = computed(() => props.parents.map((p) => ({ label: p.cName, value: p.cCode })));
 
 const form = reactive<Tpa1000>({
   id: "",
@@ -100,24 +96,47 @@ function onSubmit() {
 </script>
 
 <template>
-  <Dialog :visible="open" modal header="工厂/产线/设备编辑" :style="{ width: 'min(34rem, calc(100vw - 2rem))' }"
-    @update:visible="emit('update:open', $event)">
+  <Dialog
+    :visible="open"
+    modal
+    header="工厂/产线/设备编辑"
+    :style="{ width: 'min(34rem, calc(100vw - 2rem))' }"
+    @update:visible="emit('update:open', $event)"
+  >
     <div class="min-w-0 space-y-3 py-1">
       <div class="grid grid-cols-1 gap-x-4 gap-y-3">
         <div class="min-w-0 space-y-1">
           <label class="text-xs font-medium text-muted-foreground">父主键</label>
-          <Select v-model="form.cPid" :options="parentOptions" option-label="label" option-value="value"
-            class="w-full min-w-0" />
+          <Select
+            v-model="form.cPid"
+            :options="parentOptions"
+            option-label="label"
+            option-value="value"
+            class="w-full min-w-0"
+          />
         </div>
         <div class="min-w-0 space-y-1">
           <label class="text-xs font-medium text-muted-foreground">层级</label>
-          <Select v-model="form.nLevel" :options="LEVEL_OPTIONS" option-label="label" option-value="value"
-            class="w-full min-w-0" />
+          <Select
+            v-model="form.nLevel"
+            :options="LEVEL_OPTIONS"
+            option-label="label"
+            option-value="value"
+            class="w-full min-w-0"
+          />
         </div>
         <div class="min-w-0 space-y-1">
-          <label class="text-xs font-medium text-muted-foreground">代码<span class="ml-0.5 text-destructive">*</span></label>
-          <InputText v-model="form.cCode" :disabled="isEdit" placeholder="请输入代码" autocapitalize="off" spellcheck="false"
-            class="w-full min-w-0" />
+          <label class="text-xs font-medium text-muted-foreground"
+            >代码<span class="ml-0.5 text-destructive">*</span></label
+          >
+          <InputText
+            v-model="form.cCode"
+            :disabled="isEdit"
+            placeholder="请输入代码"
+            autocapitalize="off"
+            spellcheck="false"
+            class="w-full min-w-0"
+          />
         </div>
         <div class="min-w-0 space-y-1">
           <label class="text-xs font-medium text-muted-foreground">名称</label>
@@ -129,8 +148,13 @@ function onSubmit() {
         </div>
         <div class="min-w-0 space-y-1">
           <label class="text-xs font-medium text-muted-foreground">拼音简称</label>
-          <InputText v-model="form.cSimpCode" placeholder="请输入拼音简称" autocapitalize="off" spellcheck="false"
-            class="w-full min-w-0" />
+          <InputText
+            v-model="form.cSimpCode"
+            placeholder="请输入拼音简称"
+            autocapitalize="off"
+            spellcheck="false"
+            class="w-full min-w-0"
+          />
         </div>
         <div class="min-w-0 space-y-1">
           <label class="text-xs font-medium text-muted-foreground">流水</label>
@@ -138,13 +162,23 @@ function onSubmit() {
         </div>
         <div class="min-w-0 space-y-1">
           <label class="text-xs font-medium text-muted-foreground">产线代码</label>
-          <Select v-model="form.cLineCode" :options="lineOptions" option-label="label" option-value="value"
-            class="w-full min-w-0" />
+          <Select
+            v-model="form.cLineCode"
+            :options="lineOptions"
+            option-label="label"
+            option-value="value"
+            class="w-full min-w-0"
+          />
         </div>
         <div class="min-w-0 space-y-1">
           <label class="text-xs font-medium text-muted-foreground">工作中心代码</label>
-          <InputText v-model="form.cWorkCenter" placeholder="请输入工作中心代码" autocapitalize="off" spellcheck="false"
-            class="w-full min-w-0" />
+          <InputText
+            v-model="form.cWorkCenter"
+            placeholder="请输入工作中心代码"
+            autocapitalize="off"
+            spellcheck="false"
+            class="w-full min-w-0"
+          />
         </div>
         <div class="min-w-0 space-y-1">
           <label class="text-xs font-medium text-muted-foreground">所属工序代码</label>

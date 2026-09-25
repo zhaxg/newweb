@@ -4,13 +4,7 @@ import Button from "primevue/button";
 import InputText from "primevue/inputtext";
 import Select from "primevue/select";
 import Dialog from "primevue/dialog";
-import {
-  IconPencil,
-  IconPlus,
-  IconPrinter,
-  IconSearch,
-  IconTrash,
-} from "@tabler/icons-vue";
+import { IconPencil, IconPlus, IconPrinter, IconSearch, IconTrash } from "@tabler/icons-vue";
 import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
@@ -41,10 +35,7 @@ const addAqn = ref("");
 const printingMock = ref(false);
 const printHostRef = ref<HTMLElement | null>(null);
 
-const typeOptions = [
-  { label: "全部类型", value: "" },
-  ...PRINT_SCHEMAS.map((s) => ({ label: s.title, value: s.aqn })),
-];
+const typeOptions = [{ label: "全部类型", value: "" }, ...PRINT_SCHEMAS.map((s) => ({ label: s.title, value: s.aqn }))];
 
 const colDefs: ColDef[] = [
   { field: "id", headerName: "ID", width: 160 },
@@ -76,9 +67,7 @@ function applyFilter() {
   rows.value = allRows.value.filter((r) => {
     if (tf && r.cDataType !== tf && !String(r.cDataType).includes(tf)) return false;
     if (!kw) return true;
-    const hay = [r.id, r.cDataType, r.cComments, r.creator, r.lastModifier]
-      .join(" ")
-      .toLowerCase();
+    const hay = [r.id, r.cDataType, r.cComments, r.creator, r.lastModifier].join(" ").toLowerCase();
     return hay.includes(kw);
   });
 }
@@ -238,12 +227,8 @@ onMounted(() => {
       <Button text class="shrink-0 whitespace-nowrap" :loading="querying" @click="onQuery">
         <IconSearch class="h-3 w-3" />查询
       </Button>
-      <Button text class="shrink-0 whitespace-nowrap" @click="onAdd">
-        <IconPlus class="h-3 w-3" />添加
-      </Button>
-      <Button text class="shrink-0 whitespace-nowrap" @click="onEdit">
-        <IconPencil class="h-3 w-3" />编辑
-      </Button>
+      <Button text class="shrink-0 whitespace-nowrap" @click="onAdd"> <IconPlus class="h-3 w-3" />添加 </Button>
+      <Button text class="shrink-0 whitespace-nowrap" @click="onEdit"> <IconPencil class="h-3 w-3" />编辑 </Button>
       <Button text severity="danger" class="shrink-0 whitespace-nowrap" @click="onDelete">
         <IconTrash class="h-3 w-3" />删除
       </Button>
@@ -270,12 +255,7 @@ onMounted(() => {
       />
     </div>
 
-    <Dialog
-      v-model:visible="addOpen"
-      modal
-      header="选择数据类型"
-      :style="{ width: 'min(28rem, calc(100vw - 2rem))' }"
-    >
+    <Dialog v-model:visible="addOpen" modal header="选择数据类型" :style="{ width: 'min(28rem, calc(100vw - 2rem))' }">
       <div class="flex flex-col gap-2 py-2">
         <label class="text-xs text-muted-foreground">打印数据源（IXtraReportDataSourceDto）</label>
         <Select
@@ -286,9 +266,7 @@ onMounted(() => {
           class="w-full"
           placeholder="请选择"
         />
-        <p class="text-xs text-muted-foreground">
-          与原类型选择器一致的 6 类 AQN；确认后在新窗打开空布局设计器。
-        </p>
+        <p class="text-xs text-muted-foreground">与原类型选择器一致的 6 类 AQN；确认后在新窗打开空布局设计器。</p>
       </div>
       <template #footer>
         <Button text label="取消" @click="addOpen = false" />

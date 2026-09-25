@@ -324,95 +324,95 @@ function updatePointInfo(dto: PointDto | null): void {
 
 /* ===== 计划表（原 gridControl1/gridView1 ViewCaption=炉次计划：89 列） ===== */
 const planCols = ref<ColDef[]>([
-      { field: "selected", headerName: "选择", hide: true },
-      { field: "cPlanTime", headerName: "计划日期", width: 112 },
-      { field: "cCcCode", headerName: "连铸代码", width: 112 },
-      { field: "cSgCode", headerName: "钢种", width: 86 },
-      { field: "cSgStd", headerName: "执行标准", width: 112 },
-      { field: "cZGLineCode", headerName: "轧制产线", width: 112 },
-      { field: "cPono", headerName: "制造命令号", width: 83 },
-      { field: "cJcNo", headerName: "浇次号", width: 99 },
-      { field: "nSortJc", headerName: "炉数", width: 119 },
-      { field: "cDownDdUser", headerName: "下发调度人", width: 83 },
-      { field: "dDownDdTime", headerName: "下发调度时间", width: 95 },
-      { field: "creator", headerName: "创建人", width: 99 },
-      { field: "createTime", headerName: "创建时间", width: 112 },
-      { field: "cSpec", headerName: "规格", width: 86 },
-      { field: "nThick", headerName: "坯厚", width: 86 },
-      { field: "nWidth", headerName: "坯宽", width: 86 },
-      { field: "nLen", headerName: "坯长", width: 86 },
-      { field: "cOrderNo", headerName: "订单号", width: 99 },
-      { field: "cTsyq", headerName: "特殊要求", width: 112 },
-      { field: "cIsZb", headerName: "是否备坯计划", width: 95 },
-      { field: "cRemark", headerName: "反馈结果", width: 112 },
-      { field: "nGenerateRoutePlan", headerName: "生成工艺路线计划", width: 119 },
-      { field: "cLineName", headerName: "产线名称", width: 112 },
-      { field: "id", headerName: "主键", hide: true },
-      { field: "nStatus", headerName: "处理标记", hide: true },
-      { field: "cJcFk", headerName: "浇次主键", hide: true },
-      { field: "cStove", headerName: "炉号", hide: true },
-      { field: "nQua", headerName: "支数", hide: true },
-      { field: "nWgt", headerName: "坯重", hide: true },
-      { field: "nSort", headerName: "顺序号", hide: true },
-      { field: "cMatCode", headerName: "物料编码", hide: true },
-      { field: "cMatName", headerName: "物料名称", hide: true },
-      { field: "dUseTime", headerName: "可用时间", hide: true },
-      { field: "cRoute", headerName: "工艺路线", hide: true },
-      { field: "dJhqTime", headerName: "交期", hide: true },
-      { field: "cCustName", headerName: "客户名称", hide: true },
-      { field: "nLgCn", headerName: "炼钢产能", hide: true },
-      { field: "cLenMx", headerName: "长度明细", hide: true },
-      { field: "cSgCodeStd", headerName: "钢种标准", hide: true },
-      { field: "cStNo", headerName: "制造标准号", hide: true },
-      { field: "dDownLgsc", headerName: "下发生产时间", hide: true },
-      { field: "cDownLgscUser", headerName: "下发人", hide: true },
-      { field: "nWgtMeter", headerName: "米单重", hide: true },
-      { field: "cSpecOrder", headerName: "成品规格", hide: true },
-      { field: "cLineCode", headerName: "产线", hide: true },
-      { field: "cIsSl", headerName: "是否收料", hide: true },
-      { field: "cPotType", headerName: "包况", hide: true },
-      { field: "cPotNo", headerName: "罐号", hide: true },
-      { field: "cPotNoId", headerName: "包数据ID", hide: true },
-      { field: "cStoveLocation", headerName: "最新炉次位置", hide: true },
-      { field: "cStoveLocationStation", headerName: "最新炉次工位", hide: true },
-      { field: "cStoveState", headerName: "最新炉次状态", hide: true },
-      { field: "cStovePlanId", headerName: "炉次计划id", hide: true },
-      { field: "cToCurrentStoveSplitMergeType", headerName: "生成当前炉次的拆合类型", hide: true },
-      { field: "cToCurrentStoveSplitMergeTypeSign", headerName: "生成当前炉次的拆合类型标识", hide: true },
-      { field: "cStoveSplitMergeType", headerName: "炉次拆合类型", hide: true },
-      { field: "cStoveSplitMergeTypeSign", headerName: "炉次拆合类型标识", hide: true },
-      { field: "cStoveChangeId", headerName: "炉次最终更改标识id", hide: true },
-      { field: "cStoveChangeMachinename", headerName: "炉次最终更改位置", hide: true },
-      { field: "cQmAdjust", headerName: "质检改判", hide: true },
-      { field: "cQmAdjustActualId", headerName: "最终质检改判时炉次工序机台实际id", hide: true },
-      { field: "cRefurnace", headerName: "炉次回炉", hide: true },
-      { field: "cRefurnaceState", headerName: "炉次回炉状态", hide: true },
-      { field: "cRefurnaceActualId", headerName: "炉次回炉时炉次工序机台实际id", hide: true },
-      { field: "cMoveGs", headerName: "炉次转钢水", hide: true },
-      { field: "cMoveGsSign", headerName: "炉次转钢水标识", hide: true },
-      { field: "cMoveGsPlanId", headerName: "炉次转钢水时炉次工序机台计划id", hide: true },
-      { field: "cEnable", headerName: "启用", hide: true },
-      { field: "cNotEnableBackup", headerName: "不启用状态备注", hide: true },
-      { field: "dAccountDate", headerName: "账务日期", hide: true },
-      { field: "nMixStove", headerName: "混合炉", hide: true },
-      { field: "cBackup", headerName: "备注", hide: true },
-      { field: "timestamp", headerName: "时间戳", hide: true },
-      { field: "lastModifier", headerName: "最后修改人", hide: true },
-      { field: "lastModifyTime", headerName: "最后修改时间", hide: true },
-      { field: "cSw01", headerName: "备用字段1", hide: true },
-      { field: "cSw02", headerName: "备用字段2", hide: true },
-      { field: "cSw03", headerName: "备用字段3", hide: true },
-      { field: "cSw04", headerName: "备用字段4", hide: true },
-      { field: "cSw05", headerName: "备用字段5", hide: true },
-      { field: "cSw06", headerName: "备用字段6", hide: true },
-      { field: "qM_RouteCode", headerName: "QM_RouteCode", hide: true },
-      { field: "qM_RouteDesc", headerName: "QM_RouteDesc", hide: true },
-      { field: "qM_RouteShortOldSysCode", headerName: "QM_RouteShortOldSysCode", hide: true },
-      { field: "stoveRouteDataAddToGanttTemp", headerName: "是否是炉次工艺路线数据临时添加至甘特图", hide: true },
-      { field: "cDelFlag", headerName: "删除标识", hide: true },
-      { field: "cLdCode", headerName: "转炉代码", hide: true },
-      { field: "cLfCode", headerName: "精炼代码", hide: true },
-      { field: "cRhCode", headerName: "真空代码", hide: true },
+  { field: "selected", headerName: "选择", hide: true },
+  { field: "cPlanTime", headerName: "计划日期", width: 112 },
+  { field: "cCcCode", headerName: "连铸代码", width: 112 },
+  { field: "cSgCode", headerName: "钢种", width: 86 },
+  { field: "cSgStd", headerName: "执行标准", width: 112 },
+  { field: "cZGLineCode", headerName: "轧制产线", width: 112 },
+  { field: "cPono", headerName: "制造命令号", width: 83 },
+  { field: "cJcNo", headerName: "浇次号", width: 99 },
+  { field: "nSortJc", headerName: "炉数", width: 119 },
+  { field: "cDownDdUser", headerName: "下发调度人", width: 83 },
+  { field: "dDownDdTime", headerName: "下发调度时间", width: 95 },
+  { field: "creator", headerName: "创建人", width: 99 },
+  { field: "createTime", headerName: "创建时间", width: 112 },
+  { field: "cSpec", headerName: "规格", width: 86 },
+  { field: "nThick", headerName: "坯厚", width: 86 },
+  { field: "nWidth", headerName: "坯宽", width: 86 },
+  { field: "nLen", headerName: "坯长", width: 86 },
+  { field: "cOrderNo", headerName: "订单号", width: 99 },
+  { field: "cTsyq", headerName: "特殊要求", width: 112 },
+  { field: "cIsZb", headerName: "是否备坯计划", width: 95 },
+  { field: "cRemark", headerName: "反馈结果", width: 112 },
+  { field: "nGenerateRoutePlan", headerName: "生成工艺路线计划", width: 119 },
+  { field: "cLineName", headerName: "产线名称", width: 112 },
+  { field: "id", headerName: "主键", hide: true },
+  { field: "nStatus", headerName: "处理标记", hide: true },
+  { field: "cJcFk", headerName: "浇次主键", hide: true },
+  { field: "cStove", headerName: "炉号", hide: true },
+  { field: "nQua", headerName: "支数", hide: true },
+  { field: "nWgt", headerName: "坯重", hide: true },
+  { field: "nSort", headerName: "顺序号", hide: true },
+  { field: "cMatCode", headerName: "物料编码", hide: true },
+  { field: "cMatName", headerName: "物料名称", hide: true },
+  { field: "dUseTime", headerName: "可用时间", hide: true },
+  { field: "cRoute", headerName: "工艺路线", hide: true },
+  { field: "dJhqTime", headerName: "交期", hide: true },
+  { field: "cCustName", headerName: "客户名称", hide: true },
+  { field: "nLgCn", headerName: "炼钢产能", hide: true },
+  { field: "cLenMx", headerName: "长度明细", hide: true },
+  { field: "cSgCodeStd", headerName: "钢种标准", hide: true },
+  { field: "cStNo", headerName: "制造标准号", hide: true },
+  { field: "dDownLgsc", headerName: "下发生产时间", hide: true },
+  { field: "cDownLgscUser", headerName: "下发人", hide: true },
+  { field: "nWgtMeter", headerName: "米单重", hide: true },
+  { field: "cSpecOrder", headerName: "成品规格", hide: true },
+  { field: "cLineCode", headerName: "产线", hide: true },
+  { field: "cIsSl", headerName: "是否收料", hide: true },
+  { field: "cPotType", headerName: "包况", hide: true },
+  { field: "cPotNo", headerName: "罐号", hide: true },
+  { field: "cPotNoId", headerName: "包数据ID", hide: true },
+  { field: "cStoveLocation", headerName: "最新炉次位置", hide: true },
+  { field: "cStoveLocationStation", headerName: "最新炉次工位", hide: true },
+  { field: "cStoveState", headerName: "最新炉次状态", hide: true },
+  { field: "cStovePlanId", headerName: "炉次计划id", hide: true },
+  { field: "cToCurrentStoveSplitMergeType", headerName: "生成当前炉次的拆合类型", hide: true },
+  { field: "cToCurrentStoveSplitMergeTypeSign", headerName: "生成当前炉次的拆合类型标识", hide: true },
+  { field: "cStoveSplitMergeType", headerName: "炉次拆合类型", hide: true },
+  { field: "cStoveSplitMergeTypeSign", headerName: "炉次拆合类型标识", hide: true },
+  { field: "cStoveChangeId", headerName: "炉次最终更改标识id", hide: true },
+  { field: "cStoveChangeMachinename", headerName: "炉次最终更改位置", hide: true },
+  { field: "cQmAdjust", headerName: "质检改判", hide: true },
+  { field: "cQmAdjustActualId", headerName: "最终质检改判时炉次工序机台实际id", hide: true },
+  { field: "cRefurnace", headerName: "炉次回炉", hide: true },
+  { field: "cRefurnaceState", headerName: "炉次回炉状态", hide: true },
+  { field: "cRefurnaceActualId", headerName: "炉次回炉时炉次工序机台实际id", hide: true },
+  { field: "cMoveGs", headerName: "炉次转钢水", hide: true },
+  { field: "cMoveGsSign", headerName: "炉次转钢水标识", hide: true },
+  { field: "cMoveGsPlanId", headerName: "炉次转钢水时炉次工序机台计划id", hide: true },
+  { field: "cEnable", headerName: "启用", hide: true },
+  { field: "cNotEnableBackup", headerName: "不启用状态备注", hide: true },
+  { field: "dAccountDate", headerName: "账务日期", hide: true },
+  { field: "nMixStove", headerName: "混合炉", hide: true },
+  { field: "cBackup", headerName: "备注", hide: true },
+  { field: "timestamp", headerName: "时间戳", hide: true },
+  { field: "lastModifier", headerName: "最后修改人", hide: true },
+  { field: "lastModifyTime", headerName: "最后修改时间", hide: true },
+  { field: "cSw01", headerName: "备用字段1", hide: true },
+  { field: "cSw02", headerName: "备用字段2", hide: true },
+  { field: "cSw03", headerName: "备用字段3", hide: true },
+  { field: "cSw04", headerName: "备用字段4", hide: true },
+  { field: "cSw05", headerName: "备用字段5", hide: true },
+  { field: "cSw06", headerName: "备用字段6", hide: true },
+  { field: "qM_RouteCode", headerName: "QM_RouteCode", hide: true },
+  { field: "qM_RouteDesc", headerName: "QM_RouteDesc", hide: true },
+  { field: "qM_RouteShortOldSysCode", headerName: "QM_RouteShortOldSysCode", hide: true },
+  { field: "stoveRouteDataAddToGanttTemp", headerName: "是否是炉次工艺路线数据临时添加至甘特图", hide: true },
+  { field: "cDelFlag", headerName: "删除标识", hide: true },
+  { field: "cLdCode", headerName: "转炉代码", hide: true },
+  { field: "cLfCode", headerName: "精炼代码", hide: true },
+  { field: "cRhCode", headerName: "真空代码", hide: true },
 ]);
 
 function onPlanReady(e: GridReadyEvent) {
@@ -483,21 +483,23 @@ async function initGantt() {
       publicKVApi.getMSConfig(),
       frmMS2000Api.getGanttResourcesDatas({ lineCode: lineCode || undefined }),
       historyMode
-        ? frmMS2000Api.getStoveRouteHistoryDatas1({
-            lineCode: lineCode || undefined,
-            begTime: fmt(historyBeg),
-            endTime: fmt(historyEnd),
-            stoveNoOrPono: stoveNoOrPono.value.trim() || undefined,
-          }).then((r) => {
-            const wrap = r as Row | null;
-            if (wrap && Array.isArray(wrap.ganttDataDto_StoveRoutePlans)) {
-              if (!wrap.stoveIsExist && stoveNoOrPono.value.trim().length >= 6) {
-                toast(`查询的炉次号或制造命令号为‘${stoveNoOrPono.value.trim()}’的炉次不存在！`, 3000, "warn");
+        ? frmMS2000Api
+            .getStoveRouteHistoryDatas1({
+              lineCode: lineCode || undefined,
+              begTime: fmt(historyBeg),
+              endTime: fmt(historyEnd),
+              stoveNoOrPono: stoveNoOrPono.value.trim() || undefined,
+            })
+            .then((r) => {
+              const wrap = r as Row | null;
+              if (wrap && Array.isArray(wrap.ganttDataDto_StoveRoutePlans)) {
+                if (!wrap.stoveIsExist && stoveNoOrPono.value.trim().length >= 6) {
+                  toast(`查询的炉次号或制造命令号为‘${stoveNoOrPono.value.trim()}’的炉次不存在！`, 3000, "warn");
+                }
+                return wrap.ganttDataDto_StoveRoutePlans;
               }
-              return wrap.ganttDataDto_StoveRoutePlans;
-            }
-            return arr(r);
-          })
+              return arr(r);
+            })
         : frmMS2000Api.getStoveRouteDatas({ lineCode: lineCode || undefined }),
     ]);
     /* 导出 config 行高作组件 style 参考（fitRowHeight 开启时视口均分仍优先） */
@@ -507,7 +509,9 @@ async function initGantt() {
     if (Number.isFinite(rowH) && rowH > 0) ganttStyle.value.resourceRowHeight = rowH;
     if (Number.isFinite(rowInner) && rowInner > 0) ganttStyle.value.resourceRowHeightInner = rowInner;
     resources.value = buildResources(arr(machines));
-    const dtos = arr(routeDatas).map(toPointDto).filter((d) => d.tms2010?.id);
+    const dtos = arr(routeDatas)
+      .map(toPointDto)
+      .filter((d) => d.tms2010?.id);
     applyWindow(dtos, historyMode);
     rebindGantt(dtos);
   } finally {
@@ -636,7 +640,9 @@ async function onMouseUpAfter(appt: AppointmentObject | null): Promise<void> {
 
   const [code, station = ""] = appt.resourceId.split("-");
   if (machineChanged) {
-    const list = arr(await publicFactoryLineAreaMachineApi.getFactoryLineAreaMachine_LG({ lineCode: lineCode || undefined }));
+    const list = arr(
+      await publicFactoryLineAreaMachineApi.getFactoryLineAreaMachine_LG({ lineCode: lineCode || undefined }),
+    );
     const hit = list.find(
       (x) => x.machineCode === code && (!t1.cPlanMachineStationCode || x.machineStationCode === station),
     );
@@ -730,7 +736,9 @@ async function addPoint() {
   if (!p) return;
   await frmMS2000Api.checkWhenAddGanttPoint({ tms2010Id: p.tms2010.id });
   if (p.tms2010.id) {
-    const latest = arr(await frmMS2000Api.getStoveRouteDatas({ lineCode: lineCode || undefined, gsIds: [p.tms2000?.id] }));
+    const latest = arr(
+      await frmMS2000Api.getStoveRouteDatas({ lineCode: lineCode || undefined, gsIds: [p.tms2000?.id] }),
+    );
     const mine = latest.find((x) => x.tms2010Id === p.tms2010.id || x.tms2010?.id === p.tms2010.id);
     const mineT1 = (mine?.tms2010 ?? mine) as Row | undefined;
     if (!mineT1 || p.tms2010.nActualExist !== mineT1.nActualExist) {
@@ -748,7 +756,9 @@ async function removePoint() {
   const p = rawById.get(id);
   if (!p) return;
   if (!dirtyIds.has(String(p.tms2010.id)) && p.tms2000?.id) {
-    const datas = arr(await frmMS2000Api.getStoveRouteDatas({ lineCode: lineCode || undefined, gsIds: [p.tms2000.id] }));
+    const datas = arr(
+      await frmMS2000Api.getStoveRouteDatas({ lineCode: lineCode || undefined, gsIds: [p.tms2000.id] }),
+    );
     const t1 = datas.find((x) => x.tms2010Id === p.tms2010.id || x.tms2010?.id === p.tms2010.id);
     const realT1 = (t1?.tms2010 ?? t1) as Row | undefined;
     if (realT1?.nActualExist) {
@@ -770,11 +780,19 @@ async function removePoint() {
   const gsId = p.tms2000?.id;
   const others = ganttDtos.filter((x) => x.tms2000?.id === gsId && x !== p);
   if ((p.tms2000?.cToCurrentStoveSplitMergeTypeSign || p.tms2000?.cStoveSplitMergeTypeSign) && others.length < 1) {
-    toast(`禁止操作，炉次‘${stoveNo}’参与了拆合炉，不允许通过“删除点位”的方式删除该炉次的所有工艺路线计划！`, 3500, "warn");
+    toast(
+      `禁止操作，炉次‘${stoveNo}’参与了拆合炉，不允许通过“删除点位”的方式删除该炉次的所有工艺路线计划！`,
+      3500,
+      "warn",
+    );
     return;
   }
   if (p.tms2000?.cStovePlanId && others.length < 1) {
-    toast(`禁止操作，炉次‘${stoveNo}’的炉次号已经固定，不允许通过‘删除点位’的方式删除该炉次的所有工艺路线计划！`, 3500, "warn");
+    toast(
+      `禁止操作，炉次‘${stoveNo}’的炉次号已经固定，不允许通过‘删除点位’的方式删除该炉次的所有工艺路线计划！`,
+      3500,
+      "warn",
+    );
     return;
   }
   const machineLabel = machineNameOf(p.tms2010?.cPlanMachineCode, p.tms2010?.cPlanMachineStationCode);
@@ -894,7 +912,11 @@ async function sgCodeChange() {
 async function addStovePlan() {
   const id = ganttRef.value?.chart?.currentAppointment?.appointmentId;
   if (!id) {
-    toast("请在甘特图上选择要添加的炉次锚定的甘特图炉次点位！\r\n选择本浇次的炉次在甘特图上的任意一个点位均可！", 3500, "warn");
+    toast(
+      "请在甘特图上选择要添加的炉次锚定的甘特图炉次点位！\r\n选择本浇次的炉次在甘特图上的任意一个点位均可！",
+      3500,
+      "warn",
+    );
     return;
   }
   toast("添加计划弹窗待接入（FrmMS2000_AddStovePlan）", 2500, "warn");
@@ -937,7 +959,11 @@ async function onPlanDblClick(e: RowClickedEvent) {
 /** chkAutoRefresh_EditValueChanging：确认文案照抄 */
 function onAutoRefreshToggle(v: unknown) {
   if (v === true) {
-    if (!window.confirm("注意：自动刷新开启后，若要进行甘特图调整，请先关闭自动刷新！\r\n否则调整的数据在保存前可能因自动刷新而丢失！！！")) {
+    if (
+      !window.confirm(
+        "注意：自动刷新开启后，若要进行甘特图调整，请先关闭自动刷新！\r\n否则调整的数据在保存前可能因自动刷新而丢失！！！",
+      )
+    ) {
       chkAutoRefresh.value = false;
       return;
     }
@@ -955,7 +981,11 @@ async function autoTick() {
     if (!asReportShow) await queryPlans();
     const n = new Date();
     const p = (x: number) => String(x).padStart(2, "0");
-    toast(`界面‘甘特图’自动刷新执行完毕！时间：${p(n.getHours())}:${p(n.getMinutes())}:${p(n.getSeconds())}`, 2000, "success");
+    toast(
+      `界面‘甘特图’自动刷新执行完毕！时间：${p(n.getHours())}:${p(n.getMinutes())}:${p(n.getSeconds())}`,
+      2000,
+      "success",
+    );
   } catch {
     /* 拦截层已 toast；自动刷新失败静默（照 C# catch {}） */
   }
@@ -1049,14 +1079,20 @@ onBeforeUnmount(() => {
       <label for="chkJc" class="shrink-0 text-xs text-muted-foreground">同浇次批量添加</label>
       <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="saveGanttDatas">保存</Button>
       <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="togglePlanPanel">{{ showPlanText }}</Button>
-      <Button variant="outlined" v-if="!isLg1"  class="shrink-0 whitespace-nowrap" @click="addPoint">添加点位</Button>
-      <Button variant="outlined" v-if="!isLg1"  class="shrink-0 whitespace-nowrap" @click="removePoint">删除点位</Button>
-      <Button variant="outlined" severity="danger" class="shrink-0 whitespace-nowrap" @click="removeStove">删除炉次</Button>
-      <Button  variant="outlined" severity="warn" class="shrink-0 whitespace-nowrap" @click="autoResolveConflicts">解决重叠</Button>
+      <Button variant="outlined" v-if="!isLg1" class="shrink-0 whitespace-nowrap" @click="addPoint">添加点位</Button>
+      <Button variant="outlined" v-if="!isLg1" class="shrink-0 whitespace-nowrap" @click="removePoint">删除点位</Button>
+      <Button variant="outlined" severity="danger" class="shrink-0 whitespace-nowrap" @click="removeStove"
+        >删除炉次</Button
+      >
+      <Button variant="outlined" severity="warn" class="shrink-0 whitespace-nowrap" @click="autoResolveConflicts"
+        >解决重叠</Button
+      >
       <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="planExchange">计划交换</Button>
       <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="sgCodeChange">钢种变更</Button>
       <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="addStovePlan">添加计划</Button>
-      <Button variant="outlined" v-show="false" class="shrink-0 whitespace-nowrap" @click="stoveMergeSplit">钢水分包</Button>
+      <Button variant="outlined" v-show="false" class="shrink-0 whitespace-nowrap" @click="stoveMergeSplit"
+        >钢水分包</Button
+      >
       <Checkbox :model-value="chkAutoRefresh" binary inputId="chkAr" @update:model-value="onAutoRefreshToggle" />
       <label for="chkAr" class="shrink-0 text-xs text-muted-foreground">自动更新</label>
     </div>
@@ -1065,12 +1101,7 @@ onBeforeUnmount(() => {
          报表模式查询控件靠左；点位信息居左（空则提示）；图例:[色块标签] 最右 -->
     <div class="flex h-9 shrink-0 items-center gap-1.5 overflow-x-auto border-b border-border/60 px-2 text-xs">
       <template v-if="asReportShow">
-        <Button
-          text
-          class="shrink-0 whitespace-nowrap"
-          :loading="ganttLoading"
-          @click="refreshGantt2"
-        >
+        <Button text class="shrink-0 whitespace-nowrap" :loading="ganttLoading" @click="refreshGantt2">
           <IconRefresh class="h-3 w-3" />刷新
         </Button>
         <template v-if="allowHistory">
@@ -1200,7 +1231,9 @@ onBeforeUnmount(() => {
           <Button text class="shrink-0 whitespace-nowrap" @click="movePlan(1)">下移</Button>
           <Button text class="shrink-0 whitespace-nowrap" @click="clearRoute">清除路线</Button>
           <Button text class="shrink-0 whitespace-nowrap" @click="planInvalid">计划作废</Button>
-          <Button v-show="invalidMode" text class="shrink-0 whitespace-nowrap" @click="planInvalidCancel">取消作废</Button>
+          <Button v-show="invalidMode" text class="shrink-0 whitespace-nowrap" @click="planInvalidCancel"
+            >取消作废</Button
+          >
           <span class="ml-auto text-xs font-medium text-muted-foreground">炉次计划</span>
         </div>
         <!-- 炉次计划表（原 gridControl1 Dock=Fill；双击行=原拖拽到甘特） -->
@@ -1214,7 +1247,13 @@ onBeforeUnmount(() => {
             :row-data="plans"
             :pagination="false"
             :loading="planLoading"
-            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
+            :row-selection="{
+              mode: 'multiRow',
+              checkboxes: true,
+              headerCheckbox: true,
+              enableClickSelection: true,
+              enableSelectionWithoutKeys: true,
+            }"
             @grid-ready="onPlanReady"
             @row-clicked="onPlanClick"
             @row-double-clicked="onPlanDblClick"
@@ -1223,5 +1262,5 @@ onBeforeUnmount(() => {
         </div>
       </SplitterPanel>
     </Splitter>
-  </div> 
+  </div>
 </template>

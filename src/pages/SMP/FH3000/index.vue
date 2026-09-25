@@ -138,7 +138,17 @@ function onDetailReady(e: GridReadyEvent) {
 /* 原 BindData：分组求和（客户端聚合） */
 function groupSummary(list: ApiBillDetail[]): ApiBillDetail[] {
   const keyOf = (x: ApiBillDetail) =>
-    [x.orderNo, x.dealersName, x.carNo, x.shipNo, x.bcArea, x.wharfName, x.orderRemark, x.firstAuTime, x.stateName].join("");
+    [
+      x.orderNo,
+      x.dealersName,
+      x.carNo,
+      x.shipNo,
+      x.bcArea,
+      x.wharfName,
+      x.orderRemark,
+      x.firstAuTime,
+      x.stateName,
+    ].join("");
   const map = new Map<string, ApiBillDetail>();
   for (const x of list) {
     const k = keyOf(x);
@@ -243,8 +253,17 @@ onMounted(() => {
       </div>
       <div class="col-span-2 flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">开始时间</label>
-        <DatePicker v-model="q.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-          show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+        <DatePicker
+          v-model="q.dates"
+          selection-mode="range"
+          :manual-input="false"
+          date-format="yy-mm-dd"
+          show-time
+          hour-format="24"
+          show-icon
+          placeholder="开始 至 结束"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="flex items-center">
         <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="querying" @click="onQuery">
@@ -260,12 +279,21 @@ onMounted(() => {
           <span class="text-xs font-medium text-muted-foreground">派车计划汇总</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="mainColDefs"
-            :default-col-def="hmxDefaultColDef" :row-data="groupRows" :locale-text="AG_GRID_LOCALE_CN"
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :column-defs="mainColDefs"
+            :default-col-def="hmxDefaultColDef"
+            :row-data="groupRows"
+            :locale-text="AG_GRID_LOCALE_CN"
             :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
-            :pagination="false" :animate-rows="false" :loading="querying"
-            @grid-ready="onMainReady" @selection-changed="onMainSelectionChanged"
-            @first-data-rendered="autoSizeOnFirstData" />
+            :pagination="false"
+            :animate-rows="false"
+            :loading="querying"
+            @grid-ready="onMainReady"
+            @selection-changed="onMainSelectionChanged"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
 
@@ -274,10 +302,18 @@ onMounted(() => {
           <span class="text-xs font-medium text-muted-foreground">提货明细</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="detailColDefs"
-            :default-col-def="hmxDefaultColDef" :row-data="detailRows" :locale-text="AG_GRID_LOCALE_CN"
-            :pagination="false" :animate-rows="false"
-            @grid-ready="onDetailReady" @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :column-defs="detailColDefs"
+            :default-col-def="hmxDefaultColDef"
+            :row-data="detailRows"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :pagination="false"
+            :animate-rows="false"
+            @grid-ready="onDetailReady"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
     </Splitter>

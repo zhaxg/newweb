@@ -19,7 +19,15 @@ import InputText from "primevue/inputtext";
 import Select from "primevue/select";
 import { IconFlame, IconSearch } from "@tabler/icons-vue";
 import { AgGridVue } from "ag-grid-vue3";
-import type { ColDef, GridApi, GridReadyEvent, SelectionChangedEvent, ValueFormatterParams, ValueGetterParams, ValueSetterParams } from "ag-grid-community";
+import type {
+  ColDef,
+  GridApi,
+  GridReadyEvent,
+  SelectionChangedEvent,
+  ValueFormatterParams,
+  ValueGetterParams,
+  ValueSetterParams,
+} from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
 import { useMenuQuery } from "@/lib/menuQuery";
@@ -258,7 +266,11 @@ async function onRepair() {
     return;
   }
   if (st !== "Normal" && st !== "Service") {
-    toast("禁止操作，当前包不是备用或维修状态！\n只有备用或维修状态的包才能执行维修操作！请先将包状态更新为备用或维修状态！", 3500, "warn");
+    toast(
+      "禁止操作，当前包不是备用或维修状态！\n只有备用或维修状态的包才能执行维修操作！请先将包状态更新为备用或维修状态！",
+      3500,
+      "warn",
+    );
     return;
   }
   toast("FrmMS1030_Repair：二级弹窗待接入", 2500, "warn");
@@ -325,8 +337,14 @@ onMounted(() => {
       <label class="shrink-0 text-xs text-muted-foreground">产线</label>
       <InputText :model-value="lineCode" disabled class="w-24 shrink-0" />
       <label class="shrink-0 text-xs text-muted-foreground">包类别</label>
-      <Select :model-value="packType" :options="PACK_TYPE_OPTIONS" option-label="label" option-value="value" disabled
-        class="w-24 shrink-0" />
+      <Select
+        :model-value="packType"
+        :options="PACK_TYPE_OPTIONS"
+        option-label="label"
+        option-value="value"
+        disabled
+        class="w-24 shrink-0"
+      />
       <label class="shrink-0 text-xs text-muted-foreground">包号</label>
       <InputText v-model="packNo" placeholder="包号" class="w-28 shrink-0" />
       <span class="flex shrink-0 items-center gap-1">
@@ -356,10 +374,20 @@ onMounted(() => {
     </div>
 
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows" :pagination="false"
-        :loading="querying" :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
-        @grid-ready="onGridReady" @selection-changed="onSelectionChanged" @first-data-rendered="autoSizeOnFirstData" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="rows"
+        :pagination="false"
+        :loading="querying"
+        :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
+        @grid-ready="onGridReady"
+        @selection-changed="onSelectionChanged"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
   </div>
 </template>

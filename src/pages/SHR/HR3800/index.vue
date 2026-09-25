@@ -37,8 +37,12 @@ const RESULT_OPTIONS = [
 ];
 
 function defaultRange(): [Date, Date] {
-  const start = new Date(); start.setHours(0, 0, 0, 0); start.setDate(start.getDate() - 2);
-  const end = new Date(); end.setDate(end.getDate() + 7); end.setHours(23, 59, 59, 0);
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  start.setDate(start.getDate() - 2);
+  const end = new Date();
+  end.setDate(end.getDate() + 7);
+  end.setHours(23, 59, 59, 0);
   return [start, end];
 }
 
@@ -165,8 +169,12 @@ const querying = ref(false);
 const slabApi = ref<GridApi | null>(null);
 const logApi = ref<GridApi | null>(null);
 
-function onSlabReady(e: GridReadyEvent) { slabApi.value = e.api; }
-function onLogReady(e: GridReadyEvent) { logApi.value = e.api; }
+function onSlabReady(e: GridReadyEvent) {
+  slabApi.value = e.api;
+}
+function onLogReady(e: GridReadyEvent) {
+  logApi.value = e.api;
+}
 
 function isoDate(d: Date): string {
   const p = (n: number) => String(n).padStart(2, "0");
@@ -176,9 +184,12 @@ function isoDate(d: Date): string {
 async function loadStores() {
   try {
     const list = ((await tyd1000Api.queryRoom("")) ?? []) as Tyd1000[];
-    storeOptions.value = list.filter((x) => x.cStoreCode != null)
+    storeOptions.value = list
+      .filter((x) => x.cStoreCode != null)
       .map((x) => ({ label: x.cStoreDes ?? x.cStoreCode ?? "", value: x.cStoreCode! }));
-  } catch { /* 拦截层已 toast */ }
+  } catch {
+    /* 拦截层已 toast */
+  }
 }
 
 function buildSlabQuery(): DtoQueryThr3800SlabInfo {
@@ -188,9 +199,8 @@ function buildSlabQuery(): DtoQueryThr3800SlabInfo {
     cSgCode: q.cSgCode || null,
     nResult: q.nResult,
     cStoreCode: q.cStoreCode || null,
-    dProTime: q.proDates?.[0] && q.proDates?.[1]
-      ? { min: isoDate(q.proDates[0]), max: isoDate(q.proDates[1]) }
-      : undefined,
+    dProTime:
+      q.proDates?.[0] && q.proDates?.[1] ? { min: isoDate(q.proDates[0]), max: isoDate(q.proDates[1]) } : undefined,
   };
 }
 
@@ -202,20 +212,27 @@ async function onQueryStore() {
     slabApi.value?.setGridOption("rowData", slabs.value);
     requestAnimationFrame(() => slabApi.value?.autoSizeAllColumns());
     if (!slabs.value.length) toast("无符合条件的数据", 2000, "info");
-  } catch { /* 拦截层已 toast */ } finally { querying.value = false; }
+  } catch {
+    /* 拦截层已 toast */
+  } finally {
+    querying.value = false;
+  }
 }
 
 /* DataBindXM → QueryThr3800s(TimeRange) */
 async function onQueryLog() {
   querying.value = true;
   try {
-    const tr: TimeRange | undefined = q.logDates?.[0] && q.logDates?.[1]
-      ? { min: isoDate(q.logDates[0]), max: isoDate(q.logDates[1]) }
-      : undefined;
+    const tr: TimeRange | undefined =
+      q.logDates?.[0] && q.logDates?.[1] ? { min: isoDate(q.logDates[0]), max: isoDate(q.logDates[1]) } : undefined;
     logs.value = ((await hR3800Api.queryThr3800s(tr)) ?? []) as Thr3800[];
     logApi.value?.setGridOption("rowData", logs.value);
     requestAnimationFrame(() => logApi.value?.autoSizeAllColumns());
-  } catch { /* 拦截层已 toast */ } finally { querying.value = false; }
+  } catch {
+    /* 拦截层已 toast */
+  } finally {
+    querying.value = false;
+  }
 }
 
 function focusSlab(): Tyd2000Dto | null {
@@ -225,12 +242,18 @@ function focusSlab(): Tyd2000Dto | null {
 /* btnAdd 修磨 → FrmHR3800_Add（占位；入参按原代码预填当前行） */
 function onAdd() {
   const current = focusSlab();
-  if (!slabs.value.length || !current) { toast("请选择要修磨的材料", 2000, "warn"); return; }
+  if (!slabs.value.length || !current) {
+    toast("请选择要修磨的材料", 2000, "warn");
+    return;
+  }
   toast("修磨录入弹窗（FrmHR3800_Add）待接入，保存走 hR3800Api.addThr3800", 2500, "warn");
 }
 
 onMounted(() => {
-  void loadStores().then(() => { void onQueryStore(); void onQueryLog(); });
+  void loadStores().then(() => {
+    void onQueryStore();
+    void onQueryLog();
+  });
 });
 </script>
 
@@ -260,18 +283,42 @@ onMounted(() => {
           </div>
           <div class="flex min-w-0 items-center gap-1.5">
             <label class="w-16 shrink-0 text-xs text-muted-foreground">修磨结果</label>
-            <Select v-model="q.nResult" :options="RESULT_OPTIONS" option-label="label" option-value="value" show-clear
-              placeholder="全部" class="min-w-0 flex-1" />
+            <Select
+              v-model="q.nResult"
+              :options="RESULT_OPTIONS"
+              option-label="label"
+              option-value="value"
+              show-clear
+              placeholder="全部"
+              class="min-w-0 flex-1"
+            />
           </div>
           <div class="flex min-w-0 items-center gap-1.5">
             <label class="w-12 shrink-0 text-xs text-muted-foreground">库区</label>
-            <Select v-model="q.cStoreCode" :options="storeOptions" option-label="label" option-value="value" show-clear
-              filter placeholder="选择库区" class="min-w-0 flex-1" />
+            <Select
+              v-model="q.cStoreCode"
+              :options="storeOptions"
+              option-label="label"
+              option-value="value"
+              show-clear
+              filter
+              placeholder="选择库区"
+              class="min-w-0 flex-1"
+            />
           </div>
           <div class="col-span-2 flex min-w-0 items-center gap-1.5">
             <label class="w-14 shrink-0 text-xs text-muted-foreground">产出时间</label>
-            <DatePicker v-model="q.proDates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-              show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+            <DatePicker
+              v-model="q.proDates"
+              selection-mode="range"
+              :manual-input="false"
+              date-format="yy-mm-dd"
+              show-time
+              hour-format="24"
+              show-icon
+              placeholder="开始 至 结束"
+              class="min-w-0 flex-1"
+            />
           </div>
         </div>
 
@@ -287,11 +334,20 @@ onMounted(() => {
         </div>
 
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="slabColDefs"
-            :default-col-def="hmxDefaultColDef" :row-data="slabs" :locale-text="AG_GRID_LOCALE_CN"
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :column-defs="slabColDefs"
+            :default-col-def="hmxDefaultColDef"
+            :row-data="slabs"
+            :locale-text="AG_GRID_LOCALE_CN"
             :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
-            :pagination="false" :animate-rows="false" :loading="querying"
-            @grid-ready="onSlabReady" @first-data-rendered="autoSizeOnFirstData" />
+            :pagination="false"
+            :animate-rows="false"
+            :loading="querying"
+            @grid-ready="onSlabReady"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
 
@@ -303,18 +359,35 @@ onMounted(() => {
         <!-- 工具栏（原 stackPanel2：时间范围 + 查询） -->
         <div class="flex h-9 shrink-0 items-center gap-2 border-b border-border/60 px-2">
           <label class="shrink-0 text-xs text-muted-foreground">时间范围</label>
-          <DatePicker v-model="q.logDates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-            show-time hour-format="24" show-icon placeholder="开始 至 结束" class="w-80 shrink-0" />
+          <DatePicker
+            v-model="q.logDates"
+            selection-mode="range"
+            :manual-input="false"
+            date-format="yy-mm-dd"
+            show-time
+            hour-format="24"
+            show-icon
+            placeholder="开始 至 结束"
+            class="w-80 shrink-0"
+          />
           <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="querying" @click="onQueryLog">
             <IconSearch class="h-3 w-3" />查询
           </Button>
           <span class="ml-auto text-xs text-muted-foreground">日志（{{ logs.length }}）</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="logColDefs"
-            :default-col-def="hmxDefaultColDef" :row-data="logs" :locale-text="AG_GRID_LOCALE_CN"
-            :pagination="false" :animate-rows="false"
-            @grid-ready="onLogReady" @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :column-defs="logColDefs"
+            :default-col-def="hmxDefaultColDef"
+            :row-data="logs"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :pagination="false"
+            :animate-rows="false"
+            @grid-ready="onLogReady"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
     </Splitter>

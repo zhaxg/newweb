@@ -14,9 +14,10 @@ export interface PermissionNode {
  * checkedList = selected 为真的节点 id；初始勾选只保留叶子（被他人当作父级的节点剔除，
  * 由树的级联派生父节点勾选态）。
  */
-export function transformPermissionTree(
-  permissionList: RolePermissionOfViewAndWidgets[],
-): { tree: PermissionNode[]; checkedLeafIds: string[] } {
+export function transformPermissionTree(permissionList: RolePermissionOfViewAndWidgets[]): {
+  tree: PermissionNode[];
+  checkedLeafIds: string[];
+} {
   const nodeMap = new Map<string, PermissionNode>();
   const checkedList: string[] = [];
   const roots: PermissionNode[] = [];

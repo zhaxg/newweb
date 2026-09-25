@@ -37,17 +37,43 @@ const applySize = () => {
   <div class="flex h-8 shrink-0 items-center gap-2 border-b border-border/60 px-2 text-xs text-muted-foreground">
     <span>{{ props.pageIndex + 1 }}/{{ pageCount }}</span>
     <span class="mx-1 h-4 w-px bg-border" />
-    <Button variant="outlined" class="h-6 shrink-0 whitespace-nowrap !px-2" :disabled="props.pageIndex <= 0" @click="prev">
+    <Button
+      variant="outlined"
+      class="h-6 shrink-0 whitespace-nowrap !px-2"
+      :disabled="props.pageIndex <= 0"
+      @click="prev"
+    >
       上一页
     </Button>
-    <Button variant="outlined" class="h-6 shrink-0 whitespace-nowrap !px-2" :disabled="props.pageIndex + 1 >= pageCount" @click="next">
+    <Button
+      variant="outlined"
+      class="h-6 shrink-0 whitespace-nowrap !px-2"
+      :disabled="props.pageIndex + 1 >= pageCount"
+      @click="next"
+    >
       下一页
     </Button>
     <span>输入页码：</span>
-    <InputNumber v-model="gotoPage" :min="1" :max="pageCount" :use-grouping="false" class="w-20" show-buttons :step="1" />
+    <InputNumber
+      v-model="gotoPage"
+      :min="1"
+      :max="pageCount"
+      :use-grouping="false"
+      class="w-20"
+      show-buttons
+      :step="1"
+    />
     <Button variant="outlined" class="h-6 shrink-0 whitespace-nowrap !px-2" @click="goto">转到</Button>
     <span class="ml-auto">每页显示：</span>
-    <InputNumber v-model="size" :min="1" :use-grouping="false" class="w-20" show-buttons :step="10" @update:model-value="applySize" />
+    <InputNumber
+      v-model="size"
+      :min="1"
+      :use-grouping="false"
+      class="w-20"
+      show-buttons
+      :step="10"
+      @update:model-value="applySize"
+    />
     <span>行</span>
     <span class="w-28 text-right">共 {{ props.dataCount }} 条</span>
   </div>

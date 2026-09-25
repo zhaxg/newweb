@@ -1,11 +1,20 @@
 <script setup lang="ts">
-import { computed, defineComponent, h, ref } from "vue";import { IconPencil, IconPlus, IconRefresh, IconTrash } from "@tabler/icons-vue";
+import { computed, defineComponent, h, ref } from "vue";
+import { IconPencil, IconPlus, IconRefresh, IconTrash } from "@tabler/icons-vue";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import Splitter from "primevue/splitter";
 import SplitterPanel from "primevue/splitterpanel";
 import { AgGridVue } from "ag-grid-vue3";
-import type { AutoGroupColumnDef, ColDef, GetRowIdParams, GridApi, GridReadyEvent, RowNode, ValueFormatterParams } from "ag-grid-community";
+import type {
+  AutoGroupColumnDef,
+  ColDef,
+  GetRowIdParams,
+  GridApi,
+  GridReadyEvent,
+  RowNode,
+  ValueFormatterParams,
+} from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
 import { useToast } from "@/composables/useToast";
@@ -285,11 +294,24 @@ function onEditSubmit() {
           <span class="text-xs font-medium text-muted-foreground">工厂/产线/区域</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="treeColDefs"
-            :default-col-def="hmxDefaultColDef" :auto-group-column-def="autoGroupColumnDef" :row-data="treeRows"
-            :get-row-id="getTreeRowId" :tree-data="true" :get-data-path="getDataPath" :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
-            :pagination="false" :animate-rows="false" :loading="querying" :locale-text="AG_GRID_LOCALE_CN"
-            @grid-ready="onTreeReady" @selection-changed="onTreeSelectionChanged" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :column-defs="treeColDefs"
+            :default-col-def="hmxDefaultColDef"
+            :auto-group-column-def="autoGroupColumnDef"
+            :row-data="treeRows"
+            :get-row-id="getTreeRowId"
+            :tree-data="true"
+            :get-data-path="getDataPath"
+            :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
+            :pagination="false"
+            :animate-rows="false"
+            :loading="querying"
+            :locale-text="AG_GRID_LOCALE_CN"
+            @grid-ready="onTreeReady"
+            @selection-changed="onTreeSelectionChanged"
+          />
         </div>
       </SplitterPanel>
       <SplitterPanel :minSize="20" class="flex flex-col">
@@ -297,10 +319,20 @@ function onEditSubmit() {
           <span class="text-xs font-medium text-muted-foreground">机台设备</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="machineColDefs"
-            :default-col-def="hmxDefaultColDef" :row-data="machines" :get-row-id="getMachineRowId"
-            :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }" :pagination="false" :animate-rows="false" :locale-text="AG_GRID_LOCALE_CN"
-            @grid-ready="onGridReady" @selection-changed="onGridSelectionChanged" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :column-defs="machineColDefs"
+            :default-col-def="hmxDefaultColDef"
+            :row-data="machines"
+            :get-row-id="getMachineRowId"
+            :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
+            :pagination="false"
+            :animate-rows="false"
+            :locale-text="AG_GRID_LOCALE_CN"
+            @grid-ready="onGridReady"
+            @selection-changed="onGridSelectionChanged"
+          />
         </div>
       </SplitterPanel>
     </Splitter>
@@ -308,8 +340,13 @@ function onEditSubmit() {
     <Tpa1000EditDialog v-model:open="editOpen" :item="editItem" :parents="treeRows" @submit="onEditSubmit" />
 
     <!-- 删除确认（对应原 MsgBox.ShowYesNo("确认删除[xxx]吗?")） -->
-    <Dialog :visible="confirmOpen" modal header="警告" :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
-      @update:visible="confirmOpen = $event">
+    <Dialog
+      :visible="confirmOpen"
+      modal
+      header="警告"
+      :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
+      @update:visible="confirmOpen = $event"
+    >
       <p class="text-sm">确认删除[{{ confirmTarget?.cName }}]吗?</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />

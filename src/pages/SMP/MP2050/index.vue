@@ -27,7 +27,13 @@ import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
 import { useMenuQuery } from "@/lib/menuQuery";
 import { useToast } from "@/composables/useToast";
-import { castStoveApi, type InputPlanDto, type Tmp2030Dto, type Tmp2040Dto, type Tmp2042 } from "@/api/mes4ddh/smp.swagger";
+import {
+  castStoveApi,
+  type InputPlanDto,
+  type Tmp2030Dto,
+  type Tmp2040Dto,
+  type Tmp2042,
+} from "@/api/mes4ddh/smp.swagger";
 
 const { toast } = useToast();
 const theme = makeHmxGridTheme();
@@ -441,8 +447,15 @@ async function onJcInvalid() {
       <label class="shrink-0 text-xs text-muted-foreground">连铸机</label>
       <Select v-model="icboMachine" :options="[]" show-clear placeholder="请选择" class="w-36 shrink-0" />
       <label class="shrink-0 text-xs text-muted-foreground">状态</label>
-      <Select v-model="icboStatus" :options="statusOptions" option-label="label" option-value="value" show-clear
-        placeholder="全部" class="w-36 shrink-0" />
+      <Select
+        v-model="icboStatus"
+        :options="statusOptions"
+        option-label="label"
+        option-value="value"
+        show-clear
+        placeholder="全部"
+        class="w-36 shrink-0"
+      />
       <label class="shrink-0 text-xs text-muted-foreground">浇次下发时间</label>
       <DatePicker v-model="dtS" date-format="yy-mm-dd" show-icon class="shrink-0" />
       <span class="shrink-0 text-xs text-muted-foreground">~</span>
@@ -460,11 +473,21 @@ async function onJcInvalid() {
           <span class="text-xs font-medium text-muted-foreground">浇次信息</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="jcColDefs" :row-data="jcRows" :pagination="false"
-            :loading="querying" :get-row-id="rowId" :row-selection="{ mode: 'singleRow', enableClickSelection: true }"
-            @grid-ready="ready('jc')" @first-data-rendered="autoSizeOnFirstData"
-            @selection-changed="onJcSelectionChanged" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="jcColDefs"
+            :row-data="jcRows"
+            :pagination="false"
+            :loading="querying"
+            :get-row-id="rowId"
+            :row-selection="{ mode: 'singleRow', enableClickSelection: true }"
+            @grid-ready="ready('jc')"
+            @first-data-rendered="autoSizeOnFirstData"
+            @selection-changed="onJcSelectionChanged"
+          />
         </div>
         <div class="flex h-9 shrink-0 items-center gap-1 border-t border-border/60 px-2">
           <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onDownJc">
@@ -477,9 +500,13 @@ async function onJcInvalid() {
             <IconArrowDown class="h-3 w-3" />下移
           </Button>
           <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onSaveSort">保存顺序</Button>
-          <Button variant="outlined" severity="danger" class="shrink-0 whitespace-nowrap" @click="onDeleteJc">删除浇次</Button>
+          <Button variant="outlined" severity="danger" class="shrink-0 whitespace-nowrap" @click="onDeleteJc"
+            >删除浇次</Button
+          >
           <!-- 原 btnJCVisible=false/Enabled=false：按原样隐藏保留，逻辑已接 onJcInvalid -->
-          <Button variant="outlined" severity="danger" class="hidden whitespace-nowrap" @click="onJcInvalid">浇次作废</Button>
+          <Button variant="outlined" severity="danger" class="hidden whitespace-nowrap" @click="onJcInvalid"
+            >浇次作废</Button
+          >
         </div>
       </SplitterPanel>
 
@@ -491,20 +518,39 @@ async function onJcInvalid() {
               <span class="text-xs font-medium text-muted-foreground">浇次炉次信息</span>
             </div>
             <div class="min-h-0 flex-1 overflow-hidden">
-              <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                :default-col-def="hmxDefaultColDef" :column-defs="jcStoveColDefs" :row-data="jcStoveRows"
-                :pagination="false" :loading="querying" :master-detail="true"
-                :detail-grid-options="stoveDetailOptions" :get-detail-row-data="getStoveDetailRows"
-                :row-selection="{ mode: 'singleRow', enableClickSelection: true }" @grid-ready="ready('jcStove')"
-                @first-data-rendered="autoSizeOnFirstData" @selection-changed="onJcStoveSelectionChanged" />
+              <AgGridVue
+                class="hmx-ag-grid h-full w-full"
+                :theme="theme"
+                :locale-text="AG_GRID_LOCALE_CN"
+                :default-col-def="hmxDefaultColDef"
+                :column-defs="jcStoveColDefs"
+                :row-data="jcStoveRows"
+                :pagination="false"
+                :loading="querying"
+                :master-detail="true"
+                :detail-grid-options="stoveDetailOptions"
+                :get-detail-row-data="getStoveDetailRows"
+                :row-selection="{ mode: 'singleRow', enableClickSelection: true }"
+                @grid-ready="ready('jcStove')"
+                @first-data-rendered="autoSizeOnFirstData"
+                @selection-changed="onJcStoveSelectionChanged"
+              />
             </div>
           </SplitterPanel>
           <SplitterPanel :minSize="20" class="flex flex-col overflow-hidden">
             <!-- 订单 gcStoveOrder（无 ViewCaption） -->
             <div class="min-h-0 flex-1 overflow-hidden">
-              <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                :default-col-def="hmxDefaultColDef" :column-defs="stoveOrderColDefs" :row-data="stoveOrderRows"
-                :pagination="false" @grid-ready="ready('order')" @first-data-rendered="autoSizeOnFirstData" />
+              <AgGridVue
+                class="hmx-ag-grid h-full w-full"
+                :theme="theme"
+                :locale-text="AG_GRID_LOCALE_CN"
+                :default-col-def="hmxDefaultColDef"
+                :column-defs="stoveOrderColDefs"
+                :row-data="stoveOrderRows"
+                :pagination="false"
+                @grid-ready="ready('order')"
+                @first-data-rendered="autoSizeOnFirstData"
+              />
             </div>
             <!-- stackPanel3：删除炉次（原未绑事件，按钮按元素保留） -->
             <div class="flex h-9 shrink-0 items-center gap-1 border-t border-border/60 px-2">

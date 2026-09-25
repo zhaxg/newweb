@@ -72,7 +72,9 @@ const masterColDefs: ColDef[] = [
 function getRowId(p: GetRowIdParams) {
   return String((p.data as Tqmyl01).id ?? "");
 }
-function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
+function onGridReady(e: GridReadyEvent) {
+  gridApi.value = e.api;
+}
 
 function currentRow(): Tqmyl01 | null {
   return (gridApi.value?.getSelectedRows()[0] as Tqmyl01 | undefined) ?? null;
@@ -199,19 +201,32 @@ function setValid(target: ValidFlag) {
     }
   });
 }
-function onEnable() { setValid(ValidFlag.Valid); }
-function onDisable() { setValid(ValidFlag.Invalid); }
+function onEnable() {
+  setValid(ValidFlag.Valid);
+}
+function onDisable() {
+  setValid(ValidFlag.Invalid);
+}
 
 /* ---------- 两个配置弹窗（FrmYl07 / FrmYl06）：本轮留占位 ---------- */
-function onItemConfig() { toast("画面迁移：指标属性配置（FrmYl07）逻辑待接入", 3000, "warn"); }
-function onAlarmConfig() { toast("画面迁移：指标报警配置（FrmYl06）逻辑待接入", 3000, "warn"); }
+function onItemConfig() {
+  toast("画面迁移：指标属性配置（FrmYl07）逻辑待接入", 3000, "warn");
+}
+function onAlarmConfig() {
+  toast("画面迁移：指标报警配置（FrmYl06）逻辑待接入", 3000, "warn");
+}
 </script>
 
 <template>
   <div class="flex min-h-0 flex-1 flex-col">
     <!-- 确认（对应原 MsgBox.ShowYesNo("确定生效/作废[{code}]？")） -->
-    <Dialog :visible="confirmOpen" modal header="确认" :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
-      @update:visible="confirmOpen = $event">
+    <Dialog
+      :visible="confirmOpen"
+      modal
+      header="确认"
+      :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
+      @update:visible="confirmOpen = $event"
+    >
       <p class="text-xs whitespace-pre-wrap">{{ confirmMsg }}</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />
@@ -239,8 +254,15 @@ function onAlarmConfig() { toast("画面迁移：指标报警配置（FrmYl06）
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">生效状态</label>
-        <Select v-model="input.nValidFlag" :options="validOptions" option-label="label" option-value="value" show-clear
-          placeholder="全部" class="min-w-0 flex-1" />
+        <Select
+          v-model="input.nValidFlag"
+          :options="validOptions"
+          option-label="label"
+          option-value="value"
+          show-clear
+          placeholder="全部"
+          class="min-w-0 flex-1"
+        />
       </div>
     </div>
 
@@ -255,12 +277,8 @@ function onAlarmConfig() { toast("画面迁移：指标报警配置（FrmYl06）
       <Button text class="shrink-0 whitespace-nowrap" @click="onEdit(false)">
         <IconPencil class="h-3 w-3" />编辑
       </Button>
-      <Button text class="shrink-0 whitespace-nowrap" @click="onEdit(true)">
-        <IconCopy class="h-3 w-3" />复制
-      </Button>
-      <Button text class="shrink-0 whitespace-nowrap" @click="onEnable">
-        <IconCheck class="h-3 w-3" />生效
-      </Button>
+      <Button text class="shrink-0 whitespace-nowrap" @click="onEdit(true)"> <IconCopy class="h-3 w-3" />复制 </Button>
+      <Button text class="shrink-0 whitespace-nowrap" @click="onEnable"> <IconCheck class="h-3 w-3" />生效 </Button>
       <Button text severity="danger" class="shrink-0 whitespace-nowrap" @click="onDisable">
         <IconX class="h-3 w-3" />禁用
       </Button>
@@ -282,13 +300,23 @@ function onAlarmConfig() { toast("画面迁移：指标报警配置（FrmYl06）
           <!-- 左：UCYl01 主表 -->
           <SplitterPanel :size="75" :minSize="30" class="flex flex-col overflow-hidden">
             <div class="min-h-0 flex-1 overflow-hidden">
-              <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                :default-col-def="hmxDefaultColDef" :column-defs="masterColDefs" :row-data="rows" :get-row-id="getRowId"
+              <AgGridVue
+                class="hmx-ag-grid h-full w-full"
+                :theme="theme"
+                :locale-text="AG_GRID_LOCALE_CN"
+                :default-col-def="hmxDefaultColDef"
+                :column-defs="masterColDefs"
+                :row-data="rows"
+                :get-row-id="getRowId"
                 :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
                 :suppress-column-virtualisation="true"
-                :pagination="false" :animate-rows="false" :loading="querying || saving"
-                @grid-ready="onGridReady" @selection-changed="onSelectionChanged"
-                @first-data-rendered="autoSizeOnFirstData" />
+                :pagination="false"
+                :animate-rows="false"
+                :loading="querying || saving"
+                @grid-ready="onGridReady"
+                @selection-changed="onSelectionChanged"
+                @first-data-rendered="autoSizeOnFirstData"
+              />
             </div>
           </SplitterPanel>
 

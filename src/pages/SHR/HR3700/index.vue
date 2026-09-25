@@ -22,13 +22,7 @@ import { useMenuQuery } from "@/lib/menuQuery";
 import { useToast } from "@/composables/useToast";
 import { TrackableList } from "@/api/common/trackableList";
 import { systemKeyValueApi } from "@/api/admin/request";
-import {
-  hR3700Api,
-  type HqDto,
-  type OrderDto,
-  type Thr4000,
-  type TimeRange,
-} from "@/api/mes4ddh/shr.swagger";
+import { hR3700Api, type HqDto, type OrderDto, type Thr4000, type TimeRange } from "@/api/mes4ddh/shr.swagger";
 
 const { toast } = useToast();
 const theme = makeHmxGridTheme();
@@ -78,7 +72,9 @@ const hqRows = ref<HqDto[]>([]);
 const hqLoading = ref(false);
 const hqApi = ref<GridApi | null>(null);
 const hqCurrent = ref<HqDto | null>(null);
-function onHqReady(e: GridReadyEvent) { hqApi.value = e.api; }
+function onHqReady(e: GridReadyEvent) {
+  hqApi.value = e.api;
+}
 function onHqSelectionChanged() {
   const row = (hqApi.value?.getSelectedRows()[0] as HqDto | undefined) ?? null;
   hqCurrent.value = row;
@@ -89,13 +85,17 @@ function onHqSelectionChanged() {
 const planRows = ref<OrderDto[]>([]);
 const planLoading = ref(false);
 const planApi = ref<GridApi | null>(null);
-function onPlanReady(e: GridReadyEvent) { planApi.value = e.api; }
+function onPlanReady(e: GridReadyEvent) {
+  planApi.value = e.api;
+}
 
 /* ---------- 剪切结果（gridView3 / Thr4000，TrackableList 行内编辑） ---------- */
 const trackList = shallowRef<TrackableList<Thr4000>>(new TrackableList<Thr4000>());
 const sjLoading = ref(false);
 const sjApi = ref<GridApi | null>(null);
-function onSjReady(e: GridReadyEvent) { sjApi.value = e.api; }
+function onSjReady(e: GridReadyEvent) {
+  sjApi.value = e.api;
+}
 function onSjCellValueChanged(e: CellValueChangedEvent) {
   sjApi.value?.refreshCells({ rowNodes: e.node ? [e.node] : undefined, force: true });
 }
@@ -183,7 +183,13 @@ const sjColDefs: ColDef[] = [
   { colId: "cDelivyStatusCode", field: "cDelivyStatusCode", headerName: "交货状态代码", width: 138, hide: true },
   { colId: "cCustStdCode", field: "cCustStdCode", headerName: "加工用途代码", width: 125, hide: true },
   { colId: "cOrderCustCname", field: "cOrderCustCname", headerName: "订货客户中文名称", width: 164, hide: true },
-  { colId: "cConsigneeCustCname", field: "cConsigneeCustCname", headerName: "收货客户中文名称", width: 164, hide: true },
+  {
+    colId: "cConsigneeCustCname",
+    field: "cConsigneeCustCname",
+    headerName: "收货客户中文名称",
+    width: 164,
+    hide: true,
+  },
   { colId: "cPieceNoSlab", field: "cPieceNoSlab", headerName: "坯料件次号", width: 125, hide: true },
   { colId: "cSgCodeSlab", field: "cSgCodeSlab", headerName: "坯料钢种", width: 112, hide: true },
   { colId: "cSgStdSlab", field: "cSgStdSlab", headerName: "坯料执行标准", width: 138, hide: true },
@@ -241,18 +247,19 @@ const sjColDefs: ColDef[] = [
 async function onQuery() {
   hqLoading.value = true;
   try {
-    const list = (await hR3700Api.getHqSlabs({
-      cLineCode,
-      cStoreCode,
-      cStoreCodes,
-      cOrderNo: input.cOrderNo.trim() || undefined,
-      cBatchNo: input.cBatchNo.trim() || undefined,
-      cPieceNo: input.cPieceNo.trim() || undefined,
-      cStove: input.cStove.trim() || undefined,
-      cSgCode: input.cSgCode.trim() || undefined,
-      cSpec: input.cSpec.trim() || undefined,
-      dProTime: toTimeRange(input.dates),
-    })) ?? [];
+    const list =
+      (await hR3700Api.getHqSlabs({
+        cLineCode,
+        cStoreCode,
+        cStoreCodes,
+        cOrderNo: input.cOrderNo.trim() || undefined,
+        cBatchNo: input.cBatchNo.trim() || undefined,
+        cPieceNo: input.cPieceNo.trim() || undefined,
+        cStove: input.cStove.trim() || undefined,
+        cSgCode: input.cSgCode.trim() || undefined,
+        cSpec: input.cSpec.trim() || undefined,
+        dProTime: toTimeRange(input.dates),
+      })) ?? [];
     hqRows.value = list;
     hqCurrent.value = null;
     planRows.value = [];
@@ -268,7 +275,7 @@ async function onQuery() {
 async function onHqFocused(item: HqDto | null) {
   planLoading.value = true;
   try {
-    const plans = item ? (await hR3700Api.queryJQPlans(item.cPieceNo ?? undefined)) ?? [] : [];
+    const plans = item ? ((await hR3700Api.queryJQPlans(item.cPieceNo ?? undefined)) ?? []) : [];
     planRows.value = plans as OrderDto[];
     isQy.value = !!item && item.cIsQy === "Y";
     trackList.value = new TrackableList<Thr4000>();
@@ -402,8 +409,17 @@ onMounted(async () => {
       </div>
       <div class="col-span-2 flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">产出时间</label>
-        <DatePicker v-model="input.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-          show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+        <DatePicker
+          v-model="input.dates"
+          selection-mode="range"
+          :manual-input="false"
+          date-format="yy-mm-dd"
+          show-time
+          hour-format="24"
+          show-icon
+          placeholder="开始 至 结束"
+          class="min-w-0 flex-1"
+        />
       </div>
     </div>
     <!-- 查询按钮行（原 stackPanel1） -->
@@ -422,12 +438,21 @@ onMounted(async () => {
               <span class="text-xs font-medium text-muted-foreground">材料信息</span>
             </div>
             <div class="min-h-0 flex-1 overflow-hidden">
-              <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                :default-col-def="hmxDefaultColDef" :column-defs="hqColDefs" :row-data="hqRows"
+              <AgGridVue
+                class="hmx-ag-grid h-full w-full"
+                :theme="theme"
+                :locale-text="AG_GRID_LOCALE_CN"
+                :default-col-def="hmxDefaultColDef"
+                :column-defs="hqColDefs"
+                :row-data="hqRows"
                 :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
-                :pagination="false" :animate-rows="false" :loading="hqLoading"
-                @grid-ready="onHqReady" @selection-changed="onHqSelectionChanged"
-                @first-data-rendered="autoSizeOnFirstData" />
+                :pagination="false"
+                :animate-rows="false"
+                :loading="hqLoading"
+                @grid-ready="onHqReady"
+                @selection-changed="onHqSelectionChanged"
+                @first-data-rendered="autoSizeOnFirstData"
+              />
             </div>
           </SplitterPanel>
           <SplitterPanel :minSize="20" class="flex flex-col overflow-hidden">
@@ -435,10 +460,19 @@ onMounted(async () => {
               <span class="text-xs font-medium text-muted-foreground">剪切计划</span>
             </div>
             <div class="min-h-0 flex-1 overflow-hidden">
-              <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                :default-col-def="hmxDefaultColDef" :column-defs="planColDefs" :row-data="planRows"
-                :pagination="false" :animate-rows="false" :loading="planLoading"
-                @grid-ready="onPlanReady" @first-data-rendered="autoSizeOnFirstData" />
+              <AgGridVue
+                class="hmx-ag-grid h-full w-full"
+                :theme="theme"
+                :locale-text="AG_GRID_LOCALE_CN"
+                :default-col-def="hmxDefaultColDef"
+                :column-defs="planColDefs"
+                :row-data="planRows"
+                :pagination="false"
+                :animate-rows="false"
+                :loading="planLoading"
+                @grid-ready="onPlanReady"
+                @first-data-rendered="autoSizeOnFirstData"
+              />
             </div>
           </SplitterPanel>
         </Splitter>
@@ -451,11 +485,21 @@ onMounted(async () => {
             按计划产出
           </Button>
           <label class="ml-2 shrink-0 text-xs text-muted-foreground">班次</label>
-          <Select v-model="shift" :options="shiftOptions" option-label="label" option-value="value"
-            class="w-28 shrink-0" />
+          <Select
+            v-model="shift"
+            :options="shiftOptions"
+            option-label="label"
+            option-value="value"
+            class="w-28 shrink-0"
+          />
           <label class="shrink-0 text-xs text-muted-foreground">班组</label>
-          <Select v-model="group" :options="groupOptions" option-label="label" option-value="value"
-            class="w-28 shrink-0" />
+          <Select
+            v-model="group"
+            :options="groupOptions"
+            option-label="label"
+            option-value="value"
+            class="w-28 shrink-0"
+          />
           <div class="ml-2 flex shrink-0 items-center gap-1.5">
             <Checkbox v-model="isQy" binary inputId="checkQy" />
             <label for="checkQy" class="text-xs text-muted-foreground">取样板标记</label>
@@ -468,17 +512,31 @@ onMounted(async () => {
           <span class="text-xs font-medium text-muted-foreground">剪切结果</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="sjColDefs" :row-data="trackList"
-            :pagination="false" :animate-rows="false" :loading="sjLoading"
-            @grid-ready="onSjReady" @cell-value-changed="onSjCellValueChanged"
-            @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="sjColDefs"
+            :row-data="trackList"
+            :pagination="false"
+            :animate-rows="false"
+            :loading="sjLoading"
+            @grid-ready="onSjReady"
+            @cell-value-changed="onSjCellValueChanged"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
     </Splitter>
 
-    <Dialog :visible="confirmOpen" modal header="确认" :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
-      @update:visible="confirmOpen = $event">
+    <Dialog
+      :visible="confirmOpen"
+      modal
+      header="确认"
+      :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
+      @update:visible="confirmOpen = $event"
+    >
       <p class="text-xs">{{ confirmMsg }}</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />

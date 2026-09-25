@@ -44,15 +44,24 @@ function onSlideEnd(e: TransitionEvent) {
     <!-- 居中大卡片：轮播图背景 -->
     <div class="absolute inset-0 flex items-center justify-center p-4">
       <div
-        class="relative h-[min(40rem,88vh)] w-[min(66rem,94vw)] overflow-hidden rounded-2xl border border-white/60 shadow-[0_24px_64px_rgba(15,40,80,0.25)] dark:border-white/10 max-md:h-full max-md:w-full max-md:rounded-none max-md:border-0 max-md:shadow-none">
+        class="relative h-[min(40rem,88vh)] w-[min(66rem,94vw)] overflow-hidden rounded-2xl border border-white/60 shadow-[0_24px_64px_rgba(15,40,80,0.25)] dark:border-white/10 max-md:h-full max-md:w-full max-md:rounded-none max-md:border-0 max-md:shadow-none"
+      >
         <!-- 左右滑动轮播轨道（移动端隐藏，只留登录小卡） -->
         <div class="absolute inset-0 overflow-hidden max-md:hidden">
-          <div class="flex h-full transition-transform duration-700 ease-out"
+          <div
+            class="flex h-full transition-transform duration-700 ease-out"
             :class="{ 'transition-none': !slideAnimate }"
             :style="{ width: `${slides.length * 100}%`, transform: `translateX(-${(bgIndex * 100) / slides.length}%)` }"
-            @transitionend="onSlideEnd">
-            <img v-for="(src, i) in slides" :key="i" :src="src" alt="" draggable="false"
-              class="h-full flex-1 basis-0 object-cover" />
+            @transitionend="onSlideEnd"
+          >
+            <img
+              v-for="(src, i) in slides"
+              :key="i"
+              :src="src"
+              alt=""
+              draggable="false"
+              class="h-full flex-1 basis-0 object-cover"
+            />
           </div>
         </div>
         <div class="absolute inset-0 bg-white/5 dark:bg-black/40 max-md:hidden"></div>

@@ -27,8 +27,14 @@ onMounted(() => document.addEventListener("contextmenu", onContextMenu));
 /** 强制清理过渡类：transitionend 在部分环境（headless/reduced-motion）不触发，
  *  导致 screen-enter-from 残留使页面 opacity=0 不可见。 */
 function forceCleanTransition(el: Element) {
-  el.classList.remove("screen-enter-from", "screen-enter-active", "screen-enter-to",
-    "screen-leave-from", "screen-leave-active", "screen-leave-to");
+  el.classList.remove(
+    "screen-enter-from",
+    "screen-enter-active",
+    "screen-enter-to",
+    "screen-leave-from",
+    "screen-leave-active",
+    "screen-leave-to",
+  );
 }
 </script>
 
@@ -62,10 +68,14 @@ body {
 
 /* 登录页 ↔ 壳层整屏切换（交叉淡入淡出）：旧屏淡出微收，新屏淡入微升 */
 .screen-enter-active {
-  transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.25, 0.8, 0.5, 1);
+  transition:
+    opacity 0.22s ease,
+    transform 0.22s cubic-bezier(0.25, 0.8, 0.5, 1);
 }
 .screen-leave-active {
-  transition: opacity 0.14s ease, transform 0.14s ease;
+  transition:
+    opacity 0.14s ease,
+    transform 0.14s ease;
 }
 .screen-enter-from {
   opacity: 0;

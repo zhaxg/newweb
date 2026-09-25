@@ -46,39 +46,39 @@ const input = reactive({
 });
 
 const colDefs: ColDef[] = [
-        { field: "selected", headerName: "选择", hide: true },
-      { field: "cOrderCustCname", headerName: "客户", width: 150 },
-      { field: "cOrderNo", headerName: "编号", width: 150 },
-      { field: "cSteelType", headerName: "品名", width: 150 },
-      { field: "cSgCode", headerName: "钢种", width: 150 },
-      { field: "nThick", headerName: "板厚", width: 150 },
-      { field: "nThickMin", headerName: "板厚下限", width: 150 },
-      { field: "nThickMax", headerName: "板厚上限", width: 150 },
-      { field: "nWidth", headerName: "板宽下限", width: 150 },
-      { field: "nWidthMax", headerName: "板宽上限", width: 150 },
-      { field: "nWidthWgt", headerName: "边部宽度余量", width: 150 },
-      { field: "nLenMin", headerName: "板长下限", width: 150 },
-      { field: "nLenMax", headerName: "板长上限", width: 150 },
-      { field: "cDelivyStatusDesc", headerName: "交货状态", width: 150 },
-      { field: "nNum", headerName: "签订件数", width: 150 },
-      { field: "nWgt", headerName: "总量（吨）", width: 150 },
-      { field: "cTrimFlagDesc", headerName: "切边方式", width: 150 },
-      { field: "cOverstepBl", headerName: "短溢装比例", width: 150 },
-      { field: "cDelivyQtyFlag", headerName: "计重方式", width: 150 },
-      { field: "cTol", headerName: "公差", width: 150 },
-      { field: "cFlawDesc", headerName: "探伤等级", width: 150 },
-      { field: "cSgStd", headerName: "执行标准", width: 150 },
-      { field: "cConNo", headerName: "用户合同号", width: 150 },
-      { field: "dJhqTime", headerName: "交期", width: 150 },
-      { field: "cDelivyAddress", headerName: "流向", width: 150 },
-      { field: "cSpecialMarkGy", headerName: "性能", width: 150 },
-      { field: "nWtMin", headerName: "单重min", width: 150 },
-      { field: "nWtMax", headerName: "单重max", width: 150 },
-      { field: "cSpec", headerName: "订单规格", width: 150 },
-      { field: "cConRemark", headerName: "合同特殊要求", width: 150 },
-      { field: "cInboundNo", headerName: "入库标识", width: 150 },
-      { field: "cTrimFlag", headerName: "切边方式", width: 100, hide: true },
-      { field: "id", headerName: "主键", width: 100, hide: true },
+  { field: "selected", headerName: "选择", hide: true },
+  { field: "cOrderCustCname", headerName: "客户", width: 150 },
+  { field: "cOrderNo", headerName: "编号", width: 150 },
+  { field: "cSteelType", headerName: "品名", width: 150 },
+  { field: "cSgCode", headerName: "钢种", width: 150 },
+  { field: "nThick", headerName: "板厚", width: 150 },
+  { field: "nThickMin", headerName: "板厚下限", width: 150 },
+  { field: "nThickMax", headerName: "板厚上限", width: 150 },
+  { field: "nWidth", headerName: "板宽下限", width: 150 },
+  { field: "nWidthMax", headerName: "板宽上限", width: 150 },
+  { field: "nWidthWgt", headerName: "边部宽度余量", width: 150 },
+  { field: "nLenMin", headerName: "板长下限", width: 150 },
+  { field: "nLenMax", headerName: "板长上限", width: 150 },
+  { field: "cDelivyStatusDesc", headerName: "交货状态", width: 150 },
+  { field: "nNum", headerName: "签订件数", width: 150 },
+  { field: "nWgt", headerName: "总量（吨）", width: 150 },
+  { field: "cTrimFlagDesc", headerName: "切边方式", width: 150 },
+  { field: "cOverstepBl", headerName: "短溢装比例", width: 150 },
+  { field: "cDelivyQtyFlag", headerName: "计重方式", width: 150 },
+  { field: "cTol", headerName: "公差", width: 150 },
+  { field: "cFlawDesc", headerName: "探伤等级", width: 150 },
+  { field: "cSgStd", headerName: "执行标准", width: 150 },
+  { field: "cConNo", headerName: "用户合同号", width: 150 },
+  { field: "dJhqTime", headerName: "交期", width: 150 },
+  { field: "cDelivyAddress", headerName: "流向", width: 150 },
+  { field: "cSpecialMarkGy", headerName: "性能", width: 150 },
+  { field: "nWtMin", headerName: "单重min", width: 150 },
+  { field: "nWtMax", headerName: "单重max", width: 150 },
+  { field: "cSpec", headerName: "订单规格", width: 150 },
+  { field: "cConRemark", headerName: "合同特殊要求", width: 150 },
+  { field: "cInboundNo", headerName: "入库标识", width: 150 },
+  { field: "cTrimFlag", headerName: "切边方式", width: 100, hide: true },
+  { field: "id", headerName: "主键", width: 100, hide: true },
 ];
 
 function onGridReady(e: GridReadyEvent) {
@@ -158,7 +158,13 @@ async function onQuery() {
         :default-col-def="hmxDefaultColDef"
         :column-defs="colDefs"
         :row-data="rows"
-        :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
+        :row-selection="{
+          mode: 'multiRow',
+          checkboxes: true,
+          headerCheckbox: true,
+          enableClickSelection: true,
+          enableSelectionWithoutKeys: true,
+        }"
         :suppress-column-virtualisation="true"
         :pagination="false"
         :animate-rows="false"

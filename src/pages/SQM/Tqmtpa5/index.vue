@@ -50,7 +50,9 @@ function getRowId(p: { data: Tqmtpa5 }) {
   return String(p.data.id);
 }
 
-function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
+function onGridReady(e: GridReadyEvent) {
+  gridApi.value = e.api;
+}
 
 function currentRow(): Tqmtpa5 | null {
   return (gridApi.value?.getSelectedRows()[0] as Tqmtpa5 | undefined) ?? null;
@@ -108,14 +110,24 @@ async function onSave() {
   <div class="flex min-h-0 flex-1 flex-col">
     <!-- 原 stackPanel1：2 条件 + 4 按钮同一行（ui-rules §6） -->
     <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
-      <InputText v-model="input.stdCode" maxlength="100" placeholder="钢种代码" class="w-40 shrink-0" @keydown.enter="onQuery" />
-      <InputText v-model="input.sgStd" maxlength="100" placeholder="钢种" class="w-40 shrink-0" @keydown.enter="onQuery" />
+      <InputText
+        v-model="input.stdCode"
+        maxlength="100"
+        placeholder="钢种代码"
+        class="w-40 shrink-0"
+        @keydown.enter="onQuery"
+      />
+      <InputText
+        v-model="input.sgStd"
+        maxlength="100"
+        placeholder="钢种"
+        class="w-40 shrink-0"
+        @keydown.enter="onQuery"
+      />
       <Button text class="shrink-0 whitespace-nowrap" :loading="querying" @click="onQuery">
         <IconSearch class="h-3 w-3" />查询
       </Button>
-      <Button text class="shrink-0 whitespace-nowrap" @click="onAdd">
-        <IconPlus class="h-3 w-3" />添加
-      </Button>
+      <Button text class="shrink-0 whitespace-nowrap" @click="onAdd"> <IconPlus class="h-3 w-3" />添加 </Button>
       <Button text severity="danger" class="shrink-0 whitespace-nowrap" @click="onDelete">
         <IconTrash class="h-3 w-3" />删除
       </Button>
@@ -127,12 +139,22 @@ async function onSave() {
 
     <!-- 数据表格（原 gridControl1 / gridView1，Tqmtpa5） -->
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="trackList" :get-row-id="getRowId"
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="trackList"
+        :get-row-id="getRowId"
         :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
         :suppress-column-virtualisation="true"
-        :pagination="false" :animate-rows="false" :loading="querying || saving"
-        @grid-ready="onGridReady" @first-data-rendered="autoSizeOnFirstData" />
+        :pagination="false"
+        :animate-rows="false"
+        :loading="querying || saving"
+        @grid-ready="onGridReady"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
   </div>
 </template>

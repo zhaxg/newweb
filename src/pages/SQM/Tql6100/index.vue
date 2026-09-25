@@ -103,11 +103,12 @@ function onGridReady(e: GridReadyEvent) {
 async function onQuery() {
   querying.value = true;
   try {
-    rows.value = (await tql6100Api.getTql6100Dtos({
-      timeRange: toTimeRange(input.timeRange),
-      cStoveNo: input.stoveNo.trim(),
-      cPieceNo: input.slabNo.trim(),
-    })) ?? [];
+    rows.value =
+      (await tql6100Api.getTql6100Dtos({
+        timeRange: toTimeRange(input.timeRange),
+        cStoveNo: input.stoveNo.trim(),
+        cPieceNo: input.slabNo.trim(),
+      })) ?? [];
     requestAnimationFrame(() => gridApi.value?.autoSizeAllColumns());
   } catch {
     /* 拦截层已 toast */
@@ -148,8 +149,16 @@ function onExport() {
     <!-- 原 stackPanel1 单行 Dock=Top：时间范围/炉号/材料号 + 4 按钮同 strip（h-9 硬规则） -->
     <div class="flex h-9 shrink-0 items-center gap-1 overflow-x-auto border-b border-border/60 px-2">
       <label class="w-16 shrink-0 text-xs text-muted-foreground">时间范围</label>
-      <DatePicker v-model="input.timeRange" selection-mode="range" :manual-input="false"
-        date-format="yy-mm-dd" show-time hour-format="24" show-icon class="w-72 shrink-0" />
+      <DatePicker
+        v-model="input.timeRange"
+        selection-mode="range"
+        :manual-input="false"
+        date-format="yy-mm-dd"
+        show-time
+        hour-format="24"
+        show-icon
+        class="w-72 shrink-0"
+      />
       <label class="w-16 shrink-0 text-xs text-muted-foreground">炉号</label>
       <InputText v-model="input.stoveNo" class="w-36 shrink-0" />
       <label class="w-16 shrink-0 text-xs text-muted-foreground">材料号</label>
@@ -171,12 +180,27 @@ function onExport() {
 
     <!-- 数据表格 -->
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows"
-        :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="rows"
+        :row-selection="{
+          mode: 'multiRow',
+          checkboxes: true,
+          headerCheckbox: true,
+          enableClickSelection: true,
+          enableSelectionWithoutKeys: true,
+        }"
         :suppress-column-virtualisation="true"
-        :pagination="false" :animate-rows="false" :loading="querying"
-        @grid-ready="onGridReady" @first-data-rendered="autoSizeOnFirstData" />
+        :pagination="false"
+        :animate-rows="false"
+        :loading="querying"
+        @grid-ready="onGridReady"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
   </div>
 </template>

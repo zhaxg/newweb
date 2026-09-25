@@ -31,12 +31,7 @@ import type {
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { hmxDefaultColDef, makeHmxGridTheme, autoSizeOnFirstData } from "@/lib/agGrid";
 import { TrackableList } from "@/api/common/trackableList";
-import {
-  TableType,
-  tqmtm104Api,
-  type Tqmtm104DetailDto,
-  type Tqmtm104Dto,
-} from "@/api/mes4ddh/sqm.swagger";
+import { TableType, tqmtm104Api, type Tqmtm104DetailDto, type Tqmtm104Dto } from "@/api/mes4ddh/sqm.swagger";
 import { systemKeyValueApi } from "@/api/admin/request";
 import { NextStrId } from "@/lib/yitIdHelper";
 
@@ -198,7 +193,7 @@ function currentRow(): Tqmtm104Dto | null {
 /** 原 gridView1_FocusedRowObjectChanged：右树数据源 = 焦点行 Details ?? 默认明细 */
 function applyTreeSource() {
   const cur = currentRow();
-  const list = (cur?.details ?? treeDefault.value) ?? [];
+  const list = cur?.details ?? treeDefault.value ?? [];
   treeRows.value = toTreeRows(list);
   requestAnimationFrame(() => {
     const api = treeApi.value;
@@ -211,7 +206,9 @@ function applyTreeSource() {
     api.forEachNode((node) => {
       if (!node.allChildrenCount) return;
       let hasSel = false;
-      node.allLeafChildren?.forEach((leaf) => { if (leaf.isSelected()) hasSel = true; });
+      node.allLeafChildren?.forEach((leaf) => {
+        if (leaf.isSelected()) hasSel = true;
+      });
       if (hasSel) node.setExpanded(true);
     });
     api.autoSizeAllColumns();
@@ -220,8 +217,12 @@ function applyTreeSource() {
 
 watch(focusedSourceId, applyTreeSource);
 
-function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
-function onTreeReady(e: GridReadyEvent) { treeApi.value = e.api; }
+function onGridReady(e: GridReadyEvent) {
+  gridApi.value = e.api;
+}
+function onTreeReady(e: GridReadyEvent) {
+  treeApi.value = e.api;
+}
 
 /** 主表选中行 → 记录 sourceId（缺省回落 __trackId），驱动右树切换 */
 function onMainSelectionChanged() {
@@ -235,7 +236,9 @@ function onSelectionChanged() {
   const api = treeApi.value;
   if (!api) return;
   const selectedIds = new Set<string>();
-  api.forEachNode((node) => { if (node.isSelected()) selectedIds.add(String((node.data as Tqmtm104DetailDto).id ?? "")); });
+  api.forEachNode((node) => {
+    if (node.isSelected()) selectedIds.add(String((node.data as Tqmtm104DetailDto).id ?? ""));
+  });
   for (const d of cur.details ?? []) {
     const now = selectedIds.has(String(d.id ?? ""));
     if (!!d.selected !== now) d.selected = now;
@@ -283,7 +286,9 @@ async function bindData() {
   }
 }
 
-function onQuery() { void bindData(); }
+function onQuery() {
+  void bindData();
+}
 
 /** 原 btnAdd_Click：AddNew + SourceId=GenerateID，明细= queryTreeSource 整份复制（Selected=false） */
 function onAdd() {
@@ -301,7 +306,9 @@ function onAdd() {
 function onDelete() {
   const cur = currentRow();
   if (!cur) return;
-  trackList.value.remove((r) => (r as Tqmtm104Dto & { __trackId?: string }).__trackId === (cur as { __trackId?: string }).__trackId);
+  trackList.value.remove(
+    (r) => (r as Tqmtm104Dto & { __trackId?: string }).__trackId === (cur as { __trackId?: string }).__trackId,
+  );
   focusedSourceId.value = null;
   applyTreeSource();
 }
@@ -329,8 +336,12 @@ async function onSave() {
   }
 }
 
-function onExpand() { treeApi.value?.expandAll(); }
-function onCollapse() { treeApi.value?.collapseAll(); }
+function onExpand() {
+  treeApi.value?.expandAll();
+}
+function onCollapse() {
+  treeApi.value?.collapseAll();
+}
 
 onMounted(() => {
   void Promise.all([
@@ -348,23 +359,55 @@ onMounted(() => {
       <div class="grid grid-cols-6 items-center gap-x-3 gap-y-1.5">
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">作业工序</label>
-          <Select v-model="input.workType" :options="kvWorkType" :filter="true" show-clear option-label="label"
-            option-value="value" placeholder="全部" class="min-w-0 flex-1" />
+          <Select
+            v-model="input.workType"
+            :options="kvWorkType"
+            :filter="true"
+            show-clear
+            option-label="label"
+            option-value="value"
+            placeholder="全部"
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">基表类型</label>
-          <Select v-model="input.basicTableType" :options="tableTypeOpts" :filter="true" show-clear
-            option-label="label" option-value="value" placeholder="全部" class="min-w-0 flex-1" />
+          <Select
+            v-model="input.basicTableType"
+            :options="tableTypeOpts"
+            :filter="true"
+            show-clear
+            option-label="label"
+            option-value="value"
+            placeholder="全部"
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">品名</label>
-          <Select v-model="input.prodName" :options="kvProdCode" :filter="true" show-clear option-label="label"
-            option-value="value" placeholder="全部" class="min-w-0 flex-1" />
+          <Select
+            v-model="input.prodName"
+            :options="kvProdCode"
+            :filter="true"
+            show-clear
+            option-label="label"
+            option-value="value"
+            placeholder="全部"
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">产品大类</label>
-          <Select v-model="input.prodClass" :options="kvProdClass" :filter="true" show-clear option-label="label"
-            option-value="value" placeholder="全部" class="min-w-0 flex-1" />
+          <Select
+            v-model="input.prodClass"
+            :options="kvProdClass"
+            :filter="true"
+            show-clear
+            option-label="label"
+            option-value="value"
+            placeholder="全部"
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">检索索引</label>
@@ -378,9 +421,7 @@ onMounted(() => {
       <Button text class="shrink-0 whitespace-nowrap" :loading="querying" @click="onQuery">
         <IconSearch class="h-3 w-3" />查询
       </Button>
-      <Button text class="shrink-0 whitespace-nowrap" @click="onAdd">
-        <IconPlus class="h-3 w-3" />添加
-      </Button>
+      <Button text class="shrink-0 whitespace-nowrap" @click="onAdd"> <IconPlus class="h-3 w-3" />添加 </Button>
       <Button text severity="danger" class="shrink-0 whitespace-nowrap" @click="onDelete">
         <IconTrash class="h-3 w-3" />删除
       </Button>
@@ -395,14 +436,24 @@ onMounted(() => {
       <!-- Panel1：gridControl1 -->
       <SplitterPanel :size="50" :minSize="30" class="flex flex-col overflow-hidden">
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="trackList" :get-row-id="getRowId"
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="colDefs"
+            :row-data="trackList"
+            :get-row-id="getRowId"
             :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
             :suppress-column-virtualisation="true"
-            :pagination="false" :animate-rows="false" :loading="querying || saving"
-            @grid-ready="onGridReady" @cell-value-changed="() => gridApi?.refreshCells({ force: true })"
+            :pagination="false"
+            :animate-rows="false"
+            :loading="querying || saving"
+            @grid-ready="onGridReady"
+            @cell-value-changed="() => gridApi?.refreshCells({ force: true })"
             @selection-changed="onMainSelectionChanged"
-            @first-data-rendered="autoSizeOnFirstData" />
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
 
@@ -417,14 +468,26 @@ onMounted(() => {
           </Button>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :auto-group-column-def="autoGroupColumnDef"
-            :column-defs="treeColDefs" :row-data="treeRows" :get-data-path="(d) => d.path"
-            :get-row-id="(p) => String(p.data.id ?? '')" :tree-data="true" :row-selection="treeSelection"
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :auto-group-column-def="autoGroupColumnDef"
+            :column-defs="treeColDefs"
+            :row-data="treeRows"
+            :get-data-path="(d) => d.path"
+            :get-row-id="(p) => String(p.data.id ?? '')"
+            :tree-data="true"
+            :row-selection="treeSelection"
             :suppress-column-virtualisation="true"
-            :pagination="false" :animate-rows="false"
-            @grid-ready="onTreeReady" @selection-changed="onSelectionChanged"
-            @cell-value-changed="onTreeCellValueChanged" @first-data-rendered="autoSizeOnFirstData" />
+            :pagination="false"
+            :animate-rows="false"
+            @grid-ready="onTreeReady"
+            @selection-changed="onSelectionChanged"
+            @cell-value-changed="onTreeCellValueChanged"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
     </Splitter>

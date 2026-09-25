@@ -75,12 +75,7 @@ function clear() {
         :placeholder="placeholder"
         @click="openDialog"
       />
-      <Button
-        text
-        class="shrink-0 px-1"
-        :aria-label="`批量录入${unitName}`"
-        @click="openDialog"
-      >
+      <Button text class="shrink-0 px-1" :aria-label="`批量录入${unitName}`" @click="openDialog">
         <IconChevronDown class="h-3 w-3" />
       </Button>
     </div>

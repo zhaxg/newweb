@@ -29,7 +29,7 @@ function walk(dir, out = []) {
 function auditFile(path, text) {
   const findings = [];
   const lines = text.split("\n");
-  const report = (idx, rule, snippet) => {
+  const report = (idx, rule, _snippet) => {
     const line = lines[idx];
     if (line.includes("audit-allow")) return;
     findings.push(`${relative(process.cwd(), path)}:${idx + 1}  [${rule}]  ${line.trim().slice(0, 120)}`);

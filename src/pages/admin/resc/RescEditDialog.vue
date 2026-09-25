@@ -13,7 +13,7 @@ import type { HmxResTree } from "./tree-node";
 
 const props = defineProps<{
   open: boolean;
-  
+
   node: HmxResTree | null;
 }>();
 
@@ -89,8 +89,13 @@ function onSubmit() {
 </script>
 
 <template>
-  <Dialog :visible="open" modal header="资源信息" :style="{ width: 'min(40rem, calc(100vw - 2rem))' }"
-    @update:visible="emit('update:open', $event)">
+  <Dialog
+    :visible="open"
+    modal
+    header="资源信息"
+    :style="{ width: 'min(40rem, calc(100vw - 2rem))' }"
+    @update:visible="emit('update:open', $event)"
+  >
     <div class="min-w-0 space-y-3 py-1">
       <div class="grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2">
         <div class="min-w-0 space-y-1">
@@ -107,40 +112,98 @@ function onSubmit() {
           <IconPicker v-model="form.cIcon" />
         </div>
         <div class="min-w-0 space-y-1">
-          <label class="text-xs font-medium text-muted-foreground" title="资源编码，格式为三位字母+四位数字 如TAB1234，可选">编码</label>
-          <InputText v-model="form.cCode" placeholder="TAB1234" title="资源编码，格式为三位字母+四位数字 如TAB1234，可选"
-            maxlength="7" autocapitalize="characters" spellcheck="false" class="w-full min-w-0"
-            @keydown.enter="onSubmit" />
+          <label
+            class="text-xs font-medium text-muted-foreground"
+            title="资源编码，格式为三位字母+四位数字 如TAB1234，可选"
+            >编码</label
+          >
+          <InputText
+            v-model="form.cCode"
+            placeholder="TAB1234"
+            title="资源编码，格式为三位字母+四位数字 如TAB1234，可选"
+            maxlength="7"
+            autocapitalize="characters"
+            spellcheck="false"
+            class="w-full min-w-0"
+            @keydown.enter="onSubmit"
+          />
         </div>
 
         <div class="min-w-0 space-y-1 sm:col-span-2">
-          <label class="text-xs font-medium text-muted-foreground">资源名称<span
-              class="ml-0.5 text-destructive">*</span></label>
-          <InputText v-model="form.cTitle" placeholder="请输入资源名称" autofocus autocapitalize="off" spellcheck="false"
-            class="w-full min-w-0" @keydown.enter="onSubmit" />
+          <label class="text-xs font-medium text-muted-foreground"
+            >资源名称<span class="ml-0.5 text-destructive">*</span></label
+          >
+          <InputText
+            v-model="form.cTitle"
+            placeholder="请输入资源名称"
+            autofocus
+            autocapitalize="off"
+            spellcheck="false"
+            class="w-full min-w-0"
+            @keydown.enter="onSubmit"
+          />
         </div>
 
         <div class="min-w-0 space-y-1">
-          <label class="text-xs font-medium text-muted-foreground" title="非具体页面路由: 默认提供了LAYOUT、BLANK、IFRAME三种类型">布局类型</label>
-          <Select v-model="form.cName" :options="LAYOUTS"
-            title="非具体页面路由: 默认提供了LAYOUT、BLANK、IFRAME三种类型" class="w-full min-w-0" />
+          <label
+            class="text-xs font-medium text-muted-foreground"
+            title="非具体页面路由: 默认提供了LAYOUT、BLANK、IFRAME三种类型"
+            >布局类型</label
+          >
+          <Select
+            v-model="form.cName"
+            :options="LAYOUTS"
+            title="非具体页面路由: 默认提供了LAYOUT、BLANK、IFRAME三种类型"
+            class="w-full min-w-0"
+          />
         </div>
         <div class="min-w-0 space-y-1">
-          <label class="text-xs font-medium text-muted-foreground" title="由树结构生成路由地址，只填写当前路由节点的名称，不带 / 符号">路由名称</label>
-          <InputText v-model="form.cResPath" placeholder="请输入路由名称" title="由树结构生成路由地址，只填写当前路由节点的名称，不带 / 符号"
-            autocapitalize="off" spellcheck="false" class="w-full min-w-0" @keydown.enter="onSubmit" />
+          <label
+            class="text-xs font-medium text-muted-foreground"
+            title="由树结构生成路由地址，只填写当前路由节点的名称，不带 / 符号"
+            >路由名称</label
+          >
+          <InputText
+            v-model="form.cResPath"
+            placeholder="请输入路由名称"
+            title="由树结构生成路由地址，只填写当前路由节点的名称，不带 / 符号"
+            autocapitalize="off"
+            spellcheck="false"
+            class="w-full min-w-0"
+            @keydown.enter="onSubmit"
+          />
         </div>
 
         <div class="min-w-0 space-y-1 sm:col-span-2">
-          <label class="text-xs font-medium text-muted-foreground" title="vue文件的地址。外部链接填写URL, 跳转填写路由名称=_blank">组件路径</label>
-          <InputText v-model="form.cResSubPath" placeholder="请输入组件路径" title="vue文件的地址。外部链接填写URL, 跳转填写路由名称=_blank"
-            autocapitalize="off" spellcheck="false" class="w-full min-w-0" @keydown.enter="onSubmit" />
+          <label
+            class="text-xs font-medium text-muted-foreground"
+            title="vue文件的地址。外部链接填写URL, 跳转填写路由名称=_blank"
+            >组件路径</label
+          >
+          <InputText
+            v-model="form.cResSubPath"
+            placeholder="请输入组件路径"
+            title="vue文件的地址。外部链接填写URL, 跳转填写路由名称=_blank"
+            autocapitalize="off"
+            spellcheck="false"
+            class="w-full min-w-0"
+            @keydown.enter="onSubmit"
+          />
         </div>
 
         <div class="min-w-0 space-y-1 sm:col-span-2">
-          <label class="text-xs font-medium text-muted-foreground" title="在构造函数后注入。举例：name=zhaxg&pawd=234">注入参数</label>
-          <InputText v-model="form.cQueryString" placeholder="name=xx&pawd=xx" title="在构造函数后注入。举例：name=zhaxg&pawd=234"
-            autocapitalize="off" spellcheck="false" class="w-full min-w-0" @keydown.enter="onSubmit" />
+          <label class="text-xs font-medium text-muted-foreground" title="在构造函数后注入。举例：name=zhaxg&pawd=234"
+            >注入参数</label
+          >
+          <InputText
+            v-model="form.cQueryString"
+            placeholder="name=xx&pawd=xx"
+            title="在构造函数后注入。举例：name=zhaxg&pawd=234"
+            autocapitalize="off"
+            spellcheck="false"
+            class="w-full min-w-0"
+            @keydown.enter="onSubmit"
+          />
         </div>
 
         <div class="min-w-0 space-y-1">
@@ -149,8 +212,13 @@ function onSubmit() {
         </div>
         <div class="min-w-0 space-y-1">
           <label class="text-xs font-medium text-muted-foreground">是否启用</label>
-          <Select v-model="form.cEnable" :options="ENABLE_OPTIONS" option-label="label" option-value="value"
-            class="w-full min-w-0" />
+          <Select
+            v-model="form.cEnable"
+            :options="ENABLE_OPTIONS"
+            option-label="label"
+            option-value="value"
+            class="w-full min-w-0"
+          />
         </div>
       </div>
     </div>

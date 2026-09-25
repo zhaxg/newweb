@@ -76,7 +76,9 @@ const colDefs: ColDef[] = [
   { field: "LastModifyTime", headerName: "最后修改时间", width: 140 },
 ];
 
-function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
+function onGridReady(e: GridReadyEvent) {
+  gridApi.value = e.api;
+}
 
 async function onQuery() {
   querying.value = true;
@@ -87,7 +89,9 @@ async function onQuery() {
     querying.value = false;
   }
 }
-function onImport() { toast("画面迁移：导入逻辑待接入", 2000, "warn"); }
+function onImport() {
+  toast("画面迁移：导入逻辑待接入", 2000, "warn");
+}
 </script>
 
 <template>
@@ -97,16 +101,36 @@ function onImport() { toast("画面迁移：导入逻辑待接入", 2000, "warn"
       <div class="grid grid-cols-6 items-center gap-x-3 gap-y-1.5">
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">工艺类型</label>
-          <Select v-model="input.Gytype" :options="gytypeOptions" option-label="label" option-value="value" class="min-w-0 flex-1" show-clear />
+          <Select
+            v-model="input.Gytype"
+            :options="gytypeOptions"
+            option-label="label"
+            option-value="value"
+            class="min-w-0 flex-1"
+            show-clear
+          />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">季节</label>
-          <Select v-model="input.Season" :options="seasonOptions" option-label="label" option-value="value" class="min-w-0 flex-1" show-clear />
+          <Select
+            v-model="input.Season"
+            :options="seasonOptions"
+            option-label="label"
+            option-value="value"
+            class="min-w-0 flex-1"
+            show-clear
+          />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">宽度范围</label>
-          <RangeInput v-model:min="input.Widthlow" v-model:max="input.Widthup"
-            :min-fraction-digits="1" :max-fraction-digits="1" show-buttons class="min-w-0 flex-1" />
+          <RangeInput
+            v-model:min="input.Widthlow"
+            v-model:max="input.Widthup"
+            :min-fraction-digits="1"
+            :max-fraction-digits="1"
+            show-buttons
+            class="min-w-0 flex-1"
+          />
         </div>
       </div>
     </div>
@@ -124,12 +148,27 @@ function onImport() { toast("画面迁移：导入逻辑待接入", 2000, "warn"
 
     <!-- 数据表格 -->
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows"
-        :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="rows"
+        :row-selection="{
+          mode: 'multiRow',
+          checkboxes: true,
+          headerCheckbox: true,
+          enableClickSelection: true,
+          enableSelectionWithoutKeys: true,
+        }"
         :suppress-column-virtualisation="true"
-        :pagination="false" :animate-rows="false" :loading="querying"
-        @grid-ready="onGridReady" @first-data-rendered="autoSizeOnFirstData" />
+        :pagination="false"
+        :animate-rows="false"
+        :loading="querying"
+        @grid-ready="onGridReady"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
   </div>
 </template>

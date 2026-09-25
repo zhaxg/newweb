@@ -10,26 +10,16 @@ export class TrackableList<T> extends Array<T> {
   // 获取变更集合（Vue 模板可直接使用）
   get SaveChangesData(): SaveChangesData<T> {
     const addedItems = this.filter(
-      (item) =>
-        !this._originalItems.some(
-          (orig) => orig.__trackId === (item as any).__trackId,
-        ),
+      (item) => !this._originalItems.some((orig) => orig.__trackId === (item as any).__trackId),
     ).map((x) => this.removeTrackId(x as TrackableItem<T>));
 
     const changedItems = this.filter((newItem) => {
-      const oldItem = this._originalItems.find(
-        (item) => item.__trackId === (newItem as any).__trackId,
-      );
+      const oldItem = this._originalItems.find((item) => item.__trackId === (newItem as any).__trackId);
       return oldItem && !this._isEqual(oldItem, newItem);
     }).map((x) => this.removeTrackId(x as TrackableItem<T>));
 
     const deletedItems = this._originalItems
-      .filter(
-        (origItem) =>
-          !this.some(
-            (item) => (item as any).__trackId === (origItem as any).__trackId,
-          ),
-      )
+      .filter((origItem) => !this.some((item) => (item as any).__trackId === (origItem as any).__trackId))
       .map((x) => this.removeTrackId(x as TrackableItem<T>));
 
     return {
@@ -74,11 +64,7 @@ export class TrackableList<T> extends Array<T> {
     this._init(this.map((x) => this.removeTrackId(x as TrackableItem<T>)));
   }
 
-  override splice(
-    start: number,
-    deleteCount?: number,
-    ...items: T[]
-  ): T[] {
+  override splice(start: number, deleteCount?: number, ...items: T[]): T[] {
     const wrappedItems = items.map((item) => this._wrapItem(item));
     return super.splice(start, deleteCount ?? this.length, ...wrappedItems);
   }

@@ -14,7 +14,14 @@ import InputText from "primevue/inputtext";
 import Select from "primevue/select";
 import { IconDeviceFloppy, IconPlus, IconSearch, IconTrash } from "@tabler/icons-vue";
 import { AgGridVue } from "ag-grid-vue3";
-import type { ColDef, GridApi, GridReadyEvent, SelectionChangedEvent, ValueGetterParams, ValueSetterParams } from "ag-grid-community";
+import type {
+  ColDef,
+  GridApi,
+  GridReadyEvent,
+  SelectionChangedEvent,
+  ValueGetterParams,
+  ValueSetterParams,
+} from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
 import { useMenuQuery } from "@/lib/menuQuery";
@@ -64,7 +71,13 @@ const colDefs = ref<ColDef[]>(
           ? { component: "agSelectCellEditor", params: { values: sgCodes.value } }
           : { component: "agTextCellEditor" },
     },
-    { field: "NUseTime", headerName: "工序机台耗时(分钟)", width: 129, editable: true, cellEditor: "agNumberCellEditor" },
+    {
+      field: "NUseTime",
+      headerName: "工序机台耗时(分钟)",
+      width: 129,
+      editable: true,
+      cellEditor: "agNumberCellEditor",
+    },
     { field: "CBackup", headerName: "备注", width: 120, editable: true },
     { field: "Id", headerName: "主键", width: 120, hide: true },
     { field: "CFactoryCode", headerName: "工厂", width: 120, hide: true },
@@ -205,7 +218,13 @@ function onAdd() {
   if (!p) return;
   rows.value = [
     ...rows.value,
-    { id: NextStrId(), cLineCode: p.lineCode, cLineName: p.lineName, cMachineCode: p.machineCode, cMachineName: p.machineName },
+    {
+      id: NextStrId(),
+      cLineCode: p.lineCode,
+      cLineName: p.lineName,
+      cMachineCode: p.machineCode,
+      cMachineName: p.machineName,
+    },
   ];
 }
 
@@ -214,7 +233,9 @@ function onRemove() {
   if (!p) return;
   const row = selected.value;
   if (!row) return;
-  const ok = window.confirm(`确定删除选择的机台为：‘${gv(row, "CMachineName") ?? ""}’，钢种为：‘${gv(row, "CSgCode") ?? ""}’的配置数据？`);
+  const ok = window.confirm(
+    `确定删除选择的机台为：‘${gv(row, "CMachineName") ?? ""}’，钢种为：‘${gv(row, "CSgCode") ?? ""}’的配置数据？`,
+  );
   if (!ok) return;
   rows.value = rows.value.filter((r) => r !== row);
   selected.value = null;
@@ -226,7 +247,15 @@ async function onSave() {
   const datas = rows.value;
   if (datas.length > 0) {
     const key = (r: Record<string, unknown>) =>
-      [gv(r, "CFactoryCode"), gv(r, "CLineCode"), gv(r, "CProc"), gv(r, "CMachineCode"), gv(r, "CSgCode"), gv(r, "CSgStd"), gv(r, "CConditionsCode")]
+      [
+        gv(r, "CFactoryCode"),
+        gv(r, "CLineCode"),
+        gv(r, "CProc"),
+        gv(r, "CMachineCode"),
+        gv(r, "CSgCode"),
+        gv(r, "CSgStd"),
+        gv(r, "CConditionsCode"),
+      ]
         .map((x) => String(x ?? ""))
         .join("\u0001");
     const first = new Map<string, Record<string, unknown>>();
@@ -238,7 +267,11 @@ async function onSave() {
       }
       first.set(k, r);
     }
-    if (datas.some((r) => (r as Record<string, unknown>).nUseTime == null && (r as Record<string, unknown>).NUseTime == null)) {
+    if (
+      datas.some(
+        (r) => (r as Record<string, unknown>).nUseTime == null && (r as Record<string, unknown>).NUseTime == null,
+      )
+    ) {
       toast("禁止操作，存在工序机台耗时（分钟）为空的数据！", 3000, "warn");
       return;
     }
@@ -266,7 +299,13 @@ onMounted(async () => {
   await Promise.all([loadLines(), loadMachines()]);
   try {
     const list = (await publicQMInfoApi.getSgCode()) ?? [];
-    sgCodes.value = (list as unknown[]).map((s) => (typeof s === "string" ? s : String((s as Record<string, unknown>).cName ?? (s as Record<string, unknown>).cCode ?? ""))).filter(Boolean);
+    sgCodes.value = (list as unknown[])
+      .map((s) =>
+        typeof s === "string"
+          ? s
+          : String((s as Record<string, unknown>).cName ?? (s as Record<string, unknown>).cCode ?? ""),
+      )
+      .filter(Boolean);
   } catch {
     sgCodes.value = [];
     /* 拦截层已 toast */
@@ -281,8 +320,16 @@ onMounted(async () => {
       <label class="shrink-0 text-xs text-muted-foreground">产线</label>
       <InputText :model-value="lineText" disabled class="w-32 shrink-0" />
       <label class="shrink-0 text-xs text-muted-foreground">机台</label>
-      <Select v-model="machineCode" :options="machineOptions" option-label="label" option-value="value" show-clear
-        placeholder="请选择" class="w-36 shrink-0" @value-change="onMachineChange" />
+      <Select
+        v-model="machineCode"
+        :options="machineOptions"
+        option-label="label"
+        option-value="value"
+        show-clear
+        placeholder="请选择"
+        class="w-36 shrink-0"
+        @value-change="onMachineChange"
+      />
       <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="querying" @click="query">
         <IconSearch class="h-3 w-3" />查询
       </Button>
@@ -298,10 +345,20 @@ onMounted(async () => {
     </div>
 
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows" :pagination="false"
-        :loading="querying" :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
-        @grid-ready="onGridReady" @selection-changed="onSelectionChanged" @first-data-rendered="autoSizeOnFirstData" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="rows"
+        :pagination="false"
+        :loading="querying"
+        :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
+        @grid-ready="onGridReady"
+        @selection-changed="onSelectionChanged"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
   </div>
 </template>

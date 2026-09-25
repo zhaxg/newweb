@@ -90,43 +90,77 @@ function onOk() {
 </script>
 
 <template>
-  <Dialog :visible="props.visible" modal :header="props.isNew ? '添加试验子项目' : '编辑试验子项目'"
-    :style="{ width: 'min(46rem, calc(100vw - 2rem))' }" @update:visible="emit('update:visible', $event)">
+  <Dialog
+    :visible="props.visible"
+    modal
+    :header="props.isNew ? '添加试验子项目' : '编辑试验子项目'"
+    :style="{ width: 'min(46rem, calc(100vw - 2rem))' }"
+    @update:visible="emit('update:visible', $event)"
+  >
     <!-- 原 DataLayoutControl 2 列行主序（坐标回读 336/692，行高 24） -->
     <div class="grid grid-cols-2 items-start gap-x-3 gap-y-2">
       <div class="min-w-0">
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-28 shrink-0 text-xs text-muted-foreground">试验项目种类</label>
-          <Select :model-value="form.testItemType ?? null" :options="kvItemType" :filter="true" show-clear
-            option-label="label" option-value="value" placeholder="试验项目种类" class="min-w-0 flex-1"
-            :invalid="!!errors.testItemType" @update:model-value="onTypeChange" />
+          <Select
+            :model-value="form.testItemType ?? null"
+            :options="kvItemType"
+            :filter="true"
+            show-clear
+            option-label="label"
+            option-value="value"
+            placeholder="试验项目种类"
+            class="min-w-0 flex-1"
+            :invalid="!!errors.testItemType"
+            @update:model-value="onTypeChange"
+          />
         </div>
         <p v-if="errors.testItemType" class="mt-0.5 pl-[7.75rem] text-xs text-destructive">{{ errors.testItemType }}</p>
       </div>
       <div class="min-w-0">
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-28 shrink-0 text-xs text-muted-foreground">试验项目代码</label>
-          <Select :model-value="form.testItemCode ?? null" :options="itemCodeOpts" :filter="true" show-clear
-            option-label="label" option-value="value" placeholder="试验项目代码" class="min-w-0 flex-1"
-            @update:model-value="onCodeChange" />
+          <Select
+            :model-value="form.testItemCode ?? null"
+            :options="itemCodeOpts"
+            :filter="true"
+            show-clear
+            option-label="label"
+            option-value="value"
+            placeholder="试验项目代码"
+            class="min-w-0 flex-1"
+            @update:model-value="onCodeChange"
+          />
         </div>
       </div>
 
       <div class="min-w-0">
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-28 shrink-0 text-xs text-muted-foreground">试验子项目代码</label>
-          <InputText v-model="form.testSubItemCode" maxlength="50" class="min-w-0 flex-1"
-            :invalid="!!errors.testSubItemCode" />
+          <InputText
+            v-model="form.testSubItemCode"
+            maxlength="50"
+            class="min-w-0 flex-1"
+            :invalid="!!errors.testSubItemCode"
+          />
         </div>
-        <p v-if="errors.testSubItemCode" class="mt-0.5 pl-[7.75rem] text-xs text-destructive">{{ errors.testSubItemCode }}</p>
+        <p v-if="errors.testSubItemCode" class="mt-0.5 pl-[7.75rem] text-xs text-destructive">
+          {{ errors.testSubItemCode }}
+        </p>
       </div>
       <div class="min-w-0">
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-28 shrink-0 text-xs text-muted-foreground">试验子项目名称</label>
-          <InputText v-model="form.testSubItemName" maxlength="100" class="min-w-0 flex-1"
-            :invalid="!!errors.testSubItemName" />
+          <InputText
+            v-model="form.testSubItemName"
+            maxlength="100"
+            class="min-w-0 flex-1"
+            :invalid="!!errors.testSubItemName"
+          />
         </div>
-        <p v-if="errors.testSubItemName" class="mt-0.5 pl-[7.75rem] text-xs text-destructive">{{ errors.testSubItemName }}</p>
+        <p v-if="errors.testSubItemName" class="mt-0.5 pl-[7.75rem] text-xs text-destructive">
+          {{ errors.testSubItemName }}
+        </p>
       </div>
 
       <div class="min-w-0">
@@ -164,8 +198,11 @@ function onOk() {
       <div class="min-w-0">
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-28 shrink-0 text-xs text-muted-foreground">精度</label>
-          <InputText :model-value="form.other5 == null ? '' : String(form.other5)" class="min-w-0 flex-1"
-            @update:model-value="(v?: string) => (form.other5 = !v ? null : Number(v))" />
+          <InputText
+            :model-value="form.other5 == null ? '' : String(form.other5)"
+            class="min-w-0 flex-1"
+            @update:model-value="(v?: string) => (form.other5 = !v ? null : Number(v))"
+          />
         </div>
       </div>
 
@@ -191,8 +228,11 @@ function onOk() {
       <div class="min-w-0">
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-28 shrink-0 text-xs text-muted-foreground">录入排序</label>
-          <InputText :model-value="form.seq == null ? '' : String(form.seq)" class="min-w-0 flex-1"
-            @update:model-value="(v?: string) => (form.seq = !v ? null : Number(v))" />
+          <InputText
+            :model-value="form.seq == null ? '' : String(form.seq)"
+            class="min-w-0 flex-1"
+            @update:model-value="(v?: string) => (form.seq = !v ? null : Number(v))"
+          />
         </div>
       </div>
     </div>

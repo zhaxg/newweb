@@ -95,9 +95,16 @@ defineExpose({ openModal });
 </script>
 
 <template>
-  <Dialog :visible="visible" modal header="修改密码" :style="{ width: 'min(24rem, calc(100vw - 2rem))' }"
-    @update:visible="visible = $event">
-    <p class="mb-4 text-xs leading-relaxed text-muted-foreground">为保障账号安全，建议定期更换密码。修改成功后请使用新密码重新登录。</p>
+  <Dialog
+    :visible="visible"
+    modal
+    header="修改密码"
+    :style="{ width: 'min(24rem, calc(100vw - 2rem))' }"
+    @update:visible="visible = $event"
+  >
+    <p class="mb-4 text-xs leading-relaxed text-muted-foreground">
+      为保障账号安全，建议定期更换密码。修改成功后请使用新密码重新登录。
+    </p>
     <form @submit.prevent="handleSubmit">
       <div v-for="f in fields" :key="f.name" class="mb-3.5 last:mb-0">
         <label class="mb-1 block text-xs font-medium text-foreground">{{ f.label }}</label>
@@ -106,17 +113,31 @@ defineExpose({ openModal });
             <component :is="f.icon" />
           </InputIcon>
           <!-- autofocus 供 Dialog 打开时命中（否则回退聚焦关闭钮出现焦点圈）；InputPassword attrs 直通 input -->
-          <InputPassword v-model="form[f.name]" variant="filled" fluid :invalid="!!errors[f.name]"
-            :placeholder="f.placeholder" autocomplete="off" :autofocus="f.name === 'oldPassword'"
-            @blur="validateField(f.name)" @update:model-value="onInput(f.name)" />
+          <InputPassword
+            v-model="form[f.name]"
+            variant="filled"
+            fluid
+            :invalid="!!errors[f.name]"
+            :placeholder="f.placeholder"
+            autocomplete="off"
+            :autofocus="f.name === 'oldPassword'"
+            @blur="validateField(f.name)"
+            @update:model-value="onInput(f.name)"
+          />
         </IconField>
         <!-- 固定高度占位：报错出现/消失不引起布局跳动 -->
         <p class="mt-0.5 h-4 text-xs leading-4 text-destructive">{{ errors[f.name] }}</p>
       </div>
     </form>
     <template #footer>
-      <Button label="取消" variant="text" severity="secondary" size="small" :disabled="submitting"
-        @click="visible = false" />
+      <Button
+        label="取消"
+        variant="text"
+        severity="secondary"
+        size="small"
+        :disabled="submitting"
+        @click="visible = false"
+      />
       <Button label="确认修改" size="small" :loading="submitting" @click="handleSubmit" />
     </template>
   </Dialog>

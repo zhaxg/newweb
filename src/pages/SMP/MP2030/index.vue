@@ -18,12 +18,28 @@ import Splitter from "primevue/splitter";
 import SplitterPanel from "primevue/splitterpanel";
 import { IconSearch } from "@tabler/icons-vue";
 import { AgGridVue } from "ag-grid-vue3";
-import type { ColDef, GetDetailRowDataParams, GridApi, GridOptions, GridReadyEvent, RowClickedEvent } from "ag-grid-community";
+import type {
+  ColDef,
+  GetDetailRowDataParams,
+  GridApi,
+  GridOptions,
+  GridReadyEvent,
+  RowClickedEvent,
+} from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
 import { useMenuQuery } from "@/lib/menuQuery";
 import { useToast } from "@/composables/useToast";
-import { castStoveApi, LgProdStatusEnum, OrderReviewEnum, type InputPlanDto, type InputTmp2010Dto, type SlabPcDto, type Tmp2040Dto, type Tmp2042 } from "@/api/mes4ddh/smp.swagger";
+import {
+  castStoveApi,
+  LgProdStatusEnum,
+  OrderReviewEnum,
+  type InputPlanDto,
+  type InputTmp2010Dto,
+  type SlabPcDto,
+  type Tmp2040Dto,
+  type Tmp2042,
+} from "@/api/mes4ddh/smp.swagger";
 
 const { toast } = useToast();
 const theme = makeHmxGridTheme();
@@ -332,7 +348,9 @@ function onStoveRowClicked(e: RowClickedEvent<Tmp2040Dto>) {
 
 /** stackPanel2 删除（simpleButton4_Click → DeleteLc，选中=Selected 列） */
 async function onDeleteLc() {
-  const ids = selectedStoves().map((x) => x.id).filter(Boolean) as string[];
+  const ids = selectedStoves()
+    .map((x) => x.id)
+    .filter(Boolean) as string[];
   if (!ids.length) {
     toast("没有选择需要删除的炉次！", 2500, "warn");
     return;
@@ -449,16 +467,36 @@ onMounted(() => {
       <label class="shrink-0 text-xs text-muted-foreground">钢种</label>
       <InputText v-model="txtGz" class="w-28 shrink-0" />
       <label class="shrink-0 text-xs text-muted-foreground">计划状态</label>
-      <Select v-model="icboPlan" :options="planOptions" option-label="label" option-value="value" show-clear
-        placeholder="全部" class="w-28 shrink-0" @value-change="onPlanStatusChange" />
+      <Select
+        v-model="icboPlan"
+        :options="planOptions"
+        option-label="label"
+        option-value="value"
+        show-clear
+        placeholder="全部"
+        class="w-28 shrink-0"
+        @value-change="onPlanStatusChange"
+      />
       <label class="shrink-0 text-xs text-muted-foreground">轧制产线</label>
-      <Select v-model="cboZGLineInfo" :options="zgOptions" option-label="label" option-value="value" show-clear
-        placeholder="请选择" class="w-32 shrink-0" @value-change="onZgLineChange" />
+      <Select
+        v-model="cboZGLineInfo"
+        :options="zgOptions"
+        option-label="label"
+        option-value="value"
+        show-clear
+        placeholder="请选择"
+        class="w-32 shrink-0"
+        @value-change="onZgLineChange"
+      />
       <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="querying" @click="queryPlan">
         <IconSearch class="h-3 w-3" />查询
       </Button>
-      <Button variant="outlined" class="shrink-0 whitespace-nowrap" :disabled="!genEnabled" @click="onGenerate">生成炉次</Button>
-      <Button variant="outlined" class="shrink-0 whitespace-nowrap" :disabled="!genEnabled" @click="onAutoGenerate">自动生成炉次</Button>
+      <Button variant="outlined" class="shrink-0 whitespace-nowrap" :disabled="!genEnabled" @click="onGenerate"
+        >生成炉次</Button
+      >
+      <Button variant="outlined" class="shrink-0 whitespace-nowrap" :disabled="!genEnabled" @click="onAutoGenerate"
+        >自动生成炉次</Button
+      >
     </div>
 
     <!-- stackPanel4：原 Visible=false 的「占位控件」标签，按原样隐藏保留 -->
@@ -470,11 +508,26 @@ onMounted(() => {
     <Splitter class="min-h-0 flex-1" layout="vertical">
       <SplitterPanel :size="40" :minSize="20" class="flex flex-col overflow-hidden">
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="planColDefs" :row-data="planRows" :pagination="false"
-            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-            :loading="querying" @grid-ready="ready('plan')" @selection-changed="syncPlanSelectedField"
-            @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="planColDefs"
+            :row-data="planRows"
+            :pagination="false"
+            :row-selection="{
+              mode: 'multiRow',
+              checkboxes: true,
+              headerCheckbox: true,
+              enableClickSelection: true,
+              enableSelectionWithoutKeys: true,
+            }"
+            :loading="querying"
+            @grid-ready="ready('plan')"
+            @selection-changed="syncPlanSelectedField"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
 
@@ -486,7 +539,9 @@ onMounted(() => {
           <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="querying" @click="queryLc">
             <IconSearch class="h-3 w-3" />查询
           </Button>
-          <Button variant="outlined" severity="danger" class="shrink-0 whitespace-nowrap" @click="onDeleteLc">删除</Button>
+          <Button variant="outlined" severity="danger" class="shrink-0 whitespace-nowrap" @click="onDeleteLc"
+            >删除</Button
+          >
         </div>
 
         <!-- stackPanel3：原 Visible=false 的生成炉次参数条（连铸机/炉数/每炉支数/每炉重量/生成炉次），按原样隐藏保留 -->
@@ -514,19 +569,44 @@ onMounted(() => {
         <Splitter class="min-h-0 flex-1" layout="horizontal">
           <SplitterPanel :size="63" :minSize="30" class="flex flex-col overflow-hidden">
             <div class="min-h-0 flex-1 overflow-hidden">
-              <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                :default-col-def="hmxDefaultColDef" :column-defs="stoveColDefs" :row-data="stoveRows"
-                :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-                :pagination="false" :loading="querying" :master-detail="true" :detail-grid-options="stoveDetailOptions"
-                :get-detail-row-data="getStoveDetailRows" @grid-ready="ready('stove')"
-                @first-data-rendered="autoSizeOnFirstData" @row-clicked="onStoveRowClicked" />
+              <AgGridVue
+                class="hmx-ag-grid h-full w-full"
+                :theme="theme"
+                :locale-text="AG_GRID_LOCALE_CN"
+                :default-col-def="hmxDefaultColDef"
+                :column-defs="stoveColDefs"
+                :row-data="stoveRows"
+                :row-selection="{
+                  mode: 'multiRow',
+                  checkboxes: true,
+                  headerCheckbox: true,
+                  enableClickSelection: true,
+                  enableSelectionWithoutKeys: true,
+                }"
+                :pagination="false"
+                :loading="querying"
+                :master-detail="true"
+                :detail-grid-options="stoveDetailOptions"
+                :get-detail-row-data="getStoveDetailRows"
+                @grid-ready="ready('stove')"
+                @first-data-rendered="autoSizeOnFirstData"
+                @row-clicked="onStoveRowClicked"
+              />
             </div>
           </SplitterPanel>
           <SplitterPanel :minSize="20" class="flex flex-col overflow-hidden">
             <div class="min-h-0 flex-1 overflow-hidden">
-              <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                :default-col-def="hmxDefaultColDef" :column-defs="stoveOrderColDefs" :row-data="stoveOrderRows"
-                :pagination="false" @grid-ready="ready('order')" @first-data-rendered="autoSizeOnFirstData" />
+              <AgGridVue
+                class="hmx-ag-grid h-full w-full"
+                :theme="theme"
+                :locale-text="AG_GRID_LOCALE_CN"
+                :default-col-def="hmxDefaultColDef"
+                :column-defs="stoveOrderColDefs"
+                :row-data="stoveOrderRows"
+                :pagination="false"
+                @grid-ready="ready('order')"
+                @first-data-rendered="autoSizeOnFirstData"
+              />
             </div>
           </SplitterPanel>
         </Splitter>

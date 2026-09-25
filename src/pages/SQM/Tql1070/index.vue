@@ -34,13 +34,17 @@ const { json: menuJson } = useMenuQuery();
 
 /* ---------- 菜单参数（原 FrmTql1070_Load：QueryInput.CStoreCode/NProType） ---------- */
 const qsStoreCode =
-  typeof menuJson.CStoreCode === "string" ? menuJson.CStoreCode
-  : typeof menuJson.cStoreCode === "string" ? menuJson.cStoreCode
-  : "ZG01-01";
+  typeof menuJson.CStoreCode === "string"
+    ? menuJson.CStoreCode
+    : typeof menuJson.cStoreCode === "string"
+      ? menuJson.cStoreCode
+      : "ZG01-01";
 const qsNProType =
-  typeof menuJson.NProType === "number" ? menuJson.NProType
-  : typeof menuJson.nProType === "number" ? menuJson.nProType
-  : NProTypeEnum.P;
+  typeof menuJson.NProType === "number"
+    ? menuJson.NProType
+    : typeof menuJson.nProType === "number"
+      ? menuJson.nProType
+      : NProTypeEnum.P;
 
 /* ---------- 时间（原 Load：TimeRange(今天-3, 今天+1)） ---------- */
 function defaultRange(): Date[] {
@@ -98,8 +102,12 @@ const storageApi = ref<GridApi | null>(null);
 const recordRows = ref<any[]>([]);
 const recordLoading = ref(false);
 const recordApi = ref<GridApi | null>(null);
-function onStorageReady(e: GridReadyEvent) { storageApi.value = e.api; }
-function onRecordReady(e: GridReadyEvent) { recordApi.value = e.api; }
+function onStorageReady(e: GridReadyEvent) {
+  storageApi.value = e.api;
+}
+function onRecordReady(e: GridReadyEvent) {
+  recordApi.value = e.api;
+}
 function autosizeLater() {
   requestAnimationFrame(() => {
     storageApi.value?.autoSizeAllColumns();
@@ -514,8 +522,13 @@ function onDisable() {
       <div class="grid grid-cols-6 items-center gap-x-3 gap-y-1.5">
         <div class="col-span-2 flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">库区</label>
-          <Select v-model="storageQuery.storeCode" :options="storeOptions" option-label="label" option-value="value"
-            class="min-w-0 flex-1" />
+          <Select
+            v-model="storageQuery.storeCode"
+            :options="storeOptions"
+            option-label="label"
+            option-value="value"
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="col-span-2 flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">炉号</label>
@@ -527,8 +540,14 @@ function onDisable() {
         </div>
         <div class="col-span-2 flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">产出时间</label>
-          <DatePicker v-model="storageQuery.dates" selection-mode="range" :manual-input="false"
-            date-format="yy-mm-dd" show-icon class="min-w-0 flex-1" />
+          <DatePicker
+            v-model="storageQuery.dates"
+            selection-mode="range"
+            :manual-input="false"
+            date-format="yy-mm-dd"
+            show-icon
+            class="min-w-0 flex-1"
+          />
         </div>
       </div>
     </div>
@@ -548,19 +567,42 @@ function onDisable() {
     <Splitter class="min-h-0 flex-1" layout="vertical">
       <SplitterPanel :size="55" :minSize="15" class="flex min-h-0 flex-col">
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="storageColDefs" :row-data="storageRows"
-            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-            :suppress-column-virtualisation="true" :pagination="false" :animate-rows="false" :loading="storageLoading"
-            @grid-ready="onStorageReady" @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="storageColDefs"
+            :row-data="storageRows"
+            :row-selection="{
+              mode: 'multiRow',
+              checkboxes: true,
+              headerCheckbox: true,
+              enableClickSelection: true,
+              enableSelectionWithoutKeys: true,
+            }"
+            :suppress-column-virtualisation="true"
+            :pagination="false"
+            :animate-rows="false"
+            :loading="storageLoading"
+            @grid-ready="onStorageReady"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
 
       <SplitterPanel :size="45" :minSize="15" class="flex min-h-0 flex-col">
         <!-- 记录查询条（原 stackPanel2 Dock=Top：时间范围/炉号/材料号/查询/作废） -->
         <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
-          <DatePicker v-model="recordQuery.dates" selection-mode="range" :manual-input="false"
-            date-format="yy-mm-dd" show-icon placeholder="时间范围" class="w-64 shrink-0" />
+          <DatePicker
+            v-model="recordQuery.dates"
+            selection-mode="range"
+            :manual-input="false"
+            date-format="yy-mm-dd"
+            show-icon
+            placeholder="时间范围"
+            class="w-64 shrink-0"
+          />
           <InputText v-model="recordQuery.stove" placeholder="请输入搜索炉号" class="w-44 shrink-0" />
           <InputText v-model="recordQuery.pieceNo" placeholder="请输入搜索材料号" class="w-44 shrink-0" />
           <Button text class="shrink-0 whitespace-nowrap" :loading="recordLoading" @click="onQueryRecord">
@@ -572,18 +614,39 @@ function onDisable() {
           <span class="ml-auto text-xs text-muted-foreground">判定记录（{{ recordRows.length }}）</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="recordColDefs" :row-data="recordRows"
-            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-            :suppress-column-virtualisation="true" :pagination="false" :animate-rows="false" :loading="recordLoading"
-            @grid-ready="onRecordReady" @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="recordColDefs"
+            :row-data="recordRows"
+            :row-selection="{
+              mode: 'multiRow',
+              checkboxes: true,
+              headerCheckbox: true,
+              enableClickSelection: true,
+              enableSelectionWithoutKeys: true,
+            }"
+            :suppress-column-virtualisation="true"
+            :pagination="false"
+            :animate-rows="false"
+            :loading="recordLoading"
+            @grid-ready="onRecordReady"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
     </Splitter>
 
     <!-- 确认（对应原 MsgBox.ShowYesNo("请确定作废判定记录？作废不影响现有判定结果")） -->
-    <Dialog :visible="confirmOpen" modal header="确认" :style="{ width: 'min(28rem, calc(100vw - 2rem))' }"
-      @update:visible="confirmOpen = $event">
+    <Dialog
+      :visible="confirmOpen"
+      modal
+      header="确认"
+      :style="{ width: 'min(28rem, calc(100vw - 2rem))' }"
+      @update:visible="confirmOpen = $event"
+    >
       <p class="text-xs whitespace-pre-line">{{ confirmMsg }}</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />

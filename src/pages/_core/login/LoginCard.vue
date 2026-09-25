@@ -2,10 +2,15 @@
 /** 悬浮亚克力登录小卡：表单状态、验证码、登录与回跳全部自包含，LoginPage 只负责背景与轮播。 */
 import { computed, nextTick, ref, watch, type ComponentPublicInstance } from "vue";
 import {
-  IconEye, IconEyeOff,
-  IconLoader, IconLock, IconLogin2, IconSquareRounded,
-  IconSquareRoundedCheck, IconUser
-} from '@tabler/icons-vue';
+  IconEye,
+  IconEyeOff,
+  IconLoader,
+  IconLock,
+  IconLogin2,
+  IconSquareRounded,
+  IconSquareRoundedCheck,
+  IconUser,
+} from "@tabler/icons-vue";
 import InputText from "primevue/inputtext";
 import IconField from "primevue/iconfield";
 import InputIcon from "primevue/inputicon";
@@ -50,9 +55,7 @@ watch(userId, (id) => {
    （本站 autocomplete=off + 自有记住密码，不依赖浏览器密码管理器），
    原生 Ctrl+Z（historyUndo）走兜底分支一并拦截，避免明文与显示串脱同步。 */
 const pwRef = ref<ComponentPublicInstance | null>(null);
-const pwDisplay = computed(() =>
-  masked.value ? "#".repeat(Array.from(password.value).length) : password.value,
-);
+const pwDisplay = computed(() => (masked.value ? "#".repeat(Array.from(password.value).length) : password.value));
 
 function pwInputEl(): HTMLInputElement | null {
   const el = pwRef.value?.$el as HTMLElement | HTMLInputElement | undefined;
@@ -155,14 +158,15 @@ async function onLogin() {
 <template>
   <!-- 右缘 50px、上下 80px（≈50×1.618 取整到刻度 20），弹性空白吸收富余高度；
        移动端大卡退为透明铺满层，小卡居中占满宽度 -->
-  <div class="absolute inset-0 flex items-stretch justify-end px-12.5 py-20 max-md:items-center max-md:justify-center max-md:p-4">
+  <div
+    class="absolute inset-0 flex items-stretch justify-end px-12.5 py-20 max-md:items-center max-md:justify-center max-md:p-4"
+  >
     <div
-      class="login-acrylic flex max-h-full w-[36%] min-w-76 max-w-104 flex-col overflow-y-auto rounded-2xl border border-white/50 bg-white/55 p-5 shadow-[0_16px_48px_rgba(15,40,80,0.28)] backdrop-blur-2xl dark:border-white/10 dark:bg-slate-900/45 max-md:w-full max-md:min-w-0 max-md:max-w-96">
+      class="login-acrylic flex max-h-full w-[36%] min-w-76 max-w-104 flex-col overflow-y-auto rounded-2xl border border-white/50 bg-white/55 p-5 shadow-[0_16px_48px_rgba(15,40,80,0.28)] backdrop-blur-2xl dark:border-white/10 dark:bg-slate-900/45 max-md:w-full max-md:min-w-0 max-md:max-w-96"
+    >
       <div class="text-2xl leading-none">👏</div>
       <div class="mt-2 text-base font-semibold text-foreground">HiMind工业互联网平台</div>
-      <div class="mb-2 mt-1 text-xs text-muted-foreground">
-        欢迎！即刻登录，体验数字化智慧制造的强大赋能感！
-      </div>
+      <div class="mb-2 mt-1 text-xs text-muted-foreground">欢迎！即刻登录，体验数字化智慧制造的强大赋能感！</div>
       <div class="h-6 shrink-0"></div>
 
       <div class="login-form flex flex-1 flex-col space-y-2.5">
@@ -170,29 +174,56 @@ async function onLogin() {
           <InputIcon>
             <IconUser />
           </InputIcon>
-          <InputText v-model="userId" placeholder="请输入用户名" autocomplete="off" autofocus spellcheck="false"
-            class="w-full" @keydown.enter="onLogin" />
+          <InputText
+            v-model="userId"
+            placeholder="请输入用户名"
+            autocomplete="off"
+            autofocus
+            spellcheck="false"
+            class="w-full"
+            @keydown.enter="onLogin"
+          />
         </IconField>
 
         <IconField>
           <InputIcon>
             <IconLock />
           </InputIcon>
-          <InputText ref="pwRef" :model-value="pwDisplay" variant="filled" fluid placeholder="请输入密码"
-            autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"
-            @update:model-value="onPwModelUpdate" @beforeinput="onPwBeforeInput"
-            @compositionend="onPwCompositionEnd" @keydown.enter="onLogin" />
+          <InputText
+            ref="pwRef"
+            :model-value="pwDisplay"
+            variant="filled"
+            fluid
+            placeholder="请输入密码"
+            autocomplete="off"
+            autocapitalize="off"
+            autocorrect="off"
+            spellcheck="false"
+            @update:model-value="onPwModelUpdate"
+            @beforeinput="onPwBeforeInput"
+            @compositionend="onPwCompositionEnd"
+            @keydown.enter="onLogin"
+          />
           <InputIcon @click="masked = !masked">
             <IconEyeOff v-if="masked" />
             <IconEye v-else />
           </InputIcon>
         </IconField>
 
-        <Captcha v-model:signature="captchaSignature" v-model:challengeString="captchaChallenge"
-          v-model:captchaType="captchaType" v-model:success="captchaPassed"
-          v-slot="{ caption, loading: capLoading, success: capSuccess, verify: capVerify }">
-          <button type="button" class="captcha-btn" :class="{ 'is-success': capSuccess }" :disabled="capLoading"
-            @click="capVerify">
+        <Captcha
+          v-model:signature="captchaSignature"
+          v-model:challengeString="captchaChallenge"
+          v-model:captchaType="captchaType"
+          v-model:success="captchaPassed"
+          v-slot="{ caption, loading: capLoading, success: capSuccess, verify: capVerify }"
+        >
+          <button
+            type="button"
+            class="captcha-btn"
+            :class="{ 'is-success': capSuccess }"
+            :disabled="capLoading"
+            @click="capVerify"
+          >
             <IconLoader v-if="capLoading" class="captcha-icon animate-spin" />
             <IconSquareRoundedCheck v-else-if="capSuccess" class="captcha-icon" />
             <IconSquareRounded v-else class="captcha-icon captcha-icon-muted" />

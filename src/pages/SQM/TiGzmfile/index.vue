@@ -17,17 +17,22 @@ import Button from "primevue/button";
 import InputText from "primevue/inputtext";
 import Select from "primevue/select";
 import Dialog from "primevue/dialog";
-import { IconDownload, IconEye, IconPencil, IconPlus, IconRefresh, IconSearch, IconTrash, IconUpload, IconX } from "@tabler/icons-vue";
+import {
+  IconDownload,
+  IconEye,
+  IconPencil,
+  IconPlus,
+  IconRefresh,
+  IconSearch,
+  IconTrash,
+  IconUpload,
+  IconX,
+} from "@tabler/icons-vue";
 import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, GridApi, GridReadyEvent, ValueFormatterParams } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { hmxDefaultColDef, makeHmxGridTheme, autoSizeOnFirstData } from "@/lib/agGrid";
-import {
-  GzmFileControlStateEnum,
-  GzmFileVarietyEnum,
-  tiGzmfileApi,
-  type TiGzmfile,
-} from "@/api/mes4ddh/sqm.swagger";
+import { GzmFileControlStateEnum, GzmFileVarietyEnum, tiGzmfileApi, type TiGzmfile } from "@/api/mes4ddh/sqm.swagger";
 import { tPa1000Api, type Tpa1000 } from "@/api/mes4ddh/shr.swagger";
 import { systemKeyValueApi } from "@/api/admin/request";
 import { useToast } from "@/composables/useToast";
@@ -92,7 +97,11 @@ const colDefs: ColDef[] = [
     headerName: "受控状态",
     width: 90,
     valueFormatter: (p: ValueFormatterParams) =>
-      String(p.value ?? "") === String(GzmFileControlStateEnum.C) ? "保密" : String(p.value ?? "") === String(GzmFileControlStateEnum.NC) ? "非保密" : "",
+      String(p.value ?? "") === String(GzmFileControlStateEnum.C)
+        ? "保密"
+        : String(p.value ?? "") === String(GzmFileControlStateEnum.NC)
+          ? "非保密"
+          : "",
   },
   {
     field: "variety",
@@ -146,7 +155,9 @@ const colDefs: ColDef[] = [
   { field: "cSgStdCodes", headerName: "标准牌号代码", width: 140, hide: true },
 ];
 
-function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
+function onGridReady(e: GridReadyEvent) {
+  gridApi.value = e.api;
+}
 
 function currentRow(): TiGzmfile | null {
   return (gridApi.value?.getSelectedRows()[0] as TiGzmfile | undefined) ?? null;
@@ -192,16 +203,25 @@ async function dataBind(controlState: number, cIsEnable: string) {
 }
 
 /** 原 btnQuery_Click → DataBind()：非保密 + 启用 */
-function onQuery() { void dataBind(GzmFileControlStateEnum.NC, "Y"); }
+function onQuery() {
+  void dataBind(GzmFileControlStateEnum.NC, "Y");
+}
 /** 原 btnQueryBM_Click → DataBind(C)：保密 + 启用 */
-function onQueryBM() { void dataBind(GzmFileControlStateEnum.C, "Y"); }
+function onQueryBM() {
+  void dataBind(GzmFileControlStateEnum.C, "Y");
+}
 /** 原 btnQueryZF_Click → DataBind(default, "N")：作废件（原传 default(GzmFileControlStateEnum)=0） */
-function onQueryZF() { void dataBind(0, "N"); }
+function onQueryZF() {
+  void dataBind(0, "N");
+}
 
 /** 原 btnLook_Click：HmxWebViewForm("http://10.11.5.63:8080/" + RegulateNameReplace) */
 function onLook() {
   const cur = currentRow();
-  if (!cur) { toast("请选择一条数据后重试！", 2500, "warn"); return; }
+  if (!cur) {
+    toast("请选择一条数据后重试！", 2500, "warn");
+    return;
+  }
   window.open(`http://10.11.5.63:8080/${cur.regulateNameReplace ?? ""}`, "_blank");
 }
 
@@ -223,40 +243,67 @@ function onConfirmOk() {
 
 function onZf() {
   const cur = currentRow();
-  if (!cur) { toast("请选择一条数据后重试！", 2500, "warn"); return; }
-  if (cur.cIsEnable !== "Y") { toast("已作废文件禁止再次作废！！！", 3000, "warn"); return; }
+  if (!cur) {
+    toast("请选择一条数据后重试！", 2500, "warn");
+    return;
+  }
+  if (cur.cIsEnable !== "Y") {
+    toast("已作废文件禁止再次作废！！！", 3000, "warn");
+    return;
+  }
   askConfirm(`是否确定作废文件：${cur.regulateName}`, async () => {
     saving.value = true;
     try {
       await tiGzmfileApi.zFGzmfiles(cur.id ?? undefined);
       await dataBind(GzmFileControlStateEnum.NC, "Y");
-    } catch { /* 拦截层已 toast */ } finally { saving.value = false; }
+    } catch {
+      /* 拦截层已 toast */
+    } finally {
+      saving.value = false;
+    }
   });
 }
 
 function onCancelZf() {
   const cur = currentRow();
-  if (!cur) { toast("请选择一条数据后重试！", 2500, "warn"); return; }
-  if (cur.cIsEnable !== "N") { toast("未作废文件禁止取消作废！！！", 3000, "warn"); return; }
+  if (!cur) {
+    toast("请选择一条数据后重试！", 2500, "warn");
+    return;
+  }
+  if (cur.cIsEnable !== "N") {
+    toast("未作废文件禁止取消作废！！！", 3000, "warn");
+    return;
+  }
   askConfirm(`是否确定取消作废文件：${cur.regulateName}`, async () => {
     saving.value = true;
     try {
       await tiGzmfileApi.canleZFGzmfiles(cur.id ?? undefined);
       await dataBind(GzmFileControlStateEnum.NC, "Y");
-    } catch { /* 拦截层已 toast */ } finally { saving.value = false; }
+    } catch {
+      /* 拦截层已 toast */
+    } finally {
+      saving.value = false;
+    }
   });
 }
 
 function onDelete() {
   const cur = currentRow();
-  if (!cur) { toast("请选中需要删除的行", 2500, "warn"); return; }
+  if (!cur) {
+    toast("请选中需要删除的行", 2500, "warn");
+    return;
+  }
   askConfirm(`是否确认删除文件：${cur.regulateName}`, async () => {
     saving.value = true;
     try {
       await tiGzmfileApi.delGzmfiles(cur.id ?? undefined);
       toast(`文件：${cur.regulateName}删除成功！`, 2500, "success");
       await dataBind(GzmFileControlStateEnum.NC, "Y");
-    } catch { /* 拦截层已 toast */ } finally { saving.value = false; }
+    } catch {
+      /* 拦截层已 toast */
+    } finally {
+      saving.value = false;
+    }
   });
 }
 
@@ -265,7 +312,10 @@ const editOpen = ref(false);
 const editRow = ref<TiGzmfile | null>(null);
 function onEdit() {
   const cur = currentRow();
-  if (!cur) { toast("请选择一条数据进行操作！", 2500, "warn"); return; }
+  if (!cur) {
+    toast("请选择一条数据进行操作！", 2500, "warn");
+    return;
+  }
   editRow.value = { ...cur };
   editOpen.value = true;
 }
@@ -275,7 +325,11 @@ async function onDialogOk(row: TiGzmfile) {
     await tiGzmfileApi.addEditGzmfiles(row);
     editOpen.value = false;
     await dataBind(GzmFileControlStateEnum.NC, "Y");
-  } catch { /* 拦截层已 toast */ } finally { saving.value = false; }
+  } catch {
+    /* 拦截层已 toast */
+  } finally {
+    saving.value = false;
+  }
 }
 
 /** 原 btnAdd_Click（FrmTiGzmfileEdit._flag=true）：保存链路依赖 FtpHelper 上传到 10.11.5.63，web 无对应后端 */
@@ -285,7 +339,10 @@ function onAdd() {
 /** 原 btnDownLoad_Click：xtraFolderBrowserDialog + FtpHelper.DownloadFile，同上 → 占位 */
 function onDownload() {
   const picked = rows.value.filter((r) => r.selected);
-  if (!picked.length) { toast("请勾选需要下载的项", 2500, "warn"); return; }
+  if (!picked.length) {
+    toast("请勾选需要下载的项", 2500, "warn");
+    return;
+  }
   toast("下载依赖原 FtpHelper(10.11.5.63) 硬编码 FTP，web 侧未提供对应后端，待接入", 4000, "warn");
 }
 
@@ -298,7 +355,9 @@ onMounted(() => {
         lineOpts.value = (lines as Tpa1000[])
           .filter((x) => x.cCode)
           .map((x) => ({ label: x.cName ?? "", value: x.cCode ?? "" }));
-      } catch { /* 拦截层已 toast */ }
+      } catch {
+        /* 拦截层已 toast */
+      }
     })(),
   ]);
 });
@@ -307,8 +366,13 @@ onMounted(() => {
 <template>
   <div class="flex min-h-0 flex-1 flex-col">
     <!-- 确认（对应原 MsgBox.ShowYesNo） -->
-    <Dialog :visible="confirmOpen" modal header="确认" :style="{ width: 'min(30rem, calc(100vw - 2rem))' }"
-      @update:visible="confirmOpen = $event">
+    <Dialog
+      :visible="confirmOpen"
+      modal
+      header="确认"
+      :style="{ width: 'min(30rem, calc(100vw - 2rem))' }"
+      @update:visible="confirmOpen = $event"
+    >
       <p class="text-xs whitespace-pre-wrap">{{ confirmMsg }}</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />
@@ -321,8 +385,15 @@ onMounted(() => {
       <div class="grid grid-cols-6 items-center gap-x-3 gap-y-1.5">
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">文件种类</label>
-          <Select v-model="input.variety" :options="varietyOpts" show-clear option-label="label"
-            option-value="value" placeholder="全部" class="min-w-0 flex-1" />
+          <Select
+            v-model="input.variety"
+            :options="varietyOpts"
+            show-clear
+            option-label="label"
+            option-value="value"
+            placeholder="全部"
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">工艺规程号</label>
@@ -338,13 +409,29 @@ onMounted(() => {
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">使用单位</label>
-          <Select v-model="input.useUnit" :options="kvUseUnit" :filter="true" show-clear option-label="label"
-            option-value="value" placeholder="全部" class="min-w-0 flex-1" />
+          <Select
+            v-model="input.useUnit"
+            :options="kvUseUnit"
+            :filter="true"
+            show-clear
+            option-label="label"
+            option-value="value"
+            placeholder="全部"
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">厂别区分</label>
-          <Select v-model="input.matKind" :options="lineOpts" :filter="true" show-clear option-label="label"
-            option-value="value" placeholder="全部" class="min-w-0 flex-1" />
+          <Select
+            v-model="input.matKind"
+            :options="lineOpts"
+            :filter="true"
+            show-clear
+            option-label="label"
+            option-value="value"
+            placeholder="全部"
+            class="min-w-0 flex-1"
+          />
         </div>
       </div>
     </div>
@@ -354,9 +441,7 @@ onMounted(() => {
       <Button text class="shrink-0 whitespace-nowrap" :loading="querying" @click="onQuery">
         <IconSearch class="h-3 w-3" />查询
       </Button>
-      <Button text class="shrink-0 whitespace-nowrap" @click="onLook">
-        <IconEye class="h-3 w-3" />预览
-      </Button>
+      <Button text class="shrink-0 whitespace-nowrap" @click="onLook"> <IconEye class="h-3 w-3" />预览 </Button>
       <Button text class="shrink-0 whitespace-nowrap" @click="onQueryBM">
         <IconSearch class="h-3 w-3" />保密文件查询
       </Button>
@@ -364,12 +449,8 @@ onMounted(() => {
         <IconSearch class="h-3 w-3" />作废文件查询
       </Button>
       <span class="mx-1 h-4 w-px bg-border" />
-      <Button text class="shrink-0 whitespace-nowrap" @click="onAdd">
-        <IconUpload class="h-3 w-3" />上传
-      </Button>
-      <Button text class="shrink-0 whitespace-nowrap" @click="onEdit">
-        <IconPencil class="h-3 w-3" />修改
-      </Button>
+      <Button text class="shrink-0 whitespace-nowrap" @click="onAdd"> <IconUpload class="h-3 w-3" />上传 </Button>
+      <Button text class="shrink-0 whitespace-nowrap" @click="onEdit"> <IconPencil class="h-3 w-3" />修改 </Button>
       <Button text severity="danger" class="shrink-0 whitespace-nowrap" @click="onZf">
         <IconX class="h-3 w-3" />作废
       </Button>
@@ -387,13 +468,28 @@ onMounted(() => {
 
     <!-- 数据表格（原 gridControl1 / gridView1，TiGzmfile） -->
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows"
-        :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="rows"
+        :row-selection="{
+          mode: 'multiRow',
+          checkboxes: true,
+          headerCheckbox: true,
+          enableClickSelection: true,
+          enableSelectionWithoutKeys: true,
+        }"
         :suppress-column-virtualisation="true"
-        :pagination="false" :animate-rows="false" :loading="querying || saving"
-        @grid-ready="onGridReady" @selection-changed="onSelectionChanged"
-        @first-data-rendered="autoSizeOnFirstData" />
+        :pagination="false"
+        :animate-rows="false"
+        :loading="querying || saving"
+        @grid-ready="onGridReady"
+        @selection-changed="onSelectionChanged"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
 
     <TiGzmfileEditDialog v-model:visible="editOpen" :row="editRow" @ok="onDialogOk" />

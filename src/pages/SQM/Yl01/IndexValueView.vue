@@ -15,7 +15,14 @@ import Splitter from "primevue/splitter";
 import SplitterPanel from "primevue/splitterpanel";
 import { IconCopy } from "@tabler/icons-vue";
 import { AgGridVue } from "ag-grid-vue3";
-import type { ColDef, GetRowIdParams, GridApi, GridReadyEvent, IRowNode, ValueFormatterParams } from "ag-grid-community";
+import type {
+  ColDef,
+  GetRowIdParams,
+  GridApi,
+  GridReadyEvent,
+  IRowNode,
+  ValueFormatterParams,
+} from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { hmxDefaultColDef, makeHmxGridTheme, autoSizeOnFirstData } from "@/lib/agGrid";
 import type { Tqmyl04 } from "@/api/mes4ddh/sqm.swagger";
@@ -55,11 +62,15 @@ const loading = ref(false);
 
 const gridApi = ref<GridApi | null>(null);
 const valApi = ref<GridApi | null>(null);
-function onCandReady(e: GridReadyEvent) { gridApi.value = e.api; }
-function onValReady(e: GridReadyEvent) { valApi.value = e.api; }
+function onCandReady(e: GridReadyEvent) {
+  gridApi.value = e.api;
+}
+function onValReady(e: GridReadyEvent) {
+  valApi.value = e.api;
+}
 
 function intervalFmt(p: ValueFormatterParams) {
-  return (({ 1: "≤E≤", 2: "＜E≤", 4: "≤E＜", 6: "＜E＜" }) as Record<string, string>)[String(p.value)] ?? "";
+  return ({ 1: "≤E≤", 2: "＜E≤", 4: "≤E＜", 6: "＜E＜" } as Record<string, string>)[String(p.value)] ?? "";
 }
 /** 原 CustomColumnDisplayText：nMax/nMin/nTarget 按 nAccuracy 取整显示 */
 function accFmt(field: "nMinValue" | "nMaxValue" | "nTargetValue") {
@@ -107,9 +118,7 @@ const candColDefs = computed<ColDef[]>(() => [
     headerName: "名称",
     width: 150,
     cellClass: (p) =>
-      candPicked((p.data as YlgyTemplate | undefined)?.code)
-        ? "font-bold !bg-[rgba(63,255,255,0.35)]"
-        : "",
+      candPicked((p.data as YlgyTemplate | undefined)?.code) ? "font-bold !bg-[rgba(63,255,255,0.35)]" : "",
   },
   xferCol("in"),
 ]);
@@ -121,15 +130,43 @@ const valColDefs = computed<ColDef[]>(() => [
   { field: "cName", headerName: "指标名称", width: 140 },
   { field: "nSeq", headerName: "顺序号", width: 80, editable: props.editable },
   { field: "cUnit", headerName: "单位", width: 70, editable: props.editable },
-  { field: "nTargetValue", headerName: "目标值", width: 90, editable: props.editable, valueFormatter: accFmt("nTargetValue") },
-  { field: "nMinValue", headerName: "最小值", width: 90, editable: props.editable, valueFormatter: accFmt("nMinValue") },
+  {
+    field: "nTargetValue",
+    headerName: "目标值",
+    width: 90,
+    editable: props.editable,
+    valueFormatter: accFmt("nTargetValue"),
+  },
+  {
+    field: "nMinValue",
+    headerName: "最小值",
+    width: 90,
+    editable: props.editable,
+    valueFormatter: accFmt("nMinValue"),
+  },
   { field: "nInterval", headerName: "开闭区间", width: 90, valueFormatter: intervalFmt, editable: props.editable },
-  { field: "nMaxValue", headerName: "最大值", width: 90, editable: props.editable, valueFormatter: accFmt("nMaxValue") },
+  {
+    field: "nMaxValue",
+    headerName: "最大值",
+    width: 90,
+    editable: props.editable,
+    valueFormatter: accFmt("nMaxValue"),
+  },
   { field: "cTextValue", headerName: "文本值", width: 110, editable: props.editable },
   { field: "nAccuracy", headerName: "小数位数", width: 90, editable: props.editable },
-  { field: "nAlarmMin", headerName: showJudgeCols.value ? "内控下限" : "报警下限", width: 95, editable: props.editable },
+  {
+    field: "nAlarmMin",
+    headerName: showJudgeCols.value ? "内控下限" : "报警下限",
+    width: 95,
+    editable: props.editable,
+  },
   { field: "nIntervalAlarm", headerName: "开闭区间", width: 90, valueFormatter: intervalFmt, editable: props.editable },
-  { field: "nAlarmMax", headerName: showJudgeCols.value ? "内控上限" : "报警上限", width: 95, editable: props.editable },
+  {
+    field: "nAlarmMax",
+    headerName: showJudgeCols.value ? "内控上限" : "报警上限",
+    width: 95,
+    editable: props.editable,
+  },
   ...(showJudgeCols.value
     ? ([
         { field: "cIsJudge", headerName: "是否判定", width: 90, valueFormatter: yesNoFmt, editable: props.editable },
@@ -273,9 +310,7 @@ function createYl04(idx: YlgyTemplate): Tqmyl04 {
 /** 原 SetDefaultValues：按 YLGY.INDEX.PROPERTITY 里除报警上下限外的属性灌默认值 */
 async function setDefaultValues(row: Tqmyl04) {
   const list = await YlgyIndexPropertyRepo.getAll();
-  const cfgs = list.filter(
-    (x) => x.proc === row.cProc && x.idxCode === row.cCode && x.defaultValue != null,
-  );
+  const cfgs = list.filter((x) => x.proc === row.cProc && x.idxCode === row.cCode && x.defaultValue != null);
   const failed: string[] = [];
   for (const cfg of cfgs) {
     const key = cfg.propertyName ?? "";
@@ -364,22 +399,56 @@ function copySelected() {
     <Splitter class="min-h-0 flex-1" layout="horizontal">
       <SplitterPanel v-if="props.editable" :size="34" :minSize="14" class="flex flex-col overflow-hidden">
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="candColDefs" :row-data="candRows" :get-row-id="candRowId"
-            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-            :suppress-column-virtualisation="true" :pagination="false" :animate-rows="false" :loading="loading"
-            @grid-ready="onCandReady" @first-data-rendered="autoSizeOnFirstData" @cell-double-clicked="transferIn" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="candColDefs"
+            :row-data="candRows"
+            :get-row-id="candRowId"
+            :row-selection="{
+              mode: 'multiRow',
+              checkboxes: true,
+              headerCheckbox: true,
+              enableClickSelection: true,
+              enableSelectionWithoutKeys: true,
+            }"
+            :suppress-column-virtualisation="true"
+            :pagination="false"
+            :animate-rows="false"
+            :loading="loading"
+            @grid-ready="onCandReady"
+            @first-data-rendered="autoSizeOnFirstData"
+            @cell-double-clicked="transferIn"
+          />
         </div>
       </SplitterPanel>
 
       <SplitterPanel :minSize="30" class="flex flex-col overflow-hidden">
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="valColDefs" :row-data="valRows" :get-row-id="valRowId"
-            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-            :suppress-column-virtualisation="true" :pagination="false" :animate-rows="false"
-            @grid-ready="onValReady" @selection-changed="onValSelectionChanged"
-            @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="valColDefs"
+            :row-data="valRows"
+            :get-row-id="valRowId"
+            :row-selection="{
+              mode: 'multiRow',
+              checkboxes: true,
+              headerCheckbox: true,
+              enableClickSelection: true,
+              enableSelectionWithoutKeys: true,
+            }"
+            :suppress-column-virtualisation="true"
+            :pagination="false"
+            :animate-rows="false"
+            @grid-ready="onValReady"
+            @selection-changed="onValSelectionChanged"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
         <!-- 原 flowLayoutPanel2 Dock Bottom + labelControl1（红字，原高 20；无选中行时显示静态「tips:」） -->
         <div class="flex h-5 shrink-0 items-center gap-1 border-t border-border/60 px-2">

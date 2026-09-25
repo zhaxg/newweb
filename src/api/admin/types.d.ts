@@ -1,11 +1,4 @@
-import type {
-  CaptchaType,
-  HmxJobMisfiredEnums,
-  NotificationTargetType,
-  RbacRescType,
-  UserType,
-  YesNo,
-} from "./enums";
+import type { CaptchaType, HmxJobMisfiredEnums, NotificationTargetType, RbacRescType, UserType, YesNo } from "./enums";
 
 export interface CaptchaInfo {
   challengeString?: string;

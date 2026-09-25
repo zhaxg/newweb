@@ -221,9 +221,7 @@ async function onQuery() {
       cPieceNo: q.cPieceNo || null,
       cInboundNo: q.cInboundNo || null,
       // 批量材料号（原 txtPieceNos 多行）
-      cPieceNos: q.pieceNos
-        ? q.pieceNos.split(/[\s,，;；]+/).filter(Boolean)
-        : null,
+      cPieceNos: q.pieceNos ? q.pieceNos.split(/[\s,，;；]+/).filter(Boolean) : null,
     })) ?? []) as Tyd2000Dto[];
     rows.value = list;
     records.value = [];
@@ -295,12 +293,21 @@ async function onMainSelectionChanged() {
           <span class="text-xs font-medium text-muted-foreground">库存材料</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="mainColDefs"
-            :default-col-def="hmxDefaultColDef" :row-data="rows" :locale-text="AG_GRID_LOCALE_CN"
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :column-defs="mainColDefs"
+            :default-col-def="hmxDefaultColDef"
+            :row-data="rows"
+            :locale-text="AG_GRID_LOCALE_CN"
             :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
-            :pagination="false" :animate-rows="false" :loading="querying"
-            @grid-ready="onMainReady" @selection-changed="onMainSelectionChanged"
-            @first-data-rendered="autoSizeOnFirstData" />
+            :pagination="false"
+            :animate-rows="false"
+            :loading="querying"
+            @grid-ready="onMainReady"
+            @selection-changed="onMainSelectionChanged"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
 
@@ -309,10 +316,18 @@ async function onMainSelectionChanged() {
           <span class="text-xs font-medium text-muted-foreground">材料履历（{{ records.length }}）</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :column-defs="recColDefs"
-            :default-col-def="hmxDefaultColDef" :row-data="records" :locale-text="AG_GRID_LOCALE_CN"
-            :pagination="false" :animate-rows="false"
-            @grid-ready="onRecReady" @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :column-defs="recColDefs"
+            :default-col-def="hmxDefaultColDef"
+            :row-data="records"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :pagination="false"
+            :animate-rows="false"
+            @grid-ready="onRecReady"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
     </Splitter>

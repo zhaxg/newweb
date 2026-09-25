@@ -20,16 +20,38 @@ import DatePicker from "primevue/datepicker";
 import InputText from "primevue/inputtext";
 import Select from "primevue/select";
 import {
-  IconArrowBackUp, IconBox, IconDeviceFloppy, IconFileExport, IconFileImport, IconGridDots,
-  IconPackage, IconPencil, IconPlus, IconPrinter, IconRefresh, IconSearch, IconStack2,
-  IconTag, IconTypography, IconX,
+  IconArrowBackUp,
+  IconBox,
+  IconDeviceFloppy,
+  IconFileExport,
+  IconFileImport,
+  IconGridDots,
+  IconPackage,
+  IconPencil,
+  IconPlus,
+  IconPrinter,
+  IconRefresh,
+  IconSearch,
+  IconStack2,
+  IconTag,
+  IconTypography,
+  IconX,
 } from "@tabler/icons-vue";
 import type { GridApi } from "ag-grid-community";
 import { useMenuQuery } from "@/lib/menuQuery";
 import {
-  cPStorageApi, InventoryStatusEnum, StorageInOutTypeEnum,
-  storageApi, tyd1000Api, tyd2000Api,
-  type StorageInOutDto, type StoragePosition, type StorageInputDto, type TimeRange, type Tyd1000, type Tyd2000Dto,
+  cPStorageApi,
+  InventoryStatusEnum,
+  StorageInOutTypeEnum,
+  storageApi,
+  tyd1000Api,
+  tyd2000Api,
+  type StorageInOutDto,
+  type StoragePosition,
+  type StorageInputDto,
+  type TimeRange,
+  type Tyd1000,
+  type Tyd2000Dto,
 } from "@/api/mes4ddh/syd.swagger";
 import UcStorageGrid from "../_uc/UcStorageGrid.vue";
 import { useToast } from "@/composables/useToast";
@@ -74,8 +96,12 @@ const V = computed(() => ({
 }));
 
 function defaultRange(): [Date, Date] {
-  const start = new Date(); start.setHours(0, 0, 0, 0); start.setDate(start.getDate() - 1);
-  const end = new Date(); end.setDate(end.getDate() + 1); end.setHours(23, 59, 59, 0);
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+  start.setDate(start.getDate() - 1);
+  const end = new Date();
+  end.setDate(end.getDate() + 1);
+  end.setHours(23, 59, 59, 0);
   return [start, end];
 }
 
@@ -104,7 +130,9 @@ const rows = ref<Tyd2000Dto[]>([]);
 const querying = ref(false);
 const api = ref<GridApi | null>(null);
 
-function onReady(a: GridApi) { api.value = a; }
+function onReady(a: GridApi) {
+  api.value = a;
+}
 
 function selectedRows(): Tyd2000Dto[] {
   const byGrid = (api.value?.getSelectedRows() ?? []) as Tyd2000Dto[];
@@ -128,12 +156,15 @@ function isoDate(d: Date): string {
 async function loadStores() {
   try {
     const list = ((await tyd1000Api.queryRoom("")) ?? []) as Tyd1000[];
-    let opts = list.filter((x) => x.cStoreCode != null)
+    let opts = list
+      .filter((x) => x.cStoreCode != null)
       .map((x) => ({ label: x.cStoreDes ?? x.cStoreCode ?? "", value: x.cStoreCode! }));
     if (menu.value.StoreCodes?.length) opts = opts.filter((o) => menu.value.StoreCodes!.includes(o.value));
     storeOptions.value = opts;
     if (menu.value.StoreCodes?.length === 1) q.cStoreCode = menu.value.StoreCodes[0]!;
-  } catch { /* 拦截层已 toast */ }
+  } catch {
+    /* 拦截层已 toast */
+  }
 }
 
 function buildInput(): StorageInputDto {
@@ -150,9 +181,10 @@ function buildInput(): StorageInputDto {
     nThick: decimalRange(q.thickRange),
     nWth: decimalRange(q.wthRange),
     nLen: decimalRange(q.lenRange),
-    dProTime: q.proDates?.[0] && q.proDates?.[1]
-      ? { min: isoDate(q.proDates[0]), max: isoDate(q.proDates[1]) } as TimeRange
-      : undefined,
+    dProTime:
+      q.proDates?.[0] && q.proDates?.[1]
+        ? ({ min: isoDate(q.proDates[0]), max: isoDate(q.proDates[1]) } as TimeRange)
+        : undefined,
     cSteelType: q.cSteelType || null,
     cDelivyStatusCode: q.cDelivyStatusCode || null,
     customerName: q.customerName || null,
@@ -163,18 +195,28 @@ function buildInput(): StorageInputDto {
 
 /* btnQuery → QueryStorage（原：库区必填） */
 async function onQuery() {
-  if (!q.cStoreCode) { toast("请选择库区", 2000, "warn"); return; }
+  if (!q.cStoreCode) {
+    toast("请选择库区", 2000, "warn");
+    return;
+  }
   querying.value = true;
   try {
     rows.value = ((await tyd2000Api.queryStorage(buildInput())) ?? []) as Tyd2000Dto[];
     requestAnimationFrame(() => api.value?.autoSizeAllColumns());
     if (!rows.value.length) toast("无符合条件的数据", 2000, "info");
-  } catch { /* 拦截层已 toast */ } finally { querying.value = false; }
+  } catch {
+    /* 拦截层已 toast */
+  } finally {
+    querying.value = false;
+  }
 }
 
 function requireSelectedSameStore(): Tyd2000Dto[] | null {
   const selected = selectedRows();
-  if (!selected.length) { toast("请选择后再操作", 2000, "warn"); return null; }
+  if (!selected.length) {
+    toast("请选择后再操作", 2000, "warn");
+    return null;
+  }
   if (new Set(selected.map((w) => w.cStoreCode)).size > 1) {
     toast("请选择同一库区的数据进行操作", 2500, "warn");
     return null;
@@ -195,13 +237,20 @@ async function onCk() {
   try {
     await cPStorageApi.xnfh(selected.map((x) => x.id!).filter(Boolean));
     await onQuery();
-  } catch { /* 拦截层已 toast */ } finally { querying.value = false; }
+  } catch {
+    /* 拦截层已 toast */
+  } finally {
+    querying.value = false;
+  }
 }
 
 /* btnTK 退库 → OutStorage(TKCK) + SetStackNum */
 async function onTk() {
   const selected = selectedRows().filter((w) => w.nStatus === InventoryStatusEnum.Normal);
-  if (!selected.length) { toast("请选择[在库]的材料再操作", 2500, "warn"); return; }
+  if (!selected.length) {
+    toast("请选择[在库]的材料再操作", 2500, "warn");
+    return;
+  }
   const pieceNos = selected.map((l) => l.cPieceNo!).filter(Boolean);
   if (!window.confirm(`确认退库?数量${selected.length}?${"\n"}${pieceNos.join("\n")}`)) return;
   querying.value = true;
@@ -213,118 +262,209 @@ async function onTk() {
       pieceNos,
     };
     await storageApi.outStorage(dto);
-    const positions: StoragePosition[] = [...new Map(
-      selected.map((l) => [`${l.cStoreCode}|${l.cStackNo}`, l]),
-    ).values()].map((l) => ({ cStore: l.cStoreCode ?? null, cStackNo: l.cStackNo ?? null }));
+    const positions: StoragePosition[] = [
+      ...new Map(selected.map((l) => [`${l.cStoreCode}|${l.cStackNo}`, l])).values(),
+    ].map((l) => ({ cStore: l.cStoreCode ?? null, cStackNo: l.cStackNo ?? null }));
     await tyd2000Api.setStackNum(positions);
     await onQuery();
-  } catch { /* 拦截层已 toast */ } finally { querying.value = false; }
+  } catch {
+    /* 拦截层已 toast */
+  } finally {
+    querying.value = false;
+  }
 }
 
 /* btnAddRemark 添加生产备注 → AddProRemark（内联 prompt 复刻 MemoEdit 对话框） */
 async function onAddRemark() {
   const selected = selectedRows();
-  if (!selected.length) { toast("请选择后再操作", 2000, "warn"); return; }
+  if (!selected.length) {
+    toast("请选择后再操作", 2000, "warn");
+    return;
+  }
   const old = [...new Set(selected.map((w) => w.cProRemark).filter((r) => r))].join(";");
   const text = window.prompt(`正在修改${selected.length}件材料的生产备注`, old ? old + ";" : "");
   if (text == null) return;
   querying.value = true;
   try {
-    await tyd2000Api.addProRemark(selected.map((l) => ({
-      id: l.id, cPieceNo: l.cPieceNo, cProRemark: text,
-    })) as never);
+    await tyd2000Api.addProRemark(
+      selected.map((l) => ({
+        id: l.id,
+        cPieceNo: l.cPieceNo,
+        cProRemark: text,
+      })) as never,
+    );
     await onQuery();
-  } catch { /* 拦截层已 toast */ } finally { querying.value = false; }
+  } catch {
+    /* 拦截层已 toast */
+  } finally {
+    querying.value = false;
+  }
 }
 
 /* btnStack 更新层号 → SetStackNum */
 async function onStack() {
   const selected = selectedRows();
-  if (!selected.length) { toast("请选择材料再操作", 2000, "warn"); return; }
+  if (!selected.length) {
+    toast("请选择材料再操作", 2000, "warn");
+    return;
+  }
   querying.value = true;
   try {
-    const positions: StoragePosition[] = [...new Map(
-      selected.map((w) => [`${w.cStoreCode}|${w.cStackNo}`, w]),
-    ).values()].map((w) => ({ cStore: w.cStoreCode ?? null, cStackNo: w.cStackNo ?? null }));
+    const positions: StoragePosition[] = [
+      ...new Map(selected.map((w) => [`${w.cStoreCode}|${w.cStackNo}`, w])).values(),
+    ].map((w) => ({ cStore: w.cStoreCode ?? null, cStackNo: w.cStackNo ?? null }));
     await tyd2000Api.setStackNum(positions);
     await onQuery();
-  } catch { /* 拦截层已 toast */ } finally { querying.value = false; }
+  } catch {
+    /* 拦截层已 toast */
+  } finally {
+    querying.value = false;
+  }
 }
 
 /* btnType 更新分类 → SetTypes */
 async function onType() {
   const selected = selectedRows();
-  if (!selected.length) { toast("请选择材料再操作", 2000, "warn"); return; }
+  if (!selected.length) {
+    toast("请选择材料再操作", 2000, "warn");
+    return;
+  }
   querying.value = true;
   try {
     await tyd2000Api.setTypes(selected.map((x) => x.cPieceNo!).filter(Boolean));
     await onQuery();
-  } catch { /* 拦截层已 toast */ } finally { querying.value = false; }
+  } catch {
+    /* 拦截层已 toast */
+  } finally {
+    querying.value = false;
+  }
 }
 
 /* btnZh 手工照核 → Zh */
 async function onZh() {
   const selected = selectedRows().filter((w) => w.nStatus === InventoryStatusEnum.Normal);
-  if (!selected.length) { toast("请选择[在库]的材料再操作", 2500, "warn"); return; }
+  if (!selected.length) {
+    toast("请选择[在库]的材料再操作", 2500, "warn");
+    return;
+  }
   if (!window.confirm(`是否确认手工照核勾选的${selected.length}条材料？`)) return;
   querying.value = true;
   try {
     await tyd2000Api.zh(selected.map((x) => x.cPieceNo!).filter(Boolean));
     toast("照核成功！", 2000, "success");
     await onQuery();
-  } catch { /* 拦截层已 toast */ } finally { querying.value = false; }
+  } catch {
+    /* 拦截层已 toast */
+  } finally {
+    querying.value = false;
+  }
 }
 
 /* ---------- 二级弹窗占位（原 ShowDialog，按 skill 默认占位） ---------- */
-function placeholder(name: string) { toast(`${name}（二级弹窗）待接入`, 2500, "warn"); }
+function placeholder(name: string) {
+  toast(`${name}（二级弹窗）待接入`, 2500, "warn");
+}
 
 function onDD() {
-  const s = requireSelectedSameStore(); if (!s) return; placeholder("倒垛 FrmYD2000DD");
+  const s = requireSelectedSameStore();
+  if (!s) return;
+  placeholder("倒垛 FrmYD2000DD");
 }
 function onZk() {
-  const s = requireSelectedSameStore(); if (!s) return; placeholder("转库 FrmYD2000ZK");
+  const s = requireSelectedSameStore();
+  if (!s) return;
+  placeholder("转库 FrmYD2000ZK");
 }
 function onDd2() {
-  const s = requireSelectedSameStore(); if (!s) return; placeholder("图形化倒垛 FrmKanban → kanBanRKDD");
+  const s = requireSelectedSameStore();
+  if (!s) return;
+  placeholder("图形化倒垛 FrmKanban → kanBanRKDD");
 }
 function onDB() {
-  const s = requireSelectedSameStore(); if (!s) return; placeholder("创建调拨单 FrmYD2000DB");
+  const s = requireSelectedSameStore();
+  if (!s) return;
+  placeholder("创建调拨单 FrmYD2000DB");
 }
 function onAddCpk() {
-  const s = requireSelectedSameStore(); if (!s) return;
-  if (s.some((l) => l.nStatus !== InventoryStatusEnum.NotIn)) { toast("材料已入库，不允许重复操作", 2500, "warn"); return; }
+  const s = requireSelectedSameStore();
+  if (!s) return;
+  if (s.some((l) => l.nStatus !== InventoryStatusEnum.NotIn)) {
+    toast("材料已入库，不允许重复操作", 2500, "warn");
+    return;
+  }
   placeholder("成品入库 FrmYD2000CP");
 }
 function onAddTk() {
-  const s = requireSelectedSameStore(); if (!s) return;
-  if (s.some((l) => l.nStatus !== InventoryStatusEnum.Normal)) { toast("材料不在库，不允许操作", 2500, "warn"); return; }
-  if (!q.cStoreCode) { toast("请选择库区", 2000, "warn"); return; }
+  const s = requireSelectedSameStore();
+  if (!s) return;
+  if (s.some((l) => l.nStatus !== InventoryStatusEnum.Normal)) {
+    toast("材料不在库，不允许操作", 2500, "warn");
+    return;
+  }
+  if (!q.cStoreCode) {
+    toast("请选择库区", 2000, "warn");
+    return;
+  }
   placeholder("成品退库 FrmYD2000CP");
 }
 function zbsGuard(): Tyd2000Dto[] | null {
   const selected = selectedRows();
-  if (!selected.length) { toast("请选择材料再操作", 2000, "warn"); return null; }
-  if (new Set(selected.map((x) => x.cCusName)).size > 1) { toast("请选择同一个客户操作！", 2500, "warn"); return null; }
-  if (new Set(selected.map((x) => x.cSgStd)).size > 1) { toast("请选择同一个标准的材料操作！", 2500, "warn"); return null; }
-  if (new Set(selected.map((x) => x.cSgCode)).size > 1) { toast("请选择同一个钢种的材料操作！", 2500, "warn"); return null; }
+  if (!selected.length) {
+    toast("请选择材料再操作", 2000, "warn");
+    return null;
+  }
+  if (new Set(selected.map((x) => x.cCusName)).size > 1) {
+    toast("请选择同一个客户操作！", 2500, "warn");
+    return null;
+  }
+  if (new Set(selected.map((x) => x.cSgStd)).size > 1) {
+    toast("请选择同一个标准的材料操作！", 2500, "warn");
+    return null;
+  }
+  if (new Set(selected.map((x) => x.cSgCode)).size > 1) {
+    toast("请选择同一个钢种的材料操作！", 2500, "warn");
+    return null;
+  }
   return selected;
 }
-function onZbs() { if (!zbsGuard()) return; placeholder("标准质保书 FrmYD2000ZBS(0)"); }
-function onZbsTs() { if (!zbsGuard()) return; placeholder("探伤质保书 FrmYD2000ZBS(1)"); }
-function onZbsGc() { if (!zbsGuard()) return; placeholder("公差质保书 FrmYD2000ZBS(2)"); }
+function onZbs() {
+  if (!zbsGuard()) return;
+  placeholder("标准质保书 FrmYD2000ZBS(0)");
+}
+function onZbsTs() {
+  if (!zbsGuard()) return;
+  placeholder("探伤质保书 FrmYD2000ZBS(1)");
+}
+function onZbsGc() {
+  if (!zbsGuard()) return;
+  placeholder("公差质保书 FrmYD2000ZBS(2)");
+}
 function onSetType() {
   const selected = selectedRows();
-  if (!selected.length) { toast("请勾选后再操作", 2500, "warn"); return; }
+  if (!selected.length) {
+    toast("请勾选后再操作", 2500, "warn");
+    return;
+  }
   placeholder("指定钢板分类 FrmYD2000Type");
 }
 function onLabel() {
   const selected = selectedRows();
-  if (!selected.length) { toast("请选择材料再操作", 2000, "warn"); return; }
-  if (new Set(selected.map((x) => x.cLineCode)).size > 1) { toast("请选择同一条产线库存操作", 2500, "warn"); return; }
+  if (!selected.length) {
+    toast("请选择材料再操作", 2000, "warn");
+    return;
+  }
+  if (new Set(selected.map((x) => x.cLineCode)).size > 1) {
+    toast("请选择同一条产线库存操作", 2500, "warn");
+    return;
+  }
   placeholder("标签打印（XtraReport 模板 + AddPrintLog）");
 }
 
-onMounted(() => { void loadStores().then(() => { if (q.cStoreCode) void onQuery(); }); });
+onMounted(() => {
+  void loadStores().then(() => {
+    if (q.cStoreCode) void onQuery();
+  });
+});
 </script>
 
 <template>
@@ -333,8 +473,16 @@ onMounted(() => { void loadStores().then(() => { if (q.cStoreCode) void onQuery(
     <div class="grid shrink-0 grid-cols-6 items-center gap-x-3 gap-y-1.5 border-b border-border/60 px-3 py-2">
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">库区</label>
-        <Select v-model="q.cStoreCode" :options="storeOptions" option-label="label" option-value="value" show-clear
-          filter placeholder="选择库区" class="min-w-0 flex-1" />
+        <Select
+          v-model="q.cStoreCode"
+          :options="storeOptions"
+          option-label="label"
+          option-value="value"
+          show-clear
+          filter
+          placeholder="选择库区"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">批号</label>
@@ -382,8 +530,17 @@ onMounted(() => { void loadStores().then(() => { if (q.cStoreCode) void onQuery(
       </div>
       <div class="col-span-2 flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">产出时间</label>
-        <DatePicker v-model="q.proDates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-          show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+        <DatePicker
+          v-model="q.proDates"
+          selection-mode="range"
+          :manual-input="false"
+          date-format="yy-mm-dd"
+          show-time
+          hour-format="24"
+          show-icon
+          placeholder="开始 至 结束"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">件次号</label>

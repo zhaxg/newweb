@@ -58,10 +58,12 @@ const input = reactive({
 const rows = shallowRef<TiL2ME06ItemDto[]>([]);
 const loading = ref(false);
 const api = ref<GridApi | null>(null);
-function onReady(e: GridReadyEvent) { api.value = e.api; }
+function onReady(e: GridReadyEvent) {
+  api.value = e.api;
+}
 
 const colDefs: ColDef[] = [
-    { colId: "selected", field: "selected", headerName: "选择", width: 149 },
+  { colId: "selected", field: "selected", headerName: "选择", width: 149 },
   { colId: "nOrderSj", field: "nOrderSj", headerName: "生产顺序号", width: 149 },
   { colId: "cCustName", field: "cCustName", headerName: "客户名称", width: 149 },
   { colId: "cConRemark", field: "cConRemark", headerName: "特殊要求", width: 500 },
@@ -134,9 +136,10 @@ const colDefs: ColDef[] = [
 function rowRed(p: RowClassParams<TiL2ME06ItemDto>) {
   const r = p.data;
   if (!r) return undefined;
-  const hit = [r.pLAN_COrderNo1, r.pLAN_COrderNo2, r.pLAN_COrderNo3, r.pLAN_COrderNo4].some(
-    (x) => String(x ?? "").includes("-B"),
-  ) || String(r.cConRemark ?? "").includes("加急");
+  const hit =
+    [r.pLAN_COrderNo1, r.pLAN_COrderNo2, r.pLAN_COrderNo3, r.pLAN_COrderNo4].some((x) =>
+      String(x ?? "").includes("-B"),
+    ) || String(r.cConRemark ?? "").includes("加急");
   return hit ? { backgroundColor: "#fee2e2", color: "#b91c1c" } : undefined;
 }
 
@@ -164,9 +167,14 @@ let timer: ReturnType<typeof setInterval> | null = null;
 function toggleAuto() {
   autoOn.value = !autoOn.value;
   if (autoOn.value) timer = setInterval(() => void query(), 10000);
-  else if (timer) { clearInterval(timer); timer = null; }
+  else if (timer) {
+    clearInterval(timer);
+    timer = null;
+  }
 }
-onBeforeUnmount(() => { if (timer) clearInterval(timer); });
+onBeforeUnmount(() => {
+  if (timer) clearInterval(timer);
+});
 
 /* ---------- 打印（占位） ---------- */
 function btnPrint() {
@@ -190,13 +198,27 @@ function btnPrint() {
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-20 shrink-0 text-xs text-muted-foreground">加热炉状态</label>
-        <Select v-model="input.nFurStatus" :options="furStatusOptions" option-label="label" option-value="value"
-          class="min-w-0 flex-1" />
+        <Select
+          v-model="input.nFurStatus"
+          :options="furStatusOptions"
+          option-label="label"
+          option-value="value"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="col-span-2 flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">作业时间</label>
-        <DatePicker v-model="input.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-          show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+        <DatePicker
+          v-model="input.dates"
+          selection-mode="range"
+          :manual-input="false"
+          date-format="yy-mm-dd"
+          show-time
+          hour-format="24"
+          show-icon
+          placeholder="开始 至 结束"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="col-span-2 flex min-w-0 items-center gap-1">
         <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="loading" @click="query">
@@ -205,18 +227,32 @@ function btnPrint() {
         <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="btnPrint">
           <IconPrinter class="h-3 w-3" />打印
         </Button>
-        <Button :variant="autoOn ? 'filled' : 'outlined'" severity="secondary"
-          class="shrink-0 whitespace-nowrap" @click="toggleAuto">
+        <Button
+          :variant="autoOn ? 'filled' : 'outlined'"
+          severity="secondary"
+          class="shrink-0 whitespace-nowrap"
+          @click="toggleAuto"
+        >
           {{ autoOn ? "已开启" : "已关闭" }}
         </Button>
       </div>
     </div>
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows"
-        :row-selection="{ mode: 'multiRow', checkboxes: true }" :pagination="false" :animate-rows="false"
-        :get-row-style="rowRed" :loading="loading" @grid-ready="onReady"
-        @first-data-rendered="autoSizeOnFirstData" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="rows"
+        :row-selection="{ mode: 'multiRow', checkboxes: true }"
+        :pagination="false"
+        :animate-rows="false"
+        :get-row-style="rowRed"
+        :loading="loading"
+        @grid-ready="onReady"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
   </div>
 </template>

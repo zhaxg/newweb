@@ -16,7 +16,14 @@ import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { hmxDefaultColDef, makeHmxGridTheme, autoSizeOnFirstData } from "@/lib/agGrid";
-import { tqm1000Api, tqmtpa6Api, tqmylApi, type SgStdSignPair, type Tqmyl01, type Tqmyl02 } from "@/api/mes4ddh/sqm.swagger";
+import {
+  tqm1000Api,
+  tqmtpa6Api,
+  tqmylApi,
+  type SgStdSignPair,
+  type Tqmyl01,
+  type Tqmyl02,
+} from "@/api/mes4ddh/sqm.swagger";
 import { systemKeyValueApi } from "@/api/admin/request";
 import { NextStrId } from "@/lib/yitIdHelper";
 import { useToast } from "@/composables/useToast";
@@ -31,7 +38,9 @@ const { toast } = useToast();
 const theme = makeHmxGridTheme();
 
 const gridApi = ref<GridApi | null>(null);
-function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
+function onGridReady(e: GridReadyEvent) {
+  gridApi.value = e.api;
+}
 function currentRow(): Tqmyl02 | null {
   return (gridApi.value?.getSelectedRows()[0] as Tqmyl02 | undefined) ?? null;
 }
@@ -46,8 +55,7 @@ async function loadSteelType() {
     /* 拦截层已 toast */
   }
 }
-const steelTypeLabel = (code?: string | null) =>
-  (code && kvSteelType.value.find((o) => o.value === code)?.label) || "";
+const steelTypeLabel = (code?: string | null) => (code && kvSteelType.value.find((o) => o.value === code)?.label) || "";
 
 /* 明细列（按 VisibleIndex 0/1 + 隐藏 8 列） */
 const colDefs = (): ColDef[] => [
@@ -63,7 +71,9 @@ const colDefs = (): ColDef[] => [
   { field: "selected", headerName: "选择", width: 70, hide: true },
 ];
 const columns = colDefs();
-function getRowId(p: { data: Tqmyl02 }) { return String(p.data.id ?? ""); }
+function getRowId(p: { data: Tqmyl02 }) {
+  return String(p.data.id ?? "");
+}
 
 /* ---------- UCSelectNKGZ.GetData：三路合成候选 ---------- */
 /** 选择器候选行：Tqmyl02 落库字段 + UCSelectNKGZ 查询用的钢种分类/合成编码 */
@@ -114,9 +124,7 @@ async function loadOptions() {
     const all = [...joined, ...rest, ...fromYlgy];
     // 选项文案：标准 · 牌号 · 钢种分类（原 colCSgClassCode 走 SteelType 字典）
     options.value = all.map((row, i) => ({
-      label: [row.cSgStd, row.cSgSign, steelTypeLabel(row.cSgClassCode)]
-        .filter(Boolean)
-        .join(" · "),
+      label: [row.cSgStd, row.cSgSign, steelTypeLabel(row.cSgClassCode)].filter(Boolean).join(" · "),
       value: i,
       row,
     }));
@@ -173,15 +181,22 @@ function onRemove() {
     <!-- dataLayoutControl1：标签「钢种标准」+ UCSelectNKGZ -->
     <div v-if="props.editable" class="flex h-9 shrink-0 items-center gap-1.5 border-b border-border/60 px-2">
       <label class="w-16 shrink-0 text-xs text-muted-foreground">钢种标准</label>
-      <Select v-model="picked" :options="options" :filter="true" show-clear option-label="label"
-        option-value="value" placeholder="选择标准牌号" :loading="loadingOpts" class="min-w-0 flex-1" />
+      <Select
+        v-model="picked"
+        :options="options"
+        :filter="true"
+        show-clear
+        option-label="label"
+        option-value="value"
+        placeholder="选择标准牌号"
+        :loading="loadingOpts"
+        class="min-w-0 flex-1"
+      />
     </div>
 
     <!-- stackPanel1：添加 / 删除 -->
     <div v-if="props.editable" class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
-      <Button text class="shrink-0 whitespace-nowrap" @click="onAdd">
-        <IconPlus class="h-3 w-3" />添加
-      </Button>
+      <Button text class="shrink-0 whitespace-nowrap" @click="onAdd"> <IconPlus class="h-3 w-3" />添加 </Button>
       <Button text severity="danger" class="shrink-0 whitespace-nowrap" @click="onRemove">
         <IconTrash class="h-3 w-3" />删除
       </Button>
@@ -189,11 +204,21 @@ function onRemove() {
 
     <!-- gridControl1：Tqmyl02 -->
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="columns" :row-data="props.rows" :get-row-id="getRowId"
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="columns"
+        :row-data="props.rows"
+        :get-row-id="getRowId"
         :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
-        :suppress-column-virtualisation="true" :pagination="false" :animate-rows="false"
-        @grid-ready="onGridReady" @first-data-rendered="autoSizeOnFirstData" />
+        :suppress-column-virtualisation="true"
+        :pagination="false"
+        :animate-rows="false"
+        @grid-ready="onGridReady"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
   </div>
 </template>

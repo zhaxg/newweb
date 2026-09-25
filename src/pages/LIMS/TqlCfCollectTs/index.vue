@@ -26,13 +26,15 @@ const { toast } = useToast();
 const theme = makeHmxGridTheme();
 
 const statusFmt = (p: ValueFormatterParams) =>
-  (({
-    [TqlCFCollectNstatus.Failure]: "失败",
-    [TqlCFCollectNstatus.Normal]: "正常",
-    [TqlCFCollectNstatus.Abnormal]: "异常",
-    [TqlCFCollectNstatus.UnHandle]: "未处理",
-    [TqlCFCollectNstatus.NStatusAbnormal]: "状态异常",
-  }) as Record<string, string>)[String(p.value)] ?? (p.value == null ? "" : String(p.value));
+  (
+    ({
+      [TqlCFCollectNstatus.Failure]: "失败",
+      [TqlCFCollectNstatus.Normal]: "正常",
+      [TqlCFCollectNstatus.Abnormal]: "异常",
+      [TqlCFCollectNstatus.UnHandle]: "未处理",
+      [TqlCFCollectNstatus.NStatusAbnormal]: "状态异常",
+    }) as Record<string, string>
+  )[String(p.value)] ?? (p.value == null ? "" : String(p.value));
 
 /** 原 Load：TimeRange = 当日-7 ～ 次日0点前一秒（AddDays(1).AddSeconds(-1)）；NStatus = null */
 function defaultDates(): Date[] {
@@ -162,8 +164,17 @@ async function onQuery() {
         </div>
         <div class="col-span-3 flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">创建时间</label>
-          <DatePicker v-model="input.dates" selectionMode="range" :manualInput="false" date-format="yy-mm-dd"
-            show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+          <DatePicker
+            v-model="input.dates"
+            selectionMode="range"
+            :manualInput="false"
+            date-format="yy-mm-dd"
+            show-time
+            hour-format="24"
+            show-icon
+            placeholder="开始 至 结束"
+            class="min-w-0 flex-1"
+          />
         </div>
       </div>
     </div>
@@ -176,11 +187,26 @@ async function onQuery() {
     </div>
 
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows"
-        :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-        :pagination="false" :animate-rows="false" :loading="querying"
-        @grid-ready="onGridReady" @first-data-rendered="autoSizeOnFirstData" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="rows"
+        :row-selection="{
+          mode: 'multiRow',
+          checkboxes: true,
+          headerCheckbox: true,
+          enableClickSelection: true,
+          enableSelectionWithoutKeys: true,
+        }"
+        :pagination="false"
+        :animate-rows="false"
+        :loading="querying"
+        @grid-ready="onGridReady"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
   </div>
 </template>

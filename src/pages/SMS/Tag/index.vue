@@ -20,7 +20,14 @@ import InputText from "primevue/inputtext";
 import Select from "primevue/select";
 import { IconPlus, IconPencil, IconSearch, IconTrash, IconCircleCheck, IconBan } from "@tabler/icons-vue";
 import { AgGridVue } from "ag-grid-vue3";
-import type { ColDef, GridApi, GridReadyEvent, SelectionChangedEvent, ValueGetterParams, ValueSetterParams } from "ag-grid-community";
+import type {
+  ColDef,
+  GridApi,
+  GridReadyEvent,
+  SelectionChangedEvent,
+  ValueGetterParams,
+  ValueSetterParams,
+} from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
 import { useMenuQuery } from "@/lib/menuQuery";
@@ -81,7 +88,7 @@ function mapFmt(source: Ref<Map<string, string>>) {
   return (p: { value?: unknown }) => {
     const v = p.value == null ? "" : String(p.value);
     if (!v) return "";
-    return source.value.get(v) ?? (USAGE_FMT[v] ?? TAG_TYPE_FMT[v] ?? v);
+    return source.value.get(v) ?? USAGE_FMT[v] ?? TAG_TYPE_FMT[v] ?? v;
   };
 }
 const functionFmt = mapFmt(functionMap);
@@ -199,9 +206,11 @@ async function loadDicts() {
       frmTagApi.getAllTableFieldList() ?? [],
     ]);
     const fn = new Map<string, string>();
-    for (const x of [...((oList as unknown[]) ?? []), ...((fList as unknown[]) ?? []), ...((pList as unknown[]) ?? [])] as Array<
-      Record<string, unknown>
-    >) {
+    for (const x of [
+      ...((oList as unknown[]) ?? []),
+      ...((fList as unknown[]) ?? []),
+      ...((pList as unknown[]) ?? []),
+    ] as Array<Record<string, unknown>>) {
       const v = x.value ?? x.cCode;
       const d = x.displayName ?? x.cName;
       if (v != null) fn.set(String(v), String(d ?? v));
@@ -373,8 +382,16 @@ onMounted(async () => {
       <label class="shrink-0 text-xs text-muted-foreground">产线</label>
       <InputText :model-value="lineText" disabled class="w-32 shrink-0" />
       <label class="shrink-0 text-xs text-muted-foreground">机台</label>
-      <Select v-model="machineCode" :options="machineOptions" option-label="label" option-value="value" show-clear
-        placeholder="请选择" class="w-36 shrink-0" @value-change="onMachineChange" />
+      <Select
+        v-model="machineCode"
+        :options="machineOptions"
+        option-label="label"
+        option-value="value"
+        show-clear
+        placeholder="请选择"
+        class="w-36 shrink-0"
+        @value-change="onMachineChange"
+      />
       <label class="shrink-0 text-xs text-muted-foreground">自动化点位</label>
       <InputText v-model="plcPoint" placeholder="自动化点位" class="w-36 shrink-0" />
       <span class="flex shrink-0 items-center gap-1">
@@ -402,10 +419,20 @@ onMounted(async () => {
     </div>
 
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows" :pagination="false"
-        :loading="querying" :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
-        @grid-ready="onGridReady" @selection-changed="onSelectionChanged" @first-data-rendered="autoSizeOnFirstData" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="rows"
+        :pagination="false"
+        :loading="querying"
+        :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
+        @grid-ready="onGridReady"
+        @selection-changed="onSelectionChanged"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
   </div>
 </template>

@@ -35,8 +35,12 @@ const hzRows = shallowRef<Hr4500HzDto[]>([]);
 const loading = ref(false);
 const api = ref<GridApi | null>(null);
 const hzApi = ref<GridApi | null>(null);
-function onReady(e: GridReadyEvent) { api.value = e.api; }
-function onHzReady(e: GridReadyEvent) { hzApi.value = e.api; }
+function onReady(e: GridReadyEvent) {
+  api.value = e.api;
+}
+function onHzReady(e: GridReadyEvent) {
+  hzApi.value = e.api;
+}
 
 const colDefs: ColDef[] = [
   /*  { colId: "date", field: "date", headerName: "日期", width: 150 },
@@ -77,17 +81,14 @@ const nonStdRate = computed(() => {
     cp += r.nQuaCp ?? 0;
     fc += r.nQuaFc ?? 0;
   }
-  return cp === 0 || fc === 0 ? "0" : (Math.round((fc * 100 / cp) * 100) / 100).toFixed(2);
+  return cp === 0 || fc === 0 ? "0" : (Math.round(((fc * 100) / cp) * 100) / 100).toFixed(2);
 });
 
 async function query() {
   loading.value = true;
   try {
     const range = toTimeRange(input.dates);
-    const [cl, hz] = await Promise.all([
-      hR4500Api.queryDayCl(range),
-      hR4500Api.queryDayHz(range),
-    ]);
+    const [cl, hz] = await Promise.all([hR4500Api.queryDayCl(range), hR4500Api.queryDayHz(range)]);
     rows.value = cl ?? [];
     hzRows.value = hz ?? [];
     requestAnimationFrame(() => {
@@ -107,8 +108,17 @@ async function query() {
     <div class="grid shrink-0 grid-cols-6 items-center gap-x-3 gap-y-1.5 border-b border-border/60 px-3 py-2">
       <div class="col-span-2 flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">日期范围</label>
-        <DatePicker v-model="input.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-          show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+        <DatePicker
+          v-model="input.dates"
+          selection-mode="range"
+          :manual-input="false"
+          date-format="yy-mm-dd"
+          show-time
+          hour-format="24"
+          show-icon
+          placeholder="开始 至 结束"
+          class="min-w-0 flex-1"
+        />
       </div>
       <div class="col-span-4 flex min-w-0 items-center gap-1">
         <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="loading" @click="query">
@@ -121,10 +131,19 @@ async function query() {
         <span class="text-xs font-medium text-muted-foreground">日产量信息</span>
       </div>
       <div class="min-h-0 flex-[5] overflow-hidden">
-        <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-          :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows" :pagination="false"
-          :animate-rows="false" :loading="loading" @grid-ready="onReady"
-          @first-data-rendered="autoSizeOnFirstData" />
+        <AgGridVue
+          class="hmx-ag-grid h-full w-full"
+          :theme="theme"
+          :locale-text="AG_GRID_LOCALE_CN"
+          :default-col-def="hmxDefaultColDef"
+          :column-defs="colDefs"
+          :row-data="rows"
+          :pagination="false"
+          :animate-rows="false"
+          :loading="loading"
+          @grid-ready="onReady"
+          @first-data-rendered="autoSizeOnFirstData"
+        />
       </div>
       <div class="flex h-7 shrink-0 items-center gap-2 border-t border-border/60 px-3">
         <span class="text-xs text-muted-foreground">非尺比例：{{ nonStdRate }}%</span>
@@ -133,10 +152,19 @@ async function query() {
         <span class="text-xs font-medium text-muted-foreground">日汇总信息</span>
       </div>
       <div class="min-h-0 flex-[4] overflow-hidden">
-        <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-          :default-col-def="hmxDefaultColDef" :column-defs="hzColDefs" :row-data="hzRows" :pagination="false"
-          :animate-rows="false" :loading="loading" @grid-ready="onHzReady"
-          @first-data-rendered="autoSizeOnFirstData" />
+        <AgGridVue
+          class="hmx-ag-grid h-full w-full"
+          :theme="theme"
+          :locale-text="AG_GRID_LOCALE_CN"
+          :default-col-def="hmxDefaultColDef"
+          :column-defs="hzColDefs"
+          :row-data="hzRows"
+          :pagination="false"
+          :animate-rows="false"
+          :loading="loading"
+          @grid-ready="onHzReady"
+          @first-data-rendered="autoSizeOnFirstData"
+        />
       </div>
     </div>
   </div>

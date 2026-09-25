@@ -45,7 +45,7 @@ const roleColDefs: ColDef[] = [
   { field: "Id", headerName: "角色ID", width: 100 },
   { field: "CRoleName", headerName: "角色名称", width: 150 },
   { field: "CDescription", headerName: "描述", width: 200 },
-  ];
+];
 
 // 用户权限列
 const permColDefs: ColDef[] = [
@@ -62,7 +62,9 @@ const treeColDefs: ColDef[] = [
   { field: "Id", headerName: "功能ID", width: 150 },
 ];
 
-function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
+function onGridReady(e: GridReadyEvent) {
+  gridApi.value = e.api;
+}
 
 async function onQuery() {
   querying.value = true;
@@ -82,11 +84,25 @@ async function onQuery() {
     <!-- 工具栏：查询 | 查询类型 | 关键字 | 查询按钮（1-2个条件合并一行） -->
     <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
       <label class="shrink-0 whitespace-nowrap text-xs text-muted-foreground">查询</label>
-      <Select v-model="queryType" :options="queryTypeOptions" option-label="label" option-value="value"
-        placeholder="类型" show-clear class="w-36 shrink-0" />
+      <Select
+        v-model="queryType"
+        :options="queryTypeOptions"
+        option-label="label"
+        option-value="value"
+        placeholder="类型"
+        show-clear
+        class="w-36 shrink-0"
+      />
       <label class="shrink-0 whitespace-nowrap text-xs text-muted-foreground">关键字</label>
-      <InputText v-model="keyword" maxlength="100" placeholder="关键字" autocapitalize="off" spellcheck="false"
-        class="w-48 shrink-0" @keydown.enter="onQuery" />
+      <InputText
+        v-model="keyword"
+        maxlength="100"
+        placeholder="关键字"
+        autocapitalize="off"
+        spellcheck="false"
+        class="w-48 shrink-0"
+        @keydown.enter="onQuery"
+      />
       <Button text class="shrink-0 whitespace-nowrap" :loading="querying" @click="onQuery">
         <IconSearch class="h-3 w-3" />查询
       </Button>
@@ -101,10 +117,20 @@ async function onQuery() {
           <span class="text-xs font-medium text-muted-foreground">用户列表</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="userColDefs" :row-data="rows"
-            :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }" :pagination="false" :animate-rows="false" :loading="querying"
-            @grid-ready="onGridReady" @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="userColDefs"
+            :row-data="rows"
+            :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
+            :pagination="false"
+            :animate-rows="false"
+            :loading="querying"
+            @grid-ready="onGridReady"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
 
@@ -120,9 +146,17 @@ async function onQuery() {
                   <span class="text-xs font-medium text-muted-foreground">角色列表</span>
                 </div>
                 <div class="min-h-0 flex-1 overflow-hidden">
-                  <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                    :default-col-def="hmxDefaultColDef" :column-defs="roleColDefs" :row-data="roles"
-                    :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }" :pagination="false" :animate-rows="false" />
+                  <AgGridVue
+                    class="hmx-ag-grid h-full w-full"
+                    :theme="theme"
+                    :locale-text="AG_GRID_LOCALE_CN"
+                    :default-col-def="hmxDefaultColDef"
+                    :column-defs="roleColDefs"
+                    :row-data="roles"
+                    :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
+                    :pagination="false"
+                    :animate-rows="false"
+                  />
                 </div>
               </SplitterPanel>
               <!-- 用户权限 -->
@@ -131,9 +165,17 @@ async function onQuery() {
                   <span class="text-xs font-medium text-muted-foreground">用户权限</span>
                 </div>
                 <div class="min-h-0 flex-1 overflow-hidden">
-                  <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                    :default-col-def="hmxDefaultColDef" :column-defs="permColDefs" :row-data="perms"
-                    :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }" :pagination="false" :animate-rows="false" />
+                  <AgGridVue
+                    class="hmx-ag-grid h-full w-full"
+                    :theme="theme"
+                    :locale-text="AG_GRID_LOCALE_CN"
+                    :default-col-def="hmxDefaultColDef"
+                    :column-defs="permColDefs"
+                    :row-data="perms"
+                    :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
+                    :pagination="false"
+                    :animate-rows="false"
+                  />
                 </div>
               </SplitterPanel>
             </Splitter>
@@ -145,9 +187,16 @@ async function onQuery() {
               <span class="text-xs font-medium text-muted-foreground">功能树</span>
             </div>
             <div class="min-h-0 flex-1 overflow-hidden">
-              <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-                :default-col-def="hmxDefaultColDef" :column-defs="treeColDefs" :row-data="treeRows"
-                :pagination="false" :animate-rows="false" />
+              <AgGridVue
+                class="hmx-ag-grid h-full w-full"
+                :theme="theme"
+                :locale-text="AG_GRID_LOCALE_CN"
+                :default-col-def="hmxDefaultColDef"
+                :column-defs="treeColDefs"
+                :row-data="treeRows"
+                :pagination="false"
+                :animate-rows="false"
+              />
             </div>
           </SplitterPanel>
         </Splitter>

@@ -21,7 +21,9 @@ const search = ref("");
 /* 侧栏宽度：可拖动分割条（移植 DBX usePanelResize 交互），持久化到 localStorage */
 const SIDEBAR_MIN_WIDTH = 200;
 const SIDEBAR_MAX_WIDTH = 480;
-const sidebarWidth = ref(Math.min(SIDEBAR_MAX_WIDTH, Math.max(SIDEBAR_MIN_WIDTH, Number(localStorage.getItem("hmx-sidebar-width")) || 240)));
+const sidebarWidth = ref(
+  Math.min(SIDEBAR_MAX_WIDTH, Math.max(SIDEBAR_MIN_WIDTH, Number(localStorage.getItem("hmx-sidebar-width")) || 240)),
+);
 
 function startResize(e: PointerEvent) {
   e.preventDefault();
@@ -31,7 +33,14 @@ function startResize(e: PointerEvent) {
   const startWidth = sidebarWidth.value;
   const overlay = document.createElement("div");
   overlay.setAttribute("aria-hidden", "true");
-  Object.assign(overlay.style, { position: "fixed", inset: "0", zIndex: "2147483647", cursor: "col-resize", userSelect: "none", touchAction: "none" });
+  Object.assign(overlay.style, {
+    position: "fixed",
+    inset: "0",
+    zIndex: "2147483647",
+    cursor: "col-resize",
+    userSelect: "none",
+    touchAction: "none",
+  });
   document.body.append(overlay);
   let currentWidth = startWidth;
   let rafId: number | null = null;
@@ -186,23 +195,56 @@ function onNodeUnselect(node: TreeNode) {
 
 <template>
   <!-- z-[11]：高于标签栏（HmxTabBar z-10），保证骑在边框上的分割条热区不被遮挡 -->
-  <aside class="relative z-[11] flex h-full shrink-0 select-none flex-col border-r border-border bg-[#e5e7eb] dark:bg-sidebar" :style="{ width: sidebarWidth + 'px' }">
+  <aside
+    class="relative z-[11] flex h-full shrink-0 select-none flex-col border-r border-border bg-[#e5e7eb] dark:bg-sidebar"
+    :style="{ width: sidebarWidth + 'px' }"
+  >
     <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2 py-1.5">
       <div class="relative flex min-w-0 flex-1 items-center">
-        <IconSearch class="pointer-events-none absolute left-2 top-1/2 z-10 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
-        <InputText v-model="search" type="text" placeholder="搜索菜单" autocapitalize="off" autocorrect="off" spellcheck="false"
-          class="!h-6 w-full !rounded border border-[#cdd2d9] !bg-[#dde0e5] !pl-7 !pr-6 !text-xs shadow-none dark:!bg-input/30" />
-        <button v-if="search" type="button" class="absolute right-1.5 top-1/2 z-10 flex h-4 w-4 -translate-y-1/2 items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-foreground" aria-label="清除" @click="search = ''">
+        <IconSearch
+          class="pointer-events-none absolute left-2 top-1/2 z-10 h-3 w-3 -translate-y-1/2 text-muted-foreground"
+        />
+        <InputText
+          v-model="search"
+          type="text"
+          placeholder="搜索菜单"
+          autocapitalize="off"
+          autocorrect="off"
+          spellcheck="false"
+          class="!h-6 w-full !rounded border border-[#cdd2d9] !bg-[#dde0e5] !pl-7 !pr-6 !text-xs shadow-none dark:!bg-input/30"
+        />
+        <button
+          v-if="search"
+          type="button"
+          class="absolute right-1.5 top-1/2 z-10 flex h-4 w-4 -translate-y-1/2 items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-foreground"
+          aria-label="清除"
+          @click="search = ''"
+        >
           <IconX class="h-3 w-3" />
         </button>
       </div>
-      <button type="button" class="flex h-6 w-6 shrink-0 items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-foreground" title="一键折叠" aria-label="一键折叠" @click="collapseAll">
+      <button
+        type="button"
+        class="flex h-6 w-6 shrink-0 items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-foreground"
+        title="一键折叠"
+        aria-label="一键折叠"
+        @click="collapseAll"
+      >
         <IconChevronsUp class="h-3.5 w-3.5" />
       </button>
     </div>
     <div class="hmx-sidebar-scroll min-h-0 flex-1 overflow-y-auto py-1">
-      <Tree v-if="treeNodes.length > 0" :value="treeNodes" selection-mode="single" :expanded-keys="expandedKeys" :selection-keys="selectedKeys"
-        aria-label="功能菜单" @update:expanded-keys="expandedKeys = $event" @node-select="onNodeSelect" @node-unselect="onNodeUnselect">
+      <Tree
+        v-if="treeNodes.length > 0"
+        :value="treeNodes"
+        selection-mode="single"
+        :expanded-keys="expandedKeys"
+        :selection-keys="selectedKeys"
+        aria-label="功能菜单"
+        @update:expanded-keys="expandedKeys = $event"
+        @node-select="onNodeSelect"
+        @node-unselect="onNodeUnselect"
+      >
         <template #nodeicon="{ node }">
           <component :is="nodeIcon(node)" class="h-3.5 w-3.5 text-muted-foreground" />
         </template>

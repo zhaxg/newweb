@@ -90,9 +90,12 @@ function onSgChange(v: string | null) {
 /* 原 ucJgyt1/ucJhzt1/ucProdCode/ucProdClass_EditValueChanged：选中回填叙述列 */
 function onKvChange(key: "cProcessPurposeCode" | "cDelivyStatusCode" | "cProdCode" | "cProdClass", v: string | null) {
   const src =
-    key === "cProcessPurposeCode" ? kvCustStd
-      : key === "cDelivyStatusCode" ? kvDelivy
-        : key === "cProdCode" ? kvProdCode
+    key === "cProcessPurposeCode"
+      ? kvCustStd
+      : key === "cDelivyStatusCode"
+        ? kvDelivy
+        : key === "cProdCode"
+          ? kvProdCode
           : kvProdClass;
   const label = src.value.find((x) => x.value === v)?.label ?? null;
   if (key === "cProcessPurposeCode") form.cProcessPurposeDesc = label;
@@ -135,8 +138,13 @@ const fmtD = (d: Date | null) =>
 </script>
 
 <template>
-  <Dialog :visible="props.visible" modal :header="props.row ? '编辑产品规范' : '新增产品规范'"
-    :style="{ width: 'min(64rem, calc(100vw - 2rem))' }" @update:visible="emit('update:visible', $event)">
+  <Dialog
+    :visible="props.visible"
+    modal
+    :header="props.row ? '编辑产品规范' : '新增产品规范'"
+    :style="{ width: 'min(64rem, calc(100vw - 2rem))' }"
+    @update:visible="emit('update:visible', $event)"
+  >
     <!-- 原 DataLayoutControl 三列行主序（坐标回读），末三行整行 -->
     <div class="grid grid-cols-3 items-start gap-x-3 gap-y-2">
       <div class="min-w-0">
@@ -148,27 +156,61 @@ const fmtD = (d: Date | null) =>
       <div class="min-w-0">
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-20 shrink-0 text-xs text-muted-foreground">品名代码</label>
-          <Select :model-value="form.cProdCode ?? null" :options="kvProdCode" :filter="true" show-clear
-            option-label="label" option-value="value" placeholder="品名代码" class="min-w-0 flex-1"
-            @update:model-value="(v: string | null) => { form.cProdCode = v; onKvChange('cProdCode', v); }" />
+          <Select
+            :model-value="form.cProdCode ?? null"
+            :options="kvProdCode"
+            :filter="true"
+            show-clear
+            option-label="label"
+            option-value="value"
+            placeholder="品名代码"
+            class="min-w-0 flex-1"
+            @update:model-value="
+              (v: string | null) => {
+                form.cProdCode = v;
+                onKvChange('cProdCode', v);
+              }
+            "
+          />
         </div>
         <p v-if="errors.cProdCode" class="mt-0.5 pl-[5.375rem] text-xs text-destructive">{{ errors.cProdCode }}</p>
       </div>
       <div class="min-w-0">
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-20 shrink-0 text-xs text-muted-foreground">加工用途</label>
-          <Select :model-value="form.cProcessPurposeCode ?? null" :options="kvCustStd" :filter="true" show-clear
-            option-label="label" option-value="value" placeholder="加工用途" class="min-w-0 flex-1"
-            @update:model-value="(v: string | null) => { form.cProcessPurposeCode = v; onKvChange('cProcessPurposeCode', v); }" />
+          <Select
+            :model-value="form.cProcessPurposeCode ?? null"
+            :options="kvCustStd"
+            :filter="true"
+            show-clear
+            option-label="label"
+            option-value="value"
+            placeholder="加工用途"
+            class="min-w-0 flex-1"
+            @update:model-value="
+              (v: string | null) => {
+                form.cProcessPurposeCode = v;
+                onKvChange('cProcessPurposeCode', v);
+              }
+            "
+          />
         </div>
       </div>
 
       <div class="min-w-0">
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-20 shrink-0 text-xs text-muted-foreground">标准牌号代码</label>
-          <Select :model-value="form.cStdSgCode ?? null" :options="sgOptions" :filter="true" show-clear
-            option-label="label" option-value="value" placeholder="标准牌号" class="min-w-0 flex-1"
-            @update:model-value="onSgChange" />
+          <Select
+            :model-value="form.cStdSgCode ?? null"
+            :options="sgOptions"
+            :filter="true"
+            show-clear
+            option-label="label"
+            option-value="value"
+            placeholder="标准牌号"
+            class="min-w-0 flex-1"
+            @update:model-value="onSgChange"
+          />
         </div>
         <p v-if="errors.cStdSgCode" class="mt-0.5 pl-[5.375rem] text-xs text-destructive">{{ errors.cStdSgCode }}</p>
       </div>
@@ -238,35 +280,76 @@ const fmtD = (d: Date | null) =>
       <div class="min-w-0">
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-20 shrink-0 text-xs text-muted-foreground">转产日期1</label>
-          <DatePicker v-model="changeDate" :manual-input="false" date-format="yy-mm-dd" show-icon
-            class="min-w-0 flex-1" />
+          <DatePicker
+            v-model="changeDate"
+            :manual-input="false"
+            date-format="yy-mm-dd"
+            show-icon
+            class="min-w-0 flex-1"
+          />
         </div>
       </div>
 
       <div class="min-w-0">
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-20 shrink-0 text-xs text-muted-foreground">交货状态</label>
-          <Select :model-value="form.cDelivyStatusCode ?? null" :options="kvDelivy" :filter="true" show-clear
-            option-label="label" option-value="value" placeholder="交货状态" class="min-w-0 flex-1"
-            @update:model-value="(v: string | null) => { form.cDelivyStatusCode = v; onKvChange('cDelivyStatusCode', v); }" />
+          <Select
+            :model-value="form.cDelivyStatusCode ?? null"
+            :options="kvDelivy"
+            :filter="true"
+            show-clear
+            option-label="label"
+            option-value="value"
+            placeholder="交货状态"
+            class="min-w-0 flex-1"
+            @update:model-value="
+              (v: string | null) => {
+                form.cDelivyStatusCode = v;
+                onKvChange('cDelivyStatusCode', v);
+              }
+            "
+          />
         </div>
-        <p v-if="errors.cDelivyStatusCode" class="mt-0.5 pl-[5.375rem] text-xs text-destructive">{{ errors.cDelivyStatusCode }}</p>
+        <p v-if="errors.cDelivyStatusCode" class="mt-0.5 pl-[5.375rem] text-xs text-destructive">
+          {{ errors.cDelivyStatusCode }}
+        </p>
       </div>
       <div class="min-w-0">
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-20 shrink-0 text-xs text-muted-foreground">产品大类及形状</label>
-          <Select :model-value="form.cProdClass ?? null" :options="kvProdClass" :filter="true" show-clear
-            option-label="label" option-value="value" placeholder="产品大类及形状" class="min-w-0 flex-1"
-            @update:model-value="(v: string | null) => { form.cProdClass = v; onKvChange('cProdClass', v); }" />
+          <Select
+            :model-value="form.cProdClass ?? null"
+            :options="kvProdClass"
+            :filter="true"
+            show-clear
+            option-label="label"
+            option-value="value"
+            placeholder="产品大类及形状"
+            class="min-w-0 flex-1"
+            @update:model-value="
+              (v: string | null) => {
+                form.cProdClass = v;
+                onKvChange('cProdClass', v);
+              }
+            "
+          />
         </div>
         <p v-if="errors.cProdClass" class="mt-0.5 pl-[5.375rem] text-xs text-destructive">{{ errors.cProdClass }}</p>
       </div>
       <div class="min-w-0">
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-20 shrink-0 text-xs text-muted-foreground">制造厂别</label>
-          <Select :model-value="form.cFactoryId ?? null" :options="kvFactory" :filter="true" show-clear
-            option-label="label" option-value="value" placeholder="制造厂别" class="min-w-0 flex-1"
-            @update:model-value="(v: string | null) => (form.cFactoryId = v)" />
+          <Select
+            :model-value="form.cFactoryId ?? null"
+            :options="kvFactory"
+            :filter="true"
+            show-clear
+            option-label="label"
+            option-value="value"
+            placeholder="制造厂别"
+            class="min-w-0 flex-1"
+            @update:model-value="(v: string | null) => (form.cFactoryId = v)"
+          />
         </div>
         <p v-if="errors.cFactoryId" class="mt-0.5 pl-[5.375rem] text-xs text-destructive">{{ errors.cFactoryId }}</p>
       </div>
@@ -274,9 +357,17 @@ const fmtD = (d: Date | null) =>
       <div class="min-w-0">
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-20 shrink-0 text-xs text-muted-foreground">产品等级</label>
-          <Select :model-value="form.cLevel ?? null" :options="kvLevel" :filter="true" show-clear
-            option-label="label" option-value="value" placeholder="产品等级" class="min-w-0 flex-1"
-            @update:model-value="(v: string | null) => (form.cLevel = v)" />
+          <Select
+            :model-value="form.cLevel ?? null"
+            :options="kvLevel"
+            :filter="true"
+            show-clear
+            option-label="label"
+            option-value="value"
+            placeholder="产品等级"
+            class="min-w-0 flex-1"
+            @update:model-value="(v: string | null) => (form.cLevel = v)"
+          />
         </div>
         <p v-if="errors.cLevel" class="mt-0.5 pl-[5.375rem] text-xs text-destructive">{{ errors.cLevel }}</p>
       </div>

@@ -62,7 +62,9 @@ function ganttStovePlans(): Record<string, unknown>[] {
 export const smsRoutes: RouteMap = {
   /* 炼钢作业迁移占位（2026-09-23）：按 sms.swagger 端点全量登记 */
   /* 导出未含本端点：从 machines 投影机台名/工序（拖到新机台回写用），不编造行 */
-  ["post /dDH.Service.SMS.Services.PublicInterface/publicFactoryLineAreaMachine/getFactoryLineAreaMachine_LG"]: (config) =>
+  ["post /dDH.Service.SMS.Services.PublicInterface/publicFactoryLineAreaMachine/getFactoryLineAreaMachine_LG"]: (
+    config,
+  ) =>
     ok(
       config,
       gantt.machines.map((m) => {
@@ -102,9 +104,24 @@ export const smsRoutes: RouteMap = {
   /* 导出 config：Gantt_ResourceRowHeight 三键（HmxKv[] 形状） */
   ["post /dDH.Service.SMS.Services.PublicInterface/publicKV/getMSConfig"]: (config) =>
     ok(config, [
-      { id: "GRRH", cCode: "Gantt_ResourceRowHeight", cName: "甘特资源行高", cValue: String(gantt.config.resourceRowHeight) },
-      { id: "GRRHI", cCode: "Gantt_ResourceRowHeight_Inner", cName: "甘特资源行内条高", cValue: String(gantt.config.resourceRowHeightInner) },
-      { id: "GRRHIP", cCode: "Gantt_ResourceRowHeight_Inner_Percentage", cName: "甘特行内条高占比", cValue: String(gantt.config.resourceRowHeightInnerPercentage) },
+      {
+        id: "GRRH",
+        cCode: "Gantt_ResourceRowHeight",
+        cName: "甘特资源行高",
+        cValue: String(gantt.config.resourceRowHeight),
+      },
+      {
+        id: "GRRHI",
+        cCode: "Gantt_ResourceRowHeight_Inner",
+        cName: "甘特资源行内条高",
+        cValue: String(gantt.config.resourceRowHeightInner),
+      },
+      {
+        id: "GRRHIP",
+        cCode: "Gantt_ResourceRowHeight_Inner_Percentage",
+        cName: "甘特行内条高占比",
+        cValue: String(gantt.config.resourceRowHeightInnerPercentage),
+      },
     ]),
 
   ["post /dDH.Service.SMS.Services.PublicInterface/publicKV/getMSLZLiu"]: (config) =>
@@ -197,7 +214,8 @@ export const smsRoutes: RouteMap = {
       })),
     ),
 
-  ["post /dDH.Service.SMS.Services.SMSControlServices/uCMSStoveInputInfo/saveStoveInputInfo"]: (config) => ok(config, null),
+  ["post /dDH.Service.SMS.Services.SMSControlServices/uCMSStoveInputInfo/saveStoveInputInfo"]: (config) =>
+    ok(config, null),
 
   ["post /dDH.Service.SMS.Services.Tag/frmTag/enableData"]: (config) => ok(config, null),
 
@@ -405,8 +423,7 @@ export const smsRoutes: RouteMap = {
 
   ["post /dDH.Service.SMS.Services/frmMS2000/clearRoutePlanByIds"]: (config) => ok(config, null),
 
-  ["post /dDH.Service.SMS.Services/frmMS2000/getGanttResourcesDatas"]: (config) =>
-    ok(config, ganttMachines()),
+  ["post /dDH.Service.SMS.Services/frmMS2000/getGanttResourcesDatas"]: (config) => ok(config, ganttMachines()),
 
   /* 导出未覆盖：回空，不造演示行 */
   ["post /dDH.Service.SMS.Services/frmMS2000/getProcMachineUseTime"]: (config) => ok(config, []),
@@ -420,8 +437,7 @@ export const smsRoutes: RouteMap = {
     return ok(config, [...ids].map((id) => byId.get(id)).filter(Boolean));
   },
 
-  ["post /dDH.Service.SMS.Services/frmMS2000/getStoveRouteDatas"]: (config) =>
-    ok(config, ganttPoints()),
+  ["post /dDH.Service.SMS.Services/frmMS2000/getStoveRouteDatas"]: (config) => ok(config, ganttPoints()),
 
   ["post /dDH.Service.SMS.Services/frmMS2000/getStoveRouteHistoryDatas1"]: (config) =>
     ok(config, {
@@ -435,8 +451,7 @@ export const smsRoutes: RouteMap = {
 
   ["post /dDH.Service.SMS.Services/frmMS2000/planInvalidCancel"]: (config) => ok(config, null),
 
-  ["post /dDH.Service.SMS.Services/frmMS2000/queryStovePlan"]: (config) =>
-    ok(config, ganttStovePlans()),
+  ["post /dDH.Service.SMS.Services/frmMS2000/queryStovePlan"]: (config) => ok(config, ganttStovePlans()),
 
   ["post /dDH.Service.SMS.Services/frmMS2000/saveGanttDatas"]: (config) => ok(config, null),
 
@@ -610,7 +625,8 @@ export const smsRoutes: RouteMap = {
 
   ["post /dDH.Service.SMS.Services/frmMS2100_ZL/stoveOut"]: (config) => ok(config, null),
 
-  ["post /dDH.Service.SMS.Services/frmMS2100_ZL_VirtualStoveNo/checkPreviewOrAddVirtualStoveNo"]: (config) => ok(config, null),
+  ["post /dDH.Service.SMS.Services/frmMS2100_ZL_VirtualStoveNo/checkPreviewOrAddVirtualStoveNo"]: (config) =>
+    ok(config, null),
 
   ["post /dDH.Service.SMS.Services/frmMS2100_ZL_VirtualStoveNo/getVirtualStoveNoDatas"]: (config) =>
     ok(
@@ -1155,36 +1171,78 @@ export const smsRoutes: RouteMap = {
   ["post /dDH.Service.SMS.Services/frmMS2200_ZL/query"]: (config) =>
     ok(
       config,
-      demoRows(3, (i) => ({ id: `D${i + 1}`, cCode: `C0${i + 1}`, cName: `演示${i + 1}`, createTime: "2026-09-23 08:00:00", nStatus: 1 })),
+      demoRows(3, (i) => ({
+        id: `D${i + 1}`,
+        cCode: `C0${i + 1}`,
+        cName: `演示${i + 1}`,
+        createTime: "2026-09-23 08:00:00",
+        nStatus: 1,
+      })),
     ),
   ["post /dDH.Service.SMS.Services/frmMS2210_LF/query"]: (config) =>
     ok(
       config,
-      demoRows(3, (i) => ({ id: `D${i + 1}`, cCode: `C0${i + 1}`, cName: `演示${i + 1}`, createTime: "2026-09-23 08:00:00", nStatus: 1 })),
+      demoRows(3, (i) => ({
+        id: `D${i + 1}`,
+        cCode: `C0${i + 1}`,
+        cName: `演示${i + 1}`,
+        createTime: "2026-09-23 08:00:00",
+        nStatus: 1,
+      })),
     ),
   ["post /dDH.Service.SMS.Services/frmMS2220_RH/query"]: (config) =>
     ok(
       config,
-      demoRows(3, (i) => ({ id: `D${i + 1}`, cCode: `C0${i + 1}`, cName: `演示${i + 1}`, createTime: "2026-09-23 08:00:00", nStatus: 1 })),
+      demoRows(3, (i) => ({
+        id: `D${i + 1}`,
+        cCode: `C0${i + 1}`,
+        cName: `演示${i + 1}`,
+        createTime: "2026-09-23 08:00:00",
+        nStatus: 1,
+      })),
     ),
   ["post /dDH.Service.SMS.Services/frmMS2230_LZ/query"]: (config) =>
     ok(
       config,
-      demoRows(3, (i) => ({ id: `D${i + 1}`, cCode: `C0${i + 1}`, cName: `演示${i + 1}`, createTime: "2026-09-23 08:00:00", nStatus: 1 })),
+      demoRows(3, (i) => ({
+        id: `D${i + 1}`,
+        cCode: `C0${i + 1}`,
+        cName: `演示${i + 1}`,
+        createTime: "2026-09-23 08:00:00",
+        nStatus: 1,
+      })),
     ),
   ["post /dDH.Service.SMS.Services/frmMS2100_X_ShiftInfo/getProcUserInfo"]: (config) =>
     ok(
       config,
-      demoRows(3, (i) => ({ id: `D${i + 1}`, cCode: `C0${i + 1}`, cName: `演示${i + 1}`, createTime: "2026-09-23 08:00:00", nStatus: 1 })),
+      demoRows(3, (i) => ({
+        id: `D${i + 1}`,
+        cCode: `C0${i + 1}`,
+        cName: `演示${i + 1}`,
+        createTime: "2026-09-23 08:00:00",
+        nStatus: 1,
+      })),
     ),
   ["post /hmx.Service.Widgets.Services/tPa1000/queryMachine"]: (config) =>
     ok(
       config,
-      demoRows(3, (i) => ({ id: `D${i + 1}`, cCode: `C0${i + 1}`, cName: `演示${i + 1}`, createTime: "2026-09-23 08:00:00", nStatus: 1 })),
+      demoRows(3, (i) => ({
+        id: `D${i + 1}`,
+        cCode: `C0${i + 1}`,
+        cName: `演示${i + 1}`,
+        createTime: "2026-09-23 08:00:00",
+        nStatus: 1,
+      })),
     ),
   ["post /hmx.Service.Widgets.Services/tPa1000/queryLines"]: (config) =>
     ok(
       config,
-      demoRows(3, (i) => ({ id: `D${i + 1}`, cCode: `C0${i + 1}`, cName: `演示${i + 1}`, createTime: "2026-09-23 08:00:00", nStatus: 1 })),
+      demoRows(3, (i) => ({
+        id: `D${i + 1}`,
+        cCode: `C0${i + 1}`,
+        cName: `演示${i + 1}`,
+        createTime: "2026-09-23 08:00:00",
+        nStatus: 1,
+      })),
     ),
 };

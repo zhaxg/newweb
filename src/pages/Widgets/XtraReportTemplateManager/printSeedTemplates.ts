@@ -197,7 +197,8 @@ export function ensureSeedPrintTemplates(rows: PrintTemplateRow[]): PrintTemplat
   const samp = findPrintSchema("ThrSampPrint");
   const thr = findPrintSchema("DtoThr4000Print");
   const next = [...rows];
-  if (thr) next.push(toRow(thr, seedDtoThr4000Print(), "轧钢实绩打印基本模板", "轧钢实绩：标题+明细表+二维码（1 行样例）"));
+  if (thr)
+    next.push(toRow(thr, seedDtoThr4000Print(), "轧钢实绩打印基本模板", "轧钢实绩：标题+明细表+二维码（1 行样例）"));
   if (samp) next.push(toRow(samp, seedThrSampPrint(), "试坯打印基本模板", "试坯：标题+字段+二维码"));
   try {
     localStorage.setItem(SEED_KEY, "1");

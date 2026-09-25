@@ -64,7 +64,8 @@ const colDefs = computed<ColDef[]>(() => [
     cellEditor: "agSelectCellEditor",
     // 原 RepositoryItemKvGridLookUpEdit.ConfigDisplayText($"{CCode} - {CName}")
     cellEditorParams: { values: kvTestItem.value.map((o) => o.label) },
-    valueFormatter: (p: ValueFormatterParams) => kvTestItem.value.find((o) => o.value === p.value)?.label ?? p.value ?? "",
+    valueFormatter: (p: ValueFormatterParams) =>
+      kvTestItem.value.find((o) => o.value === p.value)?.label ?? p.value ?? "",
     valueParser: (p) => kvTestItem.value.find((o) => o.label === p.newValue)?.value ?? p.newValue,
   },
   { field: "testSubItemCode", headerName: "试验子项目代码", width: 140 },
@@ -87,7 +88,9 @@ const colDefs = computed<ColDef[]>(() => [
   { field: "id", headerName: "主键", width: 150, hide: true },
 ]);
 
-function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
+function onGridReady(e: GridReadyEvent) {
+  gridApi.value = e.api;
+}
 
 function currentRow(): TestSubItem | null {
   return (gridApi.value?.getSelectedRows()[0] as TestSubItem | undefined) ?? null;
@@ -170,8 +173,13 @@ void loadKv(kvTestItem, "A0100:TEST_ITEM");
 <template>
   <div class="flex min-h-0 flex-1 flex-col">
     <!-- 确认（对应原 MsgBox.ShowYesNo("确定删除{code} - {name}？")） -->
-    <Dialog :visible="confirmOpen" modal header="删除确认" :style="{ width: 'min(28rem, calc(100vw - 2rem))' }"
-      @update:visible="confirmOpen = $event">
+    <Dialog
+      :visible="confirmOpen"
+      modal
+      header="删除确认"
+      :style="{ width: 'min(28rem, calc(100vw - 2rem))' }"
+      @update:visible="confirmOpen = $event"
+    >
       <p class="text-xs whitespace-pre-wrap">
         确定删除{{ editRow?.testSubItemCode }} - {{ editRow?.testSubItemName }}？
       </p>
@@ -183,16 +191,18 @@ void loadKv(kvTestItem, "A0100:TEST_ITEM");
 
     <!-- 原 stackPanel1：1 条件 + 4 按钮同一行（ui-rules §6） -->
     <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
-      <InputText v-model="keyword" maxlength="100" placeholder="关键字" class="w-48 shrink-0" @keydown.enter="onQuery" />
+      <InputText
+        v-model="keyword"
+        maxlength="100"
+        placeholder="关键字"
+        class="w-48 shrink-0"
+        @keydown.enter="onQuery"
+      />
       <Button text class="shrink-0 whitespace-nowrap" :loading="querying" @click="onQuery">
         <IconSearch class="h-3 w-3" />查询
       </Button>
-      <Button text class="shrink-0 whitespace-nowrap" @click="onAdd">
-        <IconPlus class="h-3 w-3" />添加
-      </Button>
-      <Button text class="shrink-0 whitespace-nowrap" @click="onEdit">
-        <IconPencil class="h-3 w-3" />编辑
-      </Button>
+      <Button text class="shrink-0 whitespace-nowrap" @click="onAdd"> <IconPlus class="h-3 w-3" />添加 </Button>
+      <Button text class="shrink-0 whitespace-nowrap" @click="onEdit"> <IconPencil class="h-3 w-3" />编辑 </Button>
       <Button text severity="danger" class="shrink-0 whitespace-nowrap" @click="onDelete">
         <IconTrash class="h-3 w-3" />删除
       </Button>
@@ -201,12 +211,21 @@ void loadKv(kvTestItem, "A0100:TEST_ITEM");
 
     <!-- 数据表格（原 gridControl1 / gridView1，TestSubItem） -->
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows"
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="rows"
         :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
         :suppress-column-virtualisation="true"
-        :pagination="false" :animate-rows="false" :loading="querying || saving"
-        @grid-ready="onGridReady" @first-data-rendered="autoSizeOnFirstData" />
+        :pagination="false"
+        :animate-rows="false"
+        :loading="querying || saving"
+        @grid-ready="onGridReady"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
 
     <TestSubitemEditDialog v-model:visible="editOpen" :row="editRow" :is-new="isNew" @ok="onDialogOk" />

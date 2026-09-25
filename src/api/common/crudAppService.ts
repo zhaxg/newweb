@@ -31,10 +31,7 @@ function assign<T extends { [key: string]: any }>(target: any, source: any) {
 }
 
 export const crudAppService = {
-  SaveList: async <T extends { [key: string]: any }>(
-    trackList: TrackableList<T>,
-    entityName: string,
-  ) => {
+  SaveList: async <T extends { [key: string]: any }>(trackList: TrackableList<T>, entityName: string) => {
     const binaryData = Formatter.serialize(trackList.SaveChangesData);
     const base64 = uint8ArrayToBase64(binaryData);
 
@@ -59,10 +56,7 @@ export const crudAppService = {
     trackList.reset();
   },
 
-  SaveSingleData: async <T extends { [key: string]: any }>(
-    singleValue: T,
-    entityName: string,
-  ): Promise<void> => {
+  SaveSingleData: async <T extends { [key: string]: any }>(singleValue: T, entityName: string): Promise<void> => {
     const binaryData = Formatter.serialize(singleValue);
     const base64 = uint8ArrayToBase64(binaryData);
 

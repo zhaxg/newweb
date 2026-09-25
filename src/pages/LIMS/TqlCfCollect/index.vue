@@ -70,13 +70,15 @@ function buildQuery(): QueryTqlCFCollectDto {
 /* ---------- 格式化 ---------- */
 /** 原 AddEnum(TqlCFCollectNstatus) → LDisplay */
 const nStatusFmt = (p: ValueFormatterParams) =>
-  (({
-    [TqlCFCollectNstatus.Failure]: "处理失败",
-    [TqlCFCollectNstatus.Normal]: "正常",
-    [TqlCFCollectNstatus.Abnormal]: "失效",
-    [TqlCFCollectNstatus.UnHandle]: "待处理",
-    [TqlCFCollectNstatus.NStatusAbnormal]: "异常",
-  }) as Record<string, string>)[String(p.value)] ?? (p.value == null ? "" : String(p.value));
+  (
+    ({
+      [TqlCFCollectNstatus.Failure]: "处理失败",
+      [TqlCFCollectNstatus.Normal]: "正常",
+      [TqlCFCollectNstatus.Abnormal]: "失效",
+      [TqlCFCollectNstatus.UnHandle]: "待处理",
+      [TqlCFCollectNstatus.NStatusAbnormal]: "异常",
+    }) as Record<string, string>
+  )[String(p.value)] ?? (p.value == null ? "" : String(p.value));
 
 /* ---------- 列（Designer VisibleIndex；化学元素列头英文；camelCase 对齐 swagger） ---------- */
 const colDefs = ref<ColDef[]>([
@@ -157,8 +159,17 @@ async function onQuery() {
       <div class="grid grid-cols-6 items-center gap-x-3 gap-y-1.5">
         <div class="col-span-2 flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">创建时间</label>
-          <DatePicker v-model="input.dates" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-            show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+          <DatePicker
+            v-model="input.dates"
+            selection-mode="range"
+            :manual-input="false"
+            date-format="yy-mm-dd"
+            show-time
+            hour-format="24"
+            show-icon
+            placeholder="开始 至 结束"
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">熔炼号</label>
@@ -184,11 +195,27 @@ async function onQuery() {
     </div>
 
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows"
-        :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-        :suppress-column-virtualisation="true" :pagination="false" :animate-rows="false" :loading="querying"
-        @grid-ready="onGridReady" @first-data-rendered="autoSizeOnFirstData" />
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="rows"
+        :row-selection="{
+          mode: 'multiRow',
+          checkboxes: true,
+          headerCheckbox: true,
+          enableClickSelection: true,
+          enableSelectionWithoutKeys: true,
+        }"
+        :suppress-column-virtualisation="true"
+        :pagination="false"
+        :animate-rows="false"
+        :loading="querying"
+        @grid-ready="onGridReady"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
   </div>
 </template>

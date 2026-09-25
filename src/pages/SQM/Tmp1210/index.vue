@@ -32,22 +32,24 @@ const selectedRow = ref<Tmp1210 | null>(null);
 
 // 列按 Designer VisibleIndex；隐藏列以 hide: true 迁入（右键列面板可唤出）
 const colDefs = ref<ColDef[]>([
-      { field: "cSteelType", headerName: "钢种大类", width: 112 },
-      { field: "cSgCode", headerName: "钢种", width: 112 },
-      { field: "nThick", headerName: "坯厚", width: 112 },
-      { field: "nWidth", headerName: "坯宽", width: 112 },
-      { field: "nWgt", headerName: "坯重", width: 112 },
-      { field: "cRemark", headerName: "反馈结果", width: 112 },
-      { field: "creator", headerName: "创建人", width: 112 },
-      { field: "createTime", headerName: "创建时间", width: 112 },
-      { field: "lastModifier", headerName: "最后修改人", width: 112 },
-      { field: "lastModifyTime", headerName: "最后修改时间", width: 112 },
-      { field: "cId", headerName: "ID", width: 112, hide: true },
-      { field: "id", headerName: "主键", width: 112, hide: true },
-      { field: "selected", headerName: "选择", width: 112, hide: true },
+  { field: "cSteelType", headerName: "钢种大类", width: 112 },
+  { field: "cSgCode", headerName: "钢种", width: 112 },
+  { field: "nThick", headerName: "坯厚", width: 112 },
+  { field: "nWidth", headerName: "坯宽", width: 112 },
+  { field: "nWgt", headerName: "坯重", width: 112 },
+  { field: "cRemark", headerName: "反馈结果", width: 112 },
+  { field: "creator", headerName: "创建人", width: 112 },
+  { field: "createTime", headerName: "创建时间", width: 112 },
+  { field: "lastModifier", headerName: "最后修改人", width: 112 },
+  { field: "lastModifyTime", headerName: "最后修改时间", width: 112 },
+  { field: "cId", headerName: "ID", width: 112, hide: true },
+  { field: "id", headerName: "主键", width: 112, hide: true },
+  { field: "selected", headerName: "选择", width: 112, hide: true },
 ]);
 
-function onGridReady(e: GridReadyEvent) { gridApi.value = e.api; }
+function onGridReady(e: GridReadyEvent) {
+  gridApi.value = e.api;
+}
 function onSelectionChanged(e: SelectionChangedEvent) {
   selectedRow.value = (e.api.getSelectedRows()[0] as Tmp1210 | undefined) ?? null;
 }
@@ -55,10 +57,11 @@ function onSelectionChanged(e: SelectionChangedEvent) {
 async function onQuery() {
   querying.value = true;
   try {
-    rows.value = (await tmp1210Api.getTmp1210List(
-      query.value.steelType.trim() || undefined,
-      query.value.steelGrade.trim() || undefined,
-    )) ?? [];
+    rows.value =
+      (await tmp1210Api.getTmp1210List(
+        query.value.steelType.trim() || undefined,
+        query.value.steelGrade.trim() || undefined,
+      )) ?? [];
     selectedRow.value = null;
     requestAnimationFrame(() => gridApi.value?.autoSizeAllColumns());
   } catch {
@@ -185,7 +188,9 @@ async function onSaveEdit() {
   }
 }
 
-onMounted(() => { void onQuery(); });
+onMounted(() => {
+  void onQuery();
+});
 </script>
 
 <template>
@@ -210,16 +215,30 @@ onMounted(() => { void onQuery(); });
 
     <!-- 主表（gridControl1 / gridView1，绑定实体 Tmp1210） -->
     <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-        :pagination="false" :default-col-def="hmxDefaultColDef" :column-defs="colDefs" :row-data="rows"
+      <AgGridVue
+        class="hmx-ag-grid h-full w-full"
+        :theme="theme"
+        :locale-text="AG_GRID_LOCALE_CN"
+        :pagination="false"
+        :default-col-def="hmxDefaultColDef"
+        :column-defs="colDefs"
+        :row-data="rows"
         :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
-        :loading="querying" @grid-ready="onGridReady" @selection-changed="onSelectionChanged"
-        @first-data-rendered="autoSizeOnFirstData" />
+        :loading="querying"
+        @grid-ready="onGridReady"
+        @selection-changed="onSelectionChanged"
+        @first-data-rendered="autoSizeOnFirstData"
+      />
     </div>
 
     <!-- 确认（对应原 MsgBox.ShowYesNo） -->
-    <Dialog :visible="confirmOpen" modal header="确认" :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
-      @update:visible="confirmOpen = $event">
+    <Dialog
+      :visible="confirmOpen"
+      modal
+      header="确认"
+      :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
+      @update:visible="confirmOpen = $event"
+    >
       <p class="text-xs">{{ confirmMsg }}</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />
@@ -228,9 +247,13 @@ onMounted(() => { void onQuery(); });
     </Dialog>
 
     <!-- FrmTmp1210Edit（原 ShowDialog，标题随新增/编辑切换） -->
-    <Dialog :visible="editOpen" modal
+    <Dialog
+      :visible="editOpen"
+      modal
       :header="editRow ? '编辑米单重记录' : '新增米单重记录'"
-      :style="{ width: 'min(34rem, calc(100vw - 2rem))' }" @update:visible="editOpen = $event">
+      :style="{ width: 'min(34rem, calc(100vw - 2rem))' }"
+      @update:visible="editOpen = $event"
+    >
       <div class="grid grid-cols-2 gap-x-3 gap-y-2">
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">钢类</label>

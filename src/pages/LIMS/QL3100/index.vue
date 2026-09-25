@@ -62,13 +62,15 @@ const theme = makeHmxGridTheme();
 const Rejected = 25 as TestJobStatus;
 
 const statusFmt = (p: ValueFormatterParams) =>
-  (({
-    [TestJobStatus.NotSend]: "未发送",
-    [TestJobStatus.Sent]: "已发送未接收",
-    20: "已接收",
-    25: "已拒收",
-    [TestJobStatus.Finished]: "已完成",
-  }) as Record<string, string>)[String(p.value)] ?? (p.value == null ? "" : String(p.value));
+  (
+    ({
+      [TestJobStatus.NotSend]: "未发送",
+      [TestJobStatus.Sent]: "已发送未接收",
+      20: "已接收",
+      25: "已拒收",
+      [TestJobStatus.Finished]: "已完成",
+    }) as Record<string, string>
+  )[String(p.value)] ?? (p.value == null ? "" : String(p.value));
 const yesNoFmt = (p: ValueFormatterParams) => (p.value == null ? "" : Number(p.value) === 1 ? "是" : "否");
 const judgeFmt = (p: ValueFormatterParams) =>
   (({ 0: "待判", 2: "合格", 3: "不合格", 4: "人工放行" }) as Record<string, string>)[String(p.value)] ?? "";
@@ -158,7 +160,12 @@ const jobColDefs = ref<ColDef[]>([
   { field: "nTestTimes", headerName: "试验次数", width: 90 },
   { field: "cRecheckFlag", headerName: "复验标记", width: 90, valueFormatter: yesNoFmt },
   { field: "cStatus", headerName: "委托单状态", width: 120, valueFormatter: statusFmt },
-  { field: "cLineCode", headerName: "产线代码", width: 100, valueFormatter: (p) => lineOptions.value.find((l) => l.value === p.value)?.label ?? (p.value ?? "") },
+  {
+    field: "cLineCode",
+    headerName: "产线代码",
+    width: 100,
+    valueFormatter: (p) => lineOptions.value.find((l) => l.value === p.value)?.label ?? p.value ?? "",
+  },
   { field: "cSgSign", headerName: "钢种", width: 100 },
   { field: "cSgStd", headerName: "执行标准", width: 120 },
   { field: "cDeliveryStateDesc", headerName: "交货状态描述", width: 130 },
@@ -168,10 +175,22 @@ const jobColDefs = ref<ColDef[]>([
   { field: "nThick", headerName: "厚度mm", width: 90 },
   { field: "nWth", headerName: "宽度mm", width: 90 },
   { field: "nLen", headerName: "长度mm", width: 90 },
-  { field: "cAutoJudgeResult", headerName: "自动判定结果", width: 120, valueFormatter: judgeFmt, cellClass: (p) => judgeCell(p) },
+  {
+    field: "cAutoJudgeResult",
+    headerName: "自动判定结果",
+    width: 120,
+    valueFormatter: judgeFmt,
+    cellClass: (p) => judgeCell(p),
+  },
   { field: "cJudgeUser", headerName: "判定人", width: 90 },
   { field: "dJudgeTime", headerName: "判定时间", width: 140 },
-  { field: "cJudgeResult", headerName: "最终判定结果", width: 120, valueFormatter: judgeFmt, cellClass: (p) => judgeCell(p) },
+  {
+    field: "cJudgeResult",
+    headerName: "最终判定结果",
+    width: 120,
+    valueFormatter: judgeFmt,
+    cellClass: (p) => judgeCell(p),
+  },
   { field: "cJudgeRemark", headerName: "判定备注", width: 120 },
   { field: "creator", headerName: "创建人", width: 90 },
   { field: "createTime", headerName: "创建时间", width: 140 },
@@ -387,9 +406,7 @@ async function onRejectOk() {
 function onReceive() {
   const selected = selectedJobs();
   if (!selected.length) return;
-  const eligible = selected.filter(
-    (x) => Number(x.cStatus) === TestJobStatus.Sent || Number(x.cStatus) === Rejected,
-  );
+  const eligible = selected.filter((x) => Number(x.cStatus) === TestJobStatus.Sent || Number(x.cStatus) === Rejected);
   if (!eligible.length) {
     toast("委托不是已发送未接收或已拒收状态，不能接收", 2000, "warn");
     return;
@@ -437,7 +454,10 @@ function onReject() {
   }
   askReject(eligible.length, async (reason) => {
     try {
-      await testJobApi.batchReject(eligible.map((x) => x.id), reason);
+      await testJobApi.batchReject(
+        eligible.map((x) => x.id),
+        reason,
+      );
       await onQuery();
     } catch {
       /* 拦截层已 toast */
@@ -460,18 +480,15 @@ function onDeleteItem() {
   const target = selectedSample();
   if (!target) return;
   if (!requireReceived(job)) return;
-  askConfirm(
-    `确认删除${target.cTestItemName ?? ""}？\n将同时删除试样和检验结果，数据删除后无法恢复!`,
-    async () => {
-      try {
-        await testJobApi.deleteSampleRequires(target.id ?? undefined);
-        const list = await testJobApi.querySampleRequires(job.id, undefined);
-        sampleRows.value = list ?? [];
-      } catch {
-        /* 拦截层已 toast */
-      }
-    },
-  );
+  askConfirm(`确认删除${target.cTestItemName ?? ""}？\n将同时删除试样和检验结果，数据删除后无法恢复!`, async () => {
+    try {
+      await testJobApi.deleteSampleRequires(target.id ?? undefined);
+      const list = await testJobApi.querySampleRequires(job.id, undefined);
+      sampleRows.value = list ?? [];
+    } catch {
+      /* 拦截层已 toast */
+    }
+  });
 }
 
 /* 原 btnReversePrint_Click */
@@ -527,8 +544,16 @@ onMounted(() => {
       <div class="grid grid-cols-6 items-center gap-x-3 gap-y-1.5">
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">产线代码</label>
-          <Select v-model="input.cLineCode" :options="lineOptions" option-label="label" option-value="value"
-            show-clear filter placeholder="全部" class="min-w-0 flex-1" />
+          <Select
+            v-model="input.cLineCode"
+            :options="lineOptions"
+            option-label="label"
+            option-value="value"
+            show-clear
+            filter
+            placeholder="全部"
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">委托单号</label>
@@ -552,8 +577,14 @@ onMounted(() => {
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">复验标记</label>
-          <Select v-model="input.cRecheckFlag" :options="recheckOptions" option-label="label" option-value="value"
-            show-clear class="min-w-0 flex-1" />
+          <Select
+            v-model="input.cRecheckFlag"
+            :options="recheckOptions"
+            option-label="label"
+            option-value="value"
+            show-clear
+            class="min-w-0 flex-1"
+          />
         </div>
         <div class="flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">批号</label>
@@ -561,8 +592,17 @@ onMounted(() => {
         </div>
         <div class="col-span-2 flex min-w-0 items-center gap-1.5">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">委托时间</label>
-          <DatePicker v-model="input.dates" selectionMode="range" :manualInput="false" date-format="yy-mm-dd"
-            show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
+          <DatePicker
+            v-model="input.dates"
+            selectionMode="range"
+            :manualInput="false"
+            date-format="yy-mm-dd"
+            show-time
+            hour-format="24"
+            show-icon
+            placeholder="开始 至 结束"
+            class="min-w-0 flex-1"
+          />
         </div>
       </div>
     </div>
@@ -593,12 +633,28 @@ onMounted(() => {
           <span class="text-xs font-medium text-muted-foreground">委托单信息</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="jobColDefs" :row-data="jobRows"
-            :row-selection="{ mode: 'multiRow', checkboxes: true, headerCheckbox: true, enableClickSelection: true, enableSelectionWithoutKeys: true }"
-            :pagination="false" :animate-rows="false" :loading="querying" :get-row-class="jobRowClass"
-            @grid-ready="onJobGridReady" @selection-changed="onJobSelectionChanged"
-            @first-data-rendered="autoSizeOnFirstData" />
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="jobColDefs"
+            :row-data="jobRows"
+            :row-selection="{
+              mode: 'multiRow',
+              checkboxes: true,
+              headerCheckbox: true,
+              enableClickSelection: true,
+              enableSelectionWithoutKeys: true,
+            }"
+            :pagination="false"
+            :animate-rows="false"
+            :loading="querying"
+            :get-row-class="jobRowClass"
+            @grid-ready="onJobGridReady"
+            @selection-changed="onJobSelectionChanged"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
 
@@ -608,15 +664,29 @@ onMounted(() => {
           <Button variant="outlined" class="shrink-0 whitespace-nowrap" :disabled="loadingChild" @click="onAddItem">
             <IconPlus class="h-3 w-3" />新增项目
           </Button>
-          <Button variant="outlined" severity="danger" class="shrink-0 whitespace-nowrap" :disabled="loadingChild"
-            @click="onDeleteItem">
+          <Button
+            variant="outlined"
+            severity="danger"
+            class="shrink-0 whitespace-nowrap"
+            :disabled="loadingChild"
+            @click="onDeleteItem"
+          >
             <IconTrash class="h-3 w-3" />删除项目
           </Button>
-          <Button variant="outlined" class="shrink-0 whitespace-nowrap" :disabled="loadingChild" @click="onReversePrint">
+          <Button
+            variant="outlined"
+            class="shrink-0 whitespace-nowrap"
+            :disabled="loadingChild"
+            @click="onReversePrint"
+          >
             <IconPrinter class="h-3 w-3" />标为未打印
           </Button>
-          <Button variant="outlined" class="shrink-0 whitespace-nowrap" :disabled="loadingChild"
-            @click="onChangeSamplePosition">
+          <Button
+            variant="outlined"
+            class="shrink-0 whitespace-nowrap"
+            :disabled="loadingChild"
+            @click="onChangeSamplePosition"
+          >
             <IconDeviceFloppy class="h-3 w-3" />修改取样位置
           </Button>
         </div>
@@ -625,18 +695,32 @@ onMounted(() => {
           <span class="text-xs font-medium text-muted-foreground">试验项目/取样信息</span>
         </div>
         <div class="min-h-0 flex-1 overflow-hidden">
-          <AgGridVue class="hmx-ag-grid h-full w-full" :theme="theme" :locale-text="AG_GRID_LOCALE_CN"
-            :default-col-def="hmxDefaultColDef" :column-defs="sampleColDefs" :row-data="sampleRows"
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="sampleColDefs"
+            :row-data="sampleRows"
             :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
-            :pagination="false" :animate-rows="false" :loading="loadingChild"
-            @grid-ready="onSampleGridReady" @first-data-rendered="autoSizeOnFirstData" />
+            :pagination="false"
+            :animate-rows="false"
+            :loading="loadingChild"
+            @grid-ready="onSampleGridReady"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
         </div>
       </SplitterPanel>
     </Splitter>
 
     <!-- 确认（对应原 MsgBox.ShowYesNo） -->
-    <Dialog :visible="confirmOpen" modal header="确认" :style="{ width: 'min(28rem, calc(100vw - 2rem))' }"
-      @update:visible="confirmOpen = $event">
+    <Dialog
+      :visible="confirmOpen"
+      modal
+      header="确认"
+      :style="{ width: 'min(28rem, calc(100vw - 2rem))' }"
+      @update:visible="confirmOpen = $event"
+    >
       <p class="text-xs whitespace-pre-line">{{ confirmMsg }}</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />
@@ -645,8 +729,13 @@ onMounted(() => {
     </Dialog>
 
     <!-- 拒收原因（对应原 FrmConfirmValueDialog） -->
-    <Dialog :visible="rejectOpen" modal header="拒收" :style="{ width: 'min(28rem, calc(100vw - 2rem))' }"
-      @update:visible="rejectOpen = $event">
+    <Dialog
+      :visible="rejectOpen"
+      modal
+      header="拒收"
+      :style="{ width: 'min(28rem, calc(100vw - 2rem))' }"
+      @update:visible="rejectOpen = $event"
+    >
       <div class="flex flex-col gap-2">
         <p class="text-xs">是否要拒收选中的委托</p>
         <label class="text-xs text-muted-foreground">拒收原因：</label>

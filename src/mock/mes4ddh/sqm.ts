@@ -107,9 +107,15 @@ export const sqmRoutes: RouteMap = {
   ["post /dDH.Service.SQM.Services.QualityDesign/qualityDesign/queryJggyDesignResult"]: (config) =>
     ok(config, { id: "JGGY-1" }),
   ["post /dDH.Service.SQM.Services.Tqmjg/tqmjg/query"]: (config) =>
-    ok(config, demoRows(3, (i) => ({ id: `JG-${i + 1}`, cOrderNo: `SO${i + 1}` }))),
+    ok(
+      config,
+      demoRows(3, (i) => ({ id: `JG-${i + 1}`, cOrderNo: `SO${i + 1}` })),
+    ),
   ["post /dDH.Service.SQM.Services.Tmptp/tmp1210/getTmp1210List"]: (config) =>
-    ok(config, demoRows(3, (i) => ({ id: `T1210-${i + 1}`, cSteelType: "Q235", cSteelGrade: "B", nWgt: 1000 + i }))),
+    ok(
+      config,
+      demoRows(3, (i) => ({ id: `T1210-${i + 1}`, cSteelType: "Q235", cSteelGrade: "B", nWgt: 1000 + i })),
+    ),
   ["post /dDH.Service.SQM.Services.Tmptp/tmp1210/addTmp1210"]: (config) => ok(config, null),
   ["post /dDH.Service.SQM.Services.Tmptp/tmp1210/updateTmp1210"]: (config) => ok(config, null),
   ["post /dDH.Service.SQM.Services.Tmptp/tmp1210/removeTmp1210"]: (config) => ok(config, null),
@@ -448,7 +454,13 @@ export const sqmRoutes: RouteMap = {
   ["post /dDH.Service.SQM.Services.QualityDisposition/inventoryJudge/queryInventory"]: (config) =>
     ok(
       config,
-      demoRows(3, (i) => ({ id: `D${i + 1}`, selected: false, cPieceNo: `P00${i + 1}`, cStove: `S26C0${i + 1}`, nStatus: 1 })),
+      demoRows(3, (i) => ({
+        id: `D${i + 1}`,
+        selected: false,
+        cPieceNo: `P00${i + 1}`,
+        cStove: `S26C0${i + 1}`,
+        nStatus: 1,
+      })),
     ),
   ["post /dDH.Service.SQM.Services.QualityDisposition/inventoryJudge/complexDecide"]: (config) => ok(config, null),
 };
