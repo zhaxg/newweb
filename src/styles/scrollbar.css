@@ -1,0 +1,63 @@
+/* ════════════════════════════════════════════════════════════════════════════════
+   全站滚动条 · VS Code 风格：常态 3px 淡色细线，悬停升到 12px 深色圆角长条。
+   只管本应用文档内的可滚动容器；跨域 iframe 内部的滚动条由其自身文档决定，改不了。
+
+   关键前提（Chromium 121+）：元素一旦带上非 auto 的 scrollbar-width / scrollbar-color，
+   就忽略 ::-webkit-scrollbar 自绘。故本文件【不声明 scrollbar-*】，纯走 webkit 伪元素——
+   globals.css 里原先那段全局 `* { scrollbar-width; scrollbar-color }` 正是因此移除。
+   Firefox 无 ::-webkit-scrollbar，末尾用 @supports 反向兜底给一条细滚动条（做不到悬停变粗）。
+   ag-grid 的表格滚动条有各自更高优先级的 .hmx-ag-grid 规则（见 agGrid.css），不受这里影响。
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* 轨道容器：固定 12px 给悬停变粗留位；透明背景、去箭头按钮 */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+  background: transparent;
+}
+::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* 滑块：4.5px 透明 border 把 12px 轨道内的可视宽度压到 3px，配合 background-clip 只画中间那 3px → 细线观感 */
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.15);
+  border-radius: 6px;
+  border: 4.5px solid transparent;
+  background-clip: content-box;
+  transition: background-color 0.2s, border-width 0.2s;
+}
+
+/* 悬停滑块：去掉透明 border，可视宽度回弹到 12px，颜色加深 → 圆角长条 */
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.5);
+  border-width: 0;
+  border-radius: 6px;
+}
+
+/* 暗色：滑块换白色半透明，其余几何一致 */
+.dark ::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.18);
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.42);
+}
+
+/* Firefox 兜底：无 ::-webkit-scrollbar 时用标准属性给细滚动条（悬停不变粗是其能力上限）。
+   判据用「是否支持 ::-webkit-scrollbar」——Chromium 命中为 true、走上面的 webkit 自绘，
+   绝不能同时带 scrollbar-width（会抑制自绘）；Firefox 为 false、才落到标准属性。
+   （勿用 @supports (-moz-appearance) 判 Firefox：新版 Chromium 也解析该前缀属性，会误命中。） */
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(128, 128, 128, 0.35) transparent;
+  }
+  .dark * {
+    scrollbar-color: rgba(255, 255, 255, 0.28) transparent;
+  }
+}

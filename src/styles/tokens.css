@@ -35,7 +35,8 @@
 
 @theme {
   /* 非 inline:font-sans 工具类编译为 var(--font-sans),字体设置可运行时覆盖 */
-  --font-sans: "Geist Variable", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", system-ui, sans-serif;
+  /* 与 fontSettings.BASE_STACK 保持同一份兜底栈（运行时总会被 <html> 内联样式覆盖，此处只为 SSR/首帧一致） */
+  --font-sans: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", system-ui, sans-serif;
   --font-heading: var(--font-sans);
 }
 

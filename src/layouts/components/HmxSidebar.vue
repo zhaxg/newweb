@@ -4,16 +4,13 @@ import { IconChevronsUp, IconSearch, IconX } from "@tabler/icons-vue";
 import InputText from "primevue/inputtext";
 import Tree from "primevue/tree";
 import type { TreeNode } from "primevue/treenode";
-import type { HmxMenuNode } from "@/api/common/menuApi";
+import type { HmxMenuNode } from "@/layouts/composables/menuFromRoutes";
 import { TABLER_FALLBACK_ICON, tablerIcon } from "@/lib/tablerIcons";
-import { usePermissionStore } from "@/stores/permissionStore";
+import { menuTree } from "@/layouts/composables/menuFromRoutes";
 
 const props = defineProps<{
   activePageId: string | null;
 }>();
-
-/* 菜单树 = mock 后端按角色下发的动态树（与路由注册同源），无权限节点直接不渲染 */
-const perm = usePermissionStore();
 
 const emit = defineEmits<{
   openPage: [node: HmxMenuNode];
@@ -87,12 +84,13 @@ function toTreeNodes(nodes: HmxMenuNode[]): TreeNode[] {
   }));
 }
 
-const treeNodes = computed(() => toTreeNodes(filterNodes(perm.menuTree, search.value)));
+/* 菜单树真源 = 路由表投影（@/layouts/composables/menuFromRoutes），meta.hidden 与未注册页天然不出现在这里 */
+const treeNodes = computed(() => toTreeNodes(filterNodes(menuTree.value, search.value)));
 
 /* 加载菜单后默认全部折叠（不预展开任何层级） */
 const expandedKeys = ref<Record<string, boolean>>({});
 watch(
-  () => perm.menuTree,
+  menuTree,
   () => {
     /* 菜单重载：清空搜索并保持全折叠 */
     search.value = "";
@@ -130,7 +128,7 @@ const pageKeyMap = computed(() => {
       if (n.children) walk(n.children);
     }
   };
-  walk(perm.menuTree);
+  walk(menuTree.value);
   return map;
 });
 

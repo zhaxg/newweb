@@ -8,7 +8,7 @@
 
 侧栏每个 type=2 菜单在资源种子 `src/mock/admin/data/rescs.ts` 中指向原窗体：
 
-- `cResPath` = 源程序集名（如 `DDH.Winforms.SYD.dll`）→ 决定源项目与目标目录；
+- `cResPath` = 源程序集名（如 `DDH.Winforms.SYD.dll`）→ 决定源项目与目标目录；迁移完成后改写为语义段（如 `yd2001`），它同时是**路由层级的真源**：`menuRescTree` 按祖先链拼出 `pageId`，`router/fromMenu` 按它建记录 → 最终 URL `/<pageId>`；
 - `cResSubPath` = 窗体全名（如 `DDH.Winforms.SYD.Forms.FrmYD2001`）→ 最后一段类名即窗体文件；
 - 源文件 = `<项目>/**/<类名>.cs` + `<类名>.Designer.cs`，**布局以 Designer 控件树为准**（`Controls.Add` 归属与顺序、`Dock`、`SplitContainer`/`SplitterPosition`、Caption、列定义）；**`Location`/`Size` 像素不抄**（见 §3.5）；
 - 种子行已被改写（`cResSubPath` 已是 vue 路径）、需要回溯原始窗体 → 查 `temp/HMX_RES.json`（`HM_X_RES` 表原始导出，字段大写下划线：`C_RES_SUB_PATH`/`C_CODE`/`C_TITLE`/`C_PID`）按 `C_TITLE` 或 `ID` 找到记录，读 `C_RES_SUB_PATH` 得全限定类名。
@@ -34,7 +34,8 @@
 
 1. 种子行 `cResPath` 改语义段、`cResSubPath` 改 vue 组件路径（相对 `src/pages`，如 `/SYD/YD2001/index.vue`）；
 2. `src/mock/admin/store.ts` 的 `RESCS_KEY` 版本号 +1（强制 localStorage 重播种）——**一批页面集中改、只 +1 一次**；
-3. 静态校验（见 SKILL.md §7）。浏览器画面验收由用户自行打开检查，迁移流程不跑无头截图。
+3. **不写路由表、不改 `menuRescTree`**：菜单与路由同源于后端资源，`menuRescTree` 出树 → `router/fromMenu` 转 `RouteRecordRaw` → `router/index` 挂进壳层 → `router/menu` 投影出侧栏。组件路径未命中 `import.meta.glob` 时回落 `PlaceholderPage`（建设中，不整站报错）；
+4. 静态校验（见 SKILL.md §7）。浏览器画面验收由用户自行打开检查，迁移流程不跑无头截图。
 
 ## 1. 四档字阶（唯一合法字号）
 

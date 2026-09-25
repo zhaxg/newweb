@@ -15,7 +15,7 @@ import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
-import { printReportApi, type PrintTemplateRow } from "@/api/widgets/printReport";
+import { printReportApi, type PrintTemplateRow } from "@/api/mes4ddh/printReport";
 import { PRINT_SCHEMAS, buildSamplePayload, findPrintSchema } from "./printSchemas";
 import { ensurePrintDesigner } from "./loadPrintDesigner";
 import { useToast } from "@/composables/useToast";

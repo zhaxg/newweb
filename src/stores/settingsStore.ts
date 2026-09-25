@@ -37,7 +37,7 @@ const STORAGE_KEY = "hmx.editor-settings";
 
 const defaults: EditorSettings = {
   fontScale: "standard",
-  tableFontFamily: "Geist Variable Tabular",
+  tableFontFamily: "IBM Plex Sans",
   theme: "system",
   numericColumnRightAlign: true,
   cellDetailJsonFormatted: true,
@@ -48,7 +48,8 @@ const defaults: EditorSettings = {
   dataGridTypeColorScheme: "auto",
   dataGridTypeColorSchemes: [],
   fontChineseFamily: "",
-  fontEnglishFamily: "",
+  /* 默认拉丁字体：@fontsource 本地引入 400/500/700（见 main.ts），下拉选「系统默认」即回落 fontSettings.BASE_STACK */
+  fontEnglishFamily: "IBM Plex Sans",
   primaryColor: "brand",
 };
 

@@ -212,22 +212,22 @@ function onInvalid(message: string) {
     <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
       <InputText v-model="keyword" maxlength="100" placeholder="关键字" autocapitalize="off" spellcheck="false"
         class="w-48 shrink-0" @keydown.enter="query" />
-      <Button text class="shrink-0 whitespace-nowrap" @click="query">
+      <Button class="shrink-0 whitespace-nowrap" @click="query">
         <IconSearch class="h-3 w-3" />查询
       </Button>
-      <Button text class="shrink-0 whitespace-nowrap" @click="onAdd">
+      <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onAdd">
         <IconPlus class="h-3 w-3" />添加
       </Button>
-      <Button text class="shrink-0 whitespace-nowrap" @click="onEdit">
+      <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onEdit">
         <IconPencil class="h-3 w-3" />编辑
       </Button>
-      <Button text severity="danger" class="shrink-0 whitespace-nowrap" @click="onDelete">
+      <Button severity="danger" variant="outlined" class="shrink-0 whitespace-nowrap" @click="onDelete">
         <IconTrash class="h-3 w-3" />删除
       </Button>
-      <Button text class="shrink-0 whitespace-nowrap" @click="onRoleEdit">
+      <Button variant="outlined" severity="info" class="shrink-0 whitespace-nowrap" @click="onRoleEdit">
         <IconShieldCheck class="h-3 w-3" />角色维护
       </Button>
-      <Button text class="shrink-0 whitespace-nowrap" @click="onResetPwd">
+      <Button variant="outlined" severity="info" class="shrink-0 whitespace-nowrap" @click="onResetPwd">
         <IconKey class="h-3 w-3" />重置密码
       </Button>
       <span class="ml-auto text-xs text-muted-foreground">用户维护（{{ rows.length }}）</span>

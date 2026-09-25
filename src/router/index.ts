@@ -1,21 +1,10 @@
-import { defineAsyncComponent, h, type Component } from "vue";
 import { createRouter, createWebHistory } from "vue-router";
 import type { RouteRecordRaw } from "vue-router";
-import LoginPage from "@/pages/_core/login/LoginPage.vue";
-import MainLayout from "@/layouts/MainLayout.vue";
-import BlankLayout from "@/layouts/BlankLayout.vue";
-import HomePage from "@/pages/_core/home/HomePage.vue";
-import PlaceholderPage from "@/pages/_core/PlaceholderPage.vue";
-import ForbiddenPage from "@/pages/_core/ForbiddenPage.vue";
-import IframePage from "@/pages/_core/IframePage.vue";
-import PrintDesignPage from "@/pages/Widgets/XtraReportTemplateManager/PrintDesignPage.vue";
-import MapDesignPage from "@/pages/SYD/YD1010Map/MapDesignPage.vue";
-import type { HmxMenuNode } from "@/api/common/menuApi";
-import { useAuthStore } from "@/stores/authStore";
-import { usePermissionStore } from "@/stores/permissionStore";
-import { useTabsStore } from "@/stores/tabsStore";
-import { staticRouteSeeds } from "@/router/staticRoutes";
-import { loadingScreen } from "@/components/loading/loading";
+import { rootRedirectRoute, loginRoute, homeRoute, forbiddenRoute, notFoundRoute } from "@/router/builtin";
+import { businessRoutes } from "@/router/business";
+import { layouts, defaultLayoutName } from "@/layouts/composables/layouts";
+import { initMenuShell, setUserMenuRoutes } from "@/layouts/composables/menuFromRoutes";
+import { setupRouterGuards } from "@/router/guard";
 
 declare module "vue-router" {
   interface RouteMeta {
@@ -30,190 +19,65 @@ declare module "vue-router" {
     /** 菜单资源的 cQueryString（共用窗体按它区分行为，如 "ZG01,1" / "FUR" / JSON 串），页面经 useMenuQuery 读取 */
     qs?: string;
     /**
-     * 布局：缺省 = MainLayout（壳层）；"blank" = BlankLayout 整屏空布局。
-     * 静态种子 / 显式注册时写入；动态菜单叶子可后续扩展。
+     * 归属布局：取值 = @/layouts/composables/layouts 注册表的 name（如 "blank"）；缺省 = 默认布局（壳层 MainLayout）。
+     * index.ts 按它把路由归位到对应布局父记录；后端动态路由不带此字段 → 一律进默认壳层。
      */
-    layout?: "blank";
+    layout?: string;
+    /** true = 不进侧栏/顶栏菜单。菜单由路由表投影（@/layouts/composables/menuFromRoutes），本字段是唯一开关 */
+    hidden?: boolean;
+    /** 菜单图标名（tabler，经 lib/tablerIcons 解析） */
+    icon?: string;
+    /** 拒帧外链：菜单里可见，点击由 openPage 走 window.open 而不导航（直链落 403） */
+    external?: boolean;
   }
 }
 
-/** 按 meta.layout 选父路由名：blank → 空布局，否则壳层 */
-function layoutParent(meta: { layout?: "blank" } | undefined): string {
-  return meta?.layout === "blank" ? "blank" : "shell";
-}
+/* ══ 阶段一 · 登录前：静态路由表 ══════════════════════════════════════════════════
+   系统内所有路由在本文件汇总成一张 RouteRecordRaw：骨架叶子见 @/router/builtin，
+   业务叶子见 @/router/business，后端下发的动态叶子在阶段二挂进默认布局。
+   布局父记录由 @/layouts/composables/layouts 注册表生成——一个布局一个父，children 按 meta.layout 归位
+   （缺省进默认布局），加布局只改注册表、不动这里。 */
 
-/**
- * 页面组件动态解析：不写死映射表，按「用户配置的组件地址」（后端 cResSubPath / mock 节点 src）
- * 在 import.meta.glob 预扫描的页面模块里查表命中，命中即懒加载分包。
- * 配置路径相对 src/pages，如 "/admin/user/index.vue"；未命中（未实现/占位资源）回落 PlaceholderPage。
- * 模块加载失败（页面依赖缺失等）同样回落 PlaceholderPage，只提示建设中、不整站报错。
- */
-const pageModules = import.meta.glob("/src/pages/**/*.vue") as Record<string, () => Promise<{ default: Component }>>;
+const staticLayoutLeaves: RouteRecordRaw[] = [homeRoute, forbiddenRoute, ...businessRoutes];
+const childrenOf = (layout: string) => staticLayoutLeaves.filter((r) => (r.meta?.layout ?? defaultLayoutName) === layout);
 
-function placeholderFor(title: string) {
-  return () => h(PlaceholderPage, { title });
-}
+const layoutParents: RouteRecordRaw[] = layouts.map((l) => ({
+  path: "/",
+  name: l.name,
+  component: l.component,
+  meta: { requiresAuth: true, layout: l.name },
+  children: childrenOf(l.name),
+}));
 
-function resolvePageComponent(src: string | undefined, title: string) {
-  const norm = src?.startsWith("/") ? src : `/${src ?? ""}`;
-  const loader = pageModules[`/src/pages${norm}`];
-  if (!loader) return placeholderFor(title);
-  return async () => (await loader().catch(() => null))?.default ?? placeholderFor(title);
-}
+/* 菜单投影的静态部分：默认（壳层）布局的静态子路由即菜单候选，meta.hidden 排除（见 @/layouts/composables/menuFromRoutes） */
+initMenuShell(childrenOf(defaultLayoutName));
 
-const routes: RouteRecordRaw[] = [
-  { path: "/login", name: "login", component: LoginPage, meta: { public: true } },
-  /* 壳层：默认业务页（Header + Sidebar + Tab） */
-  {
-    path: "/",
-    name: "shell",
-    component: MainLayout,
-    meta: { requiresAuth: true },
-    children: [
-      { path: "", name: "home", component: HomePage, meta: { pageId: "home", title: "首页" } },
-      { path: "forbidden", name: "forbidden", component: ForbiddenPage, meta: { title: "无访问权限" } },
-    ],
-  },
-  /* 空布局：meta.layout === "blank" 的页面挂这里（整屏、无壳层） */
-  {
-    path: "/",
-    name: "blank",
-    component: BlankLayout,
-    meta: { requiresAuth: true, layout: "blank" },
-    children: [
-      /* 打印模板设计器：列表页新窗打开；无 pageId → 不进 TabBar */
-      {
-        path: "print-designer",
-        name: "print-designer",
-        component: PrintDesignPage,
-        meta: { layout: "blank", title: "打印模板设计", loading: false },
-      },
-      /* 库位图设计：YD1010Map 新窗；Univer 按需加载 */
-      {
-        path: "map-designer",
-        name: "map-designer",
-        component: MapDesignPage,
-        meta: { layout: "blank", title: "库位图设计", loading: false },
-      },
-    ],
-  },
-  // 兜底：守卫会把已登录的未匹配路径重定向到 /forbidden
-  { path: "/:pathMatch(.*)*", name: "not-found", component: ForbiddenPage },
-];
+const routes: RouteRecordRaw[] = [rootRedirectRoute, loginRoute, ...layoutParents, notFoundRoute];
 
 export const router = createRouter({ history: createWebHistory(), routes });
 
-/* ---------- 静态路由（src/router/staticRoutes.ts 声明，建 router 即注册） ---------- */
+/* ══ 阶段二 · 登录后：后端资源适配出的记录挂进默认布局（壳层） ════════════════════
+   records 由 @/router/fromMenu 从 menuRescTree 的菜单树转换而来（文件夹 = 无 component 的
+   分组记录，叶子 = 页面记录）。addRoute 返回各自的移除回调，交给阶段三清理。 */
 
-/* 不受权限管控、不随登出移除；hidden 种子只注册路由不进菜单，菜单拼接见 permissionStore。
-   meta.layout === "blank" → 挂 BlankLayout，否则挂壳层 shell。 */
-for (const seed of staticRouteSeeds) {
-  router.addRoute(layoutParent(seed), {
-    path: seed.path,
-    name: `page:${seed.path}`,
-    component: seed.iframe ? IframePage : resolvePageComponent(seed.src, seed.title),
-    meta: {
-      pageId: seed.path,
-      title: seed.title,
-      url: seed.iframe,
-      loading: seed.loading,
-      layout: seed.layout,
-    },
-  });
-}
+let removeUserRoutes: (() => void)[] = [];
 
-/* ---------- 动态路由注册（mock 后端菜单树 → addRoute） ---------- */
-
-let addedNames: string[] = [];
-
-function walkLeaves(nodes: HmxMenuNode[], fn: (leaf: HmxMenuNode) => void) {
-  for (const n of nodes) {
-    if (n.children?.length) walkLeaves(n.children, fn);
-    else if (n.page && n.page !== "home") fn(n);
-  }
-}
-
-export function registerUserRoutes(tree: HmxMenuNode[]) {
+export function registerUserRoutes(records: RouteRecordRaw[]): void {
   resetUserRoutes();
-  walkLeaves(tree, (leaf) => {
-    const name = `page:${leaf.page}`;
-    if (router.hasRoute(name)) return;
-    router.addRoute("shell", {
-      path: leaf.page!,
-      name,
-      // iframe 叶子（内置菜单）→ 承载组件；其余按配置的组件地址动态解析，未命中落占位页
-      component: leaf.iframe ? IframePage : resolvePageComponent(leaf.src, leaf.label),
-      meta: { pageId: leaf.page, title: leaf.label, url: leaf.iframe, loading: leaf.loading, qs: leaf.query },
-    });
-    addedNames.push(name);
-  });
+  removeUserRoutes = records.map((record) => router.addRoute(defaultLayoutName, record));
+  setUserMenuRoutes(records);
 }
 
-export function resetUserRoutes() {
-  for (const name of addedNames) router.removeRoute(name);
-  addedNames = [];
+/* ══ 阶段三 · 退出：动态路由整体移除，菜单回落到只剩静态骨架 ══════════════════════ */
+
+export function resetUserRoutes(): void {
+  for (const remove of removeUserRoutes) remove();
+  removeUserRoutes = [];
+  setUserMenuRoutes([]);
 }
 
-/* ---------- 路由守卫：登录 → 动态注册 → 越权 403 ---------- */
+/* ---------- 路由守卫（@/router/guard）：登录 → 动态注册 → 越权 403 + tabs 同步 ---------- */
 
-/* 刷新白屏过渡只属于首次导航（含 loadForUser 等异步）；站内 tab 切换瞬时，不插遮罩。
-   首个 beforeEach 同步显示（此时动态路由未注册、拿不到目标 meta.loading，白底遮罩先挂无成本，
-   导航落地后按最终 meta 决定淡出或直除） */
-let firstNavigation = true;
-
-router.beforeEach(async (to) => {
-  if (firstNavigation) loadingScreen.show();
-  const auth = useAuthStore();
-  const perm = usePermissionStore();
-
-  if (to.meta.public) {
-    // 已登录访问 /login → 回壳层根路径（未登录访问 /login 放行）
-    return auth.session && to.name === "login" ? { path: "/", replace: true } : true;
-  }
-
-  if (!auth.session) {
-    perm.reset();
-    resetUserRoutes();
-    return { name: "login", query: { redirect: to.fullPath }, replace: true };
-  }
-
-  if (!perm.loaded) {
-    // 登录后首次进入 / 刷新：拉取菜单 → 注册路由 → 重放本次导航（统一覆盖三种场景）
-    try {
-      const tree = await perm.loadForUser();
-      registerUserRoutes(tree);
-    } catch {
-      auth.logout();
-      perm.reset();
-      resetUserRoutes();
-      return { name: "login", replace: true };
-    }
-    return { path: to.path, query: to.query, hash: to.hash, replace: true };
-  }
-
-  // 已注册仍未匹配 = 无权限的 page 深链
-  if (to.name === "not-found") return { name: "forbidden", replace: true };
-  return true;
-});
-
-/* ---------- router → tabs 单向同步（唯一入口，防双导航循环） ---------- */
-
-router.afterEach((to) => {
-  if (firstNavigation) {
-    /* meta.loading === false 的路由不启用：无动画直除（遮罩为白底，与从未显示观感一致） */
-    loadingScreen.hide({ immediate: to.meta.loading === false });
-    firstNavigation = false;
-  }
-  // 安全兜底：强制移除 Vue Transition 残留类（transitionend 在部分环境不触发导致 opacity=0）
-  requestAnimationFrame(() => {
-    document.querySelectorAll(".screen-enter-from, .screen-enter-active, .screen-leave-from, .screen-leave-active").forEach((el) => {
-      el.classList.remove("screen-enter-from", "screen-enter-active", "screen-enter-to",
-        "screen-leave-from", "screen-leave-active", "screen-leave-to");
-    });
-  });
-  if (!to.meta.pageId) return;
-  const tabs = useTabsStore();
-  tabs.openTab({ id: `page-${to.meta.pageId}`, title: to.meta.title ?? to.meta.pageId, page: to.meta.pageId });
-});
+setupRouterGuards(router, { registerUserRoutes, resetUserRoutes });
 
 export default router;

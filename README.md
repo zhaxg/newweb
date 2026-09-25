@@ -1,6 +1,6 @@
-# ERP Web
+# HiMind 工业互联网平台
 
-基于 Vue 3 + TypeScript 构建的企业资源管理（ERP）系统前端，涵盖采购、销售、库存、财务及系统管理等核心业务模块。
+基于 Vue 3 + TypeScript 构建的HiMind工业互联网平台系统前端，涵盖采购、销售、库存、财务及系统管理等核心业务模块。
 
 ## 技术栈
 
@@ -33,7 +33,7 @@
 
 ### 基础架构
 - 登录/登出、验证码、"记住我"历史
-- 后端权限菜单驱动的动态路由注册
+- 后端资源表 → 路由记录动态注册；菜单由路由表投影（`meta.hidden` 控制是否进菜单）
 - 多标签页（Chrome Tabs 风格）导航 + KeepAlive 缓存
 - 浅色/深色主题切换
 - 中英文字体自定义、字体大小三档缩放（标准/大字体/更大字体）
@@ -112,21 +112,31 @@ src/
 │   ├── loading/            # 刷新白屏过渡
 │   └── mask/               # 输入掩码指令
 ├── composables/            # 组合式函数（主题、验证码、标签、Toast）
-├── data/                   # 静态数据 / Mock 菜单定义
 ├── layouts/                # 壳层布局（Header + Sidebar + TabBar + 内容区）
-├── lib/                    # 工具库（AG Grid 配置、PrimeVue 主题、字体等）
+│   └── pages/              # 框架自带页面（403、建设中占位、外链 iframe 承载）
+├── lib/                    # 工具库（AG Grid 配置、PrimeVue 主题、字体、localStorage 加密层等）
 ├── mock/                   # Mock 数据与适配器
 │   ├── admin/              # 系统管理域：*.ts 路由 + data/ 种子（一表一文件）
 │   ├── mes4ddh/            # MES4DDH 业务域（lims/shr/smp/sms/sqm/syd.ts）
 │   │   └── data/           # 该域演示/种子数据（如 lims.ts、gantt_data.json）
 │   └── mockAdapter.ts      # 各域 RouteMap 合并为一张路由表
 ├── pages/                  # 页面视图
-│   ├── _core/              # 登录、首页、403 等核心页面
+│   ├── _core/              # 登录、首页、个人中心
 │   └── admin/              # 系统管理各子页面
-├── router/                 # 路由配置与动态注册
+├── router/                 # 路由（index 汇总三阶段；builtin 骨架/business 业务/fromMenu 后端资源适配+组件解析/guard 守卫；菜单投影在 layouts/composables/menuFromRoutes.ts）
 ├── stores/                 # Pinia 状态（auth、permission、settings、tabs）
 └── styles/                 # 全局样式与组件覆盖
 ```
+
+## 敏感键加密
+
+`src/lib/encryptedStorage.ts` 提供 `readJson<T>(key)` / `writeJson(key, value)`，用 crypto-js（纯 JS、同步，**不依赖 HTTPS/安全上下文**）给落盘的 JSON 加一层 AES。
+
+- 开关：`VITE_APP_STORE_SECURE_KEY` 非空即加密；留空时读写退化成今天的明文 `JSON.parse/stringify`，行为逐字一致。
+- **主动调用，不做全局拦截**：目前只包 `authStore` 的 `hmx.auth-session`（含 token）与 `hmx.login-history`（勾「记住我」时存明文密码）。其它键（编辑器设置、mock 各表、Univer 的 `UniverLocalStorage/*`）保持明文原样。
+- 兼容老数据：读到不以 `U2FsdGVkX1`（crypto-js 密文固定头）开头的值按明文直接解析，下次写入自动变密文，不需要迁移代码。
+- 失败即降级：换密钥 / 脏数据 → `console.warn` + 返回 `null`，调用方回落默认值（等于未登录），绝不抛进启动链。
+- 定位：`VITE_` 变量会内联进 bundle，密钥是公开的，本层属**本地留存混淆**（防从设备/备份直接翻明文），不是访问控制。
 
 ## Mock 目录规范
 

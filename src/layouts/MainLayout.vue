@@ -4,14 +4,14 @@ import { useRoute, useRouter, RouterView } from "vue-router";
 import HmxHeader from "@/layouts/components/HmxHeader.vue";
 import HmxSidebar from "@/layouts/components/HmxSidebar.vue";
 import HmxTabBar from "@/layouts/components/HmxTabBar.vue";
+import HmxIframeHost from "@/layouts/components/HmxIframeHost.vue";
 import ErrorBoundary from "@/components/common/ErrorBoundary.vue";
 import SettingsDialog from "@/layouts/components/SettingsDialog.vue";
-import type { HmxMenuNode } from "@/api/common/menuApi";
+import type { HmxMenuNode } from "@/layouts/composables/menuFromRoutes";
 import { useAuthStore } from "@/stores/authStore";
 import { usePermissionStore } from "@/stores/permissionStore";
 import { useTabsStore } from "@/stores/tabsStore";
 import { resetUserRoutes } from "@/router";
-import { tabPath } from "@/router/paths";
 import { useToast } from "@/composables/useToast";
 
 /* 壳层：Header + Sidebar + 标签栏 + 页面区（RouterView 渲染权限内页面）。
@@ -29,7 +29,7 @@ const sidebarVisible = ref(true);
 
 /* 导航统一入口（Header / Sidebar 都汇到这）。三种来源三种去向：
    普通页面 → 组件路由；外链 iframe 模式 → 同样有 page，路由 component 选 IframePage、
-   meta.url 挂地址 → 内置承载；外链 blank 模式 → 拒帧站点（见 menuApi
+   meta.url 挂地址 → 内置承载；外链 blank 模式 → 拒帧站点（见 fromMenu
    EXTERNAL_BLANK_HOSTS），没注册路由，直接开浏览器新标签。 */
 function openPage(node: HmxMenuNode) {
   if (node.openMode === "blank" && node.url) {
@@ -37,7 +37,7 @@ function openPage(node: HmxMenuNode) {
     return;
   }
   if (!node.page) return;
-  router.push(tabPath(node.page));
+  router.push(`/${node.page}`);
 }
 
 function logout() {
@@ -76,7 +76,7 @@ function pageKey(pageId: string | undefined, routeName: unknown): string {
       <main class="flex min-h-0 min-w-0 flex-1 flex-col">
         <HmxTabBar />
         <div class="min-h-0 flex-1 overflow-hidden p-1.25 dark:bg-[#282828]">
-          <div class="flex h-full min-h-0 flex-col overflow-hidden rounded-sm"
+          <div class="relative flex h-full min-h-0 flex-col overflow-hidden rounded-sm"
             :class="route.name === 'home' ? '' : 'bg-background'">
             <RouterView v-slot="{ Component, route: r }">
               <Transition name="page" mode="out-in">
@@ -87,6 +87,8 @@ function pageKey(pageId: string | undefined, routeName: unknown): string {
                 </KeepAlive>
               </Transition>
             </RouterView>
+            <!-- 常驻 iframe 池：内嵌外链页在此持有，切页签只显隐不卸载（规避 iframe 反挂载重载） -->
+            <HmxIframeHost />
           </div>
         </div>
       </main>

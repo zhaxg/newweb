@@ -318,14 +318,14 @@ onMounted(async () => {
     <!-- 上下主子表：原 splitContainerControl1 SplitterPosition=665/1019 ≈ 65% -->
     <Splitter class="min-h-0 flex-1" layout="vertical">
       <SplitterPanel :size="65" :minSize="25" class="flex flex-col overflow-hidden">
-        <!-- stackPanel2：产线/时间范围/炉号/件次号 + 查询 -->
+        <!-- stackPanel2：产线/时间范围(占两列)/炉号/件次号 -->
         <div class="grid shrink-0 grid-cols-6 items-center gap-x-3 gap-y-1.5 border-b border-border/60 px-3 py-2">
           <div class="flex min-w-0 items-center gap-1.5">
             <label class="w-16 shrink-0 text-xs text-muted-foreground">产线</label>
             <Select v-model="lineCode" :options="lineOptions" option-label="label" option-value="value"
               class="min-w-0 flex-1" />
           </div>
-          <div class="flex min-w-0 items-center gap-1.5">
+          <div class="col-span-2 flex min-w-0 items-center gap-1.5">
             <label class="w-16 shrink-0 text-xs text-muted-foreground">时间范围</label>
             <DatePicker v-model="dates1" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
               show-time hour-format="24" show-icon placeholder="开始 至 结束" class="min-w-0 flex-1" />
@@ -338,15 +338,13 @@ onMounted(async () => {
             <label class="w-16 shrink-0 text-xs text-muted-foreground">件次号</label>
             <InputText v-model="pieceNo1" class="min-w-0 flex-1" @keydown.enter="dataBind" />
           </div>
-          <div class="col-span-2 flex min-w-0 items-center gap-1">
-            <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="topLoading" @click="dataBind">
-              <IconSearch class="h-3 w-3" />查询
-            </Button>
-          </div>
         </div>
-        <!-- stackPanel3：原因/轧制完成支数 + 轧制完成/撤销轧制完成/轧废 -->
+        <!-- stackPanel3：查询 + 原因/轧制完成支数 + 轧制完成/撤销轧制完成/轧废 -->
         <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
-          <label class="w-8 shrink-0 text-xs text-muted-foreground">原因</label>
+          <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="topLoading" @click="dataBind">
+            <IconSearch class="h-3 w-3" />查询
+          </Button>
+          <label class="ml-[3rem] w-8 shrink-0 text-xs text-muted-foreground">原因</label>
           <InputText v-model="reason" class="w-48 shrink-0" />
           <label class="ml-2 shrink-0 text-xs text-muted-foreground">轧制完成/轧废支数</label>
           <!-- 定宽容器 + fluid：非 fluid 时 input 默认 intrinsic 宽 > w-28，溢出后被右侧按钮叠画 -->
@@ -370,11 +368,11 @@ onMounted(async () => {
       </SplitterPanel>
 
       <SplitterPanel :minSize="20" class="flex flex-col overflow-hidden">
-        <!-- stackPanel1：时间范围/件次号/炉号 + 查询/撤销轧废 -->
+        <!-- stackPanel1：时间范围(与上栏同宽，占两列)/件次号/炉号 + 查询/撤销轧废 -->
         <div class="flex h-9 shrink-0 items-center gap-1.5 border-b border-border/60 px-2">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">时间范围</label>
           <DatePicker v-model="dates2" selection-mode="range" :manual-input="false" date-format="yy-mm-dd"
-            show-time hour-format="24" show-icon placeholder="开始 至 结束" class="w-72 shrink-0" />
+            show-time hour-format="24" show-icon placeholder="开始 至 结束" class="w-[27rem] shrink-0" />
           <label class="shrink-0 text-xs text-muted-foreground">件次号</label>
           <InputText v-model="pieceNo2" class="w-36 shrink-0" @keydown.enter="dataBindThrLogJc" />
           <label class="shrink-0 text-xs text-muted-foreground">炉号</label>

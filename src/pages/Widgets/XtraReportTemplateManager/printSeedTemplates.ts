@@ -12,7 +12,7 @@ import {
   findPrintSchema,
   type PrintSchema,
 } from "./printSchemas";
-import type { PrintTemplateRow } from "@/api/widgets/printReport";
+import type { PrintTemplateRow } from "@/api/mes4ddh/printReport";
 
 const SEED_KEY = "hmx.print_templates_seeded.v1";
 

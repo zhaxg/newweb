@@ -130,7 +130,7 @@ node .qoder/skills/winforms-screen-migration/scripts/extract-screen.mjs \
 
 ### 6. 路由接线
 
-改种子行 `cResPath`（语义段）+ `cResSubPath`（vue 路径，相对 `src/pages`），`src/mock/admin/store.ts` 的 `RESCS_KEY` +1。**一批页面集中改、`RESCS_KEY` 只 +1 一次**。
+改种子行 `cResPath`（语义段，同时是路由层级段）+ `cResSubPath`（vue 路径，相对 `src/pages`），`src/mock/admin/store.ts` 的 `RESCS_KEY` +1。**一批页面集中改、`RESCS_KEY` 只 +1 一次**。不碰 `src/router/*` 与 `src/api/common/menuRescTree.ts`——菜单与路由都由这份资源表投影出来（详见 `references/ui-rules.md` §0.4）。
 
 ### 7. 静态校验（AI 侧验收终点）
 
@@ -145,7 +145,7 @@ node scripts/audit-ui.mjs                        # 新页面必须 0 命中（R1
 
 ### 8. 收尾
 
-- 多个菜单共用窗体时，说明 `cQueryString` 参数目前未经路由下发（`HmxMenuNode` 不带该字段）；
+- 多个菜单共用窗体时，运行参数走后端资源的 `cQueryString` → `menuRescTree` 透传成路由 `meta.qs` → 页面用 `useMenuQuery()` 读取（按 `cResPath`/`cPid` 登记种子行的 `cQueryString` 即可，无需改路由层）；
 - 与原画面的**已知偏差**主动报（例：原 `XtraTabControl HeaderLocation=Left`，PrimeVue Tabs 页签在顶部）；
 - 批量作业时往 `temp/migration-log.md`（已 gitignore）追加一行：菜单代码 · 窗体 · 产出路径 · 已接接口 · 待接入 · 偏差。
 
@@ -167,7 +167,7 @@ node scripts/audit-ui.mjs                        # 新页面必须 0 命中（R1
 - **`autoSizeAllColumns` 会压窄窄列**：给固定窄列设 `minWidth`；`flex: 1` 的列直接忽略 autoSize。
 - **fitWidth 估宽**：中文列头按 `字数 × 13 + 60` 给初始宽，再靠 autoSize 收；直接给 `width: 80` 会让 4 字列头换行截断。
 - **不要发明控件**：Tqmtd10 曾凭空加了一行「查找」快速过滤，Designer 里没有，属违规（硬规则 2）。
-- **Vite dev overlay 会吞点击**：页面 import 解析失败时 overlay 由 `vite/client` 注入，应用层 catch 不掉。`src/router/index.ts` 的 `resolvePageComponent` 已把加载失败的页面降级为「建设中」占位——用户打开时若见「建设中」，优先查 import/路径，不要当成去跑无头验证的理由。
+- **Vite dev overlay 会吞点击**：页面 import 解析失败时 overlay 由 `vite/client` 注入，应用层 catch 不掉。`src/router/fromMenu.ts` 的 `resolvePageComponent` 已把加载失败的页面降级为「建设中」占位——用户打开时若见「建设中」，优先查 import/路径，不要当成去跑无头验证的理由。
 - **PrimeVue 5 无 `TabView`**：独立内容页签用 `Tabs` + `TabList`/`Tab` + `TabPanels`/`TabPanel`；若页签只是**录入/展示模式切换**、页签下各为同一对左右双表（如 FrmQL4000 批量/单行录入），改用 `SelectButton` + 共用 `h-9` 工具栏，**不要套 Tabs**（见 `references/ui-rules.md` §6）。
 - **`InputNumber` 定宽不加 `fluid` = 溢出压按钮**：class 打在 `.p-inputnumber` 根上管不住 input 的 intrinsic 宽（~170px），同一 `h-9` 行里右侧按钮会叠画在数字框上（HR5200/HR5300）。必须 **外层 `w-*` 容器 + `fluid` +（工具栏）`:show-buttons="false"`**，见 `references/ui-rules.md` §6。
 - **换引用 = 丢跟踪**：`trackList.value = someRows` 只在查询回填时做；行内新增删除一律 `push`/`remove`，否则 `SaveChangesData` 算成全删全加。

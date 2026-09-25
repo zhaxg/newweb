@@ -1,42 +1,5 @@
-@font-face {
-  font-family: "Geist Variable";
-  font-style: normal;
-  font-display: swap;
-  font-weight: 100 900;
-  src: url("/fonts/geist-latin-ext-wght-normal.woff2") format("woff2-variations");
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-
-@font-face {
-  font-family: "Geist Variable";
-  font-style: normal;
-  font-display: swap;
-  font-weight: 100 900;
-  src: url("/fonts/geist-latin-wght-normal.woff2") format("woff2-variations");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-
-/* 表格数字（settingsStore.tableFontFamily 可选值） */
-@font-face {
-  font-family: "Geist Variable Tabular";
-  font-style: normal;
-  font-display: swap;
-  font-weight: 100 900;
-  font-feature-settings: "tnum";
-  src: url("/fonts/geist-latin-ext-wght-normal.woff2") format("woff2-variations");
-  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-
-@font-face {
-  font-family: "Geist Variable Tabular";
-  font-style: normal;
-  font-display: swap;
-  font-weight: 100 900;
-  font-feature-settings: "tnum";
-  src: url("/fonts/geist-latin-wght-normal.woff2") format("woff2-variations");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-
+/* 拉丁字体（IBM Plex Sans 400/500/700）由 src/main.ts 以 JS import 引入 @fontsource，
+   不能写在这里——本文件已有 @font-face 之外的规则早于 @import "tailwindcss"。 */
 @import "tailwindcss";
 @source "../**/*.{vue,ts,tsx,js,jsx,html}";
 
@@ -226,16 +189,5 @@
   height: 1em;
 }
 
-/* 全局滚动条：默认隐藏，鼠标悬停所在容器时低调显示。
-   注意：设置 scrollbar-width/scrollbar-color 后 Chromium 会忽略 ::-webkit-scrollbar 自定义（全局统一，属预期）。
-   :hover 会命中悬停元素及其所有祖先，因此滚动容器自身也能被点亮。 */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: transparent transparent;
-}
-:hover {
-  scrollbar-color: rgba(128, 128, 128, 0.28) transparent;
-}
-.dark :hover {
-  scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
-}
+/* 全站滚动条样式（VS Code 风格）见 @/styles/scrollbar.css。
+   此处不再声明 scrollbar-width/scrollbar-color —— 一旦声明 Chromium 就会忽略 ::-webkit-scrollbar 自绘。 */

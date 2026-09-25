@@ -4,8 +4,16 @@ import App from "./App.vue";
 import router from "./router";
 import { hmxPrimePlugin } from "./lib/primeTheme";
 import { hmxAgGridPlugin } from "./lib/agGrid";
+import { hmxErrorPlugin } from "./lib/globalError";
+import { hmxPermissionPlugin } from "./composables/usePermission";
 import { applyEffectsPreference } from "./lib/effectsPerf";
+/* 拉丁默认字体：IBM Plex Sans 三档字重（latin 子集，无 unicode-range 的裸 @font-face）。
+   中文仍由 --font-sans 栈里的 PingFang/雅黑兜底——Plex 无中文字形，浏览器逐字回退。 */
+import "@fontsource/ibm-plex-sans/latin-400.css";
+import "@fontsource/ibm-plex-sans/latin-500.css";
+import "@fontsource/ibm-plex-sans/latin-700.css";
 import "./styles/globals.css";
+import "./styles/scrollbar.css";
 import "./styles/agGrid.css";
 import "./styles/prime-overrides.css";
 /* vue-print-designer 按需加载：见 src/lib/loadPrintDesigner.ts（设计器页/样例打印时再 import） */
@@ -18,23 +26,10 @@ applyEffectsPreference();
 
 const app = createApp(App);
 
-/* ── 全局异常捕获 ── */
-// Vue 组件渲染/挂载错误：捕获后 console.error + 阻止向上传播，避免崩溃整个 MainLayout
-app.config.errorHandler = (err, instance, info) => {
-  console.error("[Vue Error]", err, info, instance);
-};
-// 未捕获的 Promise rejection（如 AG Grid 异步报错）
-window.addEventListener("unhandledrejection", (e) => {
-  console.error("[UnhandledRejection]", e.reason);
-  e.preventDefault();
-});
-// 未捕获的同步错误
-window.addEventListener("error", (e) => {
-  console.error("[WindowError]", e.message, e.filename, e.lineno);
-});
-
 app.use(createPinia());
 app.use(router);
+app.use(hmxErrorPlugin);
+app.use(hmxPermissionPlugin);
 app.use(hmxAgGridPlugin);
 app.use(hmxPrimePlugin);
 app.mount("#app");

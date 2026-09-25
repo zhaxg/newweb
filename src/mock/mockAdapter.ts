@@ -17,7 +17,7 @@ import { sqmRoutes } from "./mes4ddh/sqm";
 import { smpRoutes } from "./mes4ddh/smp";
 import { sydRoutes } from "./mes4ddh/syd";
 import { smsRoutes } from "./mes4ddh/sms";
-import { printReportRoutes } from "./widgets/printReport";
+import { printReportRoutes } from "./mes4ddh/printReport";
 
 /**
  * 进程内 mock axios adapter：拦截 `${API_BASE}/**`，读写现有 localStorage 数据源，

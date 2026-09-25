@@ -1,5 +1,5 @@
 import { getBody, getParams, ok, type RouteMap } from "../admin/core";
-import type { PrintTemplateRow } from "@/api/widgets/printReport";
+import type { PrintTemplateRow } from "@/api/mes4ddh/printReport";
 import { ensureSeedPrintTemplates } from "@/pages/Widgets/XtraReportTemplateManager/printSeedTemplates";
 
 /**

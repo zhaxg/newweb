@@ -12,7 +12,7 @@ import {
   buildSamplePayload,
   findPrintSchema,
 } from "./printSchemas";
-import type { PrintTemplateRow } from "@/api/widgets/printReport";
+import type { PrintTemplateRow } from "@/api/mes4ddh/printReport";
 import { printDesignerCloudFetch, setPrintDesignerActiveSchema } from "./printDesignerCloudMock";
 import { ensurePrintDesigner } from "./loadPrintDesigner";
 import { useToast } from "@/composables/useToast";

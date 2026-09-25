@@ -5,7 +5,7 @@
  */
 import { computed, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { printReportApi, type PrintTemplateRow } from "@/api/widgets/printReport";
+import { printReportApi, type PrintTemplateRow } from "@/api/mes4ddh/printReport";
 import { useToast } from "@/composables/useToast";
 import PrintDesignerDialog from "./PrintDesignerDialog.vue";
 

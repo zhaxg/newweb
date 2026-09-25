@@ -17,7 +17,6 @@ export interface FontOption {
 
 export const chineseFontOptions: FontOption[] = [
   { label: "系统默认", family: "" },
-  { label: "小米黑体", family: "MiSans", cssUrl: "https://cdn.jsdelivr.net/npm/misans@4.1.0/lib/Normal/MiSans-Regular.min.css" },
   { label: "思源黑体", family: "Noto Sans SC Variable", cssUrl: "https://cdn.jsdelivr.net/npm/@fontsource-variable/noto-sans-sc@5.3.0/index.css" },
   { label: "思源宋体", family: "Noto Serif SC Variable", cssUrl: "https://cdn.jsdelivr.net/npm/@fontsource-variable/noto-serif-sc@5.3.0/index.css" },
   { label: "霞鹜文楷", family: "LXGW WenKai", cssUrl: "https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css" },
@@ -25,15 +24,19 @@ export const chineseFontOptions: FontOption[] = [
 ];
 
 export const englishFontOptions: FontOption[] = [
-  { label: "系统默认", family: "" },
-  { label: "Inter", family: "Inter", cssUrl: "https://cdn.jsdelivr.net/npm/@fontsource/inter@5.3.0/index.min.css" },
+  /* 默认拉丁字体：已随 main.ts 本地引入 400/500/700，无需 CDN */
+  { label: "系统默认", family: "IBM Plex Sans" },
   { label: "Space Grotesk", family: "Space Grotesk", cssUrl: "https://cdn.jsdelivr.net/npm/@fontsource/space-grotesk@5.3.0/index.min.css" },
-  { label: "IBM Plex Sans", family: "IBM Plex Sans", cssUrl: "https://cdn.jsdelivr.net/npm/@fontsource/ibm-plex-sans@5.3.0/index.min.css" },
   { label: "Geist Mono", family: "Geist Mono", cssUrl: "https://cdn.jsdelivr.net/npm/@fontsource/geist-mono@5.3.0/index.min.css" },
   { label: "Geist Sans", family: "Geist Sans", cssUrl: "https://cdn.jsdelivr.net/npm/@fontsource/geist-sans@5.3.0/index.min.css" },
+  { label: "Inter", family: "Inter", cssUrl: "https://cdn.jsdelivr.net/npm/@fontsource/inter@5.3.0/index.min.css" },
+
 ];
 
-const BASE_STACK = '"Geist Variable", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", system-ui, sans-serif';
+/* 兜底栈：只在用户没选英文字体（settingsStore.fontEnglishFamily = ""）时生效。
+   默认拉丁字体不写在这里，而是作为「英文字体」下拉的默认值由 fontStack() 前置。 */
+const BASE_STACK =
+  '"PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", system-ui, sans-serif';
 
 const injectedUrls = new Set<string>();
 

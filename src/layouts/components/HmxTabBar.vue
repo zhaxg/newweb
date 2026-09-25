@@ -9,7 +9,6 @@ import {
 import { useTabs } from "@/composables/useTabs";
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
-import { tabPath } from "@/router/paths";
 
 const tabsStore = useTabs();
 const { tabs, activeId } = storeToRefs(tabsStore);
@@ -19,7 +18,7 @@ const router = useRouter();
 /* tabs → router 单向：所有激活/切换都归结为 push 对应路由，实际 activeId 由 router.afterEach 的 openTab 落定。
    同一页重复 push 会被 vue-router 静默去重，不会产生额外历史。 */
 function pushPath(pageId: string | null | undefined) {
-  router.push(pageId ? tabPath(pageId) : "/");
+  router.push(pageId ? `/${pageId}` : "/home");
 }
 
 function pageOf(id: string | null): string | null {

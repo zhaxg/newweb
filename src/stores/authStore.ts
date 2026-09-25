@@ -1,11 +1,12 @@
 /**
  * 登录会话 + 登录历史（移植 HmxLoginForm.cs 的 UserLoginHistory / HmxUserSession）。
- * Pinia setup store + localStorage 持久化。
+ * Pinia setup store + localStorage 持久化；两个键的值都经 @/lib/encryptedStorage 加密一层。
  */
 import { ref, watch } from "vue";
 import { defineStore } from "pinia";
 import { authApi } from "@/api/admin/request";
 import { CaptchaType } from "@/api/admin/enums";
+import { readJson, writeJson } from "@/lib/encryptedStorage";
 
 export interface AuthSession {
   userId: string;
@@ -30,26 +31,14 @@ const SESSION_KEY = "hmx.auth-session";
 const HISTORY_KEY = "hmx.login-history";
 
 function loadSession(): AuthSession | null {
-  try {
-    const raw = localStorage.getItem(SESSION_KEY);
-    if (raw) return JSON.parse(raw) as AuthSession;
-  } catch {
-    /* 数据损坏时视为未登录 */
-  }
-  return null;
+  /* 登录态含 token，走加密封装（见 @/lib/encryptedStorage；未配密钥时等价于明文读写） */
+  return readJson<AuthSession>(SESSION_KEY);
 }
 
 function loadHistory(): LoginHistory {
-  try {
-    const raw = localStorage.getItem(HISTORY_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw) as LoginHistory;
-      if (Array.isArray(parsed.users)) return parsed;
-    }
-  } catch {
-    /* 数据损坏时回退空 */
-  }
-  return { lastUserId: "", users: [] };
+  /* 勾选"记住我"时这里存着明文密码，同样走加密封装 */
+  const parsed = readJson<LoginHistory>(HISTORY_KEY);
+  return parsed && Array.isArray(parsed.users) ? parsed : { lastUserId: "", users: [] };
 }
 
 export const useAuthStore = defineStore("auth", () => {
@@ -58,15 +47,12 @@ export const useAuthStore = defineStore("auth", () => {
 
   watch(
     session,
-    (value) => {
-      if (value) localStorage.setItem(SESSION_KEY, JSON.stringify(value));
-      else localStorage.removeItem(SESSION_KEY);
-    },
+    (value) => writeJson(SESSION_KEY, value ?? undefined),
   );
 
   watch(
     history,
-    (value) => localStorage.setItem(HISTORY_KEY, JSON.stringify(value)),
+    (value) => writeJson(HISTORY_KEY, value),
     { deep: true },
   );
 

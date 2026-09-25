@@ -1,25 +1,26 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from "vue";
-import { IconBook, IconChevronDown, IconDots, IconKey, IconLogout, IconMaximize, IconMinimize, IconSettings } from "@tabler/icons-vue";
+import {
+  IconBook, IconChevronDown, IconDots, IconKey,
+  IconLogout, IconMaximize, IconMinimize, IconSettings, IconUserCircle
+} from "@tabler/icons-vue";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import Menu from "primevue/menu";
 import TieredMenu from "primevue/tieredmenu";
 import type { MenuItem } from "primevue/menuitem";
-import User from "@primeicons/vue/user";
 import { TABLER_FALLBACK_ICON, tablerIcon } from "@/lib/tablerIcons";
 import ThemeToggle from "@/components/common/ThemeToggle.vue";
 import ModifyPasswd from "@/pages/_core/profile/ModifyPasswd.vue";
 import { useAppTheme } from "@/composables/useAppTheme";
-import type { HmxMenuNode } from "@/api/common/menuApi";
+import type { HmxMenuNode } from "@/layouts/composables/menuFromRoutes";
 import { useAuthStore } from "@/stores/authStore";
-import { usePermissionStore } from "@/stores/permissionStore";
+import { menuTree } from "@/layouts/composables/menuFromRoutes";
 import { useToast } from "@/composables/useToast";
 import { computed } from "vue";
 
 const { isDark, setMode } = useAppTheme();
 const auth = useAuthStore();
-const perm = usePermissionStore();
 const { toast } = useToast();
 
 const emit = defineEmits<{
@@ -29,7 +30,7 @@ const emit = defineEmits<{
   openPage: [node: HmxMenuNode];
 }>();
 
-/** 标题点击回首页：走父级 openPage 统一导航通道（page=home → "/"） */
+/** 标题点击回首页：走父级 openPage 统一导航通道（page=home → "/home"） */
 const HOME_NODE: HmxMenuNode = { id: "home", label: "首页", page: "home" };
 
 const userMenu = ref<InstanceType<typeof Menu> | null>(null);
@@ -60,7 +61,7 @@ function toMenuItems(nodes: HmxMenuNode[]): MenuItem[] {
   }));
 }
 const navMenuRef = ref<InstanceType<typeof TieredMenu> | null>(null);
-const navMenuItems = computed(() => toMenuItems(perm.menuTree));
+const navMenuItems = computed(() => toMenuItems(menuTree.value));
 /* TieredMenu 默认首次须点击分组项才允许 hover 展开子菜单（内部 dirty 门控）；
    弹出即置 dirty，实现"展开后鼠标滑动自动展开子菜单" */
 function onNavShow() {
@@ -94,7 +95,8 @@ onBeforeUnmount(() => document.removeEventListener("fullscreenchange", onFullscr
   <header class="flex h-12 shrink-0 items-center justify-between border-b border-border bg-[#F4F4F4] px-3 dark:bg-card">
     <div class="flex min-w-0 items-center gap-2.5">
       <!-- logo：点击切换侧栏收起/展开（与侧栏钮同行为） -->
-      <div class="flex h-7 w-7 shrink-0 cursor-pointer select-none items-center justify-center rounded-md bg-primary text-sm font-bold text-primary-foreground shadow-sm"
+      <div
+        class="flex h-7 w-7 shrink-0 cursor-pointer select-none items-center justify-center rounded-md bg-primary text-sm font-bold text-primary-foreground shadow-sm"
         title="收起/展开侧栏" @click="emit('toggleSidebar')">H</div>
       <!-- 标题：点击回首页（走父级 openPage 统一导航通道） -->
       <div class="min-w-0 cursor-pointer select-none" title="返回首页" @click="emit('openPage', HOME_NODE)">
@@ -125,11 +127,9 @@ onBeforeUnmount(() => document.removeEventListener("fullscreenchange", onFullscr
         <IconSettings class="size-[1em]" />
       </button>
       <ThemeToggle :is-dark="isDark" size="sm" :duration="600" title="主题切换" @toggle="toggleTheme" />
-      <Button severity="secondary" variant="text" rounded class="gap-1.5" @click="userMenu?.toggle($event)">
+      <Button severity="secondary" variant="outlined" rounded class="gap-1.5" @click="userMenu?.toggle($event)">
         <span class="flex items-center gap-1.5">
-          <span
-            class="flex h-6 w-6 items-center justify-center rounded-full bg-primary/15 text-primary"><User
-              class="h-3.5 w-3.5" /></span>
+          <IconUserCircle stroke={1.5} class="text-primary" />
           <span class="hidden text-xs text-foreground sm:inline">{{ auth.session?.userName ?? "" }}</span>
           <IconChevronDown class="h-3.5 w-3.5 text-muted-foreground" />
         </span>
@@ -147,9 +147,8 @@ onBeforeUnmount(() => document.removeEventListener("fullscreenchange", onFullscr
       :style="{ width: 'min(26rem, calc(100vw - 2rem))' }" @update:visible="logoutConfirmOpen = $event">
       <p class="text-xs">是否确定退出系统？</p>
       <template #footer>
-        <Button label="取消" variant="outlined" @click="logoutConfirmOpen = false" />
-        <Button label="退出" severity="danger" variant="outlined" autofocus
-          @click="logoutConfirmOpen = false; emit('logout')" />
+        <Button label="取消" severity="text" @click="logoutConfirmOpen = false" />
+        <Button label="退出" severity="danger" autofocus @click="logoutConfirmOpen = false; emit('logout')" />
       </template>
     </Dialog>
   </header>

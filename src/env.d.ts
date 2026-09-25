@@ -9,6 +9,8 @@ interface ImportMetaEnv {
   readonly VITE_API_TARGET?: string;
   /** 路由命名空间（权限资源 groupId），如 TDWEB */
   readonly VITE_ROUTER_NAMESPACE?: string;
+  /** localStorage 加密层密钥（见 @/lib/encryptedStorage）：非空串即启用，空则明文 */
+  readonly VITE_APP_STORE_SECURE_KEY?: string;
 }
 
 declare module "*.vue" {
