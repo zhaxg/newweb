@@ -223,8 +223,9 @@ src/
 │   ├── admin/              # 系统管理各子页（dept/user/role/resc/kvs/jobs/gen/settings）（平台自有）
 │   └── DDH|LIMS|SHR|SMP|SMS|SQM|SYD|Widgets/   # 业务组模块（示例，迁移中）
 ├── router/                 # index 三阶段装配 · builtin 骨架页 · business 业务静态路由
-│                           # fromMenu 后端资源→路由编译 · guard 守卫
-│                           # dynamicRoutes 动态路由清理(叶模块) · bridge router 实例桥(叶模块)
+│   └── core/               # 机制层（不常改）：fromMenu 后端资源→路由编译 · guard 守卫
+│                           #   dynamicRoutes 动态路由清理(✅叶模块) · bridge router 实例桥(✅叶模块)
+│                           #   ⛔ guard/fromMenu 依赖 store 与页面组件，勿从 router 外部引用
 ├── stores/                 # auth · permission · tabs · settings
 └── styles/                 # tokens(设计 token) · globals(字阶 @theme) · prime-overrides · agGrid · scrollbar
 
@@ -247,7 +248,7 @@ src/
   │ ① api/common/menuRescTree.ts        → MenuResNode 语义树（唯一读后端 cXxx 字段处）
   ▼
 MenuResNode
-  │ ② router/fromMenu.ts                → RouteRecordRaw（路由编译：iframe/blank、组件解析、pageId）
+  │ ② router/core/fromMenu.ts           → RouteRecordRaw（路由编译：iframe/blank、组件解析、pageId）
   ▼
 RouteRecordRaw
   │ ③ layouts/composables/menuFromRoutes.ts → HmxMenuNode（菜单投影）
@@ -258,12 +259,12 @@ RouteRecordRaw
 **菜单是路由表的投影，不是第二份数据**——所以菜单与"实际能跳的路由"天然一致。
 `meta.hidden` 是不进菜单的唯一开关；`meta.layout` 决定归入哪个布局父记录（注册表见 `layouts/composables/layouts.ts`）。
 
-路由三阶段（`router/index.ts`）：**静态骨架 → 登录后动态注册 → 退出整体移除**，守卫在 `router/guard.ts`。
+路由三阶段（`router/index.ts`）：**静态骨架 → 登录后动态注册 → 退出整体移除**，守卫在 `router/core/guard.ts`。
 
 - **加布局**：只往 `layouts/composables/layouts.ts` 的注册表加一条，不动 `router/index`。
 - **加业务页**：写 `src/router/business.ts`；会进菜单的页走后端资源下发，不写这里。
 - **循环依赖边界**：MainLayout / request / usePermission 等消费方只准 import 叶模块
-  `router/dynamicRoutes.ts`（动态路由清理）与 `router/bridge.ts`（router 实例桥）；
+  `router/core/dynamicRoutes.ts`（动态路由清理）与 `router/core/bridge.ts`（router 实例桥）；
   反向 import `@/router`（index）会成环。
 - **懒加载边界**：只有 `router/builtin.ts` 的骨架页（登录/首页/403）和 `layouts.ts` 的布局父记录
   允许静态 import；业务页一律走 `fromMenu.ts` 的 `import.meta.glob` 懒加载。重型依赖

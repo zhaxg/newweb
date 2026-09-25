@@ -1,5 +1,5 @@
 import type { RouteRecordRaw, Router } from "vue-router";
-import { toRouteRecords } from "@/router/fromMenu";
+import { toRouteRecords } from "@/router/core/fromMenu";
 import { useAuthStore } from "@/stores/authStore";
 import { usePermissionStore } from "@/stores/permissionStore";
 import { useTabsStore } from "@/stores/tabsStore";
@@ -10,6 +10,9 @@ import { loadingScreen } from "@/components/loading/loading";
  * 只负责导航拦截；路由表组装与注册逻辑见 @/router/index。
  *
  * 动态注册能力由 index.ts 注入 —— guard 若反向 import index 会形成循环引用。
+ *
+ * 引用约束：⛔ **仅 @/router/index 引用**。本文件依赖三个 store（auth/permission/tabs）与 loading，
+ * 从 router 外部引用会精确复现 AGENTS §4.2 记录的 `request → router → guard → store → api → request` 环。
  */
 export function setupRouterGuards(
   router: Router,

@@ -8,7 +8,7 @@ import type { HmxRes } from "@/api/admin/types";
  * 真正的后端接口是 authApi.getUserRescList；本文件是它到路由层之间的「菜单资源树」适配器。
  * 全链路三层，各管一段、类型互不串味：
  *   ① 本文件 menuRescTree：authApi 的平铺 HmxRes → 归一化语义树 MenuResNode（唯一读后端字段处）；
- *   ② router/fromMenu    ：MenuResNode → RouteRecordRaw（路由编译：iframe/blank 策略、组件解析、pageId 命名都在这）；
+ *   ② router/core/fromMenu：MenuResNode → RouteRecordRaw（路由编译：iframe/blank 策略、组件解析、pageId 命名都在这）；
  *   ③ menuFromRoutes     ：RouteRecordRaw → HmxMenuNode（渲染投影，在 layouts/composables/，菜单真源是路由表）。
  * 本层只把后端那套 cXxx 字段翻译成前端语义字段，不决定「怎么注册成路由」——那是 ② 的事。
  */

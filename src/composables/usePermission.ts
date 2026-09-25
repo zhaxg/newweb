@@ -13,7 +13,7 @@
  */
 import type { App, Plugin } from "vue";
 /* 取实例走叶桥不 import index——与 request 同一条防环边界：只有 main.ts 与 router 自身 import index */
-import { getRouter } from "@/router/bridge";
+import { getRouter } from "@/router/core/bridge";
 import { usePermissionStore } from "@/stores/permissionStore";
 
 /** 当前路由的 pageId（取不到 = 静态路由，不参与资源权限） */

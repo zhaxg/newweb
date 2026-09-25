@@ -18,6 +18,9 @@ import type { MenuResNode } from "@/api/common/menuRescTree";
  * - 页面叶子（有 page、无 url）→ 常规记录，name = `page:${pageId}`，组件按 src 解析、未命中落占位页。
  *
  * 数组顺序即菜单顺序（menuRescTree 已按后端 cOrder 排过）。首页由 builtin 静态注册，不在本树内。
+ *
+ * 引用约束：⛔ **仅 router 内部引用**（现消费方：@/router/index、core/guard）。本文件静态引入
+ * layouts/pages 下的页面组件，从 router 外部引用会把这些组件拖进调用方的静态依赖链。
  */
 export function toRouteRecords(nodes: MenuResNode[]): RouteRecordRaw[] {
   const out: RouteRecordRaw[] = [];

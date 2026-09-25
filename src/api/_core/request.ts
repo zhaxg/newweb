@@ -3,9 +3,9 @@ import ToastEventBus from "primevue/toasteventbus";
 import { useAuthStore } from "@/stores/authStore";
 import { usePermissionStore } from "@/stores/permissionStore";
 /* 不 import @/router（index）：request → @/router → guard → store → api → request 是真实循环依赖。
-   动态路由清理走叶模块 @/router/dynamicRoutes，router 实例走叶桥 @/router/bridge（见各自文件头注释） */
-import { getRouter } from "@/router/bridge";
-import { resetUserRoutes } from "@/router/dynamicRoutes";
+   动态路由清理走叶模块 @/router/core/dynamicRoutes，router 实例走叶桥 @/router/core/bridge（见各自文件头注释） */
+import { getRouter } from "@/router/core/bridge";
+import { resetUserRoutes } from "@/router/core/dynamicRoutes";
 import { mockAdapter } from "@/mock/mockAdapter";
 import type { Result } from "./types";
 import { ApiError } from "./types";

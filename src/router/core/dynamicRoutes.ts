@@ -8,6 +8,9 @@
  * index 静态依赖 layouts 注册表 → MainLayout，request 则经 guard → store → api 绕回自身，
  * 反向 import 会形成真实的模块循环依赖（ESM 下顶层引用会 TDZ 白屏，且报错栈极难定位）。
  * 本模块只依赖菜单投影（menuFromRoutes，纯 vue + 类型），任何方 import 它都不会造回边。
+ *
+ * 引用约束：✅ **叶模块，router 外部可安全 import**（现消费方：layouts/MainLayout、api/_core/request）。
+ * core/ 下只有本文件与 bridge.ts 是叶模块；guard / fromMenu 依赖 store 与页面组件，**勿外部引用**。
  */
 import { setUserMenuRoutes } from "@/layouts/composables/menuFromRoutes";
 

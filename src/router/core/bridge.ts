@@ -5,6 +5,9 @@
  * 是一条真实的模块循环依赖；usePermission 同理。根因是消费方只要一个「实例」，却被拖进整个
  * index（建表 + 守卫 + 注册）。index 在 createRouter 后调用 attachRouter 挂载，本桥只依赖
  * Router 类型，是叶模块——谁 import 它都不会造回边。
+ *
+ * 引用约束：✅ **叶模块，router 外部可安全 import**（现消费方：api/_core/request、composables/usePermission）。
+ * core/ 下只有本文件与 dynamicRoutes.ts 是叶模块；guard / fromMenu 依赖 store 与页面组件，**勿外部引用**。
  */
 import type { Router } from "vue-router";
 

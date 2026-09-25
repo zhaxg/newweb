@@ -167,7 +167,7 @@ node scripts/audit-ui.mjs                        # 新页面必须 0 命中（R1
 - **`autoSizeAllColumns` 会压窄窄列**：给固定窄列设 `minWidth`；`flex: 1` 的列直接忽略 autoSize。
 - **fitWidth 估宽**：中文列头按 `字数 × 13 + 60` 给初始宽，再靠 autoSize 收；直接给 `width: 80` 会让 4 字列头换行截断。
 - **不要发明控件**：Tqmtd10 曾凭空加了一行「查找」快速过滤，Designer 里没有，属违规（硬规则 2）。
-- **Vite dev overlay 会吞点击**：页面 import 解析失败时 overlay 由 `vite/client` 注入，应用层 catch 不掉。`src/router/fromMenu.ts` 的 `resolvePageComponent` 已把加载失败的页面降级为「建设中」占位——用户打开时若见「建设中」，优先查 import/路径，不要当成去跑无头验证的理由。
+- **Vite dev overlay 会吞点击**：页面 import 解析失败时 overlay 由 `vite/client` 注入，应用层 catch 不掉。`src/router/core/fromMenu.ts` 的 `resolvePageComponent` 已把加载失败的页面降级为「建设中」占位——用户打开时若见「建设中」，优先查 import/路径，不要当成去跑无头验证的理由。
 - **PrimeVue 5 无 `TabView`**：独立内容页签用 `Tabs` + `TabList`/`Tab` + `TabPanels`/`TabPanel`；若页签只是**录入/展示模式切换**、页签下各为同一对左右双表（如 FrmQL4000 批量/单行录入），改用 `SelectButton` + 共用 `h-9` 工具栏，**不要套 Tabs**（见 `references/ui-rules.md` §6）。
 - **`InputNumber` 定宽不加 `fluid` = 溢出压按钮**：class 打在 `.p-inputnumber` 根上管不住 input 的 intrinsic 宽（~170px），同一 `h-9` 行里右侧按钮会叠画在数字框上（HR5200/HR5300）。必须 **外层 `w-*` 容器 + `fluid` +（工具栏）`:show-buttons="false"`**，见 `references/ui-rules.md` §6。
 - **换引用 = 丢跟踪**：`trackList.value = someRows` 只在查询回填时做；行内新增删除一律 `push`/`remove`，否则 `SaveChangesData` 算成全删全加。
