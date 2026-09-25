@@ -5,6 +5,8 @@ import { businessRoutes } from "@/router/business";
 import { layouts, defaultLayoutName } from "@/layouts/composables/layouts";
 import { initMenuShell, setUserMenuRoutes } from "@/layouts/composables/menuFromRoutes";
 import { setupRouterGuards } from "@/router/guard";
+import { attachRouter } from "@/router/bridge";
+import { resetUserRoutes, trackUserRoutes } from "@/router/dynamicRoutes";
 
 declare module "vue-router" {
   interface RouteMeta {
@@ -57,25 +59,25 @@ const routes: RouteRecordRaw[] = [rootRedirectRoute, loginRoute, ...layoutParent
 
 export const router = createRouter({ history: createWebHistory(), routes });
 
+/* 桥挂载：request / usePermission 等只「用」router 实例，反向 import 本文件会成环
+   （request → 本文件 → guard → store → api → request），改经叶模块 @/router/bridge 取实例 */
+attachRouter(router);
+
 /* ══ 阶段二 · 登录后：后端资源适配出的记录挂进默认布局（壳层） ════════════════════
    records 由 @/router/fromMenu 从 menuRescTree 的菜单树转换而来（文件夹 = 无 component 的
    分组记录，叶子 = 页面记录）。addRoute 返回各自的移除回调，交给阶段三清理。 */
 
-let removeUserRoutes: (() => void)[] = [];
-
 export function registerUserRoutes(records: RouteRecordRaw[]): void {
   resetUserRoutes();
-  removeUserRoutes = records.map((record) => router.addRoute(defaultLayoutName, record));
+  trackUserRoutes(records.map((record) => router.addRoute(defaultLayoutName, record)));
   setUserMenuRoutes(records);
 }
 
-/* ══ 阶段三 · 退出：动态路由整体移除，菜单回落到只剩静态骨架 ══════════════════════ */
-
-export function resetUserRoutes(): void {
-  for (const remove of removeUserRoutes) remove();
-  removeUserRoutes = [];
-  setUserMenuRoutes([]);
-}
+/* ══ 阶段三 · 退出：动态路由整体移除，菜单回落到只剩静态骨架 ══════════════════════
+   实现与状态在 @/router/dynamicRoutes（叶模块）。为什么拆出去：MainLayout（被 layouts 注册表
+   静态引入，本文件又依赖注册表）与 api/_core/request 都要调 resetUserRoutes，留在本文件
+   就是 router → layouts → MainLayout → router 与 request → router → guard → store → api → request
+   两条循环依赖。守卫拿到的 resetUserRoutes 仍由本文件从 dynamicRoutes 转注入，注入模式不变。 */
 
 /* ---------- 路由守卫（@/router/guard）：登录 → 动态注册 → 越权 403 + tabs 同步 ---------- */
 

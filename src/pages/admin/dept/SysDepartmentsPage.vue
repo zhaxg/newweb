@@ -29,8 +29,7 @@ import type {
   RowNode,
   ValueFormatterParams,
 } from "ag-grid-community";
-import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
-import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
+import { autoSizeOnFirstData, makeHmxGridTheme } from "@/lib/agGrid";
 import { useToast } from "@/composables/useToast";
 import DeptEditDialog from "./DeptEditDialog.vue";
 import { departmentApi } from "@/api/admin/request";
@@ -324,7 +323,6 @@ function onInvalid(message: string) {
         class="hmx-ag-grid h-full w-full"
         :theme="theme"
         :column-defs="columnDefs"
-        :default-col-def="hmxDefaultColDef"
         :auto-group-column-def="autoGroupColumnDef"
         :row-data="gridRows"
         :get-row-id="getRowId"
@@ -333,7 +331,6 @@ function onInvalid(message: string) {
         :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
         :pagination="false"
         :animate-rows="false"
-        :locale-text="AG_GRID_LOCALE_CN"
         @grid-ready="onGridReady"
         @selection-changed="onSelectionChanged"
         @row-clicked="onRowClicked"
@@ -363,7 +360,7 @@ function onInvalid(message: string) {
       <p class="text-xs">是否确定删除当前项「{{ confirmTarget?.cDeptName }}」？</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />
-        <Button label="删除" severity="danger" variant="outlined" @click="confirmDelete" />
+        <Button label="删除" severity="danger" variant="outlined" autofocus @click="confirmDelete" />
       </template>
     </Dialog>
   </div>

@@ -142,7 +142,7 @@ npx vue-tsc --noEmit --ignoreDeprecations 6.0   # ✅ 真检查
 ```
 
 **顺序注意**：`lint` 目前 exit 1，接入前要先清零或改成"只拦 error 且分目录豁免业务示例"，
-否则会把 `build` 一起拖红。`audit:ui` 同理（当前 107 处违规、exit 1）。
+否则会把 `build` 一起拖红。`audit:ui` 同理（当前 174 处违规、exit 1）。
 
 仓库目前**没有 CI、没有测试框架、没有 husky** —— 上述三道门禁目前都只靠人工执行。
 
@@ -160,8 +160,7 @@ src/
 │   ├── chromeTabs/         # Chrome 风格标签栏（原生 Custom Element）
 │   ├── common/             # Captcha / CheckUpdates / ErrorBoundary / RangeInput / ThemeToggle
 │   ├── gantt/              # 自研 canvas 甘特引擎（chart/geometry/renderer + GanttChart）
-│   ├── loading/            # 刷新白屏全屏遮罩（路由守卫驱动）
-│   └── mask/               # ⚠️ 死代码：插件未注册、全仓无 v-mask 引用
+│   └── loading/            # 刷新白屏全屏遮罩（路由守卫驱动）
 ├── composables/            # useAppTheme / usePermission(v-hp) / useFrameKeepAlive / useToast / useCaptcha …
 ├── layouts/
 │   ├── MainLayout.vue      # 壳层：Header + Sidebar + TabBar + 内容区 + iframe 池
@@ -238,6 +237,10 @@ RouteRecordRaw
 4. 占位路由里 ≤5 行的 `demoRows` 工厂可留在路由文件；成规模的静态演示行必须下沉 `data/`。
 5. **开关判定是精确匹配**：`request.ts` 写的是 `import.meta.env.VITE_USE_MOCK !== "false"`，
    只有字面量 `false` 才关；写 `0` / `no` / `off` 都会被当成"开"。
+6. **mock「后端」是刻意的演示壳，不是安全模型**：`src/mock/admin/auth.ts` 对任意账密发 token、
+   非 mock token 一律回落 admin、验证码永远对、`getUserRescList` 无视用户全量下发——mock 层没有真实
+   服务和数据库，宽松才便于当演示壳用，这些都是设计意图而非漏洞，不该被"修复"。唯一红线是
+   生产构建不带 mock（`.env.production` 保持 `VITE_USE_MOCK=false`）。
 
 ## 字号与密度纪律
 
@@ -251,7 +254,7 @@ RouteRecordRaw
 npm run audit:ui     # node scripts/audit-ui.mjs，零依赖
 ```
 
-扫 `src/pages` / `src/layouts` / `src/components`，规则 R1（arbitrary 字号）/ R2（`size="small"`）/ R3（越档字号）/ R4（裸 `<label>` 未声明 `text-xs`），违规打印 `文件:行 [规则] 片段` 并非零退出；可挂 CI / pre-commit。豁免：违规行同加 `audit-allow` 注释。
+扫 `src/pages` / `src/layouts` / `src/components`，规则 R1（arbitrary 字号）/ R2（`size="small"`）/ R3（越档字号）/ R4（裸 `<label>` 未声明 `text-xs`）/ R5（`<Dialog>` 块内未标 `autofocus` 初始焦点，坑点见 ui-rules.md §2），违规打印 `文件:行 [规则] 片段` 并非零退出；可挂 CI / pre-commit。豁免：违规行同加 `audit-allow` 注释。
 
 > 密度还有一层 `--hmx-scale` 系数（系统设置 → 字体大小，`settingsStore.fontScale`），与字阶正交；
 > PrimeVue 侧紧凑参数统一在 `lib/primeTheme.ts` 的 `HmxCompact` 预设里，不要再往页面挂 `size="small"` 双重压缩。

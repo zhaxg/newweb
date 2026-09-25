@@ -29,8 +29,7 @@ import type {
   RowNode,
   ValueFormatterParams,
 } from "ag-grid-community";
-import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
-import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
+import { autoSizeOnFirstData, makeHmxGridTheme } from "@/lib/agGrid";
 import { useToast } from "@/composables/useToast";
 import { adminApi } from "@/api/admin/request";
 import type { HmxRes } from "@/api/admin/types";
@@ -422,7 +421,6 @@ function onBtnList() {
         class="hmx-ag-grid h-full w-full"
         :theme="theme"
         :column-defs="columnDefs"
-        :default-col-def="hmxDefaultColDef"
         :auto-group-column-def="autoGroupColumnDef"
         :row-data="gridRows"
         :get-row-id="getRowId"
@@ -432,7 +430,6 @@ function onBtnList() {
         :loading="querying"
         :pagination="false"
         :animate-rows="false"
-        :locale-text="AG_GRID_LOCALE_CN"
         @grid-ready="onGridReady"
         @selection-changed="onSelectionChanged"
         @row-clicked="onRowClicked"
@@ -457,7 +454,7 @@ function onBtnList() {
       <p class="text-sm">你确定删除当前选择的资源么: {{ confirmTarget?.cTitle }}</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />
-        <Button label="删除" severity="danger" variant="outlined" @click="confirmDelete" />
+        <Button label="删除" severity="danger" variant="outlined" autofocus @click="confirmDelete" />
       </template>
     </Dialog>
   </div>

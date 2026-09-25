@@ -1,6 +1,5 @@
 import PrimeVue from "primevue/config";
 import ToastService from "primevue/toastservice";
-import Dialog from "primevue/dialog";
 import Aura from "@primeuix/themes/aura";
 import { definePreset } from "@primeuix/themes";
 import type { App, Plugin } from "vue";
@@ -146,35 +145,11 @@ const HmxCompact = definePreset(Aura, {
   },
 });
 
-/* Dialog 初始焦点全局修正：PrimeVue 内置 focus() 在 footer→header→content 找不到
-   [autofocus] 标记时，会兜底聚焦右上角「关闭按钮」——确认类弹窗回车/空格极易误触关闭。
-   此处一次性替换兜底逻辑：无标记且 footer 有可用按钮时，聚焦 footer 最后一个按钮
-   （项目约定主操作按钮在右下，如「删除」「退出」）；有标记的弹窗行为完全不变。
-   须在首个 Dialog 实例创建前执行（main.ts import 本模块即满足）。 */
-type DialogFocusCtx = {
-  $slots: Record<string, unknown>;
-  footerContainer?: HTMLElement;
-  headerContainer?: HTMLElement;
-  content?: HTMLElement;
-};
-const dialogMethods = (Dialog as unknown as { methods: { focus(this: DialogFocusCtx): void } }).methods;
-const originalDialogFocus = dialogMethods.focus;
-dialogMethods.focus = function () {
-  const marked = [this.footerContainer, this.headerContainer, this.content].some((c) =>
-    c?.querySelector("[autofocus]"),
-  );
-  if (!marked && this.$slots.footer) {
-    const buttons = this.footerContainer?.querySelectorAll<HTMLButtonElement>("button:not([disabled])");
-    if (buttons?.length) {
-      buttons[buttons.length - 1].focus({ focusVisible: true });
-      return;
-    }
-  }
-  originalDialogFocus.call(this);
-};
-
 /* HMX PrimeVue 插件：主题预设 + 中文 locale + ToastService 一次装齐（app.use 自带防重复安装）。
-   Dialog 焦点补丁为本模块 import 副作用，不依赖 install 时机。 */
+   Dialog 初始焦点不在这里打补丁：曾覆写上游私有 Dialog.methods.focus 做无标记兜底，
+   私有 API 随 PrimeVue 升级即静默失效、且让页面看到的 Dialog 与实际行为不一致，已移除。
+   改为页面显式标记 [autofocus]（PrimeVue focus() 的官方扩展点），规则与坑点见
+   skill winforms-screen-migration 的 ui-rules.md §2，机检 R5（npm run audit:ui）。 */
 export const hmxPrimePlugin: Plugin = {
   install(app: App) {
     app.use(PrimeVue, {

@@ -11,9 +11,8 @@ import Dialog from "primevue/dialog";
 import InputText from "primevue/inputtext";
 import { AgGridVue } from "ag-grid-vue3";
 import type { CellValueChangedEvent, ColDef, GetRowIdParams, GridApi, GridReadyEvent } from "ag-grid-community";
-import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 
-import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
+import { autoSizeOnFirstData, makeHmxGridTheme } from "@/lib/agGrid";
 import { useToast } from "@/composables/useToast";
 import RolePermissionDialog from "./RolePermissionDialog.vue";
 import RoleUserDialog from "./RoleUserDialog.vue";
@@ -226,13 +225,11 @@ function stateText(row: HmxRole | undefined): string {
         class="hmx-ag-grid h-full w-full"
         :theme="theme"
         :column-defs="columnDefs"
-        :default-col-def="hmxDefaultColDef"
         :row-data="trackList"
         :get-row-id="getRowId"
         :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
         :pagination="false"
         :animate-rows="false"
-        :locale-text="AG_GRID_LOCALE_CN"
         @grid-ready="onGridReady"
         @selection-changed="onSelectionChanged"
         @cell-value-changed="onCellValueChanged"
@@ -251,7 +248,7 @@ function stateText(row: HmxRole | undefined): string {
       <p class="text-xs">是否确定删除角色「{{ confirmTarget?.cRoleName }}」？</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />
-        <Button label="删除" severity="danger" variant="outlined" @click="confirmDelete" />
+        <Button label="删除" severity="danger" variant="outlined" autofocus @click="confirmDelete" />
       </template>
     </Dialog>
 

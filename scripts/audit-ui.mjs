@@ -8,6 +8,9 @@
  *   R3  越档字号类：text-lg / text-xl / text-2xN...（四档字阶之外）
  *   R4  裸 <label>：标签必须显式声明 text-xs（字段标签 = 辅助档），
  *       否则掉进 body 兜底（正文档）与控件族不齐；见 README「字号与密度纪律」
+ *   R5  Dialog 初始焦点：<Dialog> 块内必须标 autofocus——PrimeVue focus() 找不到
+ *       [autofocus] 就兜底聚焦右上角关闭按钮（回车/空格误触关闭）；
+ *       见 ui-rules.md §2（页面显式标记是唯一契约，平台不打全局 focus 补丁）
  */
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
@@ -48,6 +51,12 @@ function auditFile(path, text) {
   // R4：裸 label（开标签内未声明 text-xs）。豁免：行内 audit-allow 或 class 绑定后续行含 text-xs
   for (const m of text.matchAll(/<label\b[^>]*>/gs)) {
     if (!m[0].includes("text-xs")) report(text.slice(0, m.index).split("\n").length - 1, "R4 label未声明辅助档", m[0]);
+  }
+  // R5：每个 <Dialog> 块内必须标 autofocus（初始焦点）。豁免：开标签行加 audit-allow。
+  for (const m of text.matchAll(/<Dialog\b[\s\S]*?<\/Dialog>/g)) {
+    if (!m[0].includes("autofocus")) {
+      report(text.slice(0, m.index).split("\n").length - 1, "R5 Dialog未标初始焦点", m[0]);
+    }
   }
   return findings;
 }

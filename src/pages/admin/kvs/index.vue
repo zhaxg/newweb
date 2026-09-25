@@ -11,8 +11,7 @@ import InputText from "primevue/inputtext";
 import ToggleSwitch from "primevue/toggleswitch";
 import { AgGridVue } from "ag-grid-vue3";
 import type { CellValueChangedEvent, ColDef, GetRowIdParams, GridApi, GridReadyEvent } from "ag-grid-community";
-import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
-import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
+import { autoSizeOnFirstData, makeHmxGridTheme } from "@/lib/agGrid";
 import Splitter from "primevue/splitter";
 import SplitterPanel from "primevue/splitterpanel";
 import { useToast } from "@/composables/useToast";
@@ -408,14 +407,12 @@ onMounted(onQuery);
             class="hmx-ag-grid h-full w-full"
             :theme="theme"
             :column-defs="masterColumns"
-            :default-col-def="hmxDefaultColDef"
             :row-data="masters"
             :get-row-id="masterRowId"
             :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
             :loading="mastersLoading"
             :pagination="false"
             :animate-rows="false"
-            :locale-text="AG_GRID_LOCALE_CN"
             @grid-ready="onMasterGridReady"
             @selection-changed="onMasterSelectionChanged"
             @first-data-rendered="autoSizeOnFirstData"
@@ -449,14 +446,12 @@ onMounted(onQuery);
               class="hmx-ag-grid h-full w-full"
               :theme="theme"
               :column-defs="childColumns"
-              :default-col-def="hmxDefaultColDef"
               :row-data="children"
               :get-row-id="childRowId"
               :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
               :loading="childrenLoading"
               :pagination="false"
               :animate-rows="false"
-              :locale-text="AG_GRID_LOCALE_CN"
               @grid-ready="onChildGridReady"
               @selection-changed="onChildSelectionChanged"
               @cell-value-changed="onChildCellValueChanged"
@@ -548,7 +543,7 @@ onMounted(onQuery);
       </div>
       <template #footer>
         <Button label="取消" variant="outlined" @click="editOpen = false" />
-        <Button label="保存" variant="outlined" :loading="editSaving" @click="onMasterSave" />
+        <Button label="保存" variant="outlined" :loading="editSaving" autofocus @click="onMasterSave" />
       </template>
     </Dialog>
 
@@ -569,7 +564,7 @@ onMounted(onQuery);
       </p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />
-        <Button label="删除" severity="danger" variant="outlined" @click="confirmDelete" />
+        <Button label="删除" severity="danger" variant="outlined" autofocus @click="confirmDelete" />
       </template>
     </Dialog>
   </div>

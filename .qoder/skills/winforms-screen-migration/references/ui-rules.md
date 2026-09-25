@@ -60,6 +60,7 @@
 - **禁孤立 px**：组件内字号一律用字阶类，不写 `font-size: NNpx`；主题/ag-grid 层尺寸走 rem；
 - **字段 label 唯一写法**：`text-xs text-muted-foreground`。裸 `<label>` 不声明字号/颜色是违规（会掉进 body 兜底 13px + 近黑，和控件族 12px 灰字同屏必然"显大显黑"）。弹窗表单标签不加 `font-medium`、不加 `/80` 透明度变体（段落区分靠分组标题 `text-sm`）；
 - 工具栏按钮图标统一 `h-3 w-3`（12px）；树节点/菜单图标不强制。
+- **每个 `<Dialog>` 必须主动标记初始焦点**：footer/header/content 内给一个元素加 `autofocus`——表单弹窗标**首个可用输入框**（别标会被 `:disabled` 禁用的字段，标记被禁用元素 = 焦点丢失），确认类标**右下主按钮**（Enter 触发主操作而非关闭）。坑点：PrimeVue `Dialog.focus()` 只认 `[autofocus]`（footer→header→content 查找，`Dialog.vue` 官方实现），一个标记都找不到就兜底聚焦右上角**关闭按钮**——回车/空格极易误触关闭。平台**不**做全局兜底补丁（曾覆写上游私有 `Dialog.methods.focus`：非公开 API，升级即静默失效，且页面看到的 Dialog 与实际行为不一致，已移除）——标记是页面显式契约，R5 机检（`<Dialog>` 块内无 `autofocus` 即命中）。
 
 ## 3. 用户缩放档位
 
@@ -89,7 +90,7 @@ npm run audit:ui      # scripts/audit-ui.mjs，零依赖，扫 src/pages|layouts
 | WinForms / DevExpress | 本项目 |
 |---|---|
 | XtraForm / UserControl 壳 | Vue 页面（页签、面包屑由壳层负责，页面只管内容区） |
-| GridView（列 Caption/宽度/样式） | AG Grid Enterprise colDefs（沿用 hmxAgGridPlugin 全站约定） |
+| GridView（列 Caption/宽度/样式） | AG Grid Enterprise colDefs（沿用 @/lib/agGrid 全站约定：hmxDefaultColDef 等） |
 | BarManager / 工具栏按钮 | 页面顶部 Button 组（名称、顺序、位置照原样） |
 | XtraTabControl（独立内容页签） | PrimeVue `Tabs` + `TabList`/`Tab` + `TabPanels`/`TabPanel`（**PrimeVue 5 无 `TabView`**）；用法 `src/pages/Widgets/InterfaceCallLog/index.vue` |
 | XtraTabControl（录入模式切换，页签下各为一组左右双表） | PrimeVue `SelectButton`（`v-model` 切模式，**不用 Tabs**）；工具栏与双表布局见 §6「模式切换工具栏 + 左右双表」，样例 `src/pages/LIMS/QL4000/index.vue` |
@@ -187,8 +188,8 @@ Designer 里没有的控件**一律不许发明**（历史上凭空加过"查找
 
 ## 7. AG Grid 约定
 
-- 根 class 必挂 `hmx-ag-grid`（全局直角 `borderRadius: "0px"`，否则圆角漂移）；
-- `:default-col-def="hmxDefaultColDef"`、`:theme="makeHmxGridTheme()"`、`:locale-text="AG_GRID_LOCALE_CN"`、`:pagination="false"`；
+- 根 class 必挂 `hmx-ag-grid`（全局直角 `borderRadius: "0px"`，否则圆角漂移）；`:theme="makeHmxGridTheme()"` 必传（依赖设置 store 字体响应式，平台无法静态全局化）；
+- **默认值不用页面写**：`:locale-text="AG_GRID_LOCALE_CN"`（中文文案）、`:default-col-def="hmxDefaultColDef"`（排序/筛选/列菜单约定）、列虚拟化关闭（`autoSizeAllColumns` 才能量到屏幕外列）三项已由 `@/lib/agGrid` 的 `provideGlobalGridOptions` 全局注入，页面级显式传入仍可覆盖（存量绑定冗余但无害，不必清理）；`:pagination="false"` 也是 AG Grid 自身默认，同样不必写；
 - **选择列**用 v36 对象写法，`colDefs` 里**不写**任何 `checkboxSelection` / `headerCheckboxSelection`（会双 checkbox）：
 
   ```ts

@@ -38,7 +38,7 @@ src/pages/  DDH  LIMS  SHR  SMP  SMS  SQM  SYD  Widgets   ← 业务组的【未
 | 开发服务器（mock） | `npm run dev` | ✅ |
 | 生产构建 | `npm run build` | ✅ `.env.production` 已设 `VITE_USE_MOCK=false` |
 | **静态检查门槛（替代原 vue-tsc）** | `npm run lint`（`typecheck` 为其别名） | ⚠️ 全仓 1 error + 250 warning：唯一 error 在业务示例 `SYD/YD2020/index.vue` 的自赋值 no-op（`no-self-assign`）；**框架层 0 error** |
-| 字阶纪律审计 | `npm run audit:ui` | ⚠️ 当前 107 处违规、exit 1，多数在业务示例里 |
+| 字阶纪律审计 | `npm run audit:ui` | ⚠️ 当前 174 处违规、exit 1，多数在业务示例里（含 R5 存量 67 个未标 `autofocus` 的 Dialog；**框架层 0**） |
 | 格式化 | `npm run format` / `npm run format:check` | ✅ 已接入 oxfmt（`.oxfmtrc.json`：printWidth 120、LF、忽略 `*.md`），全仓已格式化一遍 |
 
 ### 静态检查分工（vue-tsc 已退役）
@@ -76,9 +76,12 @@ RouteRecordRaw
 |---|---|---|
 | 一 | 模块求值 | 静态骨架 + `layouts.ts` 注册表按 `meta.layout` 生成布局父记录 |
 | 二 | 登录后 | `perm.loadForUser()` → `toRouteRecords()` → `registerUserRoutes()` 挂进默认布局 |
-| 三 | 退出 | `resetUserRoutes()` 整体移除，菜单回落到静态骨架 |
+| 三 | 退出 | `resetUserRoutes()` 整体移除，菜单回落到静态骨架（实现与状态在 `src/router/dynamicRoutes.ts`） |
 
 守卫在 `src/router/guard.ts`（登录 → 动态注册 → 越权落 403 → router→tabs 单向同步）。
+**循环依赖边界**：MainLayout / request / usePermission 等消费方只准 import 叶模块
+`src/router/dynamicRoutes.ts`（动态路由清理）与 `src/router/bridge.ts`（router 实例桥），
+反向 import `@/router`（index）会成环（index 依赖 layouts 注册表、request 经 guard→store→api 绕回）。
 **加布局**只改 `src/layouts/composables/layouts.ts` 的注册表，不动 index。
 **加业务页**写 `src/router/business.ts`（会进菜单的页走后端资源下发，不写这里）。
 
@@ -87,6 +90,7 @@ RouteRecordRaw
 | 想改什么 | 去哪 |
 |---|---|
 | 请求封装 / 401 / 错误信封 | `src/api/_core/request.ts` |
+| 全局点击连击闸（防双击） | `src/lib/clickGuard.ts`（main.ts 挂载） |
 | mock 开关、mock 路由 | `src/api/_core/request.ts:11` · `src/mock/mockAdapter.ts` |
 | 主题预设 / PrimeVue locale | `src/lib/primeTheme.ts`（`HmxCompact`） |
 | 主题色运行时覆盖 | `src/lib/themeSettings.ts` + `src/stores/settingsStore.ts` |
@@ -108,6 +112,10 @@ RouteRecordRaw
 2. **mock 与真实后端走同一条前端链路**，mock 只在 `src/mock/` 下，不许散进 `src/api`/`src/lib`。
    目录规范见 README「Mock 目录规范」。`VITE_USE_MOCK` 只有**精确等于 `"false"`** 才关
    （`request.ts:11` 是 `!== "false"`，写 `0`/`no`/`off` 都会被当成开）。
+   **mock「后端」是刻意的 demo 壳子，不是安全模型**：`src/mock/admin/auth.ts` 对任意账密发 token、
+   非 `mock-token.` 前缀一律回落 admin、验证码永远对、`getUserRescList` 无视用户全量下发、写操作进
+   localStorage——这些都是设计意图（mock 层没有真实服务和数据库，宽松才能当演示壳用），
+   **不是漏洞，不要"修复"、不要在评审/分析里当安全问题点名**。mock 相关的唯一红线是第 3 条。
 3. **生产构建不得带 mock**：`.env.production` 必须保持 `VITE_USE_MOCK=false`。
 4. **懒加载边界**：只有 `router/builtin.ts` 的骨架页（登录/首页/403）和 `layouts.ts` 的布局父记录
    允许静态 import —— 它们本来就在首屏链路上。业务页一律走 `fromMenu.ts` 的 `import.meta.glob` 懒加载；
@@ -115,6 +123,10 @@ RouteRecordRaw
    不得出现在静态 import 链里。**新增静态 import 到 `main.ts` → `router` → `layouts` 这条链 = 让全体用户多下体积。**
 5. **注释写"为什么"不写"是什么"**。本仓库注释密度高、有根因和版本号，保持这个水准。
 6. **中文文案**与现有风格一致（按钮动词化、无标点结尾、toast 短句）。
+7. **每个 `<Dialog>` 必须主动标 `autofocus` 初始焦点**（表单弹窗→首个可用输入框、确认类→右下主按钮）。
+   PrimeVue `Dialog.focus()` 找不到标记就兜底聚焦右上角关闭按钮（回车/空格误触关闭）；
+   **不许**给上游 Dialog 打全局 focus 补丁（曾覆写私有 `methods.focus`，已移除——见 `src/lib/primeTheme.ts` 注释）。
+   机检 `npm run audit:ui` R5；坑点全文见 `.qoder/skills/winforms-screen-migration/references/ui-rules.md` §2。
 
 ---
 
@@ -130,9 +142,10 @@ RouteRecordRaw
   `VITE_BASE_URL`、`VITE_API_URL_PREFIX`（接口前缀实际硬编码在 `request.ts:58`）、
   `VITE_APP_NAME`、`VITE_CUSTOMER`、`VITE_COPYRIGHT`（标题硬编码在 `index.html`）。
   **改了不生效**；新增 `VITE_` 变量要同时补 `src/env.d.ts` 并真正读取它。
-- **`NextStrId()`（`src/lib/yitIdHelper.ts`）会碰撞**：状态变量写在函数体内每次重置，
-  同毫秒调用返回相同 ID，且 `WORKER_ID` 每次随机导致不可按时间排序。
-  **别用它生成需要唯一/有序的 ID**，需要就用 `crypto.randomUUID()`。
+- **`NextStrId()`（`src/lib/yitIdHelper.ts`）已修复为可用**（原实现状态写在函数体内每次重置、
+  WorkerId 每次重掷，同毫秒几乎必然碰撞）：现为模块级状态 + sessionStorage 固定 WorkerId +
+  虚拟时钟防回拨/溢出借位，同毫秒唯一且单调递增。**仅 64 个/毫秒**，跨标签页靠 6-bit WorkerId
+  区分（同毫秒两页碰撞概率 1/64）；无此约束的场景仍首选 `crypto.randomUUID()`。
 - **许可相关是硬编码的**：`vite.config.ts` 把 `@primeui/license-manager` alias 到
   `src/lib/primeLcmgr.ts`（恒返回 valid），`agGrid.ts:71` 有明文 AG Grid 企业版 key，
   `prime-overrides.css` 隐藏 `#p-license-host`。**动这几个文件前先确认授权状态**，不要"顺手清理"。
@@ -140,8 +153,15 @@ RouteRecordRaw
   别把它当访问控制来设计安全方案。
 - **权限默认放行**：`permissionStore.hasPermission` 三道兜底全返回 `true`（fail-open），
   `v-hp` 目前全仓零使用。前端隐藏**不构成安全边界**，后端必须自行校验。
-- **`src/components/mask/` 是死代码**：插件没注册、全仓无 `v-mask` 引用。
-- **`globalError` 只 console + `preventDefault()`**：错误不给用户反馈，也关掉了浏览器原生提示。
+- **网络层刻意「无重试 · 无全局取消 · 无请求合并」**（评审别当缺陷点名）：
+  生成器查询也走 POST、幂等不可知，重试即双写风险（15s timeout 已兜底）；KeepAlive 多页签下
+  后台轮询在途请求无归属，启发式「离页即取消」必误杀缓存页；同参合并且会悄悄改轮询/刷新语义。
+  并发保护只做了 **401 单飞闸**（`request.ts`：并发 401 仅第一个执行登出 + toast + 回登录页）。
+- **全局点击连击闸**（`clickGuard.ts`）在 500ms 内吞同一 button 的第二击（capture 吞事件、
+  不翻 disabled，避免和 `:loading` 互踩）——调试「点击没反应」先想到它；
+  「响应完毕前不可再点」的契约仍是页面 `:loading` 的责任，闸只兜双击/三击。
+- **`globalError` 刻意抑制原生 unhandledrejection 输出**（已接管：console 全量留痕 + toast 克制提示，
+  同类错误 3s 去重）——`preventDefault()` 是设计行为，别当 bug 去掉。
 - **全局禁用右键**（`App.vue:25`），是刻意行为不是 bug。
 - **图标有两套加载策略**互相打架：`tablerIcons.ts` 的 `import.meta.glob` 懒加载
   vs 全仓 300 处 `import { IconX } from "@tabler/icons-vue"`（barrel 静态 re-export 全量）。

@@ -9,8 +9,7 @@ import Dialog from "primevue/dialog";
 import Tag from "primevue/tag";
 import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, GetRowIdParams, GridApi, GridReadyEvent } from "ag-grid-community";
-import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
-import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
+import { autoSizeOnFirstData, makeHmxGridTheme } from "@/lib/agGrid";
 import { useToast } from "@/composables/useToast";
 import { quartzNetApi } from "@/api/admin/request";
 import type { HmxBackgroudJobInfo, HmxSchedulerStatusInfo } from "@/api/admin/types";
@@ -250,14 +249,12 @@ async function onExcute() {
         class="hmx-ag-grid h-full w-full"
         :theme="theme"
         :column-defs="columnDefs"
-        :default-col-def="hmxDefaultColDef"
         :row-data="rows"
         :get-row-id="getRowId"
         :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
         :loading="querying"
         :pagination="false"
         :animate-rows="false"
-        :locale-text="AG_GRID_LOCALE_CN"
         @grid-ready="onGridReady"
         @selection-changed="onSelectionChanged"
         @row-double-clicked="onRowDoubleClicked"
@@ -278,7 +275,7 @@ async function onExcute() {
       <p class="text-xs">你确定删除当前选择的计划任务么: {{ confirmTarget?.cName }}</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />
-        <Button label="确定" severity="danger" variant="outlined" @click="confirmDelete" />
+        <Button label="确定" severity="danger" variant="outlined" autofocus @click="confirmDelete" />
       </template>
     </Dialog>
   </div>

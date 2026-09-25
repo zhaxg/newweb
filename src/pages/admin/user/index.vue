@@ -10,8 +10,7 @@ import Dialog from "primevue/dialog";
 import InputText from "primevue/inputtext";
 import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, GetRowIdParams, GridApi, GridReadyEvent } from "ag-grid-community";
-import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
-import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
+import { autoSizeOnFirstData, makeHmxGridTheme } from "@/lib/agGrid";
 import { useToast } from "@/composables/useToast";
 import UserEditDialog from "./UserEditDialog.vue";
 import UserRoleEditDialog from "./UserRoleEditDialog.vue";
@@ -25,7 +24,8 @@ const { toast } = useToast();
 
 const theme = makeHmxGridTheme();
 
-/* 列头 ⋮ 菜单（选中此列/按此列分组）与全站默认一致，直接用 hmxDefaultColDef（见 @/lib/agGrid） */
+/* 列头 ⋮ 菜单（选中此列/按此列分组）、筛选/排序、中文文案均来自 @/lib/agGrid 的 provideGlobalGridOptions
+   全局默认，页面不再逐页传 :default-col-def / :locale-text */
 
 const allRows = ref<HmxUser[]>([]);
 const keyword = ref("");
@@ -263,14 +263,12 @@ function onInvalid(message: string) {
         class="hmx-ag-grid h-full w-full"
         :theme="theme"
         :column-defs="columnDefs"
-        :default-col-def="hmxDefaultColDef"
         :row-data="rows"
         :get-row-id="getRowId"
         :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
         :loading="querying"
         :pagination="false"
         :animate-rows="false"
-        :locale-text="AG_GRID_LOCALE_CN"
         @grid-ready="onGridReady"
         @selection-changed="onSelectionChanged"
         @row-double-clicked="onRowDoubleClicked"
@@ -298,7 +296,7 @@ function onInvalid(message: string) {
       <p class="text-xs">是否确定删除该用户[{{ deleteTarget?.id }}]（如果存在子级用户会级联删除），是否继续！</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="deleteOpen = false" />
-        <Button label="删除" severity="danger" variant="outlined" @click="confirmDelete" />
+        <Button label="删除" severity="danger" variant="outlined" autofocus @click="confirmDelete" />
       </template>
     </Dialog>
 
@@ -313,7 +311,7 @@ function onInvalid(message: string) {
       <p class="text-xs">是否确定重置密码？</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="resetOpen = false" />
-        <Button label="确定" variant="outlined" @click="confirmResetPwd" />
+        <Button label="确定" variant="outlined" autofocus @click="confirmResetPwd" />
       </template>
     </Dialog>
 

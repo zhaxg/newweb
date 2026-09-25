@@ -12,12 +12,13 @@
  * 改用 `permStore.hasPermission(code, pageId)` 包一层 computed。
  */
 import type { App, Plugin } from "vue";
-import { router } from "@/router";
+/* 取实例走叶桥不 import index——与 request 同一条防环边界：只有 main.ts 与 router 自身 import index */
+import { getRouter } from "@/router/bridge";
 import { usePermissionStore } from "@/stores/permissionStore";
 
 /** 当前路由的 pageId（取不到 = 静态路由，不参与资源权限） */
 function currentPageId(): string | undefined {
-  const pageId = router.currentRoute.value.meta.pageId;
+  const pageId = getRouter().currentRoute.value.meta.pageId;
   return typeof pageId === "string" ? pageId : undefined;
 }
 

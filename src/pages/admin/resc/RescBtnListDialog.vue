@@ -9,9 +9,8 @@ import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import { AgGridVue } from "ag-grid-vue3";
 import type { CellValueChangedEvent, ColDef, GetRowIdParams, GridApi, GridReadyEvent } from "ag-grid-community";
-import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { useToast } from "@/composables/useToast";
-import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
+import { autoSizeOnFirstData, makeHmxGridTheme } from "@/lib/agGrid";
 import { adminApi } from "@/api/admin/request";
 import type { HmxRes } from "@/api/admin/types";
 import { RbacRescType } from "@/api/admin/enums";
@@ -187,14 +186,12 @@ const columns: ColDef[] = [
         class="hmx-ag-grid h-full w-full"
         :theme="theme"
         :column-defs="columns"
-        :default-col-def="hmxDefaultColDef"
         :row-data="trackList"
         :get-row-id="rowId"
         :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
         :loading="loading"
         :pagination="false"
         :animate-rows="false"
-        :locale-text="AG_GRID_LOCALE_CN"
         overlay-no-rows-template="暂无功能点，点击「新增」"
         @grid-ready="onGridReady"
         @cell-value-changed="onCellValueChanged"
