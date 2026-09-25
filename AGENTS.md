@@ -102,6 +102,15 @@ src/router/
 > 只有 `bridge.ts` 与 `dynamicRoutes.ts` 是**叶模块**，可被 router 外部安全 import；
 > `guard.ts` 依赖三个 store、`fromMenu.ts` 静态引入页面组件，**从外部引用会成环或拖进组件链**。
 >
+> **这条边界已由 lint 强制**，不再只靠注释：`.oxlintrc.json` 的 `no-restricted-imports` 禁掉
+> `@/router` 与 `@/router/index`（`src/main.ts` 例外，它本就该拿 index），写错当场报 error，
+> 报错文案直接给出该用哪个叶模块。
+>
+> **为什么不用 re-export 表达**：在 index 里 `export { getRouter } from "@/router/core/bridge"` 看似
+> 提供了安全入口，实则更危险——消费方仍得 `import ... from "@/router"`，而**import index 这个动作本身**
+> 就会拉进 guard → permissionStore → menuRescTree → api/admin/request → _core/request，精确复现那条环。
+> re-export 只是把叶模块伪装成安全的，不能改变 index 的静态依赖图。
+>
 > `dynamicRoutes.ts` 的 `registerUserRoutes(layoutName, records)` **把默认布局名做成参数**，正是因为
 > 布局名住在 `layouts.ts`（静态引入 MainLayout.vue）——import 它就复现了本模块要避免的那条环。
 > 绑定在 `index.ts` 的 `setupRouterGuards` 注入处完成。
