@@ -48,7 +48,17 @@ export async function fetchUserMenuTreeFromServer(): Promise<{
   const roots = menus.filter((r) => !r.cPid).sort(byOrder);
   // 首页是 builtin 静态路由（homeRoute），不在动态资源树里，避免与静态注册重复
   const pageIdToRescId = new Map<string, string>();
-  const tree = roots.map((r) => toNode(r, menus, "", pageIdToRescId));
+  const firstOwner = new Map<string, { id: string; label: string }>();
+  const clashes: Array<{ page: string; a: { id: string; label: string }; b: { id: string; label: string } }> = [];
+  const tree = roots.map((r) => toNode(r, menus, "", pageIdToRescId, firstOwner, clashes));
+  if (clashes.length) {
+    // 后端只承诺主键唯一，拼出的 pageId 没有；路由/页签/KeepAlive 全以 pageId 为身份，
+    // 撞名会静默互相覆盖（addRoute 同名后者赢）→ 显式点名：资源表要唯一的是 cResPath 链，不是 id。
+    const detail = clashes
+      .map((c) => `「${c.a.label}」(id=${c.a.id}) vs 「${c.b.label}」(id=${c.b.id}) → /${c.page}`)
+      .join("\n");
+    console.warn(`[menuRescTree] ${clashes.length} 个 pageId 被不同资源行重复，路由/缓存/页签将互相覆盖：\n${detail}`);
+  }
   return { tree, resources: resources ?? [], pageIdToRescId };
 }
 
@@ -60,10 +70,18 @@ function byOrder(a: HmxRes, b: HmxRes): number {
 }
 
 /** prefix = 祖先 cResPath 链（如 "admin"）；叶子 pageId = 完整路径（如 "admin/user"）→ 路由 /admin/user。
- *  全路径天然唯一（cResPath 跨父级重复者各带父前缀），缺 cResPath 时该段回落资源 id。
+ *  唯一性后端只承诺主键 id，不承诺拼出的全路径（不同行可填相同 cResPath）→ 撞名由调用处查重点名。
+ *  缺 cResPath 时该段回落资源 id。
  *  外链只填 url + page（是否 iframe/blank 交由 fromMenu 按主机判定），本层不做路由策略。
  *  凡拼出 pageId 的资源行（叶子页面 + 外链）都登记进 pageIdMap，供按钮权限按路由反查资源行。 */
-function toNode(res: HmxRes, all: HmxRes[], prefix: string, pageIdMap: Map<string, string>): MenuResNode {
+function toNode(
+  res: HmxRes,
+  all: HmxRes[],
+  prefix: string,
+  pageIdMap: Map<string, string>,
+  firstOwner: Map<string, { id: string; label: string }>,
+  clashes: Array<{ page: string; a: { id: string; label: string }; b: { id: string; label: string } }>,
+): MenuResNode {
   const seg = res.cResPath && res.cResPath !== "_blank" ? res.cResPath : (res.id ?? "");
   const full = prefix ? `${prefix}/${seg}` : seg;
   const node: MenuResNode = {
@@ -76,6 +94,12 @@ function toNode(res: HmxRes, all: HmxRes[], prefix: string, pageIdMap: Map<strin
   const sub = res.cResSubPath ?? "";
   /** 该资源行是一个可导航页 → 记下 pageId → 资源 id（pageId 推导规则只在本文件有，别处重算必漂移） */
   const asPage = () => {
+    const owner = firstOwner.get(full);
+    if (owner && owner.id !== (res.id ?? "")) {
+      clashes.push({ page: full, a: owner, b: { id: res.id ?? "", label: node.label } });
+    } else if (!owner) {
+      firstOwner.set(full, { id: res.id ?? "", label: node.label });
+    }
     if (res.id) pageIdMap.set(full, res.id);
   };
   // 仅 cResType=2（菜单）的子节点才算文件夹；cResType=4（按钮权限）不计入
@@ -85,7 +109,7 @@ function toNode(res: HmxRes, all: HmxRes[], prefix: string, pageIdMap: Map<strin
     node.page = full;
     asPage();
   } else if (children.length) {
-    node.children = children.map((c) => toNode(c, all, full, pageIdMap));
+    node.children = children.map((c) => toNode(c, all, full, pageIdMap, firstOwner, clashes));
   } else if (sub || res.cResPath) {
     node.page = full;
     node.src = sub || undefined;

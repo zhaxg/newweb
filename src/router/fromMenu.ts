@@ -98,6 +98,22 @@ function placeholderFor(title: string) {
 function resolvePageComponent(src: string | undefined, title: string) {
   const norm = src?.startsWith("/") ? src : `/${src ?? ""}`;
   const loader = pageModules[`/src/pages${norm}`];
+  // 未命中 = 未迁移/占位资源（glob 查表 miss，运行时无法区分「配错路径」与「尚未实现」），静默回落是设计意图
   if (!loader) return placeholderFor(title);
-  return async () => (await loader().catch(() => null))?.default ?? placeholderFor(title);
+  return async () => {
+    try {
+      const mod = await loader();
+      if (!mod?.default) {
+        console.error(`[fromMenu] 页面模块缺少默认导出: /src/pages${norm}`);
+        return placeholderFor(title);
+      }
+      return mod.default;
+    } catch (err) {
+      // 无条件留痕（不只 dev）：此处 reject 在 router/globalError 之前就被就地吞掉，
+      // 否则生产零信号——含发版后旧 tab 懒加载旧 hash chunk 404，该场景仅生产可复现。
+      // 回落占位页保留（不整站报错），console 留痕不违反该约束。
+      console.error(`[fromMenu] 页面模块加载失败: /src/pages${norm}`, err);
+      return placeholderFor(title);
+    }
+  };
 }

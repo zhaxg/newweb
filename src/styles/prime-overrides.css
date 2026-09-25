@@ -6,8 +6,9 @@
 
 html:root,
 html.dark {
-  /* 主色不再映射 var(--primary)：由 primeTheme.ts 预设 primaryColor #0052D9 推导
-     Aura 全色阶（含 hover/active/contrast 与明暗两套），此处不覆盖 */
+  /* 主色唯一真源在 --p-primary-* 侧：primeTheme.ts 预设推导 Aura 全色阶，
+     applyPrimaryColor 运行时覆盖明暗两套；Tailwind 的 --primary 轨反向读
+     var(--p-primary-color)（见 tokens.css），「系统设置→主题色」一处动、两轨全跟。此处不覆盖 */
 
   /* 内容面（Dialog/Listbox/Panel 等） */
   --p-content-background: var(--popover);
@@ -82,4 +83,17 @@ html .p-toast-message.p-toast-message-leave-to {
 
 .hmx-nav-menu .p-tieredmenu-item-label {
   white-space: nowrap;
+}
+
+/* Toast 宽度回收 + 自适应收口。两处坑：
+   ① 官方基线样式尾部又字面量声明了一遍 .p-toast{width:18.75rem}（特异度同为 0,1,0、
+      后来者赢），把前面 dt('toast.width')（预设 22rem）顶掉了——实际渲染只有 300px；
+      运行时注入顺序不可控，所以选择器用 .p-toast.p-toast 提特异度到 (0,2,0) 稳压两处基线。
+   ② 逐条消息真·自适应做不干净：.p-toast-message 是 absolute + width:100%，官方堆叠/滑动手势
+      全靠 transform 位移，消息各自缩进宽度会破坏同宽对齐与 top-center 居中（transform 已被
+      堆叠动画占用，无法再叠 translateX(-50%)）。官方形态就是固定宽盒子——
+      这里取「桌面恒定 448px（原 300px 的 ≈150%）、窄屏 min() 自动收到左右各留 2rem」，长文本靠基线
+      white-space:pre-line + break-word 自动换行。 */
+.p-toast.p-toast {
+  width: min(28rem, calc(100vw - 4rem));
 }
