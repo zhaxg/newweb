@@ -222,9 +222,9 @@ src/
 │   ├── _core/              # 登录(LoginPage/LoginCard/FlowBg)、首页(HomePage)、个人中心(ModifyPasswd)（平台自有）
 │   ├── admin/              # 系统管理各子页（dept/user/role/resc/kvs/jobs/gen/settings）（平台自有）
 │   └── DDH|LIMS|SHR|SMP|SMS|SQM|SYD|Widgets/   # 业务组模块（示例，迁移中）
-├── router/                 # index 三阶段装配 · builtin 骨架页 · business 业务静态路由
-│   └── core/               # 机制层（不常改）：fromMenu 后端资源→路由编译 · guard 守卫
-│                           #   dynamicRoutes 动态路由清理(✅叶模块) · bridge router 实例桥(✅叶模块)
+├── router/                 # index 阶段一装配 + 注入守卫 · builtin 骨架页 · business 业务静态路由
+│   └── core/               # 机制层（不常改）：routeMeta 类型增强 · fromMenu 后端资源→路由编译 · guard 守卫
+│                           #   dynamicRoutes 阶段二挂接+阶段三移除(✅叶模块) · bridge router 实例桥(✅叶模块)
 │                           #   ⛔ guard/fromMenu 依赖 store 与页面组件，勿从 router 外部引用
 ├── stores/                 # auth · permission · tabs · settings
 └── styles/                 # tokens(设计 token) · globals(字阶 @theme) · prime-overrides · agGrid · scrollbar
