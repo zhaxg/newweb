@@ -10,5 +10,5 @@
   "arrowParens": "always",
   "endOfLine": "lf",
   "sortPackageJson": false,
-  "ignorePatterns": ["dist", "temp", "shots", "node_modules", "*.md"]
+  "ignorePatterns": ["dist", "temp", "shots", "node_modules", "docs", "*.md"]
 }

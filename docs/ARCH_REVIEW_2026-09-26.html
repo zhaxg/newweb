@@ -1,0 +1,738 @@
+<title>HiMind 平台架构评审</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+
+<style>
+  :root {
+    --bg: #fbfbfc;
+    --surface: #ffffff;
+    --surface-2: #f4f6f9;
+    --ink: #14171f;
+    --ink-2: #4a5163;
+    --ink-3: #79808f;
+    --line: #e2e6ec;
+    --line-strong: #cbd2dc;
+    --accent: #0052d9;
+    --accent-soft: #e8f0fe;
+    --crit: #c02f1c;
+    --crit-soft: #fdeeeb;
+    --warn: #96610a;
+    --warn-soft: #fdf4e3;
+    --ok: #14654a;
+    --ok-soft: #e8f5ef;
+    --shadow: 0 1px 2px rgba(20, 23, 31, 0.05), 0 4px 16px rgba(20, 23, 31, 0.04);
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0e1117;
+      --surface: #161a22;
+      --surface-2: #1c212b;
+      --ink: #e8eaf0;
+      --ink-2: #a9b1c1;
+      --ink-3: #7d8595;
+      --line: #262c38;
+      --line-strong: #38404f;
+      --accent: #78a9ff;
+      --accent-soft: #17253d;
+      --crit: #ff9080;
+      --crit-soft: #331a16;
+      --warn: #e2ab4d;
+      --warn-soft: #2e2413;
+      --ok: #5fc79c;
+      --ok-soft: #12291f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.3);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0e1117;
+    --surface: #161a22;
+    --surface-2: #1c212b;
+    --ink: #e8eaf0;
+    --ink-2: #a9b1c1;
+    --ink-3: #7d8595;
+    --line: #262c38;
+    --line-strong: #38404f;
+    --accent: #78a9ff;
+    --accent-soft: #17253d;
+    --crit: #ff9080;
+    --crit-soft: #331a16;
+    --warn: #e2ab4d;
+    --warn-soft: #2e2413;
+    --ok: #5fc79c;
+    --ok-soft: #12291f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 4px 16px rgba(0, 0, 0, 0.3);
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+      "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    font-size: 15px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    padding-inline: 20px;
+    padding-block: 0 64px;
+  }
+
+  .wrap { max-width: 1180px; margin: 0 auto; }
+
+  /* ── masthead ─────────────────────────────────────────── */
+  .masthead {
+    border-bottom: 1px solid var(--line);
+    padding-block: 40px 26px;
+    margin-bottom: 34px;
+  }
+  .eyebrow {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11.5px;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 12px;
+  }
+  h1 {
+    font-size: clamp(27px, 4.4vw, 40px);
+    line-height: 1.12;
+    font-weight: 600;
+    letter-spacing: -0.021em;
+    margin: 0 0 16px;
+    text-wrap: balance;
+    max-width: 20ch;
+  }
+  .thesis {
+    font-size: 16.5px;
+    line-height: 1.6;
+    color: var(--ink-2);
+    max-width: 68ch;
+    margin: 0;
+  }
+  .thesis strong { color: var(--ink); font-weight: 600; }
+  .facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 26px;
+    margin-top: 22px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 12px;
+    color: var(--ink-3);
+  }
+  .facts b { color: var(--ink-2); font-weight: 500; }
+
+  /* ── layout ───────────────────────────────────────────── */
+  .body-grid { display: grid; grid-template-columns: 1fr; gap: 40px; }
+  @media (min-width: 1000px) {
+    .body-grid { grid-template-columns: 186px 1fr; gap: 52px; align-items: start; }
+    .toc { position: sticky; top: 24px; }
+  }
+
+  .toc { font-size: 13px; }
+  .toc h2 {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    font-weight: 500;
+    margin: 0 0 12px;
+  }
+  .toc ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 3px; }
+  @media (max-width: 999px) {
+    .toc ol { flex-direction: row; flex-wrap: wrap; gap: 6px 14px; }
+  }
+  .toc a {
+    color: var(--ink-2);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    padding-block: 2px;
+  }
+  .toc a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+  main { min-width: 0; }
+
+  section { margin-bottom: 52px; scroll-margin-top: 20px; }
+  h2.sec {
+    font-size: 21px;
+    font-weight: 600;
+    letter-spacing: -0.014em;
+    margin: 0 0 6px;
+    text-wrap: balance;
+  }
+  .sec-note { color: var(--ink-3); font-size: 13.5px; margin: 0 0 22px; max-width: 74ch; }
+  h3 {
+    font-size: 15.5px;
+    font-weight: 600;
+    margin: 30px 0 10px;
+    letter-spacing: -0.008em;
+  }
+  p { margin: 0 0 14px; max-width: 74ch; }
+  p:last-child { margin-bottom: 0; }
+
+  code {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 0.875em;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 1px 4px;
+    white-space: nowrap;
+  }
+  a.ref { color: var(--accent); text-decoration: none; }
+  a.ref:hover { text-decoration: underline; }
+
+  /* ── finding cards ────────────────────────────────────── */
+  .find {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--line-strong);
+    border-radius: 4px;
+    padding: 18px 20px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
+  }
+  .find.p0 { border-left-color: var(--crit); }
+  .find.p1 { border-left-color: var(--warn); }
+  .find.p2 { border-left-color: var(--accent); }
+  .find-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+  .find h3 { margin: 0; font-size: 16px; }
+  .tag {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .tag.p0 { background: var(--crit-soft); color: var(--crit); }
+  .tag.p1 { background: var(--warn-soft); color: var(--warn); }
+  .tag.p2 { background: var(--accent-soft); color: var(--accent); }
+  .tag.ok { background: var(--ok-soft); color: var(--ok); }
+  .find p { font-size: 14.5px; }
+  .find dl {
+    margin: 14px 0 0;
+    display: grid;
+    grid-template-columns: 76px 1fr;
+    gap: 6px 14px;
+    font-size: 13.5px;
+    border-top: 1px solid var(--line);
+    padding-top: 12px;
+  }
+  @media (max-width: 520px) { .find dl { grid-template-columns: 1fr; gap: 2px 0; } }
+  .find dt {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    padding-top: 3px;
+  }
+  .find dd { margin: 0; color: var(--ink-2); }
+
+  /* ── tables ───────────────────────────────────────────── */
+  .scroll { overflow-x: auto; margin: 0 0 18px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; min-width: 460px; }
+  th, td { text-align: left; padding: 9px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  thead th {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    font-weight: 500;
+    background: var(--surface-2);
+    white-space: nowrap;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  td.num, th.num { text-align: right; font-family: "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+  td.mono { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12.5px; }
+  .win { color: var(--ok); font-weight: 500; }
+  .lose { color: var(--crit); font-weight: 500; }
+
+  /* ── callout ──────────────────────────────────────────── */
+  .callout {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 15px 18px;
+    margin: 0 0 18px;
+    font-size: 14px;
+    color: var(--ink-2);
+  }
+  .callout strong { color: var(--ink); }
+  .callout.crit { background: var(--crit-soft); border-color: var(--crit); }
+  .callout.crit strong { color: var(--crit); }
+  .callout.ok { background: var(--ok-soft); border-color: var(--ok); }
+  .callout.ok strong { color: var(--ok); }
+
+  ul.plain { margin: 0 0 14px; padding-left: 20px; max-width: 74ch; }
+  ul.plain li { margin-bottom: 7px; }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding-top: 20px;
+    color: var(--ink-3);
+    font-size: 12.5px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="eyebrow">架构评审 · 对标 tdesign-vue-next-starter</p>
+    <h1>HiMind 平台架构评审</h1>
+    <p class="thesis">
+      平台骨架是扎实的——单真源路由、叶模块拆环、全局默认上提，这几处都做对了，而且比对标项目更稳。
+      但<strong>两道工程护栏的缺席已经造成了实际损失</strong>：一个已进入生产产物的正确性缺陷，
+      和 14 个被类型门槛缺口掩盖的运行时 bug。这份报告按「先止血、再减重、后补栏」排序。
+    </p>
+    <div class="facts">
+      <span><b>评审对象</b> newweb @ b1c3026</span>
+      <span><b>对标</b> tdesign-vue-next-starter</span>
+      <span><b>日期</b> 2026-09-26</span>
+      <span><b>方式</b> 只读分析，未改动任何代码</span>
+    </div>
+  </header>
+
+  <div class="body-grid">
+
+    <nav class="toc" aria-label="目录">
+      <h2>目录</h2>
+      <ol>
+        <li><a href="#p0">两个 P0</a></li>
+        <li><a href="#route">路由设计对标</a></li>
+        <li><a href="#plan">优化清单</a></li>
+        <li><a href="#tools">工具推荐</a></li>
+        <li><a href="#misc">顺带发现</a></li>
+      </ol>
+    </nav>
+
+    <main>
+
+      <!-- ══════════════ P0 ══════════════ -->
+      <section id="p0">
+        <h2 class="sec">两个 P0：都已复现，且第一个已进入生产产物</h2>
+        <p class="sec-note">
+          这两条不是「优化建议」。第一条会让按既定意图部署的站点直接报错，第二条让每个用户多下 115 KB
+          永远不执行的代码。两者我都逐字节复核过，不是推断。
+        </p>
+
+        <div class="find p0">
+          <div class="find-head">
+            <span class="tag p0">P0 · 正确性</span>
+            <h3>gzip 预压缩产物是陈旧快照，entry chunk 已损坏</h3>
+          </div>
+          <p>
+            <code>vite.config.ts</code> 的 <code>hmxGzipAssets</code> 在 <code>generateBundle</code> 钩子里压缩，
+            而这个钩子跑在 Vite 自己的 <code>vite:build-import-analysis</code> 之前——后者才负责把
+            <code>__VITE_PRELOAD__</code> 替换成 <code>__vite__mapDeps([...])</code>。
+            于是 <code>.gz</code> 里装的是<strong>替换之前的快照</strong>。
+          </p>
+          <div class="scroll" style="margin-top:14px">
+            <table>
+              <thead>
+                <tr><th>entry chunk <span style="text-transform:none;letter-spacing:0">index-Bkt8svBV.js</span></th><th class="num">字节</th><th class="num">__VITE_PRELOAD__</th><th class="num">mapDeps 定义</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>源文件（正确）</td><td class="num">1,682,444</td><td class="num">0</td><td class="num">1</td></tr>
+                <tr><td><code>.gz</code> 解出的内容</td><td class="num">1,340,794</td><td class="num lose">6,527</td><td class="num lose">0</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            调用形态是 <code>()=&gt;import(`./IconAbacus-*.js`), __VITE_PRELOAD__</code>——第二个实参在调用时求值，
+            是个<strong>没有任何声明的自由标识符</strong>。任何懒加载图标触发时抛
+            <code>ReferenceError: __VITE_PRELOAD__ is not defined</code>。
+          </p>
+          <dl>
+            <dt>触发条件</dt>
+            <dd>服务器配了 nginx <code>gzip_static</code> / IIS 静态压缩。而这正是 <code>vite.config.ts:9-10</code> 注释写明的目标用法——即按设计意图部署就会踩到。未配预压缩则退化读原文件，无影响。</dd>
+            <dt>规模</dt>
+            <dd>184 个 <code>.gz</code> 中 7 个陈旧（clean rebuild 后稳定复现），含 entry chunk 本身。</dd>
+            <dt>修法</dt>
+            <dd>钩子从 <code>generateBundle</code> 改为 <code>writeBundle</code>，从磁盘读已落盘的最终文件再压。已实测：184/184 逐字节一致，构建耗时无变化。</dd>
+            <dt>代价</dt>
+            <dd>修好后首屏传输<strong>上升 76 KB</strong>（509 → 585 KB gz），因为正确副本更大。这是修复的必要代价，不是回归。</dd>
+          </dl>
+        </div>
+
+        <div class="find p0">
+          <div class="find-head">
+            <span class="tag p0">P0 · 体积 + 信息暴露</span>
+            <h3>mock 数据整包进了生产产物</h3>
+          </div>
+          <p>
+            <code>src/api/_core/request.ts:9</code> 静态 <code>import { mockAdapter }</code>，第 25 行
+            <code>if (USE_MOCK) instance.defaults.adapter = mockAdapter</code>。
+            生产构建把 <code>USE_MOCK</code> 内联为 <code>false</code>，所以<strong>mock 不会真的生效</strong>——
+            但模块和全部种子数据照样进了包。
+          </p>
+          <div class="callout crit">
+            <strong>口径要说准：</strong>这不是「生产在跑 mock」。flag 是好的、红线没被破。问题是
+            <strong>死重</strong>（每个用户下载 115 KB gz 永不执行的代码）+ <strong>内网标识暴露</strong>
+            （线上 JS 里可搜到 <code>gluenet.kvfileds</code>、<code>hmx.Service.Widgets.Services</code> 等）。
+          </div>
+          <div class="scroll">
+            <table>
+              <thead><tr><th>生产 <code>request-*.js</code> 中的 mock 指纹</th><th class="num">命中</th></tr></thead>
+              <tbody>
+                <tr><td class="mono">gluenet.kvfileds</td><td class="num">1</td></tr>
+                <tr><td class="mono">GanttCCMProcEditJCInfo</td><td class="num">1</td></tr>
+                <tr><td class="mono">hmx.Service.Widgets.Services</td><td class="num">1</td></tr>
+                <tr><td class="mono">mock-token</td><td class="num">1</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            chunk 实测 1,419,801 B，其中 27 个 &gt;5KB 的字符串字面量合计 910 KB（占 68%），
+            最大一条 575 KB 来自 <code>gantt_data.json</code>。剥离后约 421 KB 原始 / 83.5 KB gz。
+          </p>
+          <dl>
+            <dt>修法</dt>
+            <dd>改为条件动态 <code>import()</code>（<code>if (USE_MOCK) instance.defaults.adapter = (await import("@/mock/mockAdapter")).mockAdapter</code>），或构建期把 mock 目录 alias 到空实现。</dd>
+            <dt>收益</dt>
+            <dd>首屏 509 → 约 394 KB gz（<strong>-23%</strong>），同时消除线上 JS 里的内网标识。</dd>
+            <dt>注意</dt>
+            <dd>要同步处理 5 个幽灵依赖（见「顺带发现」），且 dev 下 mock 必须照常可用。</dd>
+          </dl>
+        </div>
+
+        <div class="callout">
+          <strong>文档也要跟着改：</strong>README 与 AGENTS 都写着「生产构建不会带 Mock 适配器与演示数据」。
+          按上面的实测，这句<strong>不成立</strong>——flag 正确，但数据在包里。这句话本身有误导性，建议改成
+          「flag 已钉死 false，mock 不在生产生效；但模块与种子数据仍会打进产物，待按 P0-2 收敛」。
+        </div>
+      </section>
+
+      <!-- ══════════════ 路由对标 ══════════════ -->
+      <section id="route">
+        <h2 class="sec">路由设计对标</h2>
+        <p class="sec-note">
+          两个项目在路由上走的是同一条路：后端菜单 → 路由记录 → 菜单投影，单真源、不做第二份数据。
+          差别在<strong>契约的显式程度</strong>。总体判断：newweb 的运行时设计更稳，
+          tdesign 的类型与约定更显式——值得互相借的正好是对方强的那一半。
+        </p>
+
+        <div class="scroll">
+          <table>
+            <thead>
+              <tr><th>维度</th><th>newweb</th><th>tdesign-starter</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>vue-router</td>
+                <td class="mono">4.6.4</td>
+                <td class="mono win">5.3.1（内置文件式 + 类型安全路由）</td>
+              </tr>
+              <tr>
+                <td>RouteMeta 类型</td>
+                <td>有模块增强，11 个字段<br><span class="mono" style="font-size:11.5px">router/index.ts:11</span></td>
+                <td>有模块增强，11 个字段<br><span class="mono" style="font-size:11.5px">types/router.d.ts:8</span></td>
+              </tr>
+              <tr>
+                <td>菜单数据源</td>
+                <td class="win">路由表投影，单真源</td>
+                <td class="win">路由表投影，单真源</td>
+              </tr>
+              <tr>
+                <td>动态注册</td>
+                <td>三阶段，退出整体移除<br><span class="mono" style="font-size:11.5px">router/dynamicRoutes.ts</span></td>
+                <td><code>addRoute</code> 逐条，靠 <code>asyncRoutes.length===0</code> 触发<br><span class="mono" style="font-size:11.5px">permission.ts:32</span></td>
+              </tr>
+              <tr>
+                <td>刷新后恢复</td>
+                <td>守卫里 <code>!perm.loaded</code> → 重拉 + 重放导航</td>
+                <td>持久化 <code>afterHydrate</code> 回调重建<br><span class="mono" style="font-size:11.5px">store/modules/user.ts:80</span></td>
+              </tr>
+              <tr>
+                <td>缓存键</td>
+                <td class="win"><code>pageId#世代号</code>，关签自动 +1</td>
+                <td>路由 <code>name</code> 字符串，<strong>靠人工与 <code>defineOptions.name</code> 对齐</strong></td>
+              </tr>
+              <tr>
+                <td>缓存键一致性校验</td>
+                <td class="win">有 pageId 撞名告警</td>
+                <td class="lose">无。且已出现同名踩线写法<br><span class="mono" style="font-size:11.5px">TopPanel.vue:68 与页面同名</span></td>
+              </tr>
+              <tr>
+                <td>iframe 形态</td>
+                <td><code>meta.url</code> + 独立常驻池</td>
+                <td><code>frameSrc</code> / <code>frameBlank</code> 两个布尔吃三种形态</td>
+              </tr>
+              <tr>
+                <td>组件解析防御</td>
+                <td>glob 预扫描 + 解析失败留痕</td>
+                <td class="win">命中多个直接 throw 并说明原因；未命中 warn + 退 500 页</td>
+              </tr>
+              <tr>
+                <td>无 component 的深层菜单</td>
+                <td>—</td>
+                <td class="win">自动包一层<strong>无路径父路由</strong>，兼容 <code>/a/b/c</code></td>
+              </tr>
+              <tr>
+                <td><code>document.title</code></td>
+                <td class="lose">无</td>
+                <td class="lose">无</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>值得从 tdesign 借的三点</h3>
+        <ul class="plain">
+          <li>
+            <strong>组件解析的防御性写法。</strong><code>utils/route/index.ts:58-80</code> 不是简单查表：
+            glob key 规范化后全等匹配，命中多个直接 <code>throw</code> 并在报错文案里点明「同目录同名 .vue/.tsx」，
+            未命中则 warn + 退回错误页而不是白屏。自研平台最容易在「菜单配错一个字符」上翻车，这个结构值得照抄。
+          </li>
+          <li>
+            <strong>无路径父路由包深层菜单。</strong><code>utils/route/index.ts:83-109</code>：当 <code>component</code>
+            不是布局时，把自己塞进 <code>children</code>、自身换成布局、<code>path</code> 置空。
+            这样后端返回一棵不整齐的树也能渲染 <code>/a/b/c</code>，比要求后端吐规整两层树务实得多。
+          </li>
+          <li>
+            <strong>升级到 vue-router 5。</strong>v5 已把 <code>unplugin-vue-router</code> 并入核心
+            （<code>vue-router/vite</code> + 生成的 <code>typed-router.d.ts</code>），类型安全路由与文件式路由
+            是稳定特性，官方定位为对 v4 无破坏性变更的过渡版本。对标项目已经用上了，newweb 还差一个大版本。
+            <span style="color:var(--ink-3)">注意 Data Loaders 仍是实验特性，别碰。</span>
+          </li>
+        </ul>
+
+        <h3>newweb 反过来更稳的两点</h3>
+        <ul class="plain">
+          <li>
+            <strong>缓存键不依赖人工契约。</strong>tdesign 把「缓存键 = 路由 name」这个隐式约定完全交给开发者维护，
+            而它自己已经出现了 <code>TopPanel.vue</code> 与页面同名 <code>DashboardBase</code> 的踩线写法。
+            newweb 的 <code>pageId#世代号</code> 由框架算，规模上去不会错。
+          </li>
+          <li>
+            <strong>退出即整体移除。</strong>newweb 的三阶段把「登出清理」做成一个原子动作；
+            tdesign 靠 <code>afterEach</code> 里判断 <code>path === '/login'</code> 再逐条 <code>removeRoute</code>，
+            逻辑散在守卫尾部，漏一个条件就残留。
+          </li>
+        </ul>
+
+        <h3>两边都缺的</h3>
+        <p>
+          <strong>没有一处同步 <code>document.title</code>。</strong>两个项目的浏览器标签页标题永远停在
+          <code>index.html</code> 的静态值，多页签场景下用户完全无法从标签页区分页面。这是低成本高体感的缺口，
+          在 <code>afterEach</code> 里加一行即可（newweb 的 <code>guard.ts:61</code> 已经有现成的 <code>afterEach</code>）。
+        </p>
+      </section>
+
+      <!-- ══════════════ 优化清单 ══════════════ -->
+      <section id="plan">
+        <h2 class="sec">优化清单</h2>
+        <p class="sec-note">
+          按投入产出比排序。P0 已在上面展开；这里给 P1/P2 的量化收益与工作量。
+        </p>
+
+        <div class="scroll">
+          <table>
+            <thead>
+              <tr><th>#</th><th>做什么</th><th>收益</th><th>工作量</th><th>风险</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="mono">P1-1</td>
+                <td><strong>图标按需化</strong>：把 301 处 barrel import 收敛为实际用到的 66 个具名静态 import，<br>并让 <code>tablerIcons.ts:8</code> 的 glob 注册表不再驻留 entry</td>
+                <td>entry <strong>291.5 → ~80 KB gz（-72%）</strong><br>chunk 数 6651 → ~470<br>首屏 509 → ~298 KB gz（-41%）</td>
+                <td>2–4 天</td>
+                <td>中。难点是 <code>IconPicker</code> 依赖 6202 个名字做搜索，需保留纯名字清单 + 兜底</td>
+              </tr>
+              <tr>
+                <td class="mono">P1-2</td>
+                <td><strong>清理已上提的 ag-grid 样板</strong>：删 443 处 <code>:locale-text</code>、443 处 <code>:default-col-def</code> 及对应 import</td>
+                <td>约 <strong>2260 行</strong>删除，277 个页面 chunk 平均变小<br>零行为变更</td>
+                <td>1–2 天</td>
+                <td>低。<code>provideGlobalGridOptions</code> 已提供同值默认</td>
+              </tr>
+              <tr>
+                <td class="mono">P1-3</td>
+                <td><strong>加 <code>&lt;HmxGrid&gt;</code> 组件封装</strong>（<code>src/components</code> 下目前无表格封装）</td>
+                <td>283 页收敛为一行；<strong>新页面零样板</strong>——这是唯一能防回归的结构性措施</td>
+                <td>2–3 天</td>
+                <td>中。有特例（<code>hmxGridOptions</code> 2 处、<code>bestFitGrid</code> 2 处），需留逃生舱</td>
+              </tr>
+              <tr>
+                <td class="mono">P2-1</td>
+                <td><strong>加回精简 tsconfig，恢复类型门槛</strong>（<strong>务必不用 <code>baseUrl</code></strong>，用 <code>paths</code> 配 <code>@/*</code>）</td>
+                <td>立刻暴露 <strong>31 个类型错误</strong>，其中 <strong>14 个 <code>onBtn*</code> 未定义是真 bug</strong>；<br>并让 <code>src/env.d.ts</code> 的 <code>ImportMetaEnv</code> / <code>*.vue</code> 声明<strong>重新生效</strong>，恢复 IDE 补全</td>
+                <td>半天接入</td>
+                <td>低–中。建议先 continue-on-error，清零后转硬门槛</td>
+              </tr>
+              <tr>
+                <td class="mono">P2-2</td>
+                <td><strong>接入 CI</strong>（当前完全缺失）</td>
+                <td>堵住「283 页样板」这类漂移</td>
+                <td>半天</td>
+                <td>低。需先清 <code>lint</code> 的 1 error 与 <code>audit:ui</code> 的 174 条，或设白名单</td>
+              </tr>
+              <tr>
+                <td class="mono">P2-3</td>
+                <td><strong>消灭 132 处复制的 <code>p()</code> 补零助手</strong>（<code>consistent-function-scoping</code> 里 132 条是同一个函数名）</td>
+                <td>lint warning <strong>234 → ~102（-56%）</strong></td>
+                <td>1 天</td>
+                <td>低。纯搬运</td>
+              </tr>
+              <tr>
+                <td class="mono">P2-4</td>
+                <td><strong>加 <code>manualChunks</code> 分包</strong> + 把 Univer 的 CLDR 限制为 <code>zh-CN</code>/<code>en</code></td>
+                <td><code>dist</code> 25.5 → 约 15 MB（去掉 ~10 MB 永不加载的 CLDR：匈牙利语 747 KB、教会斯拉夫语 165 KB…）</td>
+                <td>1 天</td>
+                <td>中。过度分组会把未用代码拉进首屏，需用 entry graph 反复核对</td>
+              </tr>
+              <tr>
+                <td class="mono">P2-5</td>
+                <td><strong>修 1 个 error + 配置白名单</strong>：<code>SYD/YD2020:189</code> 的 <code>q.cStore = q.cStore;</code> 自赋值（注释暗示本意是另一句赋值，<strong>是真 bug</strong>）；<code>no-underscore-dangle</code> 19 条配 allow</td>
+                <td>234 → ~210 warning，消除 1 个真实逻辑缺陷</td>
+                <td>1–2 小时</td>
+                <td>低。<code>oxlint --fix</code> 只能自动消 5 条（2.1%）</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout">
+          <strong>切勿自动修 <code>no-array-sort</code>（59 条）。</strong><code>sort()</code> 原地改与
+          <code>toSorted()</code> 返新的语义差异会造成静默行为变更，必须逐处人工判断。
+        </div>
+
+        <h3>两个被澄清的常见误判</h3>
+        <ul class="plain">
+          <li>
+            <strong>不是「日期库重复」。</strong><code>dayjs</code>/<code>moment</code>/<code>date-fns</code>/<code>luxon</code>
+            全都没装。产物里 74 个 <code>locale-*.js</code>（8.55 MB）<strong>全部来自 Univer 的 CLDR i18n</strong>。
+          </li>
+          <li>
+            <strong>图标体积不在 entry 的 SVG 体里，而在它的索引表里。</strong>6184 个图标体各自只有 0.43 KB、
+            确实独立成 chunk（懒加载机制本身是对的）。entry 里那 917 KB 是
+            <strong>6202 条 key → 懒加载器的映射表</strong>。所以收益来自「砍注册表」，不是「改按需加载」。
+          </li>
+        </ul>
+      </section>
+
+      <!-- ══════════════ 工具推荐 ══════════════ -->
+      <section id="tools">
+        <h2 class="sec">值得引入的第三方工具</h2>
+        <p class="sec-note">
+          只列能对上本文具体缺口、且 2026 年仍在维护的。已在用的（oxlint/oxfmt/Pinia/Tailwind 4）不重复推荐。
+        </p>
+
+        <div class="scroll">
+          <table>
+            <thead>
+              <tr><th>工具</th><th>补哪个缺口</th><th>为什么是它</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="mono">unplugin-vue-components<br><span style="font-size:11px;color:var(--ink-3)">+ PrimeVue resolver</span></td>
+                <td>1286 条 <code>from "primevue/..."</code> 手工 import 散在 <strong>328 个文件</strong>里，实际只用到 <strong>34 种</strong>组件</td>
+                <td>按需自动导入 + 自动注册，这 1286 行全消失。PrimeVue 官方支持的 resolver，收益立竿见影且零行为变更</td>
+              </tr>
+              <tr>
+                <td class="mono">@vueuse/core</td>
+                <td>大量手写的事件监听/防抖/尺寸观察（如 <code>HmxIframeHost</code> 的高度计算）</td>
+                <td>v14 要求 Vue 3.5+，本项目满足。tree-shakeable，按需引入不增体积。对标项目已在用</td>
+              </tr>
+              <tr>
+                <td class="mono">Vitest<br><span style="font-size:11px;color:var(--ink-3)">+ @vue/test-utils + happy-dom</span></td>
+                <td>无任何测试。14 个 <code>onBtn*</code> 未定义这类 bug 本可被一条冒烟测试拦住</td>
+                <td>Vue 官方推荐，复用 Vite 同一套 transform 与 alias，几乎零配置。优先覆盖路由/权限/菜单投影这些平台层逻辑</td>
+              </tr>
+              <tr>
+                <td class="mono">knip</td>
+                <td>死代码与幽灵依赖（本次已手工发现 5 个未声明依赖、<code>@tabler/icons</code> 50 MB 零引用）</td>
+                <td>项目级「未使用」检测，Vue/TS 支持完整，可 <code>--fix</code>。能自动跑出这次靠人肉才找到的东西</td>
+              </tr>
+              <tr>
+                <td class="mono">rollup-plugin-visualizer</td>
+                <td>「entry 917 KB 是图标映射表」这类结论目前只能靠临时脚本挖</td>
+                <td>treemap 一眼看出体积归属，把它挂成 <code>npm run build:analyze</code> 可防止再次劣化</td>
+              </tr>
+              <tr>
+                <td class="mono">lefthook</td>
+                <td>无 git hooks，四道门禁全靠人工记得跑</td>
+                <td>单二进制、比 husky 快且配置集中，pre-commit 跑 <code>oxlint</code> + <code>oxfmt --check</code> 即可</td>
+              </tr>
+              <tr>
+                <td class="mono">oxlint-plugin-vue-sfc</td>
+                <td><strong>oxlint 原生不 lint Vue <code>&lt;template&gt;</code></strong>（只 lint <code>&lt;script&gt;</code>）</td>
+                <td>把 24 条 eslint-plugin-vue 规则移植到 oxc 工具链，自解析 SFC 模板 AST。已有一个 1581 SFC 的 Nuxt 仓生产验证过</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout crit">
+          <strong>这条要单独点出来：oxlint 替代不了 vue-tsc 的职责。</strong>
+          oxlint 原生<strong>不检查类型</strong>，也<strong>不 lint <code>&lt;template&gt;</code></strong>——
+          它只看 <code>&lt;script&gt;</code>。所以「用 oxlint 取代 vue-tsc」这个说法成立的前提是
+          「接受没有类型检查、也没有模板检查」，而 14 个 <code>onBtn*</code> 未定义正是从这个缺口漏过去的。
+          建议把 AGENTS 里的措辞从「静态检查门槛（替代原 vue-tsc）」改为
+          「语法/风格门槛；<strong>类型门槛暂停中</strong>」——否则下一个人会以为类型是被检查的。
+        </div>
+      </section>
+
+      <!-- ══════════════ 顺带发现 ══════════════ -->
+      <section id="misc">
+        <h2 class="sec">顺带发现</h2>
+
+        <h3>仓库卫生（总体良好）</h3>
+        <ul class="plain">
+          <li>479 个追踪文件，最大 900 KB（<code>gantt_data.json</code> 演示数据），<strong>无误入库的二进制</strong>；<code>dist</code>/<code>temp</code>/<code>.code-graph</code> 等均已在 <code>.gitignore</code>。</li>
+          <li>
+            <strong>残留 worktree 可清理：</strong><code>worktree-rustling-cooking-newt</code> 分支的内容
+            <strong>已完全包含在 main 内</strong>（落后 13 个提交），<code>.claude/worktrees/</code> 下那个目录是空壳。
+          </li>
+        </ul>
+
+        <h3>依赖健康度</h3>
+        <ul class="plain">
+          <li>
+            <strong>5 个幽灵依赖</strong>：<code>@univerjs/core</code>、<code>/drawing</code>、<code>/docs-drawing</code>、
+            <code>/sheets-drawing</code>、<code>/drawing-ui</code> 被直接 import 但未在 <code>package.json</code> 声明，
+            只作为 <code>@univerjs/presets</code> 的传递依赖存在。<strong>上游一升版调整子依赖，构建立即断裂。</strong>
+          </li>
+          <li>
+            <strong>React 混入 165 条传递依赖</strong>：<code>@univerjs/*</code> 拖进 <code>react</code> + <code>react-dom</code>
+            及 <code>@radix-ui/*</code>（2.5 MB）、<code>sonner</code>、<code>cmdk</code>，且实测真的进了产物 chunk。
+          </li>
+          <li>
+            <strong>图标库实际 5 套并存</strong>：<code>@tabler/icons-vue</code>（72 MB，66 个在用）、
+            <code>@tabler/icons</code>（50 MB，0 处直接引用）、<code>@primeicons</code>（0 处引用）、
+            以及 PrimeVue / Univer 各自内部的一套。前两个可清。
+          </li>
+          <li>
+            <code>vite.config.ts:56</code> 的 <code>tabler-icons</code> alias 指向正确但<strong>是死代码</strong>——
+            全仓 <code>from "tabler-icons"</code> 引用数为 0，301 处全走 barrel，从不经过它。
+            它想解决的正是按需引入问题，但没人用。
+          </li>
+        </ul>
+
+        <h3>文档漂移（本次已修）</h3>
+        <p>
+          README 与 AGENTS 的多处计数/断言已在提交 <code>b1c3026</code> 中同步到实测值。
+          仍有两处建议后续补充：
+        </p>
+        <ul class="plain">
+          <li><code>AGENTS.md</code> 把 <code>npm run lint</code> 描述为「静态检查门槛（替代原 vue-tsc）」——见上文工具节的措辞建议。</li>
+          <li>6000+ chunk 与 <code>INEFFECTIVE_DYNAMIC_IMPORT</code> 那条已知坑，现在可以补上量化根因与修复路径了。</li>
+        </ul>
+      </section>
+
+      <footer>
+        只读分析，未改动任何代码 · 两个 P0 结论已逐字节复核 · 报告生成于 2026-09-26
+      </footer>
+
+    </main>
+  </div>
+</div>
