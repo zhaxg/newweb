@@ -180,3 +180,72 @@ npm run build                                    # 能否构建
 
 改动涉及路由/菜单/布局时，手动验证三条路径：**登录 → 首次导航**、**刷新页面**、**登出再登入**。
 改动涉及主题/token 时，浅色和深色都看一眼。
+
+---
+
+## 8. AI 自动化测试：免登录 + 免等遮罩
+
+自动化测试（Playwright 等）不必走登录 UI，也不必等刷新遮罩淡出。两个机制都是**测试侧注入**，
+不需要改动应用代码。
+
+### 8.1 免登录：直接种入会话
+
+mock 模式下 `getUserRescList` 无视用户全量下发，token 不参与校验，所以任何 token 都能登录。
+会话在 localStorage 的 `hmx.auth-session`，值经 `lib/encryptedStorage` **AES 加密**——不能直接塞明文 JSON。
+
+**固定 token**：`mock-token.admin`（`mock-token.` 前缀后的首段会被还原成 userId，见 `src/mock/admin/auth.ts:49`）。
+
+**现成密文**（密钥 `VITE_APP_STORE_SECURE_KEY` = `5432167890` 时可直接粘贴）：
+
+```
+U2FsdGVkX18aLmj+hjGaIv11Wv/6j5JvZIwPKy8QRejeVDMzIGwrjjEkeutBmJhuG4ffLCdmzWGIFT+shWUcf0lSmwkXyfm7cA5SAjFl0djjeb/hc+ay4KuV12D9Bd/R
+```
+
+密钥若变更，用下面这行重新生成（crypto-js 已在依赖里）：
+
+```js
+CryptoJS.AES.encrypt(JSON.stringify({ userId: "admin", userName: "系统管理员", token: "mock-token.admin" }), "5432167890").toString()
+```
+
+### 8.2 免等遮罩：`HMX_DISABLE_LOADING`
+
+全局置 `true` 时刷新遮罩**完全不创建**（`src/components/loading/loading.ts`）。实测每次页面加载
+可省约 **1.9s**（就是那 2s 淡出）：
+
+| | 页面就绪 | 遮罩消失 |
+|---|---|---|
+| 默认 | 1437ms | 3377ms |
+| 置 `true` | 1359ms | **1559ms** |
+
+它只影响这个纯视觉过渡——遮罩不承载任何权限/数据语义，跳过不改变业务行为。**未挂 `import.meta.env.DEV`**：
+那样就没法对生产构建产物做同样的提速验证，而代价只是首次导航时一次属性读取；生产无人设置即行为不变。
+
+### 8.3 推荐配方
+
+**开关必须用 `addInitScript`**——`page.evaluate` 设的 global 会随下一次 `goto` 的上下文销毁而丢失。
+
+```js
+const SESSION = "U2FsdGVkX18aLmj+hjGaIv11Wv/6j5JvZIwPKy8QRejeVDMzIGwrjjEkeutBmJhuG4ffLCdmzWGIFT+shWUcf0lSmwkXyfm7cA5SAjFl0djjeb/hc+ay4KuV12D9Bd/R";
+
+// ① 开关走 addInitScript：每个新文档都生效
+await page.addInitScript(() => { globalThis.HMX_DISABLE_LOADING = true; });
+
+// ② 先加载一次拿到 origin（localStorage 按 origin 隔离）
+await page.goto(BASE);
+await page.evaluate(([k, v]) => localStorage.setItem(k, v), ["hmx.auth-session", SESSION]);
+
+// ③ 直达目标页，全程不碰登录 UI
+await page.goto(BASE + targetPath);
+```
+
+### 8.4 两条注意
+
+1. **免登录只在 mock 模式有效**。`.env.production` 是 `VITE_USE_MOCK=false`，假 token 过不了真实后端的
+   `getUserRescList`，守卫会 `logout()` 把人弹回 `/login`（已实测）。所以这是 dev/测试环境的提速手段，
+   拿生产构建跑测试时该走真实登录。
+2. **不要往应用代码里加 token 直通/后门**。权限层已经是 fail-open（`permissionStore.hasPermission`
+   三道兜底全返回 `true`），再开一条旁路就是把风险带进产物。测试侧种 localStorage 已经完全够用且零侵入。
+
+> 另：登出是**两步**——菜单项「退出」→ 确认弹窗「是否确定退出系统？」→ 再点确认。测试里漏第二步会
+> 一直停在原页（这个坑踩过一次）。
+

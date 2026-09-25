@@ -1,5 +1,17 @@
 import loadingHtml from "./loading.html?raw";
 
+/* 自动化测试提速开关：全局置 window.HMX_DISABLE_LOADING = true 时，遮罩完全不创建。
+   只影响这个纯视觉过渡——遮罩不承载任何权限/数据语义，跳过它不改变任何业务行为；
+   换来的是测试免去每次导航等 2s 淡出（首屏那一次尤其明显）。
+   测试侧在首屏脚本前注入（Playwright 的 addInitScript / evaluate），生产无人设置即行为不变。
+   为什么不挂 import.meta.env.DEV：那样就没法对生产构建产物做同样的提速验证，
+   而这里的代价只是首次导航时一次属性读取。
+   命名不用 __ 前后缀：本仓 oxlint 未配 no-underscore-dangle 白名单，双下划线会新增一条 warning，
+   而框架层的 warning 计数是这里的健康指标（见 AGENTS §3）。HMX 前缀已足够避让冲突。 */
+function disabledByFlag(): boolean {
+  return (globalThis as { HMX_DISABLE_LOADING?: boolean }).HMX_DISABLE_LOADING === true;
+}
+
 /* 全屏白底遮罩（移植自 hmx_web）：由路由守卫首个 beforeEach 显示（覆盖刷新时拉菜单/
    注册路由等异步空白），首次导航完成 afterEach 淡出移除。
    路由级豁免：RouteMeta.loading === false 的页面不启用——遮罩本为白底，导航落地时按
@@ -8,7 +20,7 @@ function createLoadingScreen() {
   let loadingEl: HTMLElement | null = null;
 
   function show() {
-    if (loadingEl) return;
+    if (loadingEl || disabledByFlag()) return;
 
     loadingEl = document.createElement("div");
     loadingEl.style.position = "fixed";
