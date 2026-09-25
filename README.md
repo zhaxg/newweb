@@ -191,6 +191,7 @@ npm run audit:ui     # node scripts/audit-ui.mjs，零依赖
 |---|---|---|
 | `VITE_USE_MOCK` | `true` | 是否启用 Mock 模式；设为 `false` 走真实后端 |
 | `VITE_API_TARGET` | `http://localhost:8080` | 真实后端地址（仅 `VITE_USE_MOCK=false` 时生效） |
+| `VITE_HELP_URL` | 空 | 帮助文档基地址；用户下拉「帮助文档」新标签打开它并追加 `pageid`/`code`（当前页资源行），未配置则 toast 提示 |
 
 ## 开发指令
 

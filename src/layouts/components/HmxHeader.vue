@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from "vue";
 import {
-  IconBook, IconChevronDown, IconDots, IconKey,
+  IconBook, IconChevronDown, IconDots, IconEraser, IconKey,
   IconLogout, IconMaximize, IconMinimize, IconSettings, IconUserCircle
 } from "@tabler/icons-vue";
 import Button from "primevue/button";
@@ -15,12 +15,16 @@ import ModifyPasswd from "@/pages/_core/profile/ModifyPasswd.vue";
 import { useAppTheme } from "@/composables/useAppTheme";
 import type { HmxMenuNode } from "@/layouts/composables/menuFromRoutes";
 import { useAuthStore } from "@/stores/authStore";
+import { usePermissionStore } from "@/stores/permissionStore";
 import { menuTree } from "@/layouts/composables/menuFromRoutes";
 import { useToast } from "@/composables/useToast";
+import { useRoute } from "vue-router";
 import { computed } from "vue";
 
 const { isDark, setMode } = useAppTheme();
 const auth = useAuthStore();
+const permission = usePermissionStore();
+const route = useRoute();
 const { toast } = useToast();
 
 const emit = defineEmits<{
@@ -40,16 +44,52 @@ function toggleTheme() {
   setMode(isDark.value ? "light" : "dark");
 }
 
-/* 用户下拉：帮助文档 | 修改密码 | 退出（图标走 #itemicon 插槽） */
+/* 用户下拉：帮助文档（新标签） | 修改密码 | 清除缓存 | 退出（图标走 #itemicon 插槽） */
 const modifyPasswdRef = ref<InstanceType<typeof ModifyPasswd> | null>(null);
 const logoutConfirmOpen = ref(false);
+const clearCacheOpen = ref(false);
 const userItems: MenuItem[] = [
-  { label: "帮助文档", command: () => toast("帮助文档建设中", 1800) },
+  { label: "帮助文档", command: openHelp },
   { label: "修改密码", command: () => modifyPasswdRef.value?.openModal() },
   { separator: true },
+  { label: "清除缓存", command: () => (clearCacheOpen.value = true) },
   { label: "退出", command: () => (logoutConfirmOpen.value = true) },
 ];
-const userIcons: Record<string, unknown> = { 帮助文档: IconBook, 修改密码: IconKey, 退出: IconLogout };
+const userIcons: Record<string, unknown> = {
+  帮助文档: IconBook, 修改密码: IconKey, 清除缓存: IconEraser, 退出: IconLogout,
+};
+
+/* 帮助文档：新标签打开 VITE_HELP_URL，带当前页资源行的 id/code 供文档站定位本页。
+   pageId → 资源行 的映射复用按钮权限那份（推导规则只在 menuRescTree 有，别处不重算）；
+   首页等静态路由没有资源行，只开基址。 */
+function openHelp() {
+  const base = String(import.meta.env.VITE_HELP_URL ?? "").trim();
+  if (!base) {
+    toast("未配置帮助文档地址（VITE_HELP_URL）", 2000, "warn");
+    return;
+  }
+  const rescId = permission.pageIdToRescId.get(String(route.meta.pageId ?? ""));
+  const row = rescId ? permission.resources.find((r) => r.id === rescId) : undefined;
+  let href = base;
+  try {
+    if (row) {
+      const url = new URL(base);
+      url.searchParams.set("pageid", row.id ?? "");
+      url.searchParams.set("code", row.cCode ?? "");
+      href = url.toString();
+    }
+  } catch {
+    /* 基址非合法 URL（如相对路径），退回原样打开 */
+  }
+  window.open(href, "_blank", "noopener");
+}
+
+/* 清空 localStorage 后整页刷新：刷新即以空存储重建各 store 默认值并回落登录页，
+   不留在「存储已空、内存还在」的半清理状态 */
+function clearLocalCache() {
+  localStorage.clear();
+  window.location.reload();
+}
 
 /* 侧栏树同款数据 → TieredMenu 模型（叶子点击 = 开页） */
 function toMenuItems(nodes: HmxMenuNode[]): MenuItem[] {
@@ -141,6 +181,21 @@ onBeforeUnmount(() => document.removeEventListener("fullscreenchange", onFullscr
       </Menu>
       <ModifyPasswd ref="modifyPasswdRef" />
     </div>
+
+    <!-- 清除缓存确认：文案先讲清范围（含登录态与个性化数据）再讲后果（刷新重登、不可恢复） -->
+    <Dialog :visible="clearCacheOpen" modal header="清除缓存" autofocus
+      :style="{ width: 'min(26rem, calc(100vw - 2rem))' }" @update:visible="clearCacheOpen = $event">
+      <p class="text-xs leading-relaxed">
+        将清空本浏览器保存的全部本地数据：登录状态、界面偏好（主题 / 字体 / 侧栏宽度）以及库位图、打印模板等本地留存数据。
+      </p>
+      <p class="text-xs leading-relaxed">
+        清除后页面自动刷新并需要重新登录，且数据无法恢复。是否继续？
+      </p>
+      <template #footer>
+        <Button label="取消" severity="text" @click="clearCacheOpen = false" />
+        <Button label="清除缓存" severity="danger" autofocus @click="clearLocalCache" />
+      </template>
+    </Dialog>
 
     <!-- 退出确认（拦截误点）；autofocus 标记 → Dialog 动画结束后焦点落在"退出"按钮 -->
     <Dialog :visible="logoutConfirmOpen" modal header="退出确认" autofocus

@@ -11,6 +11,8 @@ interface ImportMetaEnv {
   readonly VITE_ROUTER_NAMESPACE?: string;
   /** localStorage 加密层密钥（见 @/lib/encryptedStorage）：非空串即启用，空则明文 */
   readonly VITE_APP_STORE_SECURE_KEY?: string;
+  /** 帮助文档基地址：用户下拉「帮助文档」新标签打开它并追加 pageid/code（见 HmxHeader.openHelp） */
+  readonly VITE_HELP_URL?: string;
 }
 
 declare module "*.vue" {
