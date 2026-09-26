@@ -167,12 +167,12 @@ const donutDash = `${(DC * cp.pct) / 100} ${DC}`;
 
 /* 快捷入口 → 各页 pageId（与 carbon 资源树一致） */
 const ENTRIES = [
-  { icon: IconGauge, title: "配额管理", desc: "配额分配与划拨", to: "carbonQuota/anticipatedQuota" },
-  { icon: IconExchange, title: "碳交易", desc: "碳市场交易管理", to: "carbonTrade/carbonTrading" },
-  { icon: IconFileText, title: "碳报告", desc: "数据质量方案 · 月度存证", to: "carbonReport/monthlyCerticate" },
-  { icon: IconTarget, title: "碳目标", desc: "企业目标 · 项目目标 · 集团目标", to: "carbonTarget/targetManage" },
-  { icon: IconBell, title: "碳预警", desc: "预警设置与记录", to: "carbonWarning/settings" },
-  { icon: IconChartBar, title: "领导驾驶舱", desc: "可视化大屏", to: "leadership" },
+  { icon: IconGauge, title: "配额管理", desc: "配额分配与划拨", to: "carbon/trade/anticipated" },
+  { icon: IconExchange, title: "碳交易", desc: "碳市场交易管理", to: "carbon/trade/trading" },
+  { icon: IconFileText, title: "碳报告", desc: "数据质量方案 · 月度存证", to: "carbon/report/monthlyEvidence" },
+  { icon: IconTarget, title: "碳目标", desc: "企业目标 · 项目目标 · 集团目标", to: "carbon/target/manage" },
+  { icon: IconBell, title: "碳预警", desc: "预警设置与记录", to: "carbon/target/warningSettings" },
+  { icon: IconChartBar, title: "领导驾驶舱", desc: "可视化大屏", to: "carbon/overview/dashboard" },
 ];
 
 function pickEnterprise() {
@@ -350,7 +350,7 @@ function pickEnterprise() {
       <div class="rounded-lg border border-border bg-card p-4 shadow-sm">
         <div class="flex items-center justify-between">
           <div class="text-sm font-medium text-foreground">碳预警信息</div>
-          <button class="text-xs text-primary hover:underline" @click="router.push('/carbonWarning/settings')">
+          <button class="text-xs text-primary hover:underline" @click="router.push('/carbon/target/warningSettings')">
             查看全部
           </button>
         </div>

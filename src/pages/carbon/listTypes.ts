@@ -44,7 +44,7 @@ export interface RowAct {
    * link=跳另一个站内页（预警设置行内的「预警记录」）；stub=无弹窗仅提示
    */
   kind: "detail" | "edit" | "delete" | "link" | "stub";
-  /** kind=link 时的目标路由（按 pageId，如 `/carbonWarning/records`） */
+  /** kind=link 时的目标路由（按 pageId，如 `/carbon/target/warningRecords`） */
   to?: string;
 }
 

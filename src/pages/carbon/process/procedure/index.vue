@@ -1,0 +1,76 @@
+<script setup lang="ts">
+/** 对应线上「工序管理」（https://carbon-ui.rcisyn.com/jnpf_app_carbonAssets/carbonEmission/productionManage/processManage/factoryProcedure）
+ *  已接入：GET /business/factoryProcess/list（分页 + 工序名称/所属企业/所属厂区）
+ *          厂区下拉候选取自 GET /business/factoryManage/selectList（线上同页调用）
+ *  待接入：新增 / 详情 / 编辑 / 删除 —— factoryProcess/{add,edit,delete/:id,getInfo/:id} 已占位；
+ *          行内「产出品管理」按插桩提示
+ */
+import ListPage from "../../ListPage.vue";
+import { carbonQuery, carbonStub } from "@/api/carbon/queries";
+import type { ListPageSpec } from "../../listTypes";
+
+const spec: ListPageSpec = {
+  code: "factoryProcedure",
+  query: [
+    { key: "processName", label: "工序名称", kind: "input", placeholder: "请输入" },
+    {
+      key: "enterName",
+      label: "所属企业",
+      kind: "select",
+      options: ["红河谷钢铁事业部"],
+      placeholder: "请选择",
+    },
+    {
+      key: "factoryName",
+      label: "所属厂区",
+      kind: "select",
+      options: ["炼铁厂", "轧钢厂", "动力厂"],
+      placeholder: "请选择",
+    },
+  ],
+  columns: [
+    { field: "processName", headerName: "工序名称", minWidth: 150, flex: 1 },
+    { field: "enterName", headerName: "所属企业", minWidth: 170, width: 180 },
+    { field: "factoryName", headerName: "所属厂区", width: 130 },
+    { field: "lastModifyUserName", headerName: "最后编辑人", width: 110 },
+    { field: "lastModifyTime", headerName: "最后编辑时间", width: 155 },
+  ],
+  actions: [
+    { label: "详情", kind: "detail" },
+    { label: "编辑", kind: "edit" },
+    { label: "删除", kind: "delete" },
+    { label: "产出品管理", kind: "stub" },
+  ],
+  toolbar: { add: true },
+  detail: {
+    sections: [
+      {
+        fields: [
+          { label: "工序名称", from: "processName" },
+          { label: "所属企业", from: "enterName" },
+          { label: "所属厂区", from: "factoryName" },
+          { label: "描述", from: "remark" },
+          { label: "最后编辑人", from: "lastModifyUserName" },
+          { label: "最后编辑时间", from: "lastModifyTime" },
+        ],
+      },
+    ],
+  },
+  edit: {
+    title: "工序",
+    fields: [
+      { key: "enterName", label: "所属企业", kind: "select", options: ["红河谷钢铁事业部"] },
+      { key: "factoryName", label: "所属厂区", kind: "select", options: ["炼铁厂", "轧钢厂", "动力厂"] },
+      { key: "processName", label: "工序名称", kind: "input" },
+      { key: "remark", label: "描述", kind: "textarea" },
+    ],
+  },
+  fetch: carbonQuery("/factoryProcess/list"),
+  writeFn: carbonStub("/factoryProcess/add"),
+  deleteFn: carbonStub("/factoryProcess/delete/:id", "post"),
+};
+</script>
+
+<template>
+  <ListPage :spec="spec" />
+</template>
