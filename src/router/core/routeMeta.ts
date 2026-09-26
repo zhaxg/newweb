@@ -1,7 +1,7 @@
 /**
  * RouteMeta 的模块增强——路由 meta 字段的**唯一类型真源**。
  *
- * 为什么单独成文件：纯类型声明，与 index 的三阶段装配逻辑无关，是全 router 目录里最不常改的东西。
+ * 为什么单独成文件：纯类型声明，与 index 的装配逻辑无关，是全 router 目录里最不常改的东西。
  * 消费方按这里的契约读写 meta：fromMenu（编译期写入）、guard（守卫读 public/loading）、
  * menuFromRoutes（投影读 hidden/icon/title）、loading（读 loading 开关）、useMenuQuery（读 qs）。
  *

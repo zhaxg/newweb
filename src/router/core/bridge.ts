@@ -6,8 +6,10 @@
  * index（建表 + 守卫 + 注册）。index 在 createRouter 后调用 attachRouter 挂载，本桥只依赖
  * Router 类型，是叶模块——谁 import 它都不会造回边。
  *
- * 引用约束：✅ **叶模块，router 外部可安全 import**（现消费方：api/_core/request、composables/usePermission）。
- * core/ 下只有本文件与 dynamicRoutes.ts 是叶模块；guard / fromMenu 依赖 store 与页面组件，**勿外部引用**。
+ * 引用约束：✅ **全仓唯一可从 router 外部引用的叶模块**（现消费方：api/_core/request、
+ * composables/usePermission）。core/ 下其余文件（routeMeta / dynamicRoutes / guard / fromMenu）
+ * 都是 router 内部模块——guard 与 fromMenu 依赖 store 和页面组件，外部引用会成环或拖进组件链；
+ * dynamicRoutes 的清理已由守卫接管，外部不需要它。
  */
 import type { Router } from "vue-router";
 

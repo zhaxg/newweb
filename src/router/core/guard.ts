@@ -6,8 +6,9 @@ import { useTabsStore } from "@/stores/tabsStore";
 import { loadingScreen } from "@/components/loading/loading";
 
 /**
- * 路由守卫：登录 → 动态注册 → 越权 403，以及 router → tabs 单向同步。
- * 只负责导航拦截；路由表组装与注册逻辑见 @/router/index。
+ * 路由守卫：登录 → 动态注册 → 越权 403，router → tabs 单向同步，
+ * 以及**落到 /login 时就地清理**（权限 + 动态路由，见下方 public 分支）。
+ * 只负责导航拦截与清理；路由表组装见 @/router/index，动态路由的挂接/移除实现见 core/dynamicRoutes。
  *
  * 动态注册能力由 index.ts 注入 —— guard 若反向 import index 会形成循环引用。
  *

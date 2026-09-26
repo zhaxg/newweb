@@ -11,8 +11,8 @@ import { attachRouter } from "@/router/core/bridge";
 import { registerUserRoutes, resetUserRoutes } from "@/router/core/dynamicRoutes";
 
 /* ══ 阶段一 · 登录前：静态路由表 ══════════════════════════════════════════════════
-   系统内所有路由在本文件汇总成一张 RouteRecordRaw：骨架叶子见 @/router/builtin，
-   业务叶子见 @/router/business，后端下发的动态叶子在阶段二挂进默认布局。
+   **静态**路由在本文件汇总成一张 RouteRecordRaw：骨架叶子见 @/router/builtin，
+   业务叶子见 @/router/business；后端下发的动态叶子不在本文件，由 core/dynamicRoutes 在阶段二挂进默认布局。
    布局父记录由 @/layouts/composables/layouts 注册表生成——一个布局一个父，children 按 meta.layout 归位
    （缺省进默认布局），加布局只改注册表、不动这里。 */
 
@@ -40,7 +40,7 @@ export const router = createRouter({ history: createWebHistory(), routes });
 attachRouter(router);
 
 /* ══ 阶段二 / 三 · 动态路由的挂接与移除 ══════════════════════════════════════════
-   实现与状态都在 @/router/core/dynamicRoutes（叶模块——MainLayout 与 request 也要用它）。
+   实现与状态都在 @/router/core/dynamicRoutes（router 内部模块）。
    那里对布局注册表零依赖（import 它就是 router → layouts → MainLayout → 本模块那条环），
    故默认布局名在此绑定后注入。 */
 

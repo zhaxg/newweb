@@ -19,11 +19,12 @@ import type { RouteRecordRaw } from "vue-router";
 import { setUserMenuRoutes } from "@/layouts/composables/menuFromRoutes";
 import { getRouter } from "@/router/core/bridge";
 
-/* 阶段二挂接时记录各 addRoute 返回的移除回调；阶段三/登出/401 时整体执行 */
+/* 阶段二挂接时记录各 addRoute 返回的移除回调；由 resetUserRoutes 整体执行
+   （触发点是守卫的 public 分支——落到 /login 即清理，见 guard.ts） */
 let removeUserRoutes: (() => void)[] = [];
 
-/** 由 registerUserRoutes 交来移除回调（addRoute 返回值） */
-export function trackUserRoutes(removers: (() => void)[]): void {
+/** 内部：由 registerUserRoutes 交来移除回调（addRoute 返回值） */
+function trackUserRoutes(removers: (() => void)[]): void {
   removeUserRoutes = removers;
 }
 
