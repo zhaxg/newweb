@@ -164,8 +164,10 @@ setAuthFailureHandler(() => { auth.logout(); return router.replace({ name: "logi
 | 想改什么 | 去哪 |
 |---|---|
 | 请求封装 / 认证失败 / 错误信封 | `src/api/_core/request.ts` |
+| 认证失败后怎么办（登出+导航） | `setAuthFailureHandler`，注册在 `src/router/core/guard.ts` |
+| token 从哪来 | `setTokenProvider`，注册在 `src/stores/authStore.ts` |
 | 全局点击连击闸（防双击） | `src/lib/clickGuard.ts`（main.ts 挂载） |
-| mock 开关、mock 路由 | `src/api/_core/request.ts:11` · `src/mock/mockAdapter.ts` |
+| mock 开关、mock 路由 | `src/api/_core/request.ts` 的 `USE_MOCK` · `src/mock/mockAdapter.ts` |
 | 主题预设 / PrimeVue locale | `src/lib/primeTheme.ts`（`HmxCompact`） |
 | 主题色运行时覆盖 | `src/lib/themeSettings.ts` + `src/stores/settingsStore.ts` |
 | 设计 token / 字阶 | `src/styles/tokens.css` · `globals.css`（`@theme`） |
@@ -185,7 +187,7 @@ setAuthFailureHandler(() => { auth.logout(); return router.replace({ name: "logi
    机检 `npm run audit:ui`；确需豁免就在该行加 `/* audit-allow */`。
 2. **mock 与真实后端走同一条前端链路**，mock 只在 `src/mock/` 下，不许散进 `src/api`/`src/lib`。
    目录规范见 README「Mock 目录规范」。`VITE_USE_MOCK` 只有**精确等于 `"false"`** 才关
-   （`request.ts:11` 是 `!== "false"`，写 `0`/`no`/`off` 都会被当成开）。
+   （`request.ts` 的 `USE_MOCK` 是 `!== "false"`，写 `0`/`no`/`off` 都会被当成开）。
    **mock「后端」是刻意的 demo 壳子，不是安全模型**：`src/mock/admin/auth.ts` 对任意账密发 token、
    非 `mock-token.` 前缀一律回落 admin、验证码永远对、`getUserRescList` 无视用户全量下发、写操作进
    localStorage——这些都是设计意图（mock 层没有真实服务和数据库，宽松才能当演示壳用），
@@ -213,7 +215,7 @@ setAuthFailureHandler(() => { auth.logout(); return router.replace({ name: "logi
   `primeLcmgr.ts` 单独豁免 `no-unused-vars`（许可桩文件，见下方许可坑）。`.qoder/` 不扫描。
 - **行尾**：`.gitattributes` 已建立（`* text=auto eol=lf`），工作区统一 LF，oxfmt `endOfLine=lf` 与之配套。
 - **`.env` 里有 7 个变量无人消费**：`VITE_MOBILE_ROUTER_NAMESPACE`、`VITE_APP_NAMESPACE`、
-  `VITE_BASE_URL`、`VITE_API_URL_PREFIX`（接口前缀实际硬编码在 `request.ts:58`）、
+  `VITE_BASE_URL`、`VITE_API_URL_PREFIX`（接口前缀实际硬编码在 `request.ts` 的 `withApiPrefix()`）、
   `VITE_APP_NAME`、`VITE_CUSTOMER`、`VITE_COPYRIGHT`（标题硬编码在 `index.html`）。
   **改了不生效**；新增 `VITE_` 变量要同时补 `src/env.d.ts` 并真正读取它。
 - **`NextStrId()`（`src/lib/yitIdHelper.ts`）已修复为可用**（原实现状态写在函数体内每次重置、
@@ -221,7 +223,7 @@ setAuthFailureHandler(() => { auth.logout(); return router.replace({ name: "logi
   虚拟时钟防回拨/溢出借位，同毫秒唯一且单调递增。**仅 64 个/毫秒**，跨标签页靠 6-bit WorkerId
   区分（同毫秒两页碰撞概率 1/64）；无此约束的场景仍首选 `crypto.randomUUID()`。
 - **许可相关是硬编码的**：`vite.config.ts` 把 `@primeui/license-manager` alias 到
-  `src/lib/primeLcmgr.ts`（恒返回 valid），`agGrid.ts:71` 有明文 AG Grid 企业版 key，
+  `src/lib/primeLcmgr.ts`（恒返回 valid），`agGrid.ts:136` 有明文 AG Grid 企业版 key，
   `prime-overrides.css` 隐藏 `#p-license-host`。**动这几个文件前先确认授权状态**，不要"顺手清理"。
 - **`encryptedStorage` 是混淆不是安全**：`VITE_` 变量会内联进 bundle，密钥公开。
   别把它当访问控制来设计安全方案。

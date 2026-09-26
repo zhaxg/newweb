@@ -38,14 +38,16 @@ export function setAuthFailureHandler(fn: () => unknown): void {
   authFailureHandler = fn;
 }
 
-/** 默认进程内 mock；VITE_USE_MOCK=false 时走真实后端（vite proxy /api） */
-export const USE_MOCK = import.meta.env.VITE_USE_MOCK !== "false";
+/** 默认进程内 mock；VITE_USE_MOCK=false 时走真实后端（vite proxy /api）。
+ *  不导出：全仓只有下面那行用它，对外没有消费方。 */
+const USE_MOCK = import.meta.env.VITE_USE_MOCK !== "false";
 
 /** 拦截层用的轻 toast：直发 PrimeVue ToastEventBus，无需组件注入上下文。
- *  双段结构与 useToast 同约（见 @/composables/useToast）：summary=severity 派生标题、detail=正文 */
+ *  双段结构与 useToast 同约（见 @/composables/useToast）：summary=severity 派生标题、detail=正文。
+ *  不导出：仅在下方拦截器内使用；组件里要发 toast 请用 @/composables/useToast。 */
 const SEVERITY_TITLE = { success: "成功", info: "提示", warn: "警告", error: "错误" } as const;
 
-export function toastMessage(msg: string, severity: keyof typeof SEVERITY_TITLE = "error") {
+function toastMessage(msg: string, severity: keyof typeof SEVERITY_TITLE = "error") {
   ToastEventBus.emit("add", { severity, summary: SEVERITY_TITLE[severity], detail: msg, life: 2200 });
 }
 

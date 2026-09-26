@@ -351,7 +351,7 @@ C# 源码副本在 `temp/ddh_rmes`（已 gitignore）。
 
 | 变量 | 默认值 | 消费点 | 说明 |
 |---|---|---|---|
-| `VITE_USE_MOCK` | `true` | `api/_core/request.ts:14` | 是否启用 Mock；**仅精确 `false` 关闭** |
+| `VITE_USE_MOCK` | `true` | `api/_core/request.ts` 的 `USE_MOCK` | 是否启用 Mock；**仅精确 `false` 关闭** |
 | `VITE_API_TARGET` | `http://10.11.5.49:9525` | `vite.config.ts:52`（经 `loadEnv`，非 `import.meta.env`） | Vite dev proxy target（未设则回退 `http://localhost:8080`）；`.env.production` 里是 `/` |
 | `VITE_APP_STORE_SECURE_KEY` | `5432167890` | `lib/encryptedStorage.ts:17` | localStorage 加密密钥（**会内联进 bundle，属混淆非安全**），留空 = 明文 |
 | `VITE_ROUTER_NAMESPACE` | `TDWEB` | `api/common/menuRescTree.ts:45` · `pages/admin/role/RolePermissionDialog.vue:26` · `pages/admin/resc/index.vue:53` | 后端资源拉取的 `groupId`，决定本端可见的菜单资源域 |
@@ -360,7 +360,7 @@ C# 源码副本在 `temp/ddh_rmes`（已 gitignore）。
 **已定义但当前无任何代码消费**（改了不生效，属待接线或历史遗留）：
 
 `VITE_MOBILE_ROUTER_NAMESPACE` · `VITE_APP_NAMESPACE` · `VITE_BASE_URL` · `VITE_API_URL_PREFIX`
-（接口前缀实际硬编码在 `request.ts:76` 的 `withApiPrefix`）
+（接口前缀实际硬编码在 `request.ts` 的 `withApiPrefix()` 里）
 · `VITE_APP_NAME` · `VITE_CUSTOMER` · `VITE_COPYRIGHT`
 （页面标题硬编码在 `index.html` 的 `<title>`，登录页文案在组件里）
 
