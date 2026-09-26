@@ -10,6 +10,10 @@
  * composables/usePermission）。core/ 下其余文件（routeMeta / dynamicRoutes / guard / fromMenu）
  * 都是 router 内部模块——guard 与 fromMenu 依赖 store 和页面组件，外部引用会成环或拖进组件链；
  * dynamicRoutes 的清理已由守卫接管，外部不需要它。
+ *
+ * 为什么不合并进 index：那等于让消费方 `import ... from "@/router"`，而 import index 这个动作
+ * 本身就会拉进 guard → store → api → request 那条环。要删掉本文件，得先让 router 对外零消费方
+ * （401 改为注册处理器、usePermission 改为插件选项注入），评估过但判断不划算——详见 AGENTS §4.2。
  */
 import type { Router } from "vue-router";
 

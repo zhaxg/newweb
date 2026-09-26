@@ -51,7 +51,7 @@
 - 四档字阶 + `audit:ui` 机检；PrimeVue 紧凑预设 `HmxCompact`；每个 `<Dialog>` 强制标 `autofocus` 初始焦点
 - Mock 模式与真实后端模式走同一条前端链路
 - 刷新白屏过渡动画（路由守卫驱动）、新版本检测、全局错误兜底、全局点击连击闸（500ms 吞同一按钮第二击）
-- 网络层并发保护只做 **401 单飞闸**（并发 401 仅第一个执行登出）；**刻意无重试 / 无全局取消 / 无请求合并**
+- 网络层并发保护只做 **认证失败单飞闸**（并发失败仅第一个执行登出）；**刻意无重试 / 无全局取消 / 无请求合并**
 - 生产构建产 `.gz` 静态预压缩文件（`vite.config.ts` 的 `hmxGzipAssets`，level 9、仅 ≥10KB）
 
 ## 快速开始
@@ -191,7 +191,8 @@ src/
 ├── main.ts                 # 应用装配：Pinia → settings 即时实例化 → router → 三个插件 → 挂载
 ├── env.d.ts                # ImportMetaEnv 声明（新增 VITE_ 变量必须同步补这里）
 ├── api/
-│   ├── _core/              # 请求封装：request.ts（axios 实例、token 注入、信封解包、401 单飞闸、mock 开关）
+│   ├── _core/              # 请求封装：request.ts（axios 实例、token 注入、信封解包、认证失败单飞闸、mock 开关）
+│   │                       #   ⚠️ 认证失败是信封式（200 + success:false + code "401" 字符串），非 HTTP 401
 │   │                       #            types.ts
 │   ├── admin/              # 系统管理接口（enums / request / types.d.ts）
 │   ├── common/             # crudAppService · menuRescTree(资源树) · permissionTree · mathPowCaptcha · trackableList
@@ -217,7 +218,7 @@ src/
 │   ├── admin/              # 系统管理域：*.ts 路由（auth/crud/users/roles/resc/kv/jobs/department/settings/codegen/store）
 │   │   └── data/           #   种子（一表一文件：depts · kvs · rescs · roles · users）
 │   ├── mes4ddh/            # MES4DDH 六域（lims/shr/smp/sms/sqm/syd + printReport）+ data/
-│   └── mockAdapter.ts      # 各域 RouteMap 合并 + 401/404 门
+│   └── mockAdapter.ts      # 各域 RouteMap 合并 + 认证失败门/404 门（形状对齐真实后端）
 ├── pages/
 │   ├── _core/              # 登录(LoginPage/LoginCard/FlowBg)、首页(HomePage)、个人中心(ModifyPasswd)（平台自有）
 │   ├── admin/              # 系统管理各子页（dept/user/role/resc/kvs/jobs/gen/settings）（平台自有）
@@ -288,7 +289,7 @@ RouteRecordRaw
 |---|---|---|
 | 业务域 mock 路由（导出 `*Routes: RouteMap`） | `src/mock/<域>/` | `src/mock/mes4ddh/lims.ts`、`src/mock/admin/users.ts` |
 | 该域演示/种子数据（数组、JSON，一域/一表一文件） | `src/mock/<域>/data/` | `src/mock/mes4ddh/data/lims.ts`、`src/mock/admin/data/users.ts` |
-| 适配器（合并各域路由表、401/404 门） | `src/mock/mockAdapter.ts` | 不放业务数据 |
+| 适配器（合并各域路由表、认证失败/404 门） | `src/mock/mockAdapter.ts` | 不放业务数据 |
 
 规则：
 

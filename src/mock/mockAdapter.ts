@@ -57,7 +57,7 @@ const PUBLIC_ROUTES = new Set([
 ]);
 
 export function mockAdapter(config: InternalAxiosRequestConfig): Promise<AxiosResponse> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     setTimeout(() => {
       // 归一化：请求层统一补了后端 /api 前缀，这里剥掉，路由表键与接口定义（API_BASE 起）保持一致
       const url = (config.url ?? "")
@@ -65,14 +65,13 @@ export function mockAdapter(config: InternalAxiosRequestConfig): Promise<AxiosRe
         .split("?")[0]
         .replace(/^\/api(?=\/)/, "");
       const key = `${config.method ?? "get"} ${url}`;
-      // 未携带 token → 401，走真实后端的登录过期链路（供守卫/拦截层验证）
+      /* 未携带 token → 认证失败。**按真实后端的形状发**：HTTP 状态仍是 200，
+         靠信封里的 success:false + code "401"（字符串）表达——
+         {data:null, success:false, code:"401", message:"hmxapi: User is not authenticated"}。
+         早先这里发的是 HTTP 401，与真实后端不一致，于是「会话过期不登出」这个 bug
+         在演示环境被掩盖、只在生产显形（2026-09 修正）。改后 mock 与真实后端走同一条链路。 */
       if (!PUBLIC_ROUTES.has(key) && !config.headers?.Authorization) {
-        reject(
-          Object.assign(new Error("Request failed with status code 401"), {
-            config,
-            response: respond(config, 401, envelope(false, 401, "登录已过期或未登录", null)),
-          }),
-        );
+        resolve(respond(config, 200, envelope(false, "401", "hmxapi: User is not authenticated", null)));
         return;
       }
       const handler = routes[key];

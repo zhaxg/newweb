@@ -10,7 +10,8 @@ import type { Result } from "@/api/_core/types";
 
 export const API_BASE = "/hmx.Service.Admin.Services";
 
-export function envelope<T>(success: boolean, code: number, message: string, data: T): Result<T> {
+/** code 放宽为 number | string：真实后端认证失败发的是字符串 "401"（见 Result 注释） */
+export function envelope<T>(success: boolean, code: number | string, message: string, data: T): Result<T> {
   return { success, code, message, data };
 }
 

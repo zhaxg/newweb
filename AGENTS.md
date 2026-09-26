@@ -106,7 +106,7 @@ src/router/
 ```
 
 > ✅ **一句话规则：router 外部只准 import `@/router/core/bridge`。** 其余全部是 router 内部模块。
-> 外部实际只有两处：`api/_core/request.ts`（401 后要导航回登录页）与 `composables/usePermission.ts`
+> 外部实际只有两处：`api/_core/request.ts`（认证失败后要导航回登录页）与 `composables/usePermission.ts`
 > ——它们都只要一个 router 实例，bridge 就是为此存在的（10 行、只依赖 vue-router 类型）。
 
 > **这条边界已由 lint 强制**：`.oxlintrc.json` 的 `no-restricted-imports` 禁掉 `@/router` 与
@@ -118,11 +118,20 @@ src/router/
 > 本身**就会拉进 guard → permissionStore → menuRescTree → api/admin/request → _core/request，精确复现
 > 那条环。re-export 只是把叶模块伪装成安全的，改不了 index 的静态依赖图。
 
-> **为什么清理挂在守卫而不是调用方**（曾经不是）：早先 `MainLayout.logout()` 与 `request` 的 401
+> **为什么 bridge 不合并进 index**（同一个问题的另一种问法，已被问过两次）：把 bridge 的代码搬进
+> index 比 re-export **更糟**——它连「零依赖叶模块」这个性质都丢了，直接继承 index 的全部 import，
+> 环照旧。**要真正删掉 bridge，得让 `src/router/` 对外零消费方**：`request` 的认证失败改为导出
+> `setUnauthorizedHandler(fn)` 由 index 装配时注册，`usePermission` 改为 `app.use(插件, { router })`
+> 从 main.ts 拿实例。两条都反转后环消失、bridge 可删、index 成为唯一入口。
+> **评估过但不做**：这是用「间接层」换掉 10 行叶模块——认证失败会从自包含变成「必须在别处接线才工作」
+> （漏接即静默失效，正是 7f33d06 那类 bug 的形状）。现方案的成本是 10 行 + 2 处 import + 1 条 lint 规则，
+> 收益是认证失败自包含、未挂载即抛不静默。
+
+> **为什么清理挂在守卫而不是调用方**（曾经不是）：早先 `MainLayout.logout()` 与 `request` 的认证失败
 > 各自调 `resetUserRoutes()` + `perm.reset()`，于是这两个**外部**文件都得 import router 内部模块，
 > 才被迫需要两个叶模块。改为「落到 `/login` 就地清理」后，调用方只负责导航，外部依赖收敛到 bridge 一个。
-> 对标 tdesign-starter 后确认这是更简的路子——它干脆不处理 401（token 过期静默失败），所以连 bridge
-> 都不需要；我们保留 401 自动登出，代价就是这一个叶模块。
+> 对标 tdesign-starter 后确认这是更简的路子——它干脆不处理认证失败（token 过期静默失败），所以连 bridge
+> 都不需要；我们保留「认证失败自动登出」，代价就是这一个叶模块。
 
 > `dynamicRoutes.ts` 的 `registerUserRoutes(layoutName, records)` **把默认布局名做成参数**，正是因为
 > 布局名住在 `layouts.ts`（静态引入 MainLayout.vue）——import 它会造出 layouts → MainLayout → router 的回边。
@@ -137,7 +146,7 @@ src/router/
 
 | 想改什么 | 去哪 |
 |---|---|
-| 请求封装 / 401 / 错误信封 | `src/api/_core/request.ts` |
+| 请求封装 / 认证失败 / 错误信封 | `src/api/_core/request.ts` |
 | 全局点击连击闸（防双击） | `src/lib/clickGuard.ts`（main.ts 挂载） |
 | mock 开关、mock 路由 | `src/api/_core/request.ts:11` · `src/mock/mockAdapter.ts` |
 | 主题预设 / PrimeVue locale | `src/lib/primeTheme.ts`（`HmxCompact`） |
@@ -204,7 +213,16 @@ src/router/
 - **网络层刻意「无重试 · 无全局取消 · 无请求合并」**（评审别当缺陷点名）：
   生成器查询也走 POST、幂等不可知，重试即双写风险（15s timeout 已兜底）；KeepAlive 多页签下
   后台轮询在途请求无归属，启发式「离页即取消」必误杀缓存页；同参合并且会悄悄改轮询/刷新语义。
-  并发保护只做了 **401 单飞闸**（`request.ts`：并发 401 仅第一个执行登出 + toast + 回登录页）。
+  并发保护只做了 **认证失败单飞闸**（`request.ts`：并发认证失败仅第一个执行登出 + toast + 回登录页）。
+- **认证失败是「信封式」不是 HTTP 401**——别按状态码判。真实后端返回的是
+  `HTTP 200` + `{success:false, code:"401", message:"hmxapi: User is not authenticated"}`，
+  **`code` 是字符串**（mock 原先发 HTTP 401 + 数字码，与真实后端不符，见下）。
+  判定统一走 `request.ts` 的 `isUnauthenticated()`（`String(code) === "401"`，兼容字符串与数字），
+  HTTP 401 分支仅作网关/代理兜底。**这个不一致曾导致会话过期在生产环境只弹一个 message toast、
+  既不登出也不跳转**，用户卡在死页面（2026-09 修正）。改一处判定时，另一条分支要一起看。
+- **mock 的保真度是这个 bug 的温床**：`mockAdapter` 原以 HTTP 401 表达认证失败，于是演示环境走 401
+  分支一切正常、生产走信封分支静默失效。现已按真实形状改为 `HTTP 200 + envelope(false, "401", ...)`。
+  新增 mock 端点时，**响应的形状（状态码 + 信封字段类型）要对齐真实后端**，否则又会掩盖同类问题。
 - **全局点击连击闸**（`clickGuard.ts`）在 500ms 内吞同一 button 的第二击（capture 吞事件、
   不翻 disabled，避免和 `:loading` 互踩）——调试「点击没反应」先想到它；
   「响应完毕前不可再点」的契约仍是页面 `:loading` 的责任，闸只兜双击/三击。
