@@ -37,7 +37,7 @@ src/pages/  DDH  LIMS  SHR  SMP  SMS  SQM  SYD  Widgets   ← 业务组的【未
 |---|---|---|
 | 开发服务器（mock） | `npm run dev` | ✅ |
 | 生产构建 | `npm run build` | ✅ `.env.production` 已设 `VITE_USE_MOCK=false`；产 `.gz` 静态预压缩（钩子用 `writeBundle`，见 `vite.config.ts` 注释） |
-| **静态检查门槛（替代原 vue-tsc）** | `npm run lint`（`typecheck` 为其别名） | ⚠️ 全仓 1 error + 234 warning：唯一 error 在业务示例 `SYD/YD2020/index.vue:189` 的自赋值 no-op（`no-self-assign`）；**框架层 0 error / 31 warning** |
+| **静态检查门槛（替代原 vue-tsc）** | `npm run lint`（`typecheck` 为其别名） | ✅ **exit 0**：全仓 **0 error** + 226 warning（框架层 0 error / 31 warning）——**可挂 CI/build 阻断**了 |
 | 字阶纪律审计 | `npm run audit:ui` | ⚠️ 当前 174 处违规、exit 1（R2 89 · R5 67 · R4 15 · R3 2 · R1 1），多数在业务示例里；**框架层 9 处**：`pages/_core` 5 · `layouts/pages` 2 · `components/common` 2 |
 | 格式化 | `npm run format` / `npm run format:check` | ✅ 已接入 oxfmt（`.oxfmtrc.json`：printWidth 120、LF、忽略 `*.md`），全仓已格式化一遍 |
 
@@ -45,8 +45,8 @@ src/pages/  DDH  LIMS  SHR  SMP  SMS  SQM  SYD  Widgets   ← 业务组的【未
 
 `vue-tsc` 因 `tsconfig.json` 的 `baseUrl` 触发 TS5101 会跳过全部文件级诊断（假绿），
 且仓库已删除 `tsconfig.json`，**类型级门槛暂停**，代之以 `oxlint`（`.oxlintrc.json`：
-correctness=error、suspicious=warn；`.qoder` 不参与扫描。**无 overrides**——原先为 `primeLcmgr.ts` 开的
-`no-unused-vars` 豁免已删（改为给它的未用参数加 `_` 前缀，签名不变）。
+correctness=error、suspicious=warn；`.qoder` 不参与扫描。
+**配置只剩策略层——无 `rules`、无 `overrides`**，见 §6「配置最小化」一条。
 要恢复类型门槛时：补一份无 `baseUrl` 的精简 `tsconfig.json`（仅 IDE/类型用）再评估 vue-tsc。
 
 ---
@@ -211,12 +211,18 @@ setAuthFailureHandler(() => { auth.logout(); return router.replace({ name: "logi
 ## 6. 已知坑（别踩、也别当成新发现）
 
 - **`oxlint` / `oxfmt` 已接入**（`.oxlintrc.json` + `.oxfmtrc.json` + npm scripts）。现状：
-  框架层 0 error / 31 warning，全仓唯一 error 是业务示例 `SYD/YD2020` 的 `no-self-assign`。
+  **全仓 0 error / 226 warning**（框架层 0 error / 31 warning）——`npm run lint` 已 exit 0，可挂 CI。
   oxfmt 是**格式化真源**：写完代码 `npm run format`，验收 `npm run format:check`；`*.md` 不参与。
   lint 分级：correctness=error（挂 CI 阻断），suspicious=warn；`unicorn/no-useless-*` 等风格规则降为 warn，
-  `.qoder/` 不扫描。**配置刻意保持最小**：无 overrides、无自定义限制规则；`rules` 里那 4 条
-  `unicorn/*` 设成 `warn` 是**降级**（它们属 `correctness`，默认是 error）——业务示例里有一批
-  `{...(x ?? {})}` 写法会因此报 error，而 AGENTS §2 不许动业务目录，故必须降级挡在门外。
+  `.qoder/` 不扫描。
+- **配置最小化（2026-09）**：`.oxlintrc.json` 现在**只有 `categories`**——无 `rules`、无 `overrides`。
+  此前的三类特例都已消除，且消除方式都是**改代码而不是加配置**：
+  ① `primeLcmgr.ts` 的 `no-unused-vars` 豁免 → 给未用参数加 `_` 前缀（签名不变）；
+  ② 4 条 `unicorn/*` 降级（它们属 `correctness`、默认 error，是为挡业务示例里 8 处
+  `{...(x ?? {})}` / `Promise.all([x])` / `[...nodeList]` 写法而加的）→ **把那 8 处改掉**；
+  ③ `no-restricted-imports`（禁 `@/router`）→ 删，理由见 §4.2。
+  至此 `npm run lint` **exit 0**。剩下 226 条 warning 里 225 条是业务示例的约定噪声
+  （`consistent-function-scoping` / `no-array-sort` / `no-underscore-dangle`），业务目录无人处理，属预期。
 - **行尾**：`.gitattributes` 已建立（`* text=auto eol=lf`），工作区统一 LF，oxfmt `endOfLine=lf` 与之配套。
 - **`.env` 里有 7 个变量无人消费**：`VITE_MOBILE_ROUTER_NAMESPACE`、`VITE_APP_NAMESPACE`、
   `VITE_BASE_URL`、`VITE_API_URL_PREFIX`（接口前缀实际硬编码在 `request.ts` 的 `withApiPrefix()`）、

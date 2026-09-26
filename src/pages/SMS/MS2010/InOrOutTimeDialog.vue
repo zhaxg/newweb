@@ -71,7 +71,7 @@ function onWgtChange() {
 
 /** btnQuery_Click（确定）：按 _state 回写字段，文案逻辑照 .cs */
 function onOk() {
-  const r: Row = { ...(props.row ?? {}) };
+  const r: Row = { ...props.row };
   r.dTbInTime = fmtTs(form.dIn);
   r.dLgWgtMzTime = r.dTbInTime;
   r.nLgWgtMz = form.nIn;

@@ -66,7 +66,7 @@ watch(
     if (!v) return;
     Object.keys(errors).forEach((k) => delete errors[k]);
     Object.assign(form, props.row ?? {});
-    await Promise.all([loadKv(kvItemType, "A0100:TEST_ITEM_TYPE")]);
+    await loadKv(kvItemType, "A0100:TEST_ITEM_TYPE");
     try {
       testItems.value = (await testItemApi.queryTestItems()) ?? [];
     } catch {

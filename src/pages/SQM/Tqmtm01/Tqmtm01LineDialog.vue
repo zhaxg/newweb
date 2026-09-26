@@ -18,7 +18,7 @@ watch(
   },
 );
 function onOk() {
-  emit("ok", { ...(props.dto ?? {}), ...form });
+  emit("ok", { ...props.dto, ...form });
   emit("update:visible", false);
 }
 </script>

@@ -835,6 +835,9 @@ async function removeStove() {
   if (!window.confirm(`确定删除甘特图所表示的炉次‘${stoveNo}’的工艺路线计划？`)) return;
   const c = ganttRef.value?.chart;
   if (c) {
+    /* 展开是刻意的快照：removeAppointment 原地删 c.appointments，不先复制就会边遍历边删而漏项。
+       故 unicorn/no-useless-spread 在此是误报，抑制而非照改。 */
+    // oxlint-disable-next-line unicorn/no-useless-spread
     for (const a of [...c.appointments]) {
       if ((rawById.get(a.appointmentId)?.tms2000?.id ?? null) === gsId) c.removeAppointment(a.appointmentId);
     }

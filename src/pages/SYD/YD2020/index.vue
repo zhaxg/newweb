@@ -185,8 +185,9 @@ async function loadStores() {
       ? opts.filter((o) => params.value.TarStores!.includes(o.value))
       : opts;
     if (q.cStore && !opts.some((o) => o.value === q.cStore)) {
-      // 菜单库区可能不在全量里，仍回填展示
-      q.cStore = q.cStore;
+      // 菜单库区不在全量里 → 补一个选项，否则下拉显示空白（无描述信息，用编码兜底）。
+      // 原写法 `q.cStore = q.cStore` 是自赋值空操作，等于没做这件事。
+      opts.unshift({ label: q.cStore, value: q.cStore });
     }
     if (tarStoreOptions.value.length === 1) q.cTarStore = tarStoreOptions.value[0]!.value;
   } catch {

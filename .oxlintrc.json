@@ -11,11 +11,5 @@
     "style": "off",
     "restriction": "off",
     "nursery": "off"
-  },
-  "rules": {
-    "unicorn/no-useless-spread": "warn",
-    "unicorn/no-useless-fallback-in-spread": "warn",
-    "unicorn/no-single-promise-in-promise-methods": "warn",
-    "unicorn/prefer-string-starts-ends-with": "warn"
   }
 }

@@ -137,21 +137,22 @@ npm run build         # ④ 能否构建
 - 分级：`correctness=error`（挂 CI 阻断）· `suspicious=warn`；`pedantic/style/restriction/nursery` 全关。
 - `unicorn/no-useless-spread`、`unicorn/no-useless-fallback-in-spread`、
   `unicorn/no-single-promise-in-promise-methods`、`unicorn/prefer-string-starts-ends-with` 降为 warn。
-- **无 overrides**：配置只有 `categories` + 4 条 `unicorn/*` 降级。那 4 条是**降级**（它们属
-  `correctness`、默认 error）——业务示例里一批 `{...(x ?? {})}` 会报 error，而业务目录不许动，故挡住。
+- **配置只剩策略层**：`.oxlintrc.json` 只有 `categories`，**无 `rules`、无 `overrides`**。
+  此前的豁免与降级都已通过**改代码**消除（`primeLcmgr` 参数加 `_`；8 处冗余展开/空回退改掉），
+  不是靠配置挡住。
 - `src/lib/primeLcmgr.ts`（许可证桩：`vite.config.ts` 把 `@primeui/license-manager` alias 到它并
   恒返回 valid）**不再需要配置豁免**——它的未用参数加了 `_` 前缀，签名不变。
   **动许可相关文件前先确认授权状态**，见 [`AGENTS.md` §6](./AGENTS.md)。
 - `ignorePatterns`：`dist` `temp` `shots` `node_modules` `.qoder` `*.md`。
 
-当前实测（exit 1）：
+当前实测（**exit 0**）：
 
 | 范围 | error | warning |
 |---|---|---|
 | 全仓 | **1** | **234** |
 | 框架层 | **0** | 31 |
 
-唯一 error 在业务示例 `src/pages/SYD/YD2020/index.vue:189` 的自赋值 no-op（`no-self-assign`）。
+**全仓 0 error**——可挂 CI/build 阻断。
 框架层 31 条 warning 分布：`src/mock/admin` 10 · `src/components/gantt` 8 · `src/api/common` 6 ·
 `src/mock/mes4ddh` 4 · `src/pages/admin` 3；规则上集中在 `no-array-sort`（`Array#sort` 改 `toSorted`）、
 `no-underscore-dangle`（`__trackId` 等）、`consistent-function-scoping`。
@@ -186,8 +187,8 @@ npm run build         # ④ 能否构建
 
 ### 接入 `build` 前注意
 
-`lint`（1 error）与 `audit:ui`（174 处）**目前都 exit 1**，直接挂进 `build` 会把构建一起拖红。
-要接入先清零，或改成"只拦 error 且分目录豁免业务示例"。
+`lint` 现已 **exit 0**，可以直接挂进 `build` 或 CI。`audit:ui` 仍是 174 处 / exit 1，
+接入前要先清零或分目录豁免业务示例。
 
 ## 项目结构
 

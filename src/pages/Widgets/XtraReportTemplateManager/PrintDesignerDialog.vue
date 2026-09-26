@@ -91,7 +91,7 @@ function withAvailableVariables(data: any, tree: ReturnType<typeof buildAvailabl
   const base = data && typeof data === "object" ? data : { pages: [] };
   return {
     ...base,
-    ext: { ...(base.ext ?? {}), availableVariables: tree },
+    ext: { ...base.ext, availableVariables: tree },
   };
 }
 
@@ -147,7 +147,7 @@ async function applyTemplateToDesigner() {
     }
     data = withAvailableVariables(data, tree);
     if (schema) {
-      data.testData = { ...(data.testData ?? {}), ...variables };
+      data.testData = { ...data.testData, ...variables };
       el.loadTemplateData(data);
       await el.setTestData?.(variables, { merge: true });
       await el.setVariables?.(variables, { merge: true });
@@ -190,13 +190,13 @@ async function customizeFloatingPanel(el: any): Promise<void> {
   await new Promise((r) => requestAnimationFrame(() => r(null)));
 
   const renameTitle = () => {
-    for (const h of [...root.querySelectorAll("h2, [role=heading]")]) {
+    for (const h of root.querySelectorAll("h2, [role=heading]")) {
       const t = (h.textContent ?? "").trim();
       if (t === "模版列表" || t === "模板列表" || t === "Templates") {
         h.textContent = "数据源";
       }
     }
-    for (const p of [...root.querySelectorAll("p")]) {
+    for (const p of root.querySelectorAll("p")) {
       const t = (p.textContent ?? "").trim();
       if (t === "选择模版" || t === "选择模板" || /Select template/i.test(t)) {
         p.textContent = "从数据源拖拽字段到画布";
