@@ -46,7 +46,7 @@ export async function fetchUserMenuTreeFromServer(): Promise<{
   });
   const menus = (resources ?? []).filter((r) => r.cResType === RbacRescType.Menu);
   const roots = menus.filter((r) => !r.cPid).sort(byOrder);
-  // 首页是 builtin 静态路由（homeRoute），不在动态资源树里，避免与静态注册重复
+  // pageId "home" 的一级资源行 = 该租户自建首页（顶掉内置兜底页，归属判定见 router/core/dynamicRoutes）
   const pageIdToRescId = new Map<string, string>();
   const firstOwner = new Map<string, { id: string; label: string }>();
   const clashes: Array<{ page: string; a: { id: string; label: string }; b: { id: string; label: string } }> = [];

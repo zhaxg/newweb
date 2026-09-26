@@ -8,12 +8,13 @@ import { defineAsyncComponent, type Component } from "vue";
  * 映射，实测占 entry chunk **1,177,347 B（约 70%）**；而壳层（侧栏/顶栏）实际只需菜单用到的那批。
  *
  * 下面的 glob 是**小映射**（白名单见模式里的花括号），覆盖四处：
- *   ① 后端资源种子的 cIcon（菜单图标）——`src/mock/admin/data/rescs.ts` 去重后 43 个
+ *   ① 后端资源种子的 cIcon（菜单图标）——`src/mock/admin/data/rescs.ts`（43 个）+
+ *      `src/mock/carbon/data/rescs.ts`（47 个，系从 JNPF 自绘图标语义映射来，原名见其行尾注释）
  *   ② 静态路由的 meta.icon——`src/router/builtin.ts`（Home）+ `src/router/business.ts`（Blocks/Books/Wind）
  *   ③ 兜底图标 File
  *   ④ admin/gen 页硬编码用到的几个（Check/Copy/FileCode/Loader/Sparkles）
- * 重新生成①②：
- *   grep -oE 'cIcon: "[^"]*"' src/mock/admin/data/rescs.ts | sed 's/cIcon: //' | sort -u
+ * 重新生成①②（三者求并集后写回花括号，当前 83 个）：
+ *   grep -hoE 'cIcon: "[^"]*"' src/mock/admin/data/rescs.ts src/mock/carbon/data/rescs.ts | sed -E 's/.*cIcon: "([^"]*)"/\1/' | sort -u
  *   grep -hoE 'icon: "[^"]*"' src/router/builtin.ts src/router/business.ts | sort -u
  *
  * ⚠️ **这份白名单漏了不会坏**——未收录的名字会走 tablerIcon() 的兜底路径动态拉全量注册表，
@@ -24,7 +25,7 @@ import { defineAsyncComponent, type Component } from "vue";
  * ⚠️ glob 的模式必须是**单个字符串字面量**（Vite 靠静态分析收集），不能用变量或模板串拼接。
  */
 const loaders = import.meta.glob(
-  "/node_modules/@tabler/icons-vue/dist/esm/icons/Icon{AlertTriangle,Api,Apps,ArrowsJoin2,Atom2,Blocks,Bolt,Books,Building,BuildingFactory,BuildingWarehouse,Calendar,ChartBar,ChartLine,Check,Checks,Clock,Code,Copy,Database,DeviceMobile,File,FileCode,FileText,Flame,Flask,Folder,Headset,History,Home,Key,Loader,Package,Pencil,Printer,Receipt,ReportAnalytics,Route,Router,Ruler,Scale,Scan,Scissors,Settings,ShieldLock,Sparkles,Stack2,Table,Tool,Truck,User,UsersGroup,Wind}.mjs",
+  "/node_modules/@tabler/icons-vue/dist/esm/icons/Icon{Adjustments,AlertTriangle,Api,Apps,ArrowsJoin2,Atom2,Bell,Blocks,Bolt,Books,Box,Briefcase,Building,BuildingEstate,BuildingFactory,BuildingWarehouse,Calculator,Calendar,CalendarMonth,CalendarStats,Certificate,ChartBar,ChartDots,ChartLine,ChartPie,Check,Checks,CircleCheck,ClipboardCheck,Clock,Cloud,Code,Coins,Copy,CreditCard,Cube,Database,DeviceMobile,DeviceTv,Droplet,Exchange,File,FileCode,FileDescription,FileText,Flame,Flask,Folder,Headset,History,Home,Key,LayoutDashboard,Leaf,Loader,News,Package,Pencil,Printer,Receipt,Recycle,ReportAnalytics,Route,Router,Ruler,Scale,Scan,Scissors,Settings,ShieldCheck,ShieldLock,Sparkles,Stack2,Table,Target,TargetArrow,Tool,TrendingDown,Truck,User,UsersGroup,Wallet,Wind}.mjs",
 );
 
 const loaderByPascal = new Map<string, () => Promise<{ default: Component }>>();

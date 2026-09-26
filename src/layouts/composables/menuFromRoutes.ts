@@ -36,7 +36,7 @@ export interface HmxMenuNode {
  * 且同一棵树要同时喂侧栏 `Tree`(TreeNode) 与顶栏 `TieredMenu`(MenuItem) 两种不同形状，`command`/选择事件
  * 绑定属于各组件。故这里只产出中立数据，组件各自再做 `HmxMenuNode → TreeNode/MenuItem` 的最后一步映射。
  *
- * 顺序 = 记录数组顺序（后端 cOrder 已在 menuRescTree 排好）。
+ * 顺序 = 记录数组顺序（后端 cOrder 已在 menuRescTree 排好），唯一例外是首页置顶（见 pinHome）。
  */
 let staticShell: readonly RouteRecordRaw[] = [];
 const userShell = shallowRef<readonly RouteRecordRaw[]>([]);
@@ -51,7 +51,14 @@ export function setUserMenuRoutes(records: readonly RouteRecordRaw[]): void {
   userShell.value = records;
 }
 
-export const menuTree = computed<HmxMenuNode[]>(() => buildMenuTree([...staticShell, ...userShell.value]));
+export const menuTree = computed<HmxMenuNode[]>(() => pinHome(buildMenuTree([...staticShell, ...userShell.value])));
+
+/** 首页置顶：home 归属在阶段二（userShell），排在静态壳层页（如帮助文档）之后；
+ *  「菜单首位是首页」是壳层展示规则（与 meta.hidden 同级），与 home 来自哪个 shell 无关。 */
+function pinHome(nodes: HmxMenuNode[]): HmxMenuNode[] {
+  const i = nodes.findIndex((n) => n.page === "home");
+  return i > 0 ? [nodes[i], ...nodes.slice(0, i), ...nodes.slice(i + 1)] : nodes;
+}
 
 function buildMenuTree(records: readonly RouteRecordRaw[], parentPath = ""): HmxMenuNode[] {
   const out: HmxMenuNode[] = [];
@@ -70,8 +77,9 @@ function buildMenuTree(records: readonly RouteRecordRaw[], parentPath = ""): Hmx
       icon: r.meta?.icon,
       page: pageId,
       url,
-      // 拒帧外链：openPage 按 openMode === "blank" 走 window.open，不导航
-      openMode: r.meta?.external ? "blank" : undefined,
+      // 拒帧外链（external）与「本地页新开标签」（blank）都由 openPage 走 window.open：
+      // 前者没有可导航路由、地址在 url；后者路由照常注册，openPage 自己按 page 解析地址
+      openMode: r.meta?.external || r.meta?.blank ? "blank" : undefined,
       children: children?.length ? children : undefined,
     });
   }

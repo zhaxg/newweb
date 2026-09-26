@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import type { RouteRecordRaw } from "vue-router";
 /* RouteMeta 模块增强：那个文件无运行时导出，靠这行 side-effect import 生效，勿删（见其文件头） */
 import "@/router/core/routeMeta";
-import { rootRedirectRoute, loginRoute, homeRoute, forbiddenRoute, notFoundRoute } from "@/router/builtin";
+import { rootRedirectRoute, loginRoute, forbiddenRoute, notFoundRoute } from "@/router/builtin";
 import { businessRoutes } from "@/router/business";
 import { layouts, defaultLayoutName } from "@/layouts/composables/layouts";
 import { initMenuShell } from "@/layouts/composables/menuFromRoutes";
@@ -15,7 +15,10 @@ import { registerUserRoutes, resetUserRoutes } from "@/router/core/dynamicRoutes
    布局父记录由 @/layouts/composables/layouts 注册表生成——一个布局一个父，children 按 meta.layout 归位
    （缺省进默认布局），加布局只改注册表、不动这里。 */
 
-const staticLayoutLeaves: RouteRecordRaw[] = [homeRoute, forbiddenRoute, ...businessRoutes];
+/* home 不在静态装配里——归属由阶段二定夺：资源树带一级叶子 "home" 就用业务页，
+   否则内置 homeRoute 兜底（见 core/dynamicRoutes 的 withHomeOwnership）。
+   同一时刻路由表里只有一条 name "home"，不存在同名互顶后内置页回不来的问题。 */
+const staticLayoutLeaves: RouteRecordRaw[] = [forbiddenRoute, ...businessRoutes];
 const childrenOf = (layout: string) =>
   staticLayoutLeaves.filter((r) => (r.meta?.layout ?? defaultLayoutName) === layout);
 

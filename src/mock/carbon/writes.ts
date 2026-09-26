@@ -1,0 +1,208 @@
+import type { RouteMap } from "../admin/core";
+import { stubRoute } from "./list";
+
+const B = "/business";
+
+/**
+ * 碳域**只插桩**的端点：增删改、导入导出、详情查询。
+ *
+ * 按本次约定「只 mock 查询，增删改只插桩，不实现」——这些路径全部回 `ok(config, null)`，
+ * 不落库、不校验、不生成文件。**注册它们是为了不注册就会 404「mock 未注册的端点」**，
+ * 让页面上的新增/删除/导出点了有个正常反馈，而不是报错 toast。
+ *
+ * 路径来自线上 chunk 的静态抽取（`["'`](/api/business/...)["'`]` 全量正则），没有在演示系统
+ * 提交过任何写操作。方法未逐条实测，故 `get/post/put/delete` 四个动词都挂同一个占位——
+ * 命中哪个都回成功，反正不实现。带 `:id` 的键由 mockAdapter 的模式匹配兜住（见它文件尾）。
+ */
+const STUB_PATHS = [
+  /* 碳目标 */
+  "/targetManagement",
+  "/targetManagement/:id",
+  "/targetManagement/export",
+  "/targetManagement/importInsert",
+  /* 碳排放 */
+  "/emissionProject",
+  "/emissionProject/:id",
+  "/emissionProject/enable/:id",
+  "/emissionProject/deactivate/:id",
+  "/emissionType/add",
+  "/emissionType/update",
+  "/emissionType/delete",
+  "/emissionRecords",
+  "/emissionRecords/:id",
+  "/emissionRecords/exportEmissionRecords",
+  "/emissionRecords/exportProjectRecordsById",
+  "/emissionRecords/exportProjectRecordsMonth",
+  "/emissionRecords/exportProjectRecordsMonthDetail",
+  "/emissionRecords/exportProjectRecordsYear",
+  "/emissionRecords/exportProjectRecordsYearDetail",
+  "/emissionRecords/company/save",
+  "/emissionRecords/company/update",
+  "/emissionRecords/company/export",
+  "/emissionRecords/company/details/export",
+  "/emissionRecords/company/monthCollect/export",
+  "/emissionRecords/company/yearCollect/export",
+  "/emissionRecords/company/emissionTypeByCompany",
+  "/emissionRecords/company/fuelByEmissionType",
+  "/emissionRecords/company/getInfo",
+  "/emissionRecords/company/month/sum",
+  "/emissionRecords/company/monthList",
+  /* 碳排放 · 工序层级核算 */
+  "/fuelManageEnter",
+  "/fuelManageEnter/:id",
+  "/fuelManageEnter/selectList",
+  "/fuelManagePlatform/:id",
+  "/fuelManagePlatform/selectAllNameList",
+  "/productionMaterialsEnter",
+  "/productionMaterialsEnter/:id",
+  "/productionMaterialsPlatform/:id",
+  "/productionMaterialsPlatform/selectAllNameList",
+  "/productManage/add",
+  "/productManage/edit",
+  "/productManage/delete/:id",
+  "/productManage/getInfo/:id",
+  "/productManage/selectPordByFactory",
+  "/productManage/selectPordByProcess",
+  "/factoryManage/add",
+  "/factoryManage/edit",
+  "/factoryManage/delete/:id",
+  "/factoryManage/getInfo/:id",
+  "/factoryEnergy",
+  "/factoryEnergy/:id",
+  "/factoryEnergy/selectEnergyList",
+  "/factoryEnergy/selectProdListByFactory",
+  "/factoryEnergy/selectProdListByProcess",
+  "/factoryProduct",
+  "/factoryProduct/:id",
+  "/factoryProcess/add",
+  "/factoryProcess/edit",
+  "/factoryProcess/delete/:id",
+  "/factoryProcess/getInfo/:id",
+  "/processEnergyCollect/body",
+  "/processEnergyCollect/header",
+  "/processEnergyCollect/otherExport",
+  "/processEnergyYearController/body",
+  "/processEnergyYearController/header",
+  "/processEnergyYearController/export",
+  "/equipment/manage/add",
+  "/equipment/manage/edit",
+  "/equipment/manage/:id",
+  "/equipment/manage/export",
+  "/equipment/manage/importFile",
+  "/equipment/manage/download",
+  "/equipment/calibrationRecord/add",
+  "/equipment/calibrationRecord/edit",
+  "/equipment/calibrationRecord/delete",
+  "/equipment/calibrationRecord/:id",
+  /* 碳配额履约 */
+  "/anticipatedQuota/add",
+  "/anticipatedQuota/edit",
+  "/anticipatedQuota/deleteById/:id",
+  "/anticipatedQuota/getInfo/:id",
+  "/complianceManage/add",
+  "/complianceManage/edit",
+  "/complianceManage/delete/:id",
+  "/complianceManage/getInfo/:id",
+  "/quotaManage/add",
+  "/quotaManage/edit",
+  "/quotaManage/delete/:id",
+  "/quotaManage/getInfo/:id",
+  "/quotaPolicy/findQuotaPolicy",
+  /* 碳减排 */
+  "/offset/add",
+  "/offset/edit",
+  "/offset/delete/:id",
+  "/offset/getById/:id",
+  "/reductionProject",
+  "/reductionProject/:id",
+  "/reductionProject/enable/:id",
+  "/reductionProject/deactivate/:id",
+  "/reductionProject/historyList",
+  "/reductionRecords",
+  "/reductionRecords/:id",
+  "/reductionRecords/detail/:id",
+  "/reductionRecords/projectRecordsById",
+  "/reductionRecords/exportReductionRecords",
+  "/reductionRecords/exportProjectRecordsReport",
+  "/reductionRecords/exportProjectRecordsMonth",
+  "/reductionRecords/exportProjectRecordsMonthDetail",
+  "/reductionRecords/exportProjectRecordsYear",
+  "/reductionRecords/exportProjectRecordsYearDetail",
+  "/performanceCycle/add",
+  "/performanceCycle/edit",
+  "/performanceCycle/delete/:id",
+  "/performanceCycle/getInfo/:id",
+  /* 碳交易 */
+  "/carbonTrade/add",
+  "/carbonTrade/edit",
+  "/carbonTrade/delete/:id",
+  "/carbonTrade/getInfo/:id",
+  /* 碳预警 */
+  "/warningSetting/add",
+  "/warningSetting/edit",
+  "/warningSetting/delete/:id",
+  "/warningSetting/getInfo/:id",
+  "/warningSetting/changeStatus",
+  "/warningSetting/getUserAndDeptList",
+  "/warningRecord/getInfo/:id",
+  "/warningRecord/viewList",
+  /* 碳分析 */
+  "/analysisRecord/upload",
+  "/analysisRecord/clear",
+  "/analysisTarget/page",
+  "/analysisTarget/clear",
+  /* 碳报告 */
+  "/business/monthlyEvidence",
+  "/business/monthlyEvidence/:id",
+  "/business/monthlyEvidence/history",
+  "/business/monthlyEvidence/internalSelect",
+  "/business/monthlyEvidence/corporateLevelFuel",
+  "/business/monthlyEvidence/processFuelSelect",
+  /* 报表管理（导出） */
+  "/fuelProcessSummary/export",
+  "/fuelProcessSummary/daily",
+  "/fuelProcessSummary/dataUpdate",
+  /* 碳信息 */
+  "/carbonInfo/getDetailById/:id",
+  /* 碳排放计算器管理 */
+  "/forestCarbonConfigFuel",
+  "/forestCarbonConfigFuel/:id",
+  "/forestCarbonConfigHeat",
+  "/forestCarbonConfigHeat/:id",
+  "/forestCarbonConfigMcf",
+  "/forestCarbonConfigMcf/:id",
+  "/forestCarbonConfigProcess",
+  "/forestCarbonConfigProcess/:id",
+  "/forestCarbonConfigReduce",
+  "/forestCarbonConfigReduce/:id",
+  "/forestCarbonEnergy/:id",
+  "/forestCarbonEnergy/import",
+  "/forestCarbonEnergy/readExcel",
+  "/forestCarbonEnergy/templateDownload",
+  "/forestCarbonEnergy/emissionsReport",
+  "/forestCarbonEnergy/checkEmissionsReport",
+  "/forestMobileCarbonEnergy/:id",
+  "/forestMobileCarbonEnergy/info/:id",
+  "/forestMobileCarbonEnergy/submitCarbon",
+  "/CarbonEnterprise",
+  "/CarbonEnterprise/:id",
+  "/CarbonIndustryManage/:id",
+  "/profession",
+  "/profession/:id",
+  "/profession/getById/:id",
+  "/profession/list",
+  /* 大屏数据管理 */
+  "/dataConfig/edit",
+  "/dataConfig/getById/:id",
+  /* 通用文件 */
+  "/file/upload",
+  "/file/view",
+];
+
+export const carbonWriteRoutes: RouteMap = {};
+const stub = stubRoute();
+for (const p of STUB_PATHS) {
+  for (const m of ["get", "post", "put", "delete"]) {
+    carbonWriteRoutes[`${m} ${B}${p}`] = stub;
+  }
+}

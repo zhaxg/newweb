@@ -33,6 +33,16 @@ declare module "vue-router" {
     icon?: string;
     /** 拒帧外链：菜单里可见，点击由 openPage 走 window.open 而不导航（直链落 403） */
     external?: boolean;
+    /**
+     * 菜单点击时**新开浏览器标签**（照搬 external 的 openPage 分支），但路由本身照常注册、
+     * 可导航——与 `external` 的区别：external 是外链，路由 redirect 到 403、地址在 meta.url；
+     * blank 是**本地页**，组件正常挂载，只是壳层不 push 而改 window.open。
+     * 领导驾驶舱（本地复刻大屏）用它：新标签里整屏跑，壳层页签不被占用。
+     * **与 `layout: "blank"` 成对出现**（整屏页在同一标签里打开就没壳层可退出了，
+     * 所以 fromMenu 一次给出两个 meta，见其保留字注释）。
+     * 取值来源：资源 cQueryString 的保留字 `"blank"`（见 core/fromMenu 的 local 分支）。
+     */
+    blank?: boolean;
   }
 }
 

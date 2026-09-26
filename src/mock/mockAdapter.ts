@@ -18,6 +18,7 @@ import { smpRoutes } from "./mes4ddh/smp";
 import { sydRoutes } from "./mes4ddh/syd";
 import { smsRoutes } from "./mes4ddh/sms";
 import { printReportRoutes } from "./mes4ddh/printReport";
+import { carbonRoutes } from "./carbon";
 import { mesPlaceholderRoutes } from "./mes4ddh/placeholders";
 
 /**
@@ -46,6 +47,7 @@ const routes: RouteMap = {
   ...sydRoutes,
   ...smsRoutes,
   ...printReportRoutes,
+  ...carbonRoutes,
   // 迁移占位放最后：同名端点若域文件里已有手写 mock，手写优先，占位只兜「还没注册」的那些
   ...mesPlaceholderRoutes,
 };
@@ -77,7 +79,7 @@ export function mockAdapter(config: InternalAxiosRequestConfig): Promise<AxiosRe
         resolve(respond(config, 200, envelope(false, "401", "hmxapi: User is not authenticated", null)));
         return;
       }
-      const handler = routes[key];
+      const handler = routes[key] ?? matchPath(key);
       if (handler) {
         resolve(handler(config));
       } else {
@@ -85,4 +87,27 @@ export function mockAdapter(config: InternalAxiosRequestConfig): Promise<AxiosRe
       }
     }, LATENCY_MS);
   });
+}
+
+/* ── 路径参数键（`get /business/xxx/getInfo/:id`）──────────────────────
+   路由表是 `Record<键, Handler>` 的**精确**查表，`:id` 段的键永远等不到真实请求
+   （`get .../getInfo/2095…` ≠ `get .../getInfo/:id`）。碳资产域大量端点是这种 REST 形式
+   （getXxxInfo/:id、delete/:id、enable/:id…，线上 chunk 里就有 50+ 个），不支持就会一律 404
+   「mock 未注册的端点」，而这些操作按约定是要**插桩回成功**的。
+   实现取「先精确、后模式」：只有精确键落空才扫含 `:` 的键，常规键零开销；
+   模式键少（当前只有碳域），每次 miss 顺序扫一遍的代价可忽略。 */
+const PATTERN_KEYS = Object.keys(routes).filter((k) => k.includes(":"));
+
+function matchPath(key: string): Handler | undefined {
+  const sp = key.indexOf(" ");
+  if (sp < 0) return undefined;
+  const method = key.slice(0, sp + 1);
+  const path = key.slice(sp + 1);
+  for (const k of PATTERN_KEYS) {
+    if (!k.startsWith(method)) continue;
+    const pattern = k.slice(method.length);
+    const re = new RegExp(`^${pattern.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/:[A-Za-z0-9_]+/g, "[^/]+")}$`);
+    if (re.test(path)) return routes[k];
+  }
+  return undefined;
 }

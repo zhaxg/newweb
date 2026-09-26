@@ -19,7 +19,8 @@ import type { MenuResNode } from "@/api/common/menuRescTree";
  *   resetUserRoutes 会静默失效、动态路由登出后永远留在路由表里（2026-09 实测确认）。
  * - 页面叶子（有 page、无 url）→ 常规记录，name = `page:${pageId}`，组件按 src 解析、未命中落占位页。
  *
- * 数组顺序即菜单顺序（menuRescTree 已按后端 cOrder 排过）。首页由 builtin 静态注册，不在本树内。
+ * 数组顺序即菜单顺序（menuRescTree 已按后端 cOrder 排过）。首页不强制排除：资源树里
+ * 一级叶子 pageId "home" 会被 dynamicRoutes 认定为本会话首页（顶掉内置兜底页）。
  *
  * 引用约束：⛔ **仅 router 内部引用**（现消费方：@/router/index、core/guard）。本文件静态引入
  * layouts/pages 下的页面组件，从 router 外部引用会把这些组件拖进调用方的静态依赖链。
@@ -89,11 +90,26 @@ function toRecord(node: MenuResNode, parentPath = ""): RouteRecordRaw | null {
     return { path, name: `folder:${full}`, meta: { title: node.label, icon: node.icon }, children };
   }
 
+  /* cQueryString 的保留字 "blank" = **整屏页**：同时决定两件事——
+     ① `meta.layout = "blank"` 挂 BlankLayout（无 Header/Sidebar/Tab，整屏承载）；
+     ② `meta.blank = true` → 菜单点击由 openPage 走 window.open 开浏览器新标签。
+     两件事必须绑一起：整屏页在同一标签里打开就没有壳层可退出了，用户回不去，所以它只能新标签开。
+     纯资源侧没有「布局/打开方式」字段，复用 cQueryString 这条已有透传链（→ MenuResNode.query → meta）；
+     取值 "blank" 与线上 cQueryString 实际取值（"ZG01,1"/"FUR"/JSON 串）不撞。
+     是 blank 时不再往 qs 里塞，免得页面经 useMenuQuery 读到导航配置。 */
+  const blank = node.query === "blank";
   return {
     path,
     name: `page:${node.page}`,
     component: resolvePageComponent(node.src, node.label),
-    meta: { pageId: node.page, title: node.label, icon: node.icon, qs: node.query },
+    meta: {
+      pageId: node.page,
+      title: node.label,
+      icon: node.icon,
+      qs: blank ? undefined : node.query,
+      blank: blank || undefined,
+      layout: blank ? "blank" : undefined,
+    },
   };
 }
 

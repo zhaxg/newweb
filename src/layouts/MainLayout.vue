@@ -24,14 +24,23 @@ const { toast } = useToast();
 const settingsOpen = ref(false);
 const sidebarVisible = ref(true);
 
-/* 导航统一入口（Header / Sidebar 都汇到这）。三种来源三种去向：
-   普通页面 → 组件路由；外链 iframe 模式 → 同样有 page，路由 component 选 IframePage、
-   meta.url 挂地址 → 内置承载；外链 blank 模式 → 拒帧站点（见 fromMenu
-   EXTERNAL_BLANK_HOSTS），没注册路由，直接开浏览器新标签。 */
+/* 导航统一入口（Header / Sidebar 都汇到这）。四种来源四种去向：
+   普通页面 → 组件路由 push；
+   外链 iframe 模式 → 同样有 page，路由 component 选 IframePage、meta.url 挂地址 → 内置承载；
+   外链 blank 模式 → 拒帧站点（见 fromMenu EXTERNAL_BLANK_HOSTS），没注册路由，直接开浏览器新标签；
+   本地页 blank 模式（meta.blank，如领导驾驶舱）→ 路由注册着，但按 pageId 反解地址后 window.open，
+   大屏这类整屏页不占壳层页签。 */
 function openPage(node: HmxMenuNode) {
-  if (node.openMode === "blank" && node.url) {
-    window.open(node.url, "_blank", "noopener");
-    return;
+  if (node.openMode === "blank") {
+    /* 两种来源同一个动作：
+       · 拒帧外链（meta.external）→ node.url 是绝对地址，直接开；
+       · 本地页新开标签（meta.blank，如领导驾驶舱的本地复刻大屏）→ 没有 url，
+         按 pageId 反解成本站地址再开。解析不出就退回正常导航，不让点击变成哑操作。 */
+    const target = node.url ?? (node.page ? router.resolve(`/${node.page}`).href : "");
+    if (target) {
+      window.open(target, "_blank", "noopener");
+      return;
+    }
   }
   if (!node.page) return;
   router.push(`/${node.page}`);

@@ -23,7 +23,8 @@ export const loginRoute: RouteRecordRaw = {
   meta: { public: true },
 };
 
-/** 壳层首页：pageId "home"，与动态注册页同一 URL 约定（/<pageId>）；菜单首位节点（icon 走 tabler Home） */
+/** 壳层首页（内置兜底）：不再静态注册——归属由阶段二定夺，资源树没有一级叶子 "home" 时
+    才由 core/dynamicRoutes 把它挂进默认布局（顶替路径见其 withHomeOwnership 注释） */
 export const homeRoute: RouteRecordRaw = {
   path: "home",
   name: "home",
