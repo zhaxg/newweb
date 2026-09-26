@@ -16,35 +16,6 @@
     "unicorn/no-useless-spread": "warn",
     "unicorn/no-useless-fallback-in-spread": "warn",
     "unicorn/no-single-promise-in-promise-methods": "warn",
-    "unicorn/prefer-string-starts-ends-with": "warn",
-    "no-restricted-imports": [
-      "error",
-      {
-        "paths": [
-          {
-            "name": "@/router",
-            "message": "src/router 对外零消费方，勿 import 路由 index：它会拉进 guard → store → api，形成 request → router → guard → store → api → request 循环依赖（AGENTS §4.2）。需要 router 实例请走注入——传输层用 setAuthFailureHandler，指令层用 app.use 插件选项。"
-          },
-          {
-            "name": "@/router/index",
-            "message": "同上：src/router 对外零消费方，router 实例一律走注入（见 AGENTS「依赖倒置」）。"
-          }
-        ]
-      }
-    ]
-  },
-  "overrides": [
-    {
-      "files": ["src/lib/primeLcmgr.ts"],
-      "rules": {
-        "no-unused-vars": "off"
-      }
-    },
-    {
-      "files": ["src/main.ts"],
-      "rules": {
-        "no-restricted-imports": "off"
-      }
-    }
-  ]
+    "unicorn/prefer-string-starts-ends-with": "warn"
+  }
 }

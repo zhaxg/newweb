@@ -137,9 +137,11 @@ npm run build         # ④ 能否构建
 - 分级：`correctness=error`（挂 CI 阻断）· `suspicious=warn`；`pedantic/style/restriction/nursery` 全关。
 - `unicorn/no-useless-spread`、`unicorn/no-useless-fallback-in-spread`、
   `unicorn/no-single-promise-in-promise-methods`、`unicorn/prefer-string-starts-ends-with` 降为 warn。
-- `src/lib/primeLcmgr.ts` 单独豁免 `no-unused-vars`（许可证桩文件：`vite.config.ts` 把
-  `@primeui/license-manager` alias 到它并恒返回 valid。**动许可相关文件前先确认授权状态**，
-  见 [`AGENTS.md` §6](./AGENTS.md)）。
+- **无 overrides**：配置只有 `categories` + 4 条 `unicorn/*` 降级。那 4 条是**降级**（它们属
+  `correctness`、默认 error）——业务示例里一批 `{...(x ?? {})}` 会报 error，而业务目录不许动，故挡住。
+- `src/lib/primeLcmgr.ts`（许可证桩：`vite.config.ts` 把 `@primeui/license-manager` alias 到它并
+  恒返回 valid）**不再需要配置豁免**——它的未用参数加了 `_` 前缀，签名不变。
+  **动许可相关文件前先确认授权状态**，见 [`AGENTS.md` §6](./AGENTS.md)。
 - `ignorePatterns`：`dist` `temp` `shots` `node_modules` `.qoder` `*.md`。
 
 当前实测（exit 1）：

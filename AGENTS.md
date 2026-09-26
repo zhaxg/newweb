@@ -45,7 +45,8 @@ src/pages/  DDH  LIMS  SHR  SMP  SMS  SQM  SYD  Widgets   ← 业务组的【未
 
 `vue-tsc` 因 `tsconfig.json` 的 `baseUrl` 触发 TS5101 会跳过全部文件级诊断（假绿），
 且仓库已删除 `tsconfig.json`，**类型级门槛暂停**，代之以 `oxlint`（`.oxlintrc.json`：
-correctness=error、suspicious=warn；`.qoder` 不参与扫描；`primeLcmgr.ts` 单独豁免 `no-unused-vars`）。
+correctness=error、suspicious=warn；`.qoder` 不参与扫描。**无 overrides**——原先为 `primeLcmgr.ts` 开的
+`no-unused-vars` 豁免已删（改为给它的未用参数加 `_` 前缀，签名不变）。
 要恢复类型门槛时：补一份无 `baseUrl` 的精简 `tsconfig.json`（仅 IDE/类型用）再评估 vue-tsc。
 
 ---
@@ -108,9 +109,9 @@ src/router/
 > 传输层用 `setAuthFailureHandler`（由 guard 注册），指令层用 `app.use(hmxPermissionPlugin, { router })`
 > （由 main.ts 传入）。原先为破环而设的 `core/bridge.ts` 已删除。
 
-> **这条边界由 lint 强制**：`.oxlintrc.json` 的 `no-restricted-imports` 禁掉 `@/router` 与
-> `@/router/index`（`src/main.ts` 例外，它本就该拿 index）。禁的是「import index 这个动作」——
-> 它才是成环的原因，见下方 re-export 说明。
+> **这条边界**曾经**由 lint 强制**（`no-restricted-imports` 禁 `@/router`），2026-09 按「配置尽量简单」
+> 的要求去掉了——现在零违规、纯靠约定与上面这段说明。**代价要清楚**：若有人在 `request.ts` 之类
+> 的位置重新 `import ... from "@/router"`，环会悄悄回来且没有任何工具会拦。
 
 ### 4.2.1 依赖倒置：传输层不认识 store 与 router
 
@@ -213,7 +214,9 @@ setAuthFailureHandler(() => { auth.logout(); return router.replace({ name: "logi
   框架层 0 error / 31 warning，全仓唯一 error 是业务示例 `SYD/YD2020` 的 `no-self-assign`。
   oxfmt 是**格式化真源**：写完代码 `npm run format`，验收 `npm run format:check`；`*.md` 不参与。
   lint 分级：correctness=error（挂 CI 阻断），suspicious=warn；`unicorn/no-useless-*` 等风格规则降为 warn，
-  `primeLcmgr.ts` 单独豁免 `no-unused-vars`（许可桩文件，见下方许可坑）。`.qoder/` 不扫描。
+  `.qoder/` 不扫描。**配置刻意保持最小**：无 overrides、无自定义限制规则；`rules` 里那 4 条
+  `unicorn/*` 设成 `warn` 是**降级**（它们属 `correctness`，默认是 error）——业务示例里有一批
+  `{...(x ?? {})}` 写法会因此报 error，而 AGENTS §2 不许动业务目录，故必须降级挡在门外。
 - **行尾**：`.gitattributes` 已建立（`* text=auto eol=lf`），工作区统一 LF，oxfmt `endOfLine=lf` 与之配套。
 - **`.env` 里有 7 个变量无人消费**：`VITE_MOBILE_ROUTER_NAMESPACE`、`VITE_APP_NAMESPACE`、
   `VITE_BASE_URL`、`VITE_API_URL_PREFIX`（接口前缀实际硬编码在 `request.ts` 的 `withApiPrefix()`）、
