@@ -1,27 +1,38 @@
 import { defineAsyncComponent, type Component } from "vue";
 
 /**
- * Tabler 图标数据驱动注册表（https://tabler.io/icons）。
- * 每个图标经 import.meta.glob 懒加载为独立小 chunk：初始包只含名字清单，
- * 用到的图标才发请求；菜单/资源里存的 cIcon 名称写错只会回退占位图标，不炸渲染。
+ * Tabler 图标解析（**壳层侧**，在首屏链上）。
+ *
+ * 全量注册表（6202 个图标）**不在本模块**——它在 lib/tablerIconRegistry.ts，只有图标选择器
+ * 与「未收录兜底」才加载。为什么这么拆：全量 glob 会在 chunk 里内联 6202 条 名字→懒加载器
+ * 映射，实测占 entry chunk **1,177,347 B（约 70%）**；而壳层（侧栏/顶栏）实际只需菜单用到的那批。
+ *
+ * 下面的 glob 是**小映射**（白名单见模式里的花括号），覆盖四处：
+ *   ① 后端资源种子的 cIcon（菜单图标）——`src/mock/admin/data/rescs.ts` 去重后 43 个
+ *   ② 静态路由的 meta.icon——`src/router/builtin.ts`（Home）+ `src/router/business.ts`（Blocks/Books/Wind）
+ *   ③ 兜底图标 File
+ *   ④ admin/gen 页硬编码用到的几个（Check/Copy/FileCode/Loader/Sparkles）
+ * 重新生成①②：
+ *   grep -oE 'cIcon: "[^"]*"' src/mock/admin/data/rescs.ts | sed 's/cIcon: //' | sort -u
+ *   grep -hoE 'icon: "[^"]*"' src/router/builtin.ts src/router/business.ts | sort -u
+ *
+ * ⚠️ **这份白名单漏了不会坏**——未收录的名字会走 tablerIcon() 的兜底路径动态拉全量注册表，
+ * 只是那一次多下一个 chunk（之后进 cache）。所以它是**性能白名单，不是正确性依赖**。
+ * 但漏了会**悄悄抵消这次优化**（首屏就拉 183 KB gz 的注册表），故：
+ *   **完整性自检**——dev 下开首页看 Network，若出现 `tablerIconRegistry` 的请求，就是有图标漏了。
+ *
+ * ⚠️ glob 的模式必须是**单个字符串字面量**（Vite 靠静态分析收集），不能用变量或模板串拼接。
  */
-const loaders = import.meta.glob("/node_modules/@tabler/icons-vue/dist/esm/icons/Icon*.mjs");
-
-/** Pascal 基名（无 Icon 前缀），如 "Settings"、"ChartPie" */
-export const TABLER_ICON_NAMES: string[] = [];
+const loaders = import.meta.glob(
+  "/node_modules/@tabler/icons-vue/dist/esm/icons/Icon{AlertTriangle,Api,Apps,ArrowsJoin2,Atom2,Blocks,Bolt,Books,Building,BuildingFactory,BuildingWarehouse,Calendar,ChartBar,ChartLine,Check,Checks,Clock,Code,Copy,Database,DeviceMobile,File,FileCode,FileText,Flame,Flask,Folder,Headset,History,Home,Key,Loader,Package,Pencil,Printer,Receipt,ReportAnalytics,Route,Router,Ruler,Scale,Scan,Scissors,Settings,ShieldLock,Sparkles,Stack2,Table,Tool,Truck,User,UsersGroup,Wind}.mjs",
+);
 
 const loaderByPascal = new Map<string, () => Promise<{ default: Component }>>();
-
 for (const key of Object.keys(loaders)) {
   const m = /\/(Icon[A-Za-z0-9]+)\.mjs$/.exec(key);
   if (!m) continue;
-  const base = m[1].slice(4);
-  TABLER_ICON_NAMES.push(base);
-  loaderByPascal.set(base, loaders[key] as () => Promise<{ default: Component }>);
+  loaderByPascal.set(m[1].slice(4), loaders[key] as () => Promise<{ default: Component }>);
 }
-TABLER_ICON_NAMES.sort();
-
-const kebab = (name: string) => name.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
 
 /** kebab → Pascal：chart-pie → ChartPie */
 function pascalize(name: string) {
@@ -49,29 +60,27 @@ export function tablerIcon(rawName?: string | null): Component | null {
   const name = normalize(rawName);
   if (!name) return null;
   if (cache.has(name)) return cache.get(name) ?? null;
+
   const load = loaderByPascal.get(name);
-  if (!load) {
-    cache.set(name, null);
-    return null;
+  if (load) {
+    const comp = defineAsyncComponent({ loader: () => load().then((m) => m.default) });
+    cache.set(name, comp);
+    return comp;
   }
-  const comp = defineAsyncComponent({ loader: () => load().then((m) => m.default) });
+
+  /* 未收录在小映射里 → 兜底动态加载全量注册表。
+     只在后端菜单出现新图标（或白名单过期）时走一次，之后进 cache；见文件头「漏了不会坏」。 */
+  const comp = defineAsyncComponent({
+    loader: async () => {
+      const { tablerIconLoader } = await import("@/lib/tablerIconRegistry");
+      const loader = tablerIconLoader(name);
+      if (!loader) return { render: () => null } as Component;
+      return (await loader()).default;
+    },
+  });
   cache.set(name, comp);
   return comp;
 }
 
-/** 兜底图标（Tabler file），解析失败时统一回退它；glob 修复后恒非空，空渲染仅为类型安全网 */
+/** 兜底图标（Tabler file），解析失败时统一回退它；空渲染仅为类型安全网 */
 export const TABLER_FALLBACK_ICON: Component = tablerIcon("File") ?? { render: () => null };
-
-/** 供选择器搜索：Pascal 与 kebab 双形态小写匹配（空格视作连字符） */
-export function filterTablerIcons(keyword: string, limit = 0): string[] {
-  const kw = keyword.trim().toLowerCase().replace(/\s+/g, "-");
-  if (!kw) return limit ? TABLER_ICON_NAMES.slice(0, limit) : TABLER_ICON_NAMES;
-  const out: string[] = [];
-  for (const name of TABLER_ICON_NAMES) {
-    if (name.toLowerCase().includes(kw) || kebab(name).includes(kw)) {
-      out.push(name);
-      if (limit && out.length >= limit) break;
-    }
-  }
-  return out;
-}

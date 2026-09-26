@@ -301,11 +301,16 @@
       <span><b>方式</b> 只读分析，未改动任何代码</span>
     </div>
     <p class="thesis" style="margin-top:20px;font-size:14px;color:var(--ink-3)">
-      ⚠️ 本文是 <b>2026-09-26 的快照</b>，文中计数与结构描述以当日为准。其后路由层已继续演进：
-      正文提到的「叶模块拆环」已被<b>依赖倒置</b>取代——传输层不再认识 store 与 router，
+      ⚠️ 本文是 <b>2026-09-26 的快照</b>，文中计数与结构描述以当日为准。其后已继续演进：
+      正文提到的「叶模块拆环」被<b>依赖倒置</b>取代——传输层不再认识 store 与 router，
       <code>core/bridge.ts</code> 已删除，改为 <code>setTokenProvider</code> /
-      <code>setAuthFailureHandler</code> 注入（见 AGENTS §4.2.1）。另：文中列为 P0 的
-      「mock 数据进生产包」与「gzip 陈旧」两条尚待处理。
+      <code>setAuthFailureHandler</code> 注入（见 AGENTS §4.2.1）。<br>
+      P0 进展：<b>gzip 陈旧已修</b>（钩子 <code>generateBundle</code>→<code>writeBundle</code>，
+      186/186 逐字节一致，entry 的 <code>.gz</code> 里 <code>__VITE_PRELOAD__</code> 由 6527 → 0）；
+      <b>图标注册表已两级化</b>——本文列为 P1 的「砍注册表」经复核<b>说法有误</b>（6202 个图标是
+      IconPicker 的真实需求，不是冗余），正确做法是把它移出首屏链：壳层改持白名单小映射、
+      全量注册表独立成 chunk。实测 entry 原始 1.67 MB → <b>494 KB</b>、gz 299 KB → <b>117 KB</b>。
+      「mock 数据进生产包」仍未处理。
     </p>
   </header>
 

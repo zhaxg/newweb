@@ -3,7 +3,10 @@ import { computed, ref, watch } from "vue";
 import { IconX } from "@tabler/icons-vue";
 import Popover from "primevue/popover";
 import InputText from "primevue/inputtext";
-import { TABLER_FALLBACK_ICON, TABLER_ICON_NAMES, filterTablerIcons, tablerIcon } from "@/lib/tablerIcons";
+import { TABLER_FALLBACK_ICON, tablerIcon } from "@/lib/tablerIcons";
+/* 全量注册表单独 import：它带着 6202 条映射（~173 KB gz），只应在本选择器这类页面加载，
+   不进首屏链（见 lib/tablerIconRegistry.ts 文件头） */
+import { TABLER_ICON_NAMES, filterTablerIcons } from "@/lib/tablerIconRegistry";
 
 const props = defineProps<{ modelValue: string }>();
 const emit = defineEmits<{ "update:modelValue": [value: string] }>();

@@ -36,7 +36,7 @@ src/pages/  DDH  LIMS  SHR  SMP  SMS  SQM  SYD  Widgets   ← 业务组的【未
 | 目的 | 命令 | 现状 |
 |---|---|---|
 | 开发服务器（mock） | `npm run dev` | ✅ |
-| 生产构建 | `npm run build` | ✅ `.env.production` 已设 `VITE_USE_MOCK=false` |
+| 生产构建 | `npm run build` | ✅ `.env.production` 已设 `VITE_USE_MOCK=false`；产 `.gz` 静态预压缩（钩子用 `writeBundle`，见 `vite.config.ts` 注释） |
 | **静态检查门槛（替代原 vue-tsc）** | `npm run lint`（`typecheck` 为其别名） | ⚠️ 全仓 1 error + 234 warning：唯一 error 在业务示例 `SYD/YD2020/index.vue:189` 的自赋值 no-op（`no-self-assign`）；**框架层 0 error / 31 warning** |
 | 字阶纪律审计 | `npm run audit:ui` | ⚠️ 当前 174 处违规、exit 1（R2 89 · R5 67 · R4 15 · R3 2 · R1 1），多数在业务示例里；**框架层 9 处**：`pages/_core` 5 · `layouts/pages` 2 · `components/common` 2 |
 | 格式化 | `npm run format` / `npm run format:check` | ✅ 已接入 oxfmt（`.oxfmtrc.json`：printWidth 120、LF、忽略 `*.md`），全仓已格式化一遍 |
@@ -172,7 +172,8 @@ setAuthFailureHandler(() => { auth.logout(); return router.replace({ name: "logi
 | 主题色运行时覆盖 | `src/lib/themeSettings.ts` + `src/stores/settingsStore.ts` |
 | 设计 token / 字阶 | `src/styles/tokens.css` · `globals.css`（`@theme`） |
 | AG Grid 全局默认 | `src/lib/agGrid.ts`（`hmxDefaultColDef` / `makeHmxGridTheme`） |
-| 图标解析 | `src/lib/tablerIcons.ts` |
+| 图标解析（壳层，首屏链） | `src/lib/tablerIcons.ts`（白名单 + 兜底） |
+| 图标全量注册表（勿进首屏） | `src/lib/tablerIconRegistry.ts`（仅 IconPicker 用） |
 | 按钮权限 `v-hp` | `src/composables/usePermission.ts` · `stores/permissionStore.ts` |
 | 壳层布局 / 页签 | `src/layouts/MainLayout.vue` · `components/chromeTabs/` |
 | localStorage 加密 | `src/lib/encryptedStorage.ts` |
@@ -248,9 +249,19 @@ setAuthFailureHandler(() => { auth.logout(); return router.replace({ name: "logi
 - **`globalError` 刻意抑制原生 unhandledrejection 输出**（已接管：console 全量留痕 + toast 克制提示，
   同类错误 3s 去重）——`preventDefault()` 是设计行为，别当 bug 去掉。
 - **全局禁用右键**（`App.vue:25`），是刻意行为不是 bug。
-- **图标有两套加载策略**互相打架：`tablerIcons.ts` 的 `import.meta.glob` 懒加载
-  vs 全仓 300 处 `import { IconX } from "@tabler/icons-vue"`（barrel 静态 re-export 全量）。
-  构建因此产出 6000+ 个 chunk，且持续刷 `INEFFECTIVE_DYNAMIC_IMPORT` 警告——**是已知问题，不是新引入的**。
+- **图标加载分两层**（2026-09 拆，此前全量注册表在首屏）：
+  - `lib/tablerIcons.ts` —— **壳层侧，在首屏链上**。持一份**白名单小映射**（后端菜单 cIcon +
+    静态路由 meta.icon + 兜底 File + gen 页硬编码，见该文件里的花括号模式）。未收录的名字走
+    **兜底动态 import** `lib/tablerIconRegistry.ts`，所以白名单**漏了不会坏**，只是那次多下一个 chunk。
+  - `lib/tablerIconRegistry.ts` —— **全量 6202 个，刻意不在首屏链上**。只有
+    `pages/admin/resc/IconPicker.vue` 直接 import（它要全量做搜索）。
+  拆分前全量 glob 内联 6202 条映射，实测占 entry chunk **1,177,347 B（约 70%）**；拆后 entry
+  原始 1.67 MB → **494 KB**、gz 299 KB → **117 KB**。
+  **别把 glob 挪回 tablerIcons.ts**。完整性自检：dev 下开首页看 Network，若出现
+  `tablerIconRegistry` 请求就是白名单漏了图标（优化被悄悄抵消）。
+- **barrel 静态 import 仍在**：全仓约 300 处 `import { IconX } from "@tabler/icons-vue"`
+  （业务页自己用，不经 `tablerIcon()`），构建因此仍产出 6000+ chunk 并刷
+  `INEFFECTIVE_DYNAMIC_IMPORT` 警告——**是已知问题，不是新引入的**；它与上面的两层拆分是两件事。
 
 ---
 

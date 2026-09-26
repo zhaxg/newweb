@@ -100,6 +100,10 @@ npm run preview    # 预览产物
 配合 nginx `gzip_static` / IIS 静态压缩，避免服务器实时压缩 6000+ chunk 烧 CPU。
 **原文件保留**——服务器未配预压缩时退化为不压缩，不会 404。
 
+> 钩子用 `writeBundle` 而非 `generateBundle`：后者跑在 Vite 的 import-analysis **之前**，
+> 压到的是 `__VITE_PRELOAD__` 尚未替换成 `__vite__mapDeps` 的**半成品**（实测 entry 的 `.gz`
+> 里带 6527 处未定义标识符，配了 `gzip_static` 的服务器会把它发给用户 → 懒加载抛 ReferenceError）。
+
 > `npm run build` **只跑 `vite build`，不含任何静态检查**（类型门槛已随 vue-tsc 退役，见下节）。
 > 发布前请手动跑「代码检查」的四道命令。
 
@@ -213,7 +217,8 @@ src/
 │   └── pages/              # 框架自带页（ForbiddenPage 403 / PlaceholderPage 占位 / IframePage 外链承载）
 ├── lib/                    # agGrid · primeTheme(HmxCompact) · themeSettings · encryptedStorage
 │                           # clickGuard(连击闸) · globalError · effectsPerf · fontSettings
-│                           # tablerIcons · menuQuery · yitIdHelper · primeLcmgr(许可桩)
+│                           # tablerIcons(壳层白名单) · tablerIconRegistry(全量,勿进首屏) · menuQuery
+│                           # yitIdHelper · primeLcmgr(许可桩)
 ├── mock/
 │   ├── admin/              # 系统管理域：*.ts 路由（auth/crud/users/roles/resc/kv/jobs/department/settings/codegen/store）
 │   │   └── data/           #   种子（一表一文件：depts · kvs · rescs · roles · users）
