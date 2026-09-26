@@ -132,7 +132,7 @@ export const seedEmissionProjects: any[] = [
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
     projectName: null,
     status: "0",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionUnit: "tCO2",
     fuelTypeVOList: null,
     emissionId: 1,
@@ -165,7 +165,7 @@ export const seedEmissionProjects: any[] = [
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
     projectName: null,
     status: "0",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionUnit: "tCO2",
     fuelTypeVOList: null,
     emissionId: 3,
@@ -198,7 +198,7 @@ export const seedEmissionProjects: any[] = [
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
     projectName: null,
     status: "0",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionUnit: "tCO2",
     fuelTypeVOList: null,
     emissionId: 5,
@@ -235,11 +235,11 @@ export const seedEmissionProjectDownPull: any[] = [
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
     projectName: null,
     status: "0",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionUnit: "tCO2",
     fuelTypeVOList: null,
     emissionId: 1,
-    emissionName: "消耗化石燃料排放（天津示例钢铁企业有限公司）",
+    emissionName: "消耗化石燃料排放（红河谷钢铁事业部）",
     fdeleteMark: null,
     ftenantId: null,
     fcreatorTime: null,
@@ -268,11 +268,11 @@ export const seedEmissionProjectDownPull: any[] = [
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
     projectName: null,
     status: "0",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionUnit: "tCO2",
     fuelTypeVOList: null,
     emissionId: 3,
-    emissionName: "过程排放（天津示例钢铁企业有限公司）",
+    emissionName: "过程排放（红河谷钢铁事业部）",
     fdeleteMark: null,
     ftenantId: null,
     fcreatorTime: null,
@@ -301,11 +301,11 @@ export const seedEmissionProjectDownPull: any[] = [
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
     projectName: null,
     status: "0",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionUnit: "tCO2",
     fuelTypeVOList: null,
     emissionId: 5,
-    emissionName: "含碳产品隐含的排放（天津示例钢铁企业有限公司）",
+    emissionName: "含碳产品隐含的排放（红河谷钢铁事业部）",
     fdeleteMark: null,
     ftenantId: null,
     fcreatorTime: null,
@@ -337,7 +337,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026090200005",
     serialnumber: "2026090216221487",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 3,
     emissionName: "过程排放",
     dataTime: "2026-09-02",
@@ -378,7 +378,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026090200004",
     serialnumber: "2026090216221468",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 1,
     emissionName: "消耗化石燃料排放",
     dataTime: "2026-09-02",
@@ -419,7 +419,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026090200006",
     serialnumber: "2026090216221496",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 5,
     emissionName: "含碳产品隐含的排放",
     dataTime: "2026-09-02",
@@ -460,7 +460,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026090200003",
     serialnumber: "2026090216221457",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 5,
     emissionName: "含碳产品隐含的排放",
     dataTime: "2026-09-01",
@@ -501,7 +501,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026090200001",
     serialnumber: "2026090216221373",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 1,
     emissionName: "消耗化石燃料排放",
     dataTime: "2026-09-01",
@@ -542,7 +542,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026090200002",
     serialnumber: "2026090216221479",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 3,
     emissionName: "过程排放",
     dataTime: "2026-09-01",
@@ -583,7 +583,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082800001",
     serialnumber: "2026082809122113",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 1,
     emissionName: "消耗化石燃料排放",
     dataTime: "2026-08-28",
@@ -624,7 +624,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082800003",
     serialnumber: "2026082809190326",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 5,
     emissionName: "含碳产品隐含的排放",
     dataTime: "2026-08-28",
@@ -665,7 +665,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082800002",
     serialnumber: "2026082809163835",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 3,
     emissionName: "过程排放",
     dataTime: "2026-08-28",
@@ -706,7 +706,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082700001",
     serialnumber: "2026082716360762",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 1,
     emissionName: "消耗化石燃料排放",
     dataTime: "2026-08-27",
@@ -747,7 +747,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082700003",
     serialnumber: "2026082716371134",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 5,
     emissionName: "含碳产品隐含的排放",
     dataTime: "2026-08-27",
@@ -788,7 +788,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082700002",
     serialnumber: "2026082716364096",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 3,
     emissionName: "过程排放",
     dataTime: "2026-08-27",
@@ -829,7 +829,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082600008",
     serialnumber: "2026082617025214",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 1,
     emissionName: "消耗化石燃料排放",
     dataTime: "2026-08-26",
@@ -870,7 +870,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082600010",
     serialnumber: "2026082617054290",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 5,
     emissionName: "含碳产品隐含的排放",
     dataTime: "2026-08-26",
@@ -911,7 +911,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082600009",
     serialnumber: "2026082617045769",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 3,
     emissionName: "过程排放",
     dataTime: "2026-08-26",
@@ -952,7 +952,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082800076",
     serialnumber: "2026082809340395",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 1,
     emissionName: "消耗化石燃料排放",
     dataTime: "2026-08-25",
@@ -993,7 +993,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082800078",
     serialnumber: "2026082809340374",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 5,
     emissionName: "含碳产品隐含的排放",
     dataTime: "2026-08-25",
@@ -1034,7 +1034,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082800077",
     serialnumber: "2026082809340315",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 3,
     emissionName: "过程排放",
     dataTime: "2026-08-25",
@@ -1075,7 +1075,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082800073",
     serialnumber: "2026082809340218",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 1,
     emissionName: "消耗化石燃料排放",
     dataTime: "2026-08-24",
@@ -1116,7 +1116,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082800074",
     serialnumber: "2026082809340353",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 3,
     emissionName: "过程排放",
     dataTime: "2026-08-24",
@@ -1157,7 +1157,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082800075",
     serialnumber: "2026082809340358",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 5,
     emissionName: "含碳产品隐含的排放",
     dataTime: "2026-08-24",
@@ -1198,7 +1198,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082800071",
     serialnumber: "2026082809340200",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 3,
     emissionName: "过程排放",
     dataTime: "2026-08-23",
@@ -1239,7 +1239,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082800070",
     serialnumber: "2026082809340239",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 1,
     emissionName: "消耗化石燃料排放",
     dataTime: "2026-08-23",
@@ -1280,7 +1280,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082800072",
     serialnumber: "2026082809340272",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 5,
     emissionName: "含碳产品隐含的排放",
     dataTime: "2026-08-23",
@@ -1321,7 +1321,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082800068",
     serialnumber: "2026082809340287",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 3,
     emissionName: "过程排放",
     dataTime: "2026-08-22",
@@ -1362,7 +1362,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082800067",
     serialnumber: "2026082809340278",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 1,
     emissionName: "消耗化石燃料排放",
     dataTime: "2026-08-22",
@@ -1403,7 +1403,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082800069",
     serialnumber: "2026082809340278",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 5,
     emissionName: "含碳产品隐含的排放",
     dataTime: "2026-08-22",
@@ -1444,7 +1444,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082800065",
     serialnumber: "2026082809340147",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 3,
     emissionName: "过程排放",
     dataTime: "2026-08-21",
@@ -1485,7 +1485,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082800064",
     serialnumber: "2026082809340189",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 1,
     emissionName: "消耗化石燃料排放",
     dataTime: "2026-08-21",
@@ -1526,7 +1526,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082800066",
     serialnumber: "2026082809340264",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 5,
     emissionName: "含碳产品隐含的排放",
     dataTime: "2026-08-21",
@@ -1567,7 +1567,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082800061",
     serialnumber: "2026082809340171",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 1,
     emissionName: "消耗化石燃料排放",
     dataTime: "2026-08-20",
@@ -1608,7 +1608,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082800062",
     serialnumber: "2026082809340153",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 3,
     emissionName: "过程排放",
     dataTime: "2026-08-20",
@@ -1649,7 +1649,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082800063",
     serialnumber: "2026082809340147",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 5,
     emissionName: "含碳产品隐含的排放",
     dataTime: "2026-08-20",
@@ -1690,7 +1690,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082800058",
     serialnumber: "2026082809340160",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 1,
     emissionName: "消耗化石燃料排放",
     dataTime: "2026-08-19",
@@ -1731,7 +1731,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082800060",
     serialnumber: "2026082809340125",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 5,
     emissionName: "含碳产品隐含的排放",
     dataTime: "2026-08-19",
@@ -1772,7 +1772,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082800059",
     serialnumber: "2026082809340134",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 3,
     emissionName: "过程排放",
     dataTime: "2026-08-19",
@@ -1813,7 +1813,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082800057",
     serialnumber: "2026082809340011",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 5,
     emissionName: "含碳产品隐含的排放",
     dataTime: "2026-08-18",
@@ -1854,7 +1854,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082800056",
     serialnumber: "2026082809340024",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 3,
     emissionName: "过程排放",
     dataTime: "2026-08-18",
@@ -1895,7 +1895,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082800055",
     serialnumber: "2026082809340096",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 1,
     emissionName: "消耗化石燃料排放",
     dataTime: "2026-08-18",
@@ -1936,7 +1936,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082800052",
     serialnumber: "2026082809340072",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 1,
     emissionName: "消耗化石燃料排放",
     dataTime: "2026-08-17",
@@ -1977,7 +1977,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082800054",
     serialnumber: "2026082809340099",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 5,
     emissionName: "含碳产品隐含的排放",
     dataTime: "2026-08-17",
@@ -2018,7 +2018,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082800053",
     serialnumber: "2026082809340083",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 3,
     emissionName: "过程排放",
     dataTime: "2026-08-17",
@@ -2059,7 +2059,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082800051",
     serialnumber: "2026082809340021",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 5,
     emissionName: "含碳产品隐含的排放",
     dataTime: "2026-08-16",
@@ -2100,7 +2100,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082800049",
     serialnumber: "2026082809335934",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 1,
     emissionName: "消耗化石燃料排放",
     dataTime: "2026-08-16",
@@ -2141,7 +2141,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082800050",
     serialnumber: "2026082809340029",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 3,
     emissionName: "过程排放",
     dataTime: "2026-08-16",
@@ -2182,7 +2182,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082800047",
     serialnumber: "2026082809335994",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 3,
     emissionName: "过程排放",
     dataTime: "2026-08-15",
@@ -2223,7 +2223,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082800048",
     serialnumber: "2026082809335935",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 5,
     emissionName: "含碳产品隐含的排放",
     dataTime: "2026-08-15",
@@ -2264,7 +2264,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082800046",
     serialnumber: "2026082809335975",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 1,
     emissionName: "消耗化石燃料排放",
     dataTime: "2026-08-15",
@@ -2305,7 +2305,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082800045",
     serialnumber: "2026082809335966",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 5,
     emissionName: "含碳产品隐含的排放",
     dataTime: "2026-08-14",
@@ -2346,7 +2346,7 @@ export const seedEmissionRecords: any[] = [
     companyRecordsCode: "ERC2026082800044",
     serialnumber: "2026082809335954",
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     emissionId: 3,
     emissionName: "过程排放",
     dataTime: "2026-08-14",
@@ -3165,7 +3165,7 @@ export const seedEmissionCalendar: any[] = [
 export const seedEmissionDetails: any[] = [
   {
     reportDate: "2026-09-02",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -3328,7 +3328,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-09-01",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -3491,7 +3491,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-08-28",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -3654,7 +3654,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-08-27",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -3817,7 +3817,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-08-26",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -3980,7 +3980,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-08-25",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -4143,7 +4143,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-08-24",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -4306,7 +4306,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-08-23",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -4469,7 +4469,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-08-22",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -4632,7 +4632,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-08-21",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -4795,7 +4795,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-08-20",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -4958,7 +4958,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-08-19",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -5121,7 +5121,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-08-18",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -5284,7 +5284,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-08-17",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -5447,7 +5447,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-08-16",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -5610,7 +5610,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-08-15",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -5773,7 +5773,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-08-14",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -5936,7 +5936,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-08-13",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -6099,7 +6099,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-08-12",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -6262,7 +6262,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-08-11",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -6425,7 +6425,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-08-10",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -6588,7 +6588,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-08-09",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -6751,7 +6751,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-08-08",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -6914,7 +6914,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-08-07",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -7077,7 +7077,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-08-06",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -7240,7 +7240,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-08-05",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -7403,7 +7403,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-08-04",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -7566,7 +7566,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-08-03",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -7729,7 +7729,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-08-02",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -7892,7 +7892,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-08-01",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -8055,7 +8055,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-07-31",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -8218,7 +8218,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-07-30",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -8381,7 +8381,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-07-29",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -8544,7 +8544,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-07-28",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -8707,7 +8707,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-07-27",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -8870,7 +8870,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-07-26",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -9033,7 +9033,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-07-25",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -9196,7 +9196,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-07-24",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -9359,7 +9359,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-07-23",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -9522,7 +9522,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-07-22",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -9685,7 +9685,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-07-21",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -9848,7 +9848,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-07-20",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -10011,7 +10011,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-07-19",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -10174,7 +10174,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-07-18",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -10337,7 +10337,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-07-17",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -10500,7 +10500,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-07-16",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -10663,7 +10663,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-07-15",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -10826,7 +10826,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-07-14",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -10989,7 +10989,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-07-13",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -11152,7 +11152,7 @@ export const seedEmissionDetails: any[] = [
   },
   {
     reportDate: "2026-07-12",
-    companyName: "天津示例钢铁企业有限公司",
+    companyName: "红河谷钢铁事业部",
     id: null,
     indicators: [
       {
@@ -11330,7 +11330,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2026-09",
     emissionName: "消耗化石燃料排放",
     typeCarbonDioxide: 4646.447228,
@@ -11367,7 +11367,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2026-09",
     emissionName: "过程排放",
     typeCarbonDioxide: 810.846,
@@ -11404,7 +11404,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2026-09",
     emissionName: "含碳产品隐含的排放",
     typeCarbonDioxide: 97.606,
@@ -11441,7 +11441,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2026-08",
     emissionName: "消耗化石燃料排放",
     typeCarbonDioxide: 79825.986839,
@@ -11478,7 +11478,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2026-08",
     emissionName: "过程排放",
     typeCarbonDioxide: 12390.6639,
@@ -11515,7 +11515,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2026-08",
     emissionName: "含碳产品隐含的排放",
     typeCarbonDioxide: 1340.288,
@@ -11552,7 +11552,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2026-07",
     emissionName: "消耗化石燃料排放",
     typeCarbonDioxide: 92316.935783,
@@ -11589,7 +11589,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2026-07",
     emissionName: "过程排放",
     typeCarbonDioxide: 13295.635296,
@@ -11626,7 +11626,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2026-07",
     emissionName: "含碳产品隐含的排放",
     typeCarbonDioxide: 1498.241,
@@ -11663,7 +11663,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2026-06",
     emissionName: "消耗化石燃料排放",
     typeCarbonDioxide: 82889.531633,
@@ -11700,7 +11700,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2026-06",
     emissionName: "过程排放",
     typeCarbonDioxide: 11747.288,
@@ -11737,7 +11737,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2026-06",
     emissionName: "含碳产品隐含的排放",
     typeCarbonDioxide: 1407.554,
@@ -11774,7 +11774,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2026-05",
     emissionName: "消耗化石燃料排放",
     typeCarbonDioxide: 69781.820408,
@@ -11811,7 +11811,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2026-05",
     emissionName: "过程排放",
     typeCarbonDioxide: 12448.474,
@@ -11848,7 +11848,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2026-05",
     emissionName: "含碳产品隐含的排放",
     typeCarbonDioxide: 1485.994,
@@ -11885,7 +11885,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2026-04",
     emissionName: "消耗化石燃料排放",
     typeCarbonDioxide: 78844.164879,
@@ -11922,7 +11922,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2026-04",
     emissionName: "过程排放",
     typeCarbonDioxide: 12304.13,
@@ -11959,7 +11959,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2026-04",
     emissionName: "含碳产品隐含的排放",
     typeCarbonDioxide: 1431.641,
@@ -11996,7 +11996,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2026-03",
     emissionName: "消耗化石燃料排放",
     typeCarbonDioxide: 72280.768884,
@@ -12033,7 +12033,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2026-03",
     emissionName: "过程排放",
     typeCarbonDioxide: 12378.626,
@@ -12070,7 +12070,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2026-03",
     emissionName: "含碳产品隐含的排放",
     typeCarbonDioxide: 1481.11,
@@ -12107,7 +12107,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2026-02",
     emissionName: "消耗化石燃料排放",
     typeCarbonDioxide: 66720.033352,
@@ -12144,7 +12144,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2026-02",
     emissionName: "过程排放",
     typeCarbonDioxide: 11149.9,
@@ -12181,7 +12181,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2026-02",
     emissionName: "含碳产品隐含的排放",
     typeCarbonDioxide: 1336.995,
@@ -12218,7 +12218,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2026-01",
     emissionName: "消耗化石燃料排放",
     typeCarbonDioxide: 78950.359805,
@@ -12255,7 +12255,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2026-01",
     emissionName: "过程排放",
     typeCarbonDioxide: 12542.588,
@@ -12292,7 +12292,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2026-01",
     emissionName: "含碳产品隐含的排放",
     typeCarbonDioxide: 1476.818,
@@ -12329,7 +12329,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2025-12",
     emissionName: "消耗化石燃料排放",
     typeCarbonDioxide: 86207.832476,
@@ -12366,7 +12366,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2025-12",
     emissionName: "过程排放",
     typeCarbonDioxide: 12377.672,
@@ -12403,7 +12403,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2025-12",
     emissionName: "含碳产品隐含的排放",
     typeCarbonDioxide: 1490.471,
@@ -12440,7 +12440,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2025-11",
     emissionName: "消耗化石燃料排放",
     typeCarbonDioxide: 76473.031635,
@@ -12477,7 +12477,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2025-11",
     emissionName: "过程排放",
     typeCarbonDioxide: 12074.422,
@@ -12514,7 +12514,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2025-11",
     emissionName: "含碳产品隐含的排放",
     typeCarbonDioxide: 1438.042,
@@ -12551,7 +12551,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2025-10",
     emissionName: "消耗化石燃料排放",
     typeCarbonDioxide: 71013.284964,
@@ -12588,7 +12588,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2025-10",
     emissionName: "过程排放",
     typeCarbonDioxide: 12348.576,
@@ -12625,7 +12625,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2025-10",
     emissionName: "含碳产品隐含的排放",
     typeCarbonDioxide: 1515.52,
@@ -12662,7 +12662,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2025-09",
     emissionName: "消耗化石燃料排放",
     typeCarbonDioxide: 79439.832894,
@@ -12699,7 +12699,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2025-09",
     emissionName: "过程排放",
     typeCarbonDioxide: 11959.994,
@@ -12736,7 +12736,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2025-09",
     emissionName: "含碳产品隐含的排放",
     typeCarbonDioxide: 1435.378,
@@ -12773,7 +12773,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2025-08",
     emissionName: "消耗化石燃料排放",
     typeCarbonDioxide: 78689.017023,
@@ -12810,7 +12810,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2025-08",
     emissionName: "过程排放",
     typeCarbonDioxide: 12474.936,
@@ -12847,7 +12847,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2025-08",
     emissionName: "含碳产品隐含的排放",
     typeCarbonDioxide: 1502.126,
@@ -12884,7 +12884,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2025-07",
     emissionName: "消耗化石燃料排放",
     typeCarbonDioxide: 71764.025635,
@@ -12921,7 +12921,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2025-07",
     emissionName: "过程排放",
     typeCarbonDioxide: 12443.5,
@@ -12958,7 +12958,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2025-07",
     emissionName: "含碳产品隐含的排放",
     typeCarbonDioxide: 1490.952,
@@ -12995,7 +12995,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2025-06",
     emissionName: "消耗化石燃料排放",
     typeCarbonDioxide: 68401.414286,
@@ -13032,7 +13032,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2025-06",
     emissionName: "过程排放",
     typeCarbonDioxide: 12054.344,
@@ -13069,7 +13069,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2025-06",
     emissionName: "含碳产品隐含的排放",
     typeCarbonDioxide: 1446.367,
@@ -13106,7 +13106,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2025-05",
     emissionName: "消耗化石燃料排放",
     typeCarbonDioxide: 78543.200844,
@@ -13143,7 +13143,7 @@ export const seedMonthCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2025-05",
     emissionName: "过程排放",
     typeCarbonDioxide: 12553.696,
@@ -13184,7 +13184,7 @@ export const seedYearCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2026",
     emissionName: "消耗化石燃料排放",
     typeCarbonDioxide: 626256.048811,
@@ -13221,7 +13221,7 @@ export const seedYearCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2026",
     emissionName: "过程排放",
     typeCarbonDioxide: 99068.151196,
@@ -13258,7 +13258,7 @@ export const seedYearCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2026",
     emissionName: "含碳产品隐含的排放",
     typeCarbonDioxide: 11556.247,
@@ -13295,7 +13295,7 @@ export const seedYearCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2025",
     emissionName: "消耗化石燃料排放",
     typeCarbonDioxide: 887382.996238,
@@ -13332,7 +13332,7 @@ export const seedYearCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2025",
     emissionName: "过程排放",
     typeCarbonDioxide: 146420.426,
@@ -13369,7 +13369,7 @@ export const seedYearCollect: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     date: "2025",
     emissionName: "含碳产品隐含的排放",
     typeCarbonDioxide: 17596.756,

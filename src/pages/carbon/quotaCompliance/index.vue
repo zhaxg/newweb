@@ -72,7 +72,7 @@ const spec: ListPageSpec = {
   edit: {
     title: "配额履约",
     fields: [
-      { key: "enterName", label: "企业名称", kind: "select", options: ["天津示例钢铁企业有限公司"] },
+      { key: "enterName", label: "企业名称", kind: "select", options: ["红河谷钢铁事业部"] },
       { key: "serverType", label: "业务类型", kind: "select", options: ["履约", "配额"] },
       { key: "serverYear", label: "业务年份", kind: "input" },
       { key: "quotaComplianceData", label: "碳量", kind: "number", unit: "tCO2" },

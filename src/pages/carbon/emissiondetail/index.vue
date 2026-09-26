@@ -15,7 +15,6 @@
  *   · **「工序层级」**：线上是 radio 切换、切换**不发请求**（实测），DOM 里是第二张同结构的表，
  *     当前 0 行且指标列未单独捕获 —— 本页切过去显示同样的列头、行数为 0，与线上空表一致；
  *     等拿到它的指标集再拆。
- *   · 导出 `emissionRecords/company/details/export` 已占位。
  */
 import { computed, onMounted, reactive, ref } from "vue";
 import Button from "primevue/button";
@@ -23,12 +22,10 @@ import DatePicker from "primevue/datepicker";
 import SelectButton from "primevue/selectbutton";
 import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, FirstDataRenderedEvent, GridReadyEvent, GridApi } from "ag-grid-community";
-import { IconDownload, IconRotateClockwise, IconSearch } from "@tabler/icons-vue";
+import { IconRotateClockwise, IconSearch } from "@tabler/icons-vue";
 import { autoSizeOnFirstData, makeHmxGridTheme } from "@/lib/agGrid";
-import { carbonQuery, carbonStub } from "@/api/carbon/queries";
-import { useToast } from "@/composables/useToast";
+import { carbonQuery } from "@/api/carbon/queries";
 import CarbonPager from "../CarbonPager.vue";
-import { seqRenderer } from "../rowActions";
 
 interface Indicator {
   key: string;
@@ -41,7 +38,6 @@ interface DetailRow {
   indicators: Indicator[];
 }
 
-const { toast } = useToast();
 const theme = makeHmxGridTheme();
 
 /** 与线上 radio 一致：企业层级 / 工序层级 */
@@ -66,7 +62,6 @@ function headerOf(name: string): string {
 
 const colDefs = computed<ColDef[]>(() => {
   const base: ColDef[] = [
-    { colId: "seq", headerName: "序号", width: 64, valueGetter: seqRenderer, sortable: false },
     { field: "reportDate", headerName: "日期", width: 110 },
     { field: "companyName", headerName: "企业名称", minWidth: 170, width: 180 },
   ];
@@ -125,11 +120,6 @@ function onPage(p: number, size: number) {
   query();
 }
 
-function onExport() {
-  void carbonStub("/emissionRecords/company/details/export")(buildParams());
-  toast("导出待接入", 2000, "warn");
-}
-
 function onGridReady(e: GridReadyEvent) {
   gridApi.value = e.api;
 }
@@ -142,7 +132,7 @@ onMounted(query);
 
 <template>
   <div class="flex min-h-0 flex-1 flex-col">
-    <!-- 工具栏 h-9：层级切换 + 时间区间 + 查询/重置（+ 导出靠右） -->
+    <!-- 工具栏 h-9：层级切换 + 时间区间 + 查询/重置 -->
     <div class="flex h-9 shrink-0 items-center gap-2 border-b border-border/60 px-2">
       <SelectButton v-model="mode" :options="['企业层级', '工序层级']" />
       <DatePicker
@@ -163,9 +153,6 @@ onMounted(query);
         <IconRotateClockwise class="h-3 w-3" />重置
       </Button>
       <span class="ml-auto text-xs text-muted-foreground">共 {{ total }} 条</span>
-      <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onExport">
-        <IconDownload class="h-3 w-3" />导出
-      </Button>
     </div>
 
     <div class="min-h-0 flex-1 overflow-hidden">

@@ -58,7 +58,7 @@ const spec: ListPageSpec = {
   edit: {
     title: "预警设置",
     fields: [
-      { key: "enterName", label: "企业名称", kind: "select", options: ["天津示例钢铁企业有限公司"] },
+      { key: "enterName", label: "企业名称", kind: "select", options: ["红河谷钢铁事业部"] },
       { key: "warningType", label: "预警业务", kind: "select", options: ["设备预警"] },
       { key: "statusFlagName", label: "状态", kind: "select", options: ["启用", "停用"] },
     ],

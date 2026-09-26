@@ -1,14 +1,14 @@
 <script setup lang="ts">
 /** 对应线上「月度报表」（碳减排下，https://carbon-ui.rcisyn.com/jnpf_app_carbonAssets/carbonReduction/month）
  *  已接入：GET /business/reductionRecords/selectProjectRecordsMonth（分页 + 企业/项目/类型/时间区间）
- *  待接入：行内「详情」与导出 exportProjectRecordsMonth —— 均按线上路径占位
+ *  待接入：行内「详情」—— 按线上路径占位
  *
  * 「统计时间」是查询当下生成的时间（见 year 页同名注释）；「项目类型」列是 offsetId 原始 id。
  * 注意与「报表管理 → 月度报表」不是同一个页面（那边是 /reportForm/month，接口与列都不同）。
  */
 import type { ColDef } from "ag-grid-community";
 import ListPage from "../ListPage.vue";
-import { carbonQuery, carbonStub } from "@/api/carbon/queries";
+import { carbonQuery } from "@/api/carbon/queries";
 import type { ListPageSpec } from "../listTypes";
 
 function factorText(r: any): string {
@@ -43,7 +43,6 @@ const spec: ListPageSpec = {
   ],
   columns,
   actions: [{ label: "详情", kind: "detail" }],
-  toolbar: { export: true },
   detail: {
     sections: [
       {
@@ -64,7 +63,6 @@ const spec: ListPageSpec = {
     ],
   },
   fetch: carbonQuery("/reductionRecords/selectProjectRecordsMonth"),
-  exportFn: carbonStub("/reductionRecords/exportProjectRecordsMonth"),
 };
 </script>
 

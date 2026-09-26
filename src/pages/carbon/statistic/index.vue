@@ -2,7 +2,6 @@
 /** 对应线上「减排统计」（https://carbon-ui.rcisyn.com/jnpf_app_carbonAssets/carbonReduction/statistic）
  *  已接入：GET /business/reductionRecords/selectProjectRecordsReport（分页 + 企业/项目/类型/时间区间）
  *  行内「月度报表」「年度报表」是站内跳转 → /carbonReduction/{month,year}
- *  待接入：导出 exportProjectRecordsReport 占位
  *
  * 「减排因素数值」在行里不是一个字段，线上显示的是拼接串
  * 「CO2捕集量 86900 tCO2」= factorName + dataValue + factorUnit，这里按同一规则由 valueGetter 拼。
@@ -10,7 +9,7 @@
  */
 import type { ColDef } from "ag-grid-community";
 import ListPage from "../ListPage.vue";
-import { carbonQuery, carbonStub } from "@/api/carbon/queries";
+import { carbonQuery } from "@/api/carbon/queries";
 import type { ListPageSpec } from "../listTypes";
 
 function factorText(r: any): string {
@@ -40,13 +39,11 @@ const spec: ListPageSpec = {
     { label: "月度报表", kind: "link", to: "/carbonReduction/month" },
     { label: "年度报表", kind: "link", to: "/carbonReduction/year" },
   ],
-  toolbar: { export: true },
   summary: ({ rows }) => {
     const sum = rows.reduce((acc, r) => acc + Number(r?.reductionValue ?? 0), 0);
     return `减排量：${Number.isInteger(sum) ? sum : sum.toFixed(2)} tCO2`;
   },
   fetch: carbonQuery("/reductionRecords/selectProjectRecordsReport"),
-  exportFn: carbonStub("/reductionRecords/exportProjectRecordsReport"),
 };
 </script>
 

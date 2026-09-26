@@ -21,12 +21,12 @@ import Select from "primevue/select";
 import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, FirstDataRenderedEvent } from "ag-grid-community";
 import { autoSizeOnFirstData, makeHmxGridTheme } from "@/lib/agGrid";
-import { IconDownload, IconPlus, IconRotateClockwise, IconSearch } from "@tabler/icons-vue";
+import { IconPlus, IconRotateClockwise, IconSearch } from "@tabler/icons-vue";
 import { useToast } from "@/composables/useToast";
 import CarbonPager from "./CarbonPager.vue";
 import DetailDialog from "./DetailDialog.vue";
 import EditDialog from "./EditDialog.vue";
-import { actionRenderer, rowId, seqRenderer } from "./rowActions";
+import { actionRenderer, rowId } from "./rowActions";
 import type { ListPageSpec } from "./listTypes";
 
 const props = defineProps<{ spec: ListPageSpec }>();
@@ -104,11 +104,6 @@ function onPage(p: number, size: number) {
 
 onMounted(query);
 
-function onExport() {
-  void spec.value.exportFn?.(buildParams());
-  toast("导出待接入", 2000, "warn");
-}
-
 function onExtra(label: string) {
   toast(`${label}待接入`, 2000, "warn");
 }
@@ -174,7 +169,6 @@ const rowActions = computed(() => {
 });
 
 const colDefs = computed<ColDef[]>(() => {
-  const seqCol: ColDef = { colId: "seq", headerName: "序号", width: 64, valueGetter: seqRenderer, sortable: false };
   const acts = rowActions.value;
   const actionCol: ColDef | undefined = acts.length
     ? {
@@ -185,7 +179,7 @@ const colDefs = computed<ColDef[]>(() => {
         cellRenderer: actionRenderer(acts),
       }
     : undefined;
-  return [...(spec.value.noSeq ? [] : [seqCol]), ...spec.value.columns, ...(actionCol ? [actionCol] : [])];
+  return [...spec.value.columns, ...(actionCol ? [actionCol] : [])];
 });
 
 const summaryText = computed(() => {
@@ -303,10 +297,6 @@ function onFirstData(e: FirstDataRenderedEvent) {
       >
         {{ b }}
       </Button>
-      <Button v-if="spec.toolbar?.export" variant="outlined" class="shrink-0 whitespace-nowrap" @click="onExport">
-        <IconDownload class="h-3 w-3" />导出
-      </Button>
-
       <span class="ml-auto text-xs text-muted-foreground">{{ summaryText }}</span>
     </div>
 

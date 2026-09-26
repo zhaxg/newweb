@@ -2,7 +2,7 @@
 /** 对应线上「目标管理」（https://carbon-ui.rcisyn.com/jnpf_app_carbonAssets/targetManage）
  *  已接入：GET /business/targetManagement/list（分页 + 目标名称/企业名称/厂区名称/工序名称/年度）
  *  待接入：新增 / 编辑 / 删除 —— `/business/targetManagement[/:id]` 已按线上路径注册为占位，
- *          mock 回成功但不落库；导出 `/business/targetManagement/export` 同样只占位、不生成文件。
+ *          mock 回成功但不落库。
  *
  * 两处与线上字段的对照（照实测行值反推）：
  *  - 类型列存的是编码 targetTypeId（enter_target / project_target / group_target），
@@ -60,14 +60,14 @@ const spec: ListPageSpec = {
     { label: "编辑", kind: "edit" },
     { label: "删除", kind: "delete" },
   ],
-  toolbar: { add: true, export: true },
+  toolbar: { add: true },
   edit: {
     title: "目标",
     fields: [
       { key: "targetName", label: "目标名称", kind: "input" },
       { key: "targetTypeId", label: "目标类型", kind: "select", options: ["企业目标", "项目目标", "集团目标"] },
       { key: "targetYear", label: "年度", kind: "date" },
-      { key: "enterName", label: "企业名称", kind: "select", options: ["天津示例钢铁企业有限公司"] },
+      { key: "enterName", label: "企业名称", kind: "select", options: ["红河谷钢铁事业部"] },
       { key: "factoryName", label: "厂区名称", kind: "select", options: [] },
       { key: "processName", label: "工序名称", kind: "select", options: [] },
       { key: "emissionData", label: "排放量", kind: "number", unit: "tCO2" },
@@ -76,7 +76,6 @@ const spec: ListPageSpec = {
     ],
   },
   fetch: carbonQuery("/targetManagement/list"),
-  exportFn: carbonStub("/targetManagement/export"),
   writeFn: carbonStub("/targetManagement"),
   deleteFn: carbonStub("/targetManagement/:id", "post"),
 };

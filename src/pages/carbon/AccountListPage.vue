@@ -17,12 +17,11 @@ import SplitterPanel from "primevue/splitterpanel";
 import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, FirstDataRenderedEvent } from "ag-grid-community";
 import { autoSizeOnFirstData, makeHmxGridTheme } from "@/lib/agGrid";
-import { IconDownload, IconRotateClockwise, IconSearch } from "@tabler/icons-vue";
+import { IconRotateClockwise, IconSearch } from "@tabler/icons-vue";
 import { carbonApi, type AccountListQuery, type AccountNoKey } from "@/api/carbon";
 import type { PageResult } from "@/api/carbon/types";
-import { useToast } from "@/composables/useToast";
 import CarbonPager from "@/pages/carbon/CarbonPager.vue";
-import { actionRenderer, seqRenderer } from "./rowActions";
+import { actionRenderer } from "./rowActions";
 import AccountRecordPanel from "./AccountRecordPanel.vue";
 import AssetTransferDialog from "./AssetTransferDialog.vue";
 
@@ -32,7 +31,6 @@ type RecordVariant = "emission" | "reduction" | "quota" | "trade";
 
 const props = defineProps<{ variant: PageVariant }>();
 
-const { toast } = useToast();
 const theme = makeHmxGridTheme();
 
 /* ── 每页的差异表 ────────────────────────────────────────── */
@@ -45,10 +43,8 @@ interface Conf {
   actions: string[];
   fetch: (q: AccountListQuery) => Promise<PageResult<any>>;
   cols: ColDef[];
-  exportFn: (q?: unknown) => Promise<null>;
 }
 
-const seqCol: ColDef = { colId: "seq", headerName: "序号", width: 64, valueGetter: seqRenderer, sortable: false };
 const nameCol: ColDef = { field: "enterName", headerName: "企业名称", minWidth: 170, flex: 1 };
 const noCol = (field: string): ColDef => ({ field, headerName: "账户号", width: 150 });
 const amt = (field: string, headerName: string): ColDef => ({ field, headerName, width: 132 });
@@ -59,9 +55,7 @@ const CONF: Record<PageVariant, Conf> = {
     record: null,
     actions: [],
     fetch: carbonApi.getMainAccounts,
-    exportFn: carbonApi.exportMainList,
     cols: [
-      seqCol,
       nameCol,
       noCol("mainAccountNo"),
       amt("mainSum", "主账户"),
@@ -74,25 +68,21 @@ const CONF: Record<PageVariant, Conf> = {
     record: "emission",
     actions: ["账户记录"],
     fetch: carbonApi.getEmissionAccounts,
-    exportFn: carbonApi.exportEmissionList,
-    cols: [seqCol, nameCol, noCol("emissionAccountNo"), amt("emissionSum", "排放量（tCO2）")],
+    cols: [nameCol, noCol("emissionAccountNo"), amt("emissionSum", "排放量（tCO2）")],
   },
   reduction: {
     accountNoField: "reductionAccountNo",
     record: "reduction",
     actions: ["账户记录"],
     fetch: carbonApi.getReductionAccounts,
-    exportFn: carbonApi.exportReductionList,
-    cols: [seqCol, nameCol, noCol("reductionAccountNo"), amt("reductionSum", "减排量（tCO2）")],
+    cols: [nameCol, noCol("reductionAccountNo"), amt("reductionSum", "减排量（tCO2）")],
   },
   quota: {
     accountNoField: "tradeAccountNo",
     record: "quota",
     actions: ["账户记录", "资产划拨"],
     fetch: carbonApi.getQuotaAccounts,
-    exportFn: carbonApi.exportQuotaList,
     cols: [
-      seqCol,
       nameCol,
       noCol("tradeAccountNo"),
       amt("buySum", "配额量（tCO2）"),
@@ -108,9 +98,7 @@ const CONF: Record<PageVariant, Conf> = {
     record: "trade",
     actions: ["账户记录", "资产划拨"],
     fetch: carbonApi.getTradeAccounts,
-    exportFn: carbonApi.exportTradeList,
     cols: [
-      seqCol,
       nameCol,
       noCol("tradeAccountNo"),
       amt("buySum", "购入量（tCO2）"),
@@ -172,11 +160,6 @@ function onPage(nextPage: number, nextSize: number) {
 }
 
 onMounted(query);
-
-function onExport() {
-  void conf.exportFn(params());
-  toast("导出待接入", 2000, "warn");
-}
 
 /* ── 账户记录子表（点行内「账户记录」在下方展开） ───────────── */
 const recordOpen = ref(false);
@@ -242,9 +225,6 @@ function onFirstData(e: FirstDataRenderedEvent) {
         <IconRotateClockwise class="h-3 w-3" />重置
       </Button>
       <span class="ml-auto text-xs text-muted-foreground">共 {{ total }} 条</span>
-      <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onExport">
-        <IconDownload class="h-3 w-3" />导出
-      </Button>
     </div>
 
     <!-- 主表（有记录子表时用上下 Splitter，对应线上「点账户记录后区块被推下去」） -->

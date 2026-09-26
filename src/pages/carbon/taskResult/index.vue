@@ -3,13 +3,12 @@
  *  已接入：GET /business/targetManagement/list（与「目标管理」同一个接口，列不同：只到完成状态）
  *          行内详情直接用行数据渲染，没有额外请求
  *  待接入：详情弹窗里的「完成情况」内嵌表格（排放量/排放强度/减排量 三行目标 vs 实际）——
- *          DetailDialog 是 label/value 分段，装不下表格，等需要时再单独做；
- *          导出 `/business/targetManagement/export` 占位。
+ *          DetailDialog 是 label/value 分段，装不下表格，等需要时再单独做。
  *
  * 状态编码：overStatus 存 "1"，线上列表显示「未完成」（实测该行显示值），故按 1=未完成 映射。
  */
 import ListPage from "../ListPage.vue";
-import { carbonQuery, carbonStub } from "@/api/carbon/queries";
+import { carbonQuery } from "@/api/carbon/queries";
 import type { ListPageSpec } from "../listTypes";
 
 const TARGET_TYPE: Record<string, string> = {
@@ -43,7 +42,6 @@ const spec: ListPageSpec = {
     },
   ],
   actions: [{ label: "详情", kind: "detail" }],
-  toolbar: { export: true },
   detail: {
     sections: [
       {
@@ -62,7 +60,6 @@ const spec: ListPageSpec = {
     ],
   },
   fetch: carbonQuery("/targetManagement/list"),
-  exportFn: carbonStub("/targetManagement/export"),
 };
 </script>
 

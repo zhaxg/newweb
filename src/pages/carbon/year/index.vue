@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /** 对应线上「年度报表」（https://carbon-ui.rcisyn.com/jnpf_app_carbonAssets/carbonReduction/year）
  *  已接入：GET /business/reductionRecords/selectProjectRecordsYear（分页 + 企业/项目/类型/时间区间）
- *  待接入：行内「详情」与导出 exportProjectRecordsYear —— 详情端点按 `:id` 占位
+ *  待接入：行内「详情」—— 详情端点按 `:id` 占位
  *
  * 「统计时间」实测是**查询当下生成的时间**（页面打开那天的时分秒），不是行里字段，
  * 故由页面加载时取一次；线上是每次查询重新取，展示上无差别。
@@ -9,7 +9,7 @@
  */
 import type { ColDef } from "ag-grid-community";
 import ListPage from "../ListPage.vue";
-import { carbonQuery, carbonStub } from "@/api/carbon/queries";
+import { carbonQuery } from "@/api/carbon/queries";
 import type { ListPageSpec } from "../listTypes";
 
 function factorText(r: any): string {
@@ -44,7 +44,6 @@ const spec: ListPageSpec = {
   ],
   columns,
   actions: [{ label: "详情", kind: "detail" }],
-  toolbar: { export: true },
   detail: {
     sections: [
       {
@@ -66,7 +65,6 @@ const spec: ListPageSpec = {
     ],
   },
   fetch: carbonQuery("/reductionRecords/selectProjectRecordsYear"),
-  exportFn: carbonStub("/reductionRecords/exportProjectRecordsYear"),
 };
 </script>
 

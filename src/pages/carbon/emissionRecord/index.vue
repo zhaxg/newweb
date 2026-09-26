@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /** 对应线上「排放记录」（https://carbon-ui.rcisyn.com/jnpf_app_carbonAssets/carbonEmission/companyLevel/emissionRecord）
  *  已接入：POST /business/emissionRecords/company/table（分页 + 企业/排放源类型/数据来源/日期）
- *  待接入：新增 / 导出 —— emissionRecords/company/{save,export} 已占位
+ *  待接入：新增 —— emissionRecords/company/save 已占位
  *
  * 「数据来源」存 code，字典组 `record_source`：0=人工录入 / 1=系统对接（线上字典实抓）。
  * 「流水号」取 `serialnumber`（另有 companyRecordsCode 是业务单号，非流水号）。
@@ -50,11 +50,11 @@ const spec: ListPageSpec = {
     { field: "lastModifyUserName", headerName: "最后编辑人", width: 110 },
     { field: "lastModifyTime", headerName: "最后编辑时间", width: 155 },
   ],
-  toolbar: { add: true, export: true },
+  toolbar: { add: true },
   edit: {
     title: "排放记录",
     fields: [
-      { key: "enterName", label: "企业名称", kind: "select", options: ["天津示例钢铁企业有限公司"] },
+      { key: "enterName", label: "企业名称", kind: "select", options: ["红河谷钢铁事业部"] },
       {
         key: "emissionName",
         label: "排放源类型",
@@ -67,7 +67,6 @@ const spec: ListPageSpec = {
     ],
   },
   fetch: carbonQuery("/emissionRecords/company/table", "post"),
-  exportFn: carbonStub("/emissionRecords/company/export"),
   writeFn: carbonStub("/emissionRecords/company/save"),
 };
 </script>

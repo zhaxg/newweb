@@ -63,7 +63,7 @@ const spec: ListPageSpec = {
   edit: {
     title: "碳交易",
     fields: [
-      { key: "enterName", label: "企业名称", kind: "select", options: ["天津示例钢铁企业有限公司"] },
+      { key: "enterName", label: "企业名称", kind: "select", options: ["红河谷钢铁事业部"] },
       { key: "tradeTypeName", label: "交易类型", kind: "select", options: ["购入", "卖出"] },
       { key: "tradeTime", label: "交易时间", kind: "date" },
       { key: "tradeVal", label: "交易量", kind: "number", unit: "tCO2" },

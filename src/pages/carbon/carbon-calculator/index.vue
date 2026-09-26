@@ -20,7 +20,7 @@ const spec: ListPageSpec = {
       key: "enterName",
       label: "企业",
       kind: "select",
-      options: ["天津示例钢铁企业有限公司"],
+      options: ["红河谷钢铁事业部"],
       placeholder: "请选择",
     },
     {

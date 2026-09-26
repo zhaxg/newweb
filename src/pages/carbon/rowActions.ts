@@ -33,11 +33,6 @@ export function actionRenderer(actions: RowAction[]) {
   };
 }
 
-/** 「序号」列：页面序号。mock 只回当前页的行，故 rowIndex+1 即页内序号（对齐原 antd 的 1..20） */
-export function seqRenderer(p: ICellRendererParams): string {
-  return String((p.node?.rowIndex ?? 0) + 1);
-}
-
 /**
  * 取行主键。碳域各表主键名不统一——JNPF 侧有的叫 `id`、有的叫 `pkid`/`pkId`/`recordsId`/
  * `projectId`/`fuelId`…（逐个端点看过返回体确认），删行/查详情要按各自的名字拿，

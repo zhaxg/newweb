@@ -21,7 +21,7 @@ export const seedWarningSettings: any[] = [
     deleteUserId: null,
     deleteUserName: null,
     enterId: "96240625-934F-490B-8AA6-0BC775B18468",
-    enterName: "天津示例钢铁企业有限公司",
+    enterName: "红河谷钢铁事业部",
     warningType: "设备预警",
     statusFlag: 0,
     statusFlagName: "启用",

@@ -69,7 +69,7 @@ const spec: ListPageSpec = {
   edit: {
     title: "排放源",
     fields: [
-      { key: "enterName", label: "选择企业", kind: "select", options: ["天津示例钢铁企业有限公司"] },
+      { key: "enterName", label: "选择企业", kind: "select", options: ["红河谷钢铁事业部"] },
       {
         key: "emissionName",
         label: "排放源类型",

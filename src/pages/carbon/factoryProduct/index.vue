@@ -27,7 +27,7 @@ const spec: ListPageSpec = {
   edit: {
     title: "厂区产出品",
     fields: [
-      { key: "enterName", label: "企业名称", kind: "select", options: ["天津示例钢铁企业有限公司"] },
+      { key: "enterName", label: "企业名称", kind: "select", options: ["红河谷钢铁事业部"] },
       { key: "factoryName", label: "厂区名称", kind: "select", options: [] },
       { key: "productName", label: "产出品名称", kind: "select", options: [] },
     ],

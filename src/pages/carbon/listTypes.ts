@@ -77,14 +77,12 @@ export interface ListPageSpec {
   code: string;
   /** 查询条件（0 个也合法：排放明细这类全靠固定期间的页面） */
   query: QueryField[];
-  /** 列（不含序号列，ListPage 统一加；也不含操作列，由 actions 决定） */
+  /** 列（不含序号列——行号由平台 agGrid 内置 rowNumbers 给；也不含操作列，由 actions 决定） */
   columns: ColDef[];
   actions?: RowAct[];
   toolbar?: {
     /** 顶部「新增」（有 edit spec 时通常要开） */
     add?: boolean;
-    /** 顶部「导出」（配 exportFn） */
-    export?: boolean;
     /** 额外的只插桩按钮，如「模板下载」「上传」 */
     extraButtons?: string[];
   };
@@ -96,8 +94,6 @@ export interface ListPageSpec {
   edit?: { title?: string; fields: EditField[] };
   /** 查询 */
   fetch: (q: Record<string, any>) => Promise<PageResult<any>>;
-  /** 导出（只插桩） */
-  exportFn?: (q?: Record<string, any>) => Promise<unknown>;
   /** 新增/编辑提交（只插桩） */
   writeFn?: (data: Record<string, any>) => Promise<unknown>;
   /** 删除（只插桩） */
@@ -113,6 +109,4 @@ export interface ListPageSpec {
    * 并在该页来源注释里写明放宽到多少、因为什么。
    */
   queryLabelWidth?: string;
-  /** 原表没有序号列（碳信息页就是），关掉默认加的那根 */
-  noSeq?: boolean;
 }

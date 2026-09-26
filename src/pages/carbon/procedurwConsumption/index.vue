@@ -35,7 +35,7 @@ const spec: ListPageSpec = {
   edit: {
     title: "工序能耗",
     fields: [
-      { key: "enterName", label: "企业名称", kind: "select", options: ["天津示例钢铁企业有限公司"] },
+      { key: "enterName", label: "企业名称", kind: "select", options: ["红河谷钢铁事业部"] },
       { key: "factoryName", label: "厂区名称", kind: "select", options: ["炼铁厂", "轧钢厂", "动力厂"] },
       { key: "processName", label: "工序名称", kind: "select", options: [] },
       { key: "energyTime", label: "日期", kind: "date" },

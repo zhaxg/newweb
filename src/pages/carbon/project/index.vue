@@ -80,7 +80,7 @@ const spec: ListPageSpec = {
   edit: {
     title: "项目管理",
     fields: [
-      { key: "enterName", label: "企业名称", kind: "select", options: ["天津示例钢铁企业有限公司"] },
+      { key: "enterName", label: "企业名称", kind: "select", options: ["红河谷钢铁事业部"] },
       { key: "projectName", label: "项目名称", kind: "input" },
       { key: "factorName", label: "减排因素名称", kind: "input" },
       { key: "factorUnit", label: "减排因素单位", kind: "input" },

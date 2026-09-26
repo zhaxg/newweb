@@ -3,12 +3,12 @@
  * 账户记录子表区（碳排/减排/配额/交易 四页共用）。
  *
  * **它不是弹窗**——线上是点主表行后在页面**下方展开的区块**，自带查询条件、表格、
- * （碳排/减排才有）导出与行内「详情」。所以落在 Splitter 下半区，不是 Dialog。
+ * （碳排/减排才有）行内「详情」。所以落在 Splitter 下半区，不是 Dialog。
  *
  * 四种账户的差异全部收敛在这一个组件里（用 variant 切），因为它们骨架完全相同、
  * 只差列头/筛选项/接口：
- *   emission·reduction 列同构，筛选 = 企业名称 + 来源 + 变动类型，有导出
- *   quota·trade       列同构（仅第二列头「变动时间」vs「时间」），筛选 = 企业名称 + 变动类型 + 日期范围，无导出
+ *   emission·reduction 列同构，筛选 = 企业名称 + 来源 + 变动类型
+ *   quota·trade       列同构（仅第二列头「变动时间」vs「时间」），筛选 = 企业名称 + 变动类型 + 日期范围
  * 筛选项与下拉候选都是照线上实测抄的（来源：人工录入/系统对接；碳排侧变动类型：增加/删除/修改；
  * 配额侧变动类型：新增/减少）。
  */
@@ -20,11 +20,10 @@ import Select from "primevue/select";
 import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, FirstDataRenderedEvent } from "ag-grid-community";
 import { autoSizeOnFirstData, makeHmxGridTheme } from "@/lib/agGrid";
-import { IconDownload, IconRotateClockwise, IconSearch } from "@tabler/icons-vue";
+import { IconRotateClockwise, IconSearch } from "@tabler/icons-vue";
 import { carbonApi, type AccountRecordQuery } from "@/api/carbon";
 import type { AccountRecordRow, PageResult, QuotaTradeRecordRow } from "@/api/carbon/types";
-import { useToast } from "@/composables/useToast";
-import { actionRenderer, seqRenderer } from "./rowActions";
+import { actionRenderer } from "./rowActions";
 import AccountRecordDetailDialog from "./AccountRecordDetailDialog.vue";
 import TradeAccDetailDialog from "./TradeAccDetailDialog.vue";
 
@@ -36,7 +35,6 @@ const props = defineProps<{
   enterId: string;
 }>();
 
-const { toast } = useToast();
 const theme = makeHmxGridTheme();
 
 const isEmissionLike = props.variant === "emission" || props.variant === "reduction";
@@ -116,12 +114,6 @@ watch(
   () => query(),
 );
 
-function onExport() {
-  if (props.variant === "emission") void carbonApi.exportEmissionRecords(toParams());
-  else if (props.variant === "reduction") void carbonApi.exportReductionRecords(toParams());
-  toast("导出待接入", 2000, "warn");
-}
-
 /* ---------- 表格 ---------- */
 function onFirstData(e: FirstDataRenderedEvent) {
   autoSizeOnFirstData(e);
@@ -146,7 +138,6 @@ async function openDetail(row: any) {
 const ACCOUNT_LABEL: Record<string, string> = { emission: "碳排账户", reduction: "减排账户" };
 
 const colDefs = ref<ColDef[]>(buildCols());
-const seqCol: ColDef = { colId: "seq", headerName: "序号", width: 64, valueGetter: seqRenderer, sortable: false };
 
 function actionCol(): ColDef {
   return {
@@ -161,7 +152,6 @@ function actionCol(): ColDef {
 function buildCols(): ColDef[] {
   if (props.variant === "emission" || props.variant === "reduction") {
     return [
-      seqCol,
       { field: "enterName", headerName: "企业名称", minWidth: 180, flex: 1 },
       { field: "recordTime", headerName: "时间", width: 160 },
       { field: "sourceName", headerName: "来源", width: 100 },
@@ -173,7 +163,6 @@ function buildCols(): ColDef[] {
   }
   // 配额「变动时间」/交易「时间」是线上两页的真实差异，保留
   return [
-    seqCol,
     { field: "enterName", headerName: "企业名称", minWidth: 180, flex: 1 },
     { field: "recordTime", headerName: props.variant === "quota" ? "变动时间" : "时间", width: 160 },
     { field: "changeFlagName", headerName: "变动类型", width: 100 },
@@ -238,9 +227,6 @@ function buildCols(): ColDef[] {
       </Button>
       <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="reset">
         <IconRotateClockwise class="h-3 w-3" />重置
-      </Button>
-      <Button v-if="isEmissionLike" variant="outlined" class="shrink-0 whitespace-nowrap" @click="onExport">
-        <IconDownload class="h-3 w-3" />导出
       </Button>
       <span class="ml-auto text-xs font-medium text-muted-foreground">账户记录（{{ total }}）</span>
     </div>

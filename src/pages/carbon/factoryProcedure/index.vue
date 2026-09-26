@@ -17,7 +17,7 @@ const spec: ListPageSpec = {
       key: "enterName",
       label: "所属企业",
       kind: "select",
-      options: ["天津示例钢铁企业有限公司"],
+      options: ["红河谷钢铁事业部"],
       placeholder: "请选择",
     },
     {
@@ -59,7 +59,7 @@ const spec: ListPageSpec = {
   edit: {
     title: "工序",
     fields: [
-      { key: "enterName", label: "所属企业", kind: "select", options: ["天津示例钢铁企业有限公司"] },
+      { key: "enterName", label: "所属企业", kind: "select", options: ["红河谷钢铁事业部"] },
       { key: "factoryName", label: "所属厂区", kind: "select", options: ["炼铁厂", "轧钢厂", "动力厂"] },
       { key: "processName", label: "工序名称", kind: "input" },
       { key: "remark", label: "描述", kind: "textarea" },

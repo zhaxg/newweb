@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /** 对应线上「设备管理」（https://carbon-ui.rcisyn.com/jnpf_app_carbonAssets/carbonEmission/productionManage/equipmentManage）
  *  已接入：POST /business/equipment/manage/page（分页 + 设备ID/名称/位置/三个检定维度/日期区间）
- *  待接入：新增、模板下载、导入、导出 —— equipment/manage/{add,edit,download,importFile,export} 已占位；
+ *  待接入：新增、模板下载、导入 —— equipment/manage/{add,edit,download,importFile} 已占位；
  *          行内「检定/校准记录」线上是打开记录子面板，按插桩提示
  *
  * ── 单页放宽 label：**queryLabelWidth = w-32（128px）** ──
@@ -74,7 +74,7 @@ const spec: ListPageSpec = {
     { label: "删除", kind: "delete" },
     { label: "检定/校准记录", kind: "stub" },
   ],
-  toolbar: { add: true, export: true, extraButtons: ["模板下载", "导入"] },
+  toolbar: { add: true, extraButtons: ["模板下载", "导入"] },
   edit: {
     title: "设备",
     fields: [
@@ -108,7 +108,6 @@ const spec: ListPageSpec = {
     ],
   },
   fetch: carbonQuery("/equipment/manage/page", "post"),
-  exportFn: carbonStub("/equipment/manage/export"),
   writeFn: carbonStub("/equipment/manage/add"),
   deleteFn: carbonStub("/equipment/manage/:id", "post"),
 };

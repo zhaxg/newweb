@@ -1,13 +1,13 @@
 <script setup lang="ts">
 /** 对应线上「年度报表」（碳排放 → 企业层级核算，https://carbon-ui.rcisyn.com/jnpf_app_carbonAssets/carbonEmission/companyLevel/emissionStatistic/yearReport）
  *  已接入：POST /business/emissionRecords/company/yearCollect（分页 + 企业/排放源类型/年份）
- *  待接入：行内「明细」与导出 yearCollect/export —— 端点已占位
+ *  待接入：行内「明细」—— 端点已占位
  *
  * 列映射与月度报表同源（typeCarbonDioxide=排放量、carbonDioxide=排放总量），仅时间粒度不同。
  * 注意与「碳减排 → 年度报表」（/carbon/year）不是同一页。
  */
 import ListPage from "../ListPage.vue";
-import { carbonQuery, carbonStub } from "@/api/carbon/queries";
+import { carbonQuery } from "@/api/carbon/queries";
 import type { ListPageSpec } from "../listTypes";
 
 const spec: ListPageSpec = {
@@ -33,9 +33,7 @@ const spec: ListPageSpec = {
     { field: "unitCrudeSteelCarbonDioxide", headerName: "单位粗钢碳排放量（tCO2/t）", width: 190 },
   ],
   actions: [{ label: "明细", kind: "stub" }],
-  toolbar: { export: true },
   fetch: carbonQuery("/emissionRecords/company/yearCollect", "post"),
-  exportFn: carbonStub("/emissionRecords/company/yearCollect/export"),
 };
 </script>
 

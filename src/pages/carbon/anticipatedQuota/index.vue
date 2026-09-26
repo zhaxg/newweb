@@ -50,7 +50,7 @@ const spec: ListPageSpec = {
   edit: {
     title: "预计配额",
     fields: [
-      { key: "enterName", label: "企业名称", kind: "select", options: ["天津示例钢铁企业有限公司"] },
+      { key: "enterName", label: "企业名称", kind: "select", options: ["红河谷钢铁事业部"] },
       { key: "professionName", label: "所属行业", kind: "select", options: ["中国钢铁生产企业"] },
       { key: "tradingPostName", label: "交易所", kind: "select", options: ["天津碳排放交易所"] },
       { key: "quotaYear", label: "配额年份", kind: "date" },

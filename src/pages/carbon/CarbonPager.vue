@@ -7,7 +7,7 @@
  * （ui-rules §7 又要求全站 `:pagination="false"`）。所以分页状态留在页面里、
  * 网格只渲染当前页的行，条子自己画。
  *
- * 页面序号（序号列 rowIndex+1）也因此天然是页内序号，与 antd 一致。
+ * 行号（agGrid 内置 rowNumbers，rowIndex+1）也因此天然是页内序号，与 antd 一致。
  * 页面放 src/pages/carbon 根（不是某个 pageId 目录），因为 5 个页面共用；
  * 之后别的模块要复用直接 import，确认通用后再考虑上提到 src/components/common。
  */

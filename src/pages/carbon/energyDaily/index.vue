@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /** 对应线上「能耗日报表」（https://carbon-ui.rcisyn.com/jnpf_app_carbonAssets/reportForm/energyDaily）
  *  已接入：GET /business/dayReport/selectEnergyDayByEnergy（分页 + 名称/时间区间）
- *  待接入：行内无动作（原页面操作列是空的），导出也未提供
+ *  待接入：行内无动作（原页面操作列是空的）
  *
  * 「消耗量」= dataValue，「碳排放量（吨）」= emissionData（照线上行取值反查）。
  */

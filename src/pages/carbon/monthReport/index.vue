@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /** 对应线上「月度报表」（碳排放 → 企业层级核算，https://carbon-ui.rcisyn.com/jnpf_app_carbonAssets/carbonEmission/companyLevel/emissionStatistic/monthReport）
  *  已接入：POST /business/emissionRecords/company/monthCollect（分页 + 企业/排放源类型/月份）
- *  待接入：行内「明细」与导出 monthCollect/export —— 端点已占位
+ *  待接入：行内「明细」—— 端点已占位
  *
  * 列映射按线上行实测：月份=`date`、排放源类型=`emissionName`、
  * **排放量=`typeCarbonDioxide`（该类型）、排放总量=`carbonDioxide`（合计）**、
@@ -9,7 +9,7 @@
  * 注意与「碳减排 → 月度报表」（/carbon/month）不是同一页。
  */
 import ListPage from "../ListPage.vue";
-import { carbonQuery, carbonStub } from "@/api/carbon/queries";
+import { carbonQuery } from "@/api/carbon/queries";
 import type { ListPageSpec } from "../listTypes";
 
 const spec: ListPageSpec = {
@@ -35,9 +35,7 @@ const spec: ListPageSpec = {
     { field: "unitCrudeSteelCarbonDioxide", headerName: "单位粗钢碳排放量（tCO2/t）", width: 190 },
   ],
   actions: [{ label: "明细", kind: "stub" }],
-  toolbar: { export: true },
   fetch: carbonQuery("/emissionRecords/company/monthCollect", "post"),
-  exportFn: carbonStub("/emissionRecords/company/monthCollect/export"),
 };
 </script>
 
