@@ -13,8 +13,10 @@ import type { MenuResNode } from "@/api/common/menuRescTree";
  *   进壳层页签体系内置承载（实际 iframe 由布局层常驻池 HmxIframeHost 持有，见该组件）。
  * - 外链·拒帧（有 url、主机命中 EXTERNAL_BLANK_HOSTS）→ redirect 到 403 + meta.external：菜单里照常出现
  *   （点击由 MainLayout.openPage 走 window.open），直链落 403；不给 pageId，故不会被站内导航命中。
- * - 文件夹（无 page、无 url）→ 无 component 的分组记录，只带 meta.title/icon 供菜单投影
- *   （vue-router 允许父记录无 component，RouterView 会跳过该层）。
+ * - 文件夹（无 page、无 url）→ 无 component 的分组记录，name = `folder:${祖先链路径}`，带 meta.title/icon
+ *   供菜单投影（vue-router 允许父记录无 component，RouterView 会跳过该层）。
+ *   **name 不可省**：addRoute 的移除器按 name 生效，无名记录的移除器是空操作——省掉它，
+ *   resetUserRoutes 会静默失效、动态路由登出后永远留在路由表里（2026-09 实测确认）。
  * - 页面叶子（有 page、无 url）→ 常规记录，name = `page:${pageId}`，组件按 src 解析、未命中落占位页。
  *
  * 数组顺序即菜单顺序（menuRescTree 已按后端 cOrder 排过）。首页由 builtin 静态注册，不在本树内。
@@ -22,10 +24,11 @@ import type { MenuResNode } from "@/api/common/menuRescTree";
  * 引用约束：⛔ **仅 router 内部引用**（现消费方：@/router/index、core/guard）。本文件静态引入
  * layouts/pages 下的页面组件，从 router 外部引用会把这些组件拖进调用方的静态依赖链。
  */
-export function toRouteRecords(nodes: MenuResNode[]): RouteRecordRaw[] {
+/** parentPath：祖先链累积的路径，仅用于给文件夹记录命名（见 toRecord 的 name 注释） */
+export function toRouteRecords(nodes: MenuResNode[], parentPath = ""): RouteRecordRaw[] {
   const out: RouteRecordRaw[] = [];
   for (const node of nodes) {
-    const rec = toRecord(node);
+    const rec = toRecord(node, parentPath);
     if (rec) out.push(rec);
   }
   return out;
@@ -52,8 +55,10 @@ function segmentOf(node: MenuResNode): string {
   return node.path && node.path !== "_blank" ? node.path : node.id;
 }
 
-function toRecord(node: MenuResNode): RouteRecordRaw | null {
+function toRecord(node: MenuResNode, parentPath = ""): RouteRecordRaw | null {
   const path = segmentOf(node);
+  /* 祖先链累积路径：文件夹的命名需要它（见下方 name 注释），同时透传给子树 */
+  const full = parentPath ? `${parentPath}/${path}` : path;
 
   if (node.url) {
     // 拒帧外链：只留 url + external，不注册可导航页（直链落 403，点击走 window.open）
@@ -74,9 +79,14 @@ function toRecord(node: MenuResNode): RouteRecordRaw | null {
   }
 
   if (!node.page) {
-    const children = toRouteRecords(node.children ?? []);
+    const children = toRouteRecords(node.children ?? [], full);
     if (!children.length) return null;
-    return { path, meta: { title: node.label, icon: node.icon }, children };
+    /* 文件夹必须带 name，否则 addRoute 返回的移除器是空操作：
+       Vue Router 的 addRoute 按路由 name 移除，无名记录的移除器不生效——
+       于是 resetUserRoutes 会静默失效、动态路由登出后永远留在路由表里（2026-09 实测确认）。
+       用祖先链累积路径而非单段 cResPath：后者在不同父节点下可能重名。
+       带 name 的父记录无 component，RouterView 照旧跳过该层，不影响渲染。 */
+    return { path, name: `folder:${full}`, meta: { title: node.label, icon: node.icon }, children };
   }
 
   return {
