@@ -9,11 +9,7 @@ import ErrorBoundary from "@/components/common/ErrorBoundary.vue";
 import SettingsDialog from "@/layouts/components/SettingsDialog.vue";
 import type { HmxMenuNode } from "@/layouts/composables/menuFromRoutes";
 import { useAuthStore } from "@/stores/authStore";
-import { usePermissionStore } from "@/stores/permissionStore";
 import { useTabsStore } from "@/stores/tabsStore";
-/* 从叶模块取而非 @/router（index）：本组件被 layouts 注册表静态引入，而 index 又依赖该注册表，
-   import index 会形成 router → layouts → MainLayout → router 循环依赖（见 @/router/core/dynamicRoutes） */
-import { resetUserRoutes } from "@/router/core/dynamicRoutes";
 import { useToast } from "@/composables/useToast";
 
 /* 壳层：Header + Sidebar + 标签栏 + 页面区（RouterView 渲染权限内页面）。
@@ -22,7 +18,6 @@ import { useToast } from "@/composables/useToast";
 const route = useRoute();
 const router = useRouter();
 const auth = useAuthStore();
-const perm = usePermissionStore();
 const tabs = useTabsStore();
 const { toast } = useToast();
 
@@ -42,10 +37,10 @@ function openPage(node: HmxMenuNode) {
   router.push(`/${node.page}`);
 }
 
+/* 登出：只清本地会话与页签，动态路由与权限的清理交给守卫——落到 /login 时它会就地执行
+   （见 core/guard.ts 的 public 分支）。这样本组件不必 import router 内部模块。 */
 function logout() {
   auth.logout();
-  perm.reset();
-  resetUserRoutes();
   tabs.reset();
   router.replace("/login");
   toast("已退出登录", 1800);

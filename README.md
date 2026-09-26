@@ -223,9 +223,9 @@ src/
 │   ├── admin/              # 系统管理各子页（dept/user/role/resc/kvs/jobs/gen/settings）（平台自有）
 │   └── DDH|LIMS|SHR|SMP|SMS|SQM|SYD|Widgets/   # 业务组模块（示例，迁移中）
 ├── router/                 # index 阶段一装配 + 注入守卫 · builtin 骨架页 · business 业务静态路由
-│   └── core/               # 机制层（不常改）：routeMeta 类型增强 · fromMenu 后端资源→路由编译 · guard 守卫
-│                           #   dynamicRoutes 阶段二挂接+阶段三移除(✅叶模块) · bridge router 实例桥(✅叶模块)
-│                           #   ⛔ guard/fromMenu 依赖 store 与页面组件，勿从 router 外部引用
+│   └── core/               # 机制层（不常改）：bridge router 实例桥(✅唯一叶模块) · routeMeta 类型增强
+│                           #   dynamicRoutes 阶段二挂接+阶段三移除 · guard 守卫 · fromMenu 后端资源→路由编译
+│                           #   ⛔ 外部只准 import @/router/core/bridge，其余均为 router 内部模块
 ├── stores/                 # auth · permission · tabs · settings
 └── styles/                 # tokens(设计 token) · globals(字阶 @theme) · prime-overrides · agGrid · scrollbar
 

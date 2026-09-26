@@ -76,9 +76,16 @@ RouteRecordRaw
 |---|---|---|
 | 一 | 模块求值 | 静态骨架 + `layouts.ts` 注册表按 `meta.layout` 生成布局父记录（仍在 `index.ts`） |
 | 二 | 登录后 | `perm.loadForUser()` → `toRouteRecords()` → `registerUserRoutes(默认布局名, records)` 挂进默认布局 |
-| 三 | 退出 | `resetUserRoutes()` 整体移除，菜单回落到静态骨架 |
+| 三 | 退出 | **落到 `/login` 即触发**：守卫在 public 分支里 `perm.reset()` + `resetUserRoutes()`，菜单回落静态骨架 |
 
 阶段二/三的实现与状态同在 `src/router/core/dynamicRoutes.ts`（一对 register/remove 收在一处）。
+
+> ⚠️ **文件夹记录必须带 `name`（`folder:${祖先链路径}`）**，否则清理静默失效：Vue Router 的
+> `addRoute` 移除器**按 name 移除**，无名记录的移除器是**空操作**。`fromMenu.ts` 早期生成的顶层
+> 分组记录就没有 name，导致 `resetUserRoutes()` 一直没生效——登出后 434 条动态路由留在路由表里
+> （实测确认，2026-09 修复）。菜单回退是好的（`setUserMenuRoutes([])` 与路由表无关），所以
+> 这个 bug 用户看不出来，只在换账号登录时以「旧菜单路由残留」的形式显形。加 `folder:` 前缀即可，
+> 带 name 的父记录无 component，RouterView 照旧跳过该层。
 
 守卫在 `src/router/core/guard.ts`（登录 → 动态注册 → 越权落 403 → router→tabs 单向同步）。
 
@@ -91,33 +98,38 @@ src/router/
 ├─ builtin.ts        # 登录/首页/403/404 骨架页
 ├─ business.ts       # 业务静态路由
 └─ core/             # 机制层，日常不动
+   ├─ bridge.ts         ✅ 唯一的叶模块 —— 外部只准引它
    ├─ routeMeta.ts      RouteMeta 类型增强（纯类型，靠 index 的 side-effect import 生效）
-   ├─ bridge.ts         ✅ 叶模块
-   ├─ dynamicRoutes.ts  ✅ 叶模块（阶段二 register + 阶段三 reset）
-   ├─ guard.ts          ⛔ 仅 index 引用
-   └─ fromMenu.ts       ⛔ 仅 router 内部引用
+   ├─ dynamicRoutes.ts  ⛔ router 内部（阶段二 register + 阶段三 reset）
+   ├─ guard.ts          ⛔ router 内部
+   └─ fromMenu.ts       ⛔ router 内部
 ```
 
-> ⚠️ **core/ 里安全与不安全混在同一层，靠这行标注分辨**（每个文件头也各写了自己的约束）：
-> 只有 `bridge.ts` 与 `dynamicRoutes.ts` 是**叶模块**，可被 router 外部安全 import；
-> `guard.ts` 依赖三个 store、`fromMenu.ts` 静态引入页面组件，**从外部引用会成环或拖进组件链**。
->
-> **这条边界已由 lint 强制**，不再只靠注释：`.oxlintrc.json` 的 `no-restricted-imports` 禁掉
-> `@/router` 与 `@/router/index`（`src/main.ts` 例外，它本就该拿 index），写错当场报 error，
-> 报错文案直接给出该用哪个叶模块。
->
-> **为什么不用 re-export 表达**：在 index 里 `export { getRouter } from "@/router/core/bridge"` 看似
-> 提供了安全入口，实则更危险——消费方仍得 `import ... from "@/router"`，而**import index 这个动作本身**
-> 就会拉进 guard → permissionStore → menuRescTree → api/admin/request → _core/request，精确复现那条环。
-> re-export 只是把叶模块伪装成安全的，不能改变 index 的静态依赖图。
->
+> ✅ **一句话规则：router 外部只准 import `@/router/core/bridge`。** 其余全部是 router 内部模块。
+> 外部实际只有两处：`api/_core/request.ts`（401 后要导航回登录页）与 `composables/usePermission.ts`
+> ——它们都只要一个 router 实例，bridge 就是为此存在的（10 行、只依赖 vue-router 类型）。
+
+> **这条边界已由 lint 强制**：`.oxlintrc.json` 的 `no-restricted-imports` 禁掉 `@/router` 与
+> `@/router/index`（`src/main.ts` 例外，它本就该拿 index），写错当场报 error。
+> 禁的是「import index 这个动作」——它才是成环的原因，见下方 re-export 说明。
+
+> **为什么不用 re-export 表达这条边界**：在 index 里 `export { getRouter } from "@/router/core/bridge"`
+> 看似提供了安全入口，实则更危险——消费方仍得 `import ... from "@/router"`，而**import index 这个动作
+> 本身**就会拉进 guard → permissionStore → menuRescTree → api/admin/request → _core/request，精确复现
+> 那条环。re-export 只是把叶模块伪装成安全的，改不了 index 的静态依赖图。
+
+> **为什么清理挂在守卫而不是调用方**（曾经不是）：早先 `MainLayout.logout()` 与 `request` 的 401
+> 各自调 `resetUserRoutes()` + `perm.reset()`，于是这两个**外部**文件都得 import router 内部模块，
+> 才被迫需要两个叶模块。改为「落到 `/login` 就地清理」后，调用方只负责导航，外部依赖收敛到 bridge 一个。
+> 对标 tdesign-starter 后确认这是更简的路子——它干脆不处理 401（token 过期静默失败），所以连 bridge
+> 都不需要；我们保留 401 自动登出，代价就是这一个叶模块。
+
 > `dynamicRoutes.ts` 的 `registerUserRoutes(layoutName, records)` **把默认布局名做成参数**，正是因为
-> 布局名住在 `layouts.ts`（静态引入 MainLayout.vue）——import 它就复现了本模块要避免的那条环。
+> 布局名住在 `layouts.ts`（静态引入 MainLayout.vue）——import 它会造出 layouts → MainLayout → router 的回边。
 > 绑定在 `index.ts` 的 `setupRouterGuards` 注入处完成。
 
-**循环依赖边界**：MainLayout / request / usePermission 等消费方只准 import
-`@/router/core/dynamicRoutes`（动态路由清理）与 `@/router/core/bridge`（router 实例桥），
-反向 import `@/router`（index）会成环（index 依赖 layouts 注册表、request 经 guard→store→api 绕回）。
+**循环依赖边界**：消费方只准 import `@/router/core/bridge`（router 实例桥）；反向 import `@/router`（index）
+会成环（index 依赖 layouts 注册表、request 经 guard→store→api 绕回）。
 **加布局**只改 `src/layouts/composables/layouts.ts` 的注册表，不动 index。
 **加业务页**写 `src/router/business.ts`（会进菜单的页走后端资源下发，不写这里）。
 

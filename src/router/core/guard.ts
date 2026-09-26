@@ -32,8 +32,17 @@ export function setupRouterGuards(
     const perm = usePermissionStore();
 
     if (to.meta.public) {
-      // 已登录访问 /login → 回首页（未登录访问 /login 放行）
-      return auth.session && to.name === "login" ? { path: "/home", replace: true } : true;
+      /* 落到登录页 = 登出或会话失效，**就地清理**（perm.reset / resetUserRoutes 均幂等）。
+         这是「清理」的唯一触发点：调用方（MainLayout 登出、request 的 401）只负责导航到
+         /login，不必各自 import 动态路由清理——外部对 router 的依赖因此只剩 bridge 一个叶模块。
+         注意顺序：已登录访问 /login 是「回首页」而非登出，那种情况不能清。 */
+      if (to.name === "login") {
+        if (auth.session) return { path: "/home", replace: true };
+        perm.reset();
+        api.resetUserRoutes();
+        return true;
+      }
+      return true;
     }
 
     if (!auth.session) {

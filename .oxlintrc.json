@@ -23,11 +23,11 @@
         "paths": [
           {
             "name": "@/router",
-            "message": "勿从 router 外部 import 路由 index：它会拉进 guard → store → api，形成 request → router → guard → store → api → request 循环依赖（AGENTS §4.2）。要 router 实例用 @/router/core/bridge，要动态路由挂接/清理用 @/router/core/dynamicRoutes —— 只有这两个是叶模块。"
+            "message": "勿从 router 外部 import 路由 index：它会拉进 guard → store → api，形成 request → router → guard → store → api → request 循环依赖（AGENTS §4.2）。要 router 实例请用 @/router/core/bridge —— 全仓唯一可从 router 外部引用的叶模块。"
           },
           {
             "name": "@/router/index",
-            "message": "同上：用 @/router/core/bridge 或 @/router/core/dynamicRoutes（叶模块），或由 main.ts 走相对路径 ./router。"
+            "message": "同上：用 @/router/core/bridge（唯一叶模块），或由 main.ts 走相对路径 ./router。"
           }
         ]
       }

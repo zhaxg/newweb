@@ -1,11 +1,10 @@
 import axios, { AxiosError, type AxiosRequestConfig } from "axios";
 import ToastEventBus from "primevue/toasteventbus";
 import { useAuthStore } from "@/stores/authStore";
-import { usePermissionStore } from "@/stores/permissionStore";
 /* 不 import @/router（index）：request → @/router → guard → store → api → request 是真实循环依赖。
-   动态路由清理走叶模块 @/router/core/dynamicRoutes，router 实例走叶桥 @/router/core/bridge（见各自文件头注释） */
+   router 实例走叶桥 @/router/core/bridge —— 这是全仓唯一一个可从 router 外部引用的叶模块
+   （清理已由守卫在落到 /login 时接管，故不再需要 dynamicRoutes）。 */
 import { getRouter } from "@/router/core/bridge";
-import { resetUserRoutes } from "@/router/core/dynamicRoutes";
 import { mockAdapter } from "@/mock/mockAdapter";
 import type { Result } from "./types";
 import { ApiError } from "./types";
@@ -49,11 +48,9 @@ instance.interceptors.response.use(
       if (!sessionExpiredHandling) {
         sessionExpiredHandling = true;
         const auth = useAuthStore();
-        if (auth.session) {
-          auth.logout();
-          usePermissionStore().reset();
-          resetUserRoutes();
-        }
+        if (auth.session) auth.logout();
+        /* 权限与动态路由的清理不在这里做：导航到 /login 时守卫会就地执行（见 core/guard.ts
+           的 public 分支）。本层只负责「清会话 + 导航」，故对 router 的依赖仅剩实例桥一个叶模块。 */
         const appRouter = getRouter();
         const current = appRouter.currentRoute.value;
         const nav =
