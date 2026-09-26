@@ -18,6 +18,7 @@ import { smpRoutes } from "./mes4ddh/smp";
 import { sydRoutes } from "./mes4ddh/syd";
 import { smsRoutes } from "./mes4ddh/sms";
 import { printReportRoutes } from "./mes4ddh/printReport";
+import { mesPlaceholderRoutes } from "./mes4ddh/placeholders";
 
 /**
  * 进程内 mock axios adapter：拦截 `${API_BASE}/**`，读写现有 localStorage 数据源，
@@ -45,6 +46,8 @@ const routes: RouteMap = {
   ...sydRoutes,
   ...smsRoutes,
   ...printReportRoutes,
+  // 迁移占位放最后：同名端点若域文件里已有手写 mock，手写优先，占位只兜「还没注册」的那些
+  ...mesPlaceholderRoutes,
 };
 
 /** 登录前/登出接口：真实后端同样不校验 Authorization 头，豁免 mock 的 401 门 */

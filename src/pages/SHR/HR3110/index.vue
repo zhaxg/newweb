@@ -330,11 +330,11 @@ function btnOk() {
         <div class="flex h-9 shrink-0 items-center gap-1.5 border-b border-border/60 px-2">
           <label class="w-16 shrink-0 text-xs text-muted-foreground">炼钢钢种</label>
           <InputText v-model="planInput.cSgCode" class="w-32 shrink-0" @keydown.enter="queryPlan" />
-          <label class="shrink-0 text-xs text-muted-foreground">订单厚度</label>
+          <label class="w-16 shrink-0 text-xs text-muted-foreground">订单厚度</label>
           <InputNumber v-model="planInput.nThick" :show-buttons="false" :use-grouping="false" class="w-24 shrink-0" />
-          <label class="shrink-0 text-xs text-muted-foreground">订单宽度</label>
+          <label class="w-16 shrink-0 text-xs text-muted-foreground">订单宽度</label>
           <InputNumber v-model="planInput.nWidth" :show-buttons="false" :use-grouping="false" class="w-24 shrink-0" />
-          <label class="shrink-0 text-xs text-muted-foreground">计划材料</label>
+          <label class="w-16 shrink-0 text-xs text-muted-foreground">计划材料</label>
           <InputText v-model="planInput.cPieceNo" class="w-32 shrink-0" @keydown.enter="queryPlan" />
           <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="planLoading" @click="queryPlan">
             <IconSearch class="h-3 w-3" />查询
@@ -366,9 +366,9 @@ function btnOk() {
         </div>
         <!-- stackPanel2：批号/板坯号 + 查询 -->
         <div class="flex h-9 shrink-0 items-center gap-1.5 border-b border-border/60 px-2">
-          <label class="w-8 shrink-0 text-xs text-muted-foreground">批号</label>
+          <label class="w-16 shrink-0 text-xs text-muted-foreground">批号</label>
           <InputText v-model="slabInput.cBatchNo" class="w-36 shrink-0" @keydown.enter="querySlab" />
-          <label class="shrink-0 text-xs text-muted-foreground">板坯号</label>
+          <label class="w-16 shrink-0 text-xs text-muted-foreground">板坯号</label>
           <InputText v-model="slabInput.cPieceNoSlab" class="w-36 shrink-0" @keydown.enter="querySlab" />
           <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="slabLoading" @click="querySlab">
             <IconSearch class="h-3 w-3" />查询
@@ -410,7 +410,7 @@ function btnOk() {
       <p class="text-xs">{{ confirmMsg }}</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />
-        <Button label="确定" variant="outlined" @click="onConfirmOk" />
+        <Button label="确定" variant="outlined" autofocus @click="onConfirmOk" />
       </template>
     </Dialog>
   </div>

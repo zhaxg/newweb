@@ -593,7 +593,7 @@ function btnImport() {
       <p class="text-xs">{{ confirmMsg }}</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />
-        <Button label="确定" variant="outlined" @click="onConfirmOk" />
+        <Button label="确定" variant="outlined" autofocus @click="onConfirmOk" />
       </template>
     </Dialog>
   </div>

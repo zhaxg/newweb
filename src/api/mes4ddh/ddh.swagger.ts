@@ -1210,7 +1210,7 @@ export const bxcomMessageApi = {
       params: { slabNo },
     });
   },
-  send8JP4012(slabNo?: string) {
+  send8JP401_2(slabNo?: string) {
     return requestClient.request<any>("/dDH.Service.Interface.Services.BX/bxcomMessage/send8JP401_2", {
       method: "post",
       params: { slabNo },
@@ -1271,7 +1271,7 @@ export const bxcomTestApi = {
       data,
     });
   },
-  demoReceivedByBxcom(data?: DtoThr3010) {
+  demo_ReceivedByBxcom(data?: DtoThr3010) {
     return requestClient.request<any>("/dDH.Service.Interface.Services.BX/bxcomTest/demo_ReceivedByBxcom", {
       method: "post",
       data,

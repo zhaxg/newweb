@@ -332,7 +332,7 @@ onMounted(async () => {
               class="min-w-0 flex-1"
             />
           </div>
-          <div class="flex min-w-0 items-center gap-1.5">
+          <div class="col-span-2 flex min-w-0 items-center gap-1.5">
             <label class="w-16 shrink-0 text-xs text-muted-foreground">时间范围</label>
             <DatePicker
               v-model="dates1"
@@ -354,7 +354,7 @@ onMounted(async () => {
             <label class="w-16 shrink-0 text-xs text-muted-foreground">件次号</label>
             <InputText v-model="pieceNo1" class="min-w-0 flex-1" @keydown.enter="dataBind" />
           </div>
-          <div class="col-span-2 flex min-w-0 items-center gap-1">
+          <div class="flex min-w-0 items-center gap-1">
             <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="topLoading" @click="dataBind">
               <IconSearch class="h-3 w-3" />查询
             </Button>

@@ -1,96 +1,154 @@
 <script setup lang="ts">
+/** 对应 FrmTI1214（超快冷信息）：DDH.Winforms.SHR.Forms.APILogViewer.FrmTI1214
+ *  已接入：tI1214Api.getListAsync（关键字 + 时间区间；默认 [今天00:00, 今天23:59:59]，原 Today ~ Today.AddDays(1).AddSeconds(-1)，
+ *         与其他 TI12xx 页不同——此页 Load 里起点是当天而非今天-6天）
+ *  待接入：编辑弹窗 FrmTI1214_Edit（原窗体内 ShowDialog 二级窗体，保存走 ITI1214AppService.UpdateAsync，
+ *         swagger 未生成 tI1214Api.updateAsync；编辑按钮仅保留原「未选行提示」校验后占位）
+ *  偏差：查询条件与按钮同行、以 placeholder 代替原「关键字/时间区间」LabelControl（ui-rules §6，1–2 个条件） */
+
 import { ref } from "vue";
 import Button from "primevue/button";
-import { IconSearch } from "@tabler/icons-vue";
-
+import DatePicker from "primevue/datepicker";
+import InputText from "primevue/inputtext";
+import { IconPencil, IconSearch } from "@tabler/icons-vue";
 import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
-import { hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
-
-/** 对应 FrmTI1214（超快冷信息）：DDH.Winforms.SHR.Forms.APILogViewer.FrmTI1214
- *  画面迁移，逻辑不迁移到 */
+import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
+import { useToast } from "@/composables/useToast";
+import { tI1214Api, type TiL2me14, type TimeRange } from "@/api/mes4ddh/shr.swagger";
 
 const theme = makeHmxGridTheme();
-const rows = ref<any[]>([]);
+const { toast } = useToast();
+const rows = ref<TiL2me14[]>([]);
 const querying = ref(false);
 const gridApi = ref<GridApi | null>(null);
-
-const colDefs = ref<ColDef[]>([
-  { field: "SlabNo", headerName: "坯料号", width: 112 },
-  { field: "SteelGrade", headerName: "钢种", width: 112 },
-  { field: "Thick", headerName: "厚度", width: 112 },
-  { field: "Width", headerName: "宽度", width: 112 },
-  { field: "Length", headerName: "长度", width: 112 },
-  { field: "CoolMode", headerName: "冷却模式", width: 112 },
-  { field: "StartCoolTime", headerName: "开始冷却时间", width: 112 },
-  { field: "FinishCoolTime", headerName: "结束冷却时间", width: 112 },
-  { field: "RollAveTemp", headerName: "轧后平均温度", width: 112 },
-  { field: "RollMaxTemp", headerName: "轧后温度最大值", width: 112 },
-  { field: "RollMinTemp", headerName: "轧后温度最小值", width: 112 },
-  { field: "EntryAveTemp", headerName: "入炉平均温度", width: 112 },
-  { field: "EntryMaxTemp", headerName: "最高入炉温度", width: 112 },
-  { field: "EntryMinTemp", headerName: "最低入炉温度", width: 112 },
-  { field: "TargetFinishTemp", headerName: "目标终轧温度", width: 112 },
-  { field: "FinishAveTemp", headerName: "终轧平均温度", width: 112 },
-  { field: "FinishMaxTemp", headerName: "最高终轧温度", width: 112 },
-  { field: "FinishMinTemp", headerName: "最低终轧温度", width: 112 },
-  { field: "ScanAveTemp", headerName: "扫描高温计平均温度", width: 112 },
-  { field: "ScanMaxTemp", headerName: "扫描高温计最大温度", width: 112 },
-  { field: "ScanMinTemp", headerName: "扫描高温计最小温度", width: 112 },
-  { field: "CoolingRate", headerName: "冷却速率", width: 112 },
-  { field: "FluxA", headerName: "熔剂A", width: 112 },
-  { field: "FluxB", headerName: "熔剂B", width: 112 },
-  { field: "ActFluxA", headerName: "实际熔剂A", width: 112 },
-  { field: "ActFluxB", headerName: "实际熔剂B", width: 112 },
-  { field: "RatioA", headerName: "配比A", width: 112 },
-  { field: "RatioB", headerName: "配比B", width: 112 },
-  { field: "ActRatioA", headerName: "实际配比A", width: 112 },
-  { field: "ActRatioB", headerName: "实际配比B", width: 112 },
-  { field: "Speed", headerName: "速度", width: 112 },
-  { field: "ActSpeed", headerName: "实际速度", width: 112 },
-  { field: "Aspd", headerName: "喷吹速度", width: 112 },
-  { field: "ActAspd", headerName: "实际喷吹速度", width: 112 },
-  { field: "Num", headerName: "数量", width: 112 },
-  { field: "SideSpary", headerName: "侧喷", width: 112 },
-  { field: "MidSpary", headerName: "中喷", width: 112 },
-  { field: "HTSIS", headerName: "头尾遮蔽投入信号", width: 112 },
-  { field: "HeadUpLength", headerName: "头部上弯长度", width: 112 },
-  { field: "HeadBotLength", headerName: "头部下弯长度", width: 112 },
-  { field: "HeadUpCoef", headerName: "头部上弯系数", width: 112 },
-  { field: "HeadBotCoef", headerName: "头部下弯系数", width: 112 },
-  { field: "TailUpLength", headerName: "尾部上弯长度", width: 112 },
-  { field: "TailBotLength", headerName: "尾部下弯长度", width: 112 },
-  { field: "TailUpCoef", headerName: "尾部上弯系数", width: 112 },
-  { field: "TailBotCoef", headerName: "尾部下弯系数", width: 112 },
-  { field: "TempWater", headerName: "水温", width: 112 },
-  { field: "PressWater", headerName: "压力水", width: 112 },
-  { field: "total_flow", headerName: "总水量", width: 112 },
-  { field: "Creator", headerName: "创建人", width: 112 },
-  { field: "CreateTime", headerName: "创建时间", width: 112 },
-  { field: "LastModifier", headerName: "最后修改人", width: 112 },
-  { field: "LastModifyTime", headerName: "最后修改时间", width: 112 },
-]);
 function onGridReady(e: GridReadyEvent) {
   gridApi.value = e.api;
 }
 
+/* ---------- 查询条件（原 txtText01 关键字 + ucTimeRange1 时间区间） ---------- */
+const keyword = ref("");
+const dates = ref<Date[] | null>(defaultRange());
+function defaultRange(): Date[] {
+  const now = new Date();
+  const day = now.getDate();
+  return [
+    new Date(now.getFullYear(), now.getMonth(), day),
+    new Date(now.getFullYear(), now.getMonth(), day, 23, 59, 59),
+  ];
+}
+function pad2(n: number): string {
+  return String(n).padStart(2, "0");
+}
+function isoLocal(d: Date): string {
+  const p = pad2;
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+}
+function toTimeRange(list: Date[] | null): TimeRange | undefined {
+  if (!list || list.length < 2) return undefined;
+  return { min: isoLocal(list[0]), max: isoLocal(list[list.length - 1]) };
+}
+
+/* ---------- 表格（gridView1 / TiL2me14，Designer 49 列） ---------- */
+const colDefs: ColDef[] = [
+  { colId: "slabNo", field: "slabNo", headerName: "板坯号", width: 112 },
+  { colId: "steelGrade", field: "steelGrade", headerName: "钢种", width: 112 },
+  { colId: "thick", field: "thick", headerName: "厚度", width: 112 },
+  { colId: "width", field: "width", headerName: "宽度", width: 112 },
+  { colId: "length", field: "length", headerName: "长度", width: 112 },
+  { colId: "coolMode", field: "coolMode", headerName: "冷却模式", width: 112 },
+  { colId: "startCoolTime", field: "startCoolTime", headerName: "开冷时间", width: 112 },
+  { colId: "finishCoolTime", field: "finishCoolTime", headerName: "终冷时间", width: 112 },
+  { colId: "rollAveTemp", field: "rollAveTemp", headerName: "轧后平均温度", width: 112 },
+  { colId: "rollMaxTemp", field: "rollMaxTemp", headerName: "轧后温度最大值", width: 112 },
+  { colId: "rollMinTemp", field: "rollMinTemp", headerName: "轧后温度最小值", width: 112 },
+  { colId: "entryAveTemp", field: "entryAveTemp", headerName: "开冷平均温度", width: 112 },
+  { colId: "entryMaxTemp", field: "entryMaxTemp", headerName: "开冷最大温度", width: 112 },
+  { colId: "entryMinTemp", field: "entryMinTemp", headerName: "开冷最小温度", width: 112 },
+  { colId: "targetFinishTemp", field: "targetFinishTemp", headerName: "目标返红温度", width: 112 },
+  { colId: "finishAveTemp", field: "finishAveTemp", headerName: "返红平均温度", width: 112 },
+  { colId: "finishMaxTemp", field: "finishMaxTemp", headerName: "返红温度最大", width: 112 },
+  { colId: "finishMinTemp", field: "finishMinTemp", headerName: "返红温度最小", width: 112 },
+  { colId: "scanAveTemp", field: "scanAveTemp", headerName: "扫描高温计平均温度", width: 112 },
+  { colId: "scanMaxTemp", field: "scanMaxTemp", headerName: "扫描高温计最大温度", width: 112 },
+  { colId: "scanMinTemp", field: "scanMinTemp", headerName: "扫描高温计最小温度", width: 112 },
+  { colId: "coolingRate", field: "coolingRate", headerName: "实际冷速", width: 112 },
+  { colId: "fluxA", field: "fluxA", headerName: "A区设定流量", width: 112 },
+  { colId: "fluxB", field: "fluxB", headerName: "B区设定流量", width: 112 },
+  { colId: "actFluxA", field: "actFluxA", headerName: "A区实际流量", width: 112 },
+  { colId: "actFluxB", field: "actFluxB", headerName: "B区实际流量", width: 112 },
+  { colId: "ratioA", field: "ratioA", headerName: "A区设定水比", width: 112 },
+  { colId: "ratioB", field: "ratioB", headerName: "B区设定水比", width: 112 },
+  { colId: "actRatioA", field: "actRatioA", headerName: "A区实际水比", width: 112 },
+  { colId: "actRatioB", field: "actRatioB", headerName: "B区实际水比", width: 112 },
+  { colId: "speed", field: "speed", headerName: "设定辊速", width: 112 },
+  { colId: "actSpeed", field: "actSpeed", headerName: "实际辊速", width: 112 },
+  { colId: "aspd", field: "aspd", headerName: "设定加速度", width: 112 },
+  { colId: "actAspd", field: "actAspd", headerName: "实际加速度", width: 112 },
+  { colId: "num", field: "num", headerName: "开启集管组数", width: 112 },
+  { colId: "sideSpary", field: "sideSpary", headerName: "侧喷", width: 112 },
+  { colId: "midSpary", field: "midSpary", headerName: "中喷", width: 112 },
+  { colId: "htsis", field: "htsis", headerName: "头尾遮蔽投入信号", width: 112 },
+  { colId: "headUpLength", field: "headUpLength", headerName: "头上长度", width: 112 },
+  { colId: "headBotLength", field: "headBotLength", headerName: "头下长度", width: 112 },
+  { colId: "headUpCoef", field: "headUpCoef", headerName: "头上系数", width: 112 },
+  { colId: "headBotCoef", field: "headBotCoef", headerName: "头下系数", width: 112 },
+  { colId: "tailUpLength", field: "tailUpLength", headerName: "尾上长度", width: 112 },
+  { colId: "tailBotLength", field: "tailBotLength", headerName: "尾下长度", width: 112 },
+  { colId: "tailUpCoef", field: "tailUpCoef", headerName: "尾上系数", width: 112 },
+  { colId: "tailBotCoef", field: "tailBotCoef", headerName: "尾下系数", width: 112 },
+  { colId: "tempWater", field: "tempWater", headerName: "水温", width: 112 },
+  { colId: "pressWater", field: "pressWater", headerName: "水压", width: 112 },
+  { colId: "total_flow", field: "total_flow", headerName: "总水量", width: 112 },
+];
+
+/* 原 btnQuery_Click：GetListAsync(关键字, 时间区间) → 回填 + BestFitColumns */
 async function onQuery() {
   querying.value = true;
   try {
-    rows.value = [];
+    rows.value = (await tI1214Api.getListAsync(keyword.value.trim() || undefined, toTimeRange(dates.value))) ?? [];
+    requestAnimationFrame(() => gridApi.value?.autoSizeAllColumns());
+  } catch {
+    /* 拦截层已 toast */
   } finally {
     querying.value = false;
   }
+}
+
+/* 原 btnEdit_Click：无焦点行 →「请选择信息」；有则开 FrmTI1214_Edit（待接入占位） */
+function onEdit() {
+  const r = gridApi.value?.getSelectedRows()[0] as TiL2me14 | undefined;
+  if (!r) {
+    toast("请选择信息", 2000, "warn");
+    return;
+  }
+  toast("编辑弹窗（FrmTI1214_Edit）待接入", 2000, "warn");
 }
 </script>
 
 <template>
   <div class="flex min-h-0 flex-1 flex-col">
+    <!-- 查询区（原 stackPanel1：txtText01 + ucTimeRange1 + btnQuery/btnEdit）；ui-rules §6 1–2 个条件与按钮同行、placeholder 提示 -->
     <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
-      <Button text size="small" class="shrink-0 whitespace-nowrap" @click="onQuery"
-        ><IconSearch class="h-3.5 w-3.5" />查询</Button
-      >
+      <InputText v-model="keyword" placeholder="关键字" class="w-44 shrink-0" @keydown.enter="onQuery" />
+      <DatePicker
+        v-model="dates"
+        selection-mode="range"
+        :manual-input="false"
+        date-format="yy-mm-dd"
+        show-time
+        hour-format="24"
+        show-icon
+        placeholder="时间区间"
+        class="w-80 shrink-0"
+      />
+      <Button variant="outlined" :loading="querying" class="shrink-0 whitespace-nowrap" @click="onQuery">
+        <IconSearch class="h-3 w-3" />查询
+      </Button>
+      <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onEdit">
+        <IconPencil class="h-3 w-3" />编辑
+      </Button>
     </div>
     <div class="min-h-0 flex-1 overflow-hidden">
       <AgGridVue
@@ -100,8 +158,11 @@ async function onQuery() {
         :default-col-def="hmxDefaultColDef"
         :column-defs="colDefs"
         :row-data="rows"
-        row-selection="multiple"
+        :row-selection="{ mode: 'singleRow', checkboxes: true, enableClickSelection: true }"
+        :pagination="false"
+        :loading="querying"
         @grid-ready="onGridReady"
+        @first-data-rendered="autoSizeOnFirstData"
       />
     </div>
   </div>

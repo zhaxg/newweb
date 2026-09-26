@@ -195,7 +195,7 @@ async function query() {
         <InputText v-model="input.cBatchOrder" class="min-w-0 flex-1" @keydown.enter="query" />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
-        <label class="w-20 shrink-0 text-xs text-muted-foreground">炼钢钢种</label>
+        <label class="w-16 shrink-0 text-xs text-muted-foreground">炼钢钢种</label>
         <InputText v-model="input.cSgCodeLg" class="min-w-0 flex-1" @keydown.enter="query" />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
@@ -203,7 +203,7 @@ async function query() {
         <InputText v-model="input.cTrimFlag" class="min-w-0 flex-1" @keydown.enter="query" />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
-        <label class="w-20 shrink-0 text-xs text-muted-foreground">提料计划号</label>
+        <label class="w-16 shrink-0 text-xs text-muted-foreground">提料计划号</label>
         <InputText v-model="input.cOrderNoTl" class="min-w-0 flex-1" @keydown.enter="query" />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">

@@ -157,7 +157,7 @@ async function btnTb() {
         <InputText v-model="input.cBatchNo" class="min-w-0 flex-1" @keydown.enter="query" />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
-        <label class="w-20 shrink-0 text-xs text-muted-foreground">入口钢板号</label>
+        <label class="w-16 shrink-0 text-xs text-muted-foreground">入口钢板号</label>
         <InputText v-model="input.inPlateNo" class="min-w-0 flex-1" />
       </div>
       <div class="col-span-2 flex min-w-0 items-center gap-1.5">

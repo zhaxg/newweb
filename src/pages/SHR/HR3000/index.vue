@@ -366,9 +366,9 @@ async function onConfirmOk() {
             placeholder="开始 至 结束"
             class="w-72 shrink-0"
           />
-          <label class="shrink-0 text-xs text-muted-foreground">订单号</label>
+          <label class="w-16 shrink-0 text-xs text-muted-foreground">订单号</label>
           <InputText v-model="planInput.cOrderNo" class="w-36 shrink-0" @keydown.enter="queryPlan" />
-          <label class="shrink-0 text-xs text-muted-foreground">钢种</label>
+          <label class="w-16 shrink-0 text-xs text-muted-foreground">钢种</label>
           <InputText v-model="planInput.cSgCode" class="w-36 shrink-0" @keydown.enter="queryPlan" />
           <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="planLoading" @click="queryPlan">
             <IconSearch class="h-3 w-3" />查询
@@ -399,11 +399,11 @@ async function onConfirmOk() {
         </div>
         <!-- stackPanel2：炉号/钢种/规格 + 查询；组批组：装炉方式/备注 + 组批 -->
         <div class="flex h-9 shrink-0 items-center gap-1.5 border-b border-border/60 px-2">
-          <label class="w-8 shrink-0 text-xs text-muted-foreground">炉号</label>
+          <label class="w-16 shrink-0 text-xs text-muted-foreground">炉号</label>
           <InputText v-model="slabInput.cStove" class="w-36 shrink-0" @keydown.enter="querySlabByInput" />
-          <label class="shrink-0 text-xs text-muted-foreground">钢种</label>
+          <label class="w-16 shrink-0 text-xs text-muted-foreground">钢种</label>
           <InputText v-model="slabInput.cSgCode" class="w-36 shrink-0" @keydown.enter="querySlabByInput" />
-          <label class="shrink-0 text-xs text-muted-foreground">规格</label>
+          <label class="w-16 shrink-0 text-xs text-muted-foreground">规格</label>
           <InputText v-model="slabInput.cSpec" class="w-36 shrink-0" @keydown.enter="querySlabByInput" />
           <Button
             variant="outlined"
@@ -460,7 +460,7 @@ async function onConfirmOk() {
       <p class="text-xs">{{ confirmMsg }}</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />
-        <Button label="确定" variant="outlined" @click="onConfirmOk" />
+        <Button label="确定" variant="outlined" autofocus @click="onConfirmOk" />
       </template>
     </Dialog>
   </div>

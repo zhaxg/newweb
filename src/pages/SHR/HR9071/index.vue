@@ -346,7 +346,7 @@ async function query() {
         <InputText v-model="input.cSgCode" class="min-w-0 flex-1" @keydown.enter="query" />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
-        <label class="w-20 shrink-0 text-xs text-muted-foreground">执行标准</label>
+        <label class="w-16 shrink-0 text-xs text-muted-foreground">执行标准</label>
         <InputText v-model="input.cSgStd" class="min-w-0 flex-1" @keydown.enter="query" />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">

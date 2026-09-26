@@ -945,6 +945,17 @@ export interface Tyd2000Dto {
   cRemark?: string | null;
   cArer?: string | null;
 }
+/** 中厚板原料统计（原 ZhbSlabHzDto，FrmYD2000Zhb） */
+export interface ZhbSlabHzDto {
+  /** 类型 */
+  cType?: string | null;
+  /** 总支数 */
+  nNum?: number;
+  /** 总重量 */
+  nWgt?: number;
+  /** 明细 */
+  tyd2000Dtos?: Tyd2000Dto[];
+}
 export interface Tyd2000InOutRecord {
   selected?: boolean;
   id?: string | null;
@@ -1503,6 +1514,13 @@ export const tyd1000Api = {
       data,
     });
   },
+  /** 获取垛位列表（原 GetStack，FrmHR3600） */
+  getStack(cStoreCode?: string, cStackType?: number | null) {
+    return requestClient.request<Tyd1010[]>("/dDH.Service.SYD.Services/tyd1000/getStack", {
+      method: "post",
+      params: { cStoreCode, cStackType },
+    });
+  },
   queryMap() {
     return requestClient.request<Tyd1002[]>("/dDH.Service.SYD.Services/tyd1000/queryMap", {
       method: "post",
@@ -1692,6 +1710,13 @@ export const tyd2000Api = {
     return requestClient.request<Tyd2000Dto[]>("/dDH.Service.SYD.Services/tyd2000/appQueryStorage", {
       method: "post",
       data,
+    });
+  },
+  /** 中厚板原料统计查询（原 QueryZhbSlabHz，FrmYD2000Zhb） */
+  queryZhbSlabHz(cPieceNo?: string) {
+    return requestClient.request<ZhbSlabHzDto[]>("/dDH.Service.SYD.Services/tyd2000/queryZhbSlabHz", {
+      method: "post",
+      params: { cPieceNo },
     });
   },
 };

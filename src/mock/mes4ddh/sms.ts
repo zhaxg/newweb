@@ -124,15 +124,17 @@ export const smsRoutes: RouteMap = {
       },
     ]),
 
+  /* 流号字典（HmxKv）：消费方读 cDesc（流号，如 1#）与 cValue（流水值），
+     形状必须对齐真实返回，否则下拉空值 → 演示环境看不出选中项 */
   ["post /dDH.Service.SMS.Services.PublicInterface/publicKV/getMSLZLiu"]: (config) =>
     ok(
       config,
       demoRows(3, (i) => ({
         id: `D${i + 1}`,
-        cCode: `C0${i + 1}`,
-        cName: `演示${i + 1}`,
-        createTime: "2026-09-23 08:00:00",
-        nStatus: 1,
+        cCode: typeof config.data === "string" ? config.data : "",
+        cDesc: `${i + 1}#`,
+        cValue: String(i + 1),
+        cEnable: "1",
       })),
     ),
 

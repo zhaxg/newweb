@@ -178,8 +178,16 @@ function reportCalls(designerPath) {
     if (!line) continue;
     const mFn = /^(?:private|public|protected|internal)\b[^=;{]*?\b(\w+)\s*\(/.exec(line);
     if (mFn && !line.includes(";")) fn = mFn[1];
+    // 服务定位器有两种写法：`Svc<I*>.Proxy.M`（676 处）与 `SF<I*>.Proxy.M`（67 处）。
     for (const m of line.matchAll(
-      /Svc\s*<\s*(?:global::)?[\w.]*?I([A-Za-z0-9]+?)AppService\s*>\s*\.\s*Proxy\s*\.\s*([A-Za-z]\w*)/g,
+      /\b(?:Svc|SF)\s*<\s*(?:global::)?[\w.]*?I([A-Za-z0-9]+?)AppService\s*>\s*\.\s*Proxy\s*\.\s*([A-Za-z]\w*)/g,
+    )) {
+      calls.push({ fn, svc: m[1], method: m[2] });
+    }
+    // 另一种调用约定：`dpc.Proxy<IXxxAppService>().Method(...)`（全仓 700+ 处）。
+    // 只认 Svc<> 时这类窗体会被误报成「无服务调用」，页面因此被迁成空壳。
+    for (const m of line.matchAll(
+      /\.Proxy\s*<\s*(?:global::)?[\w.]*?I([A-Za-z0-9]+?)AppService\s*>\s*\(\s*\)\s*\.\s*([A-Za-z]\w*)/g,
     )) {
       calls.push({ fn, svc: m[1], method: m[2] });
     }
@@ -193,7 +201,7 @@ function reportCalls(designerPath) {
     }
   }
 
-  if (!calls.length) console.log("  服务调用: 无（.cs 里没有 Svc<I*AppService>.Proxy 调用）");
+  if (!calls.length) console.log("  服务调用: 无（.cs 里没有 Svc<I*AppService>.Proxy / Proxy<I*AppService>() 调用）");
   else {
     console.log(`  服务调用 ${calls.length} 处（前端映射规则见 references/backend-api.md §1）:`);
     const apis = existingApis();

@@ -1,402 +1,445 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import Button from "primevue/button";
-import { IconSearch } from "@tabler/icons-vue";
-
-import { AgGridVue } from "ag-grid-vue3";
-import type { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
-import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
-import { hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
-
 /** 对应 FrmHR9200（在产物料跟踪）：DDH.Winforms.SHR.Forms.FrmHR9200
- *  画面迁移，逻辑不迁移到 */
+ *  已接入：hR9000Api.queryZpSlabs；hR4200Api.queryTiL2me04s/05s/06s/11s/02s/01s/08s/14s/09s/15s/16s/17s/18s/19s/12s、
+ *          queryTiP48j01s/02s/031s/04s/05s/06s/07s/09s；hR4000Api.queryPrintSjs；
+ *          bxcomMessageApi.sendMEL02 / sendMEL204 / send8JP401_2 / send8JP403；bxcomTestApi.demo_ReceivedByBxcom
+ *  待接入：「轧制实绩」页签行双击原开 FrmHR9201 二级弹窗（画面未迁移，占位提示）
+ *  偏差：原页签栏在左侧（XtraTabControl HeaderLocation=Left），PrimeVue Tabs 页签在顶部，24 页签横向滚动；
+ *          切边方式/异常原因/位置等代码列显示原值（原运行时 formatter 为 KeyValueFormatters.CUTFLAG /
+ *          EnumCodeConverter<TiL2me01Reject*Enum>，swagger 无对应枚举可照抄，不自行编候选值）；
+ *          「模拟二级消息」原为 DropDownButton+PopupMenu，改 Button+Menu popup；
+ *          原页签头滚轮切换页签未实现（纯操作便利）；ShowLoadingPanel 改 grid loading；
+ *          产线取菜单参数 meta.qs（原 QueryString），主表 Selected 列为数据勾选标记列，非行选择 checkbox */
+
+import { reactive, ref, watch } from "vue";
+import Button from "primevue/button";
+import DatePicker from "primevue/datepicker";
+import Dialog from "primevue/dialog";
+import InputText from "primevue/inputtext";
+import Menu from "primevue/menu";
+import Splitter from "primevue/splitter";
+import SplitterPanel from "primevue/splitterpanel";
+import Tab from "primevue/tab";
+import TabList from "primevue/tablist";
+import TabPanel from "primevue/tabpanel";
+import TabPanels from "primevue/tabpanels";
+import Tabs from "primevue/tabs";
+import {
+  IconArrowBarDown,
+  IconArrowBarUp,
+  IconFlask,
+  IconScissors,
+  IconSearch,
+  IconSend,
+  IconTrash,
+} from "@tabler/icons-vue";
+import { AgGridVue } from "ag-grid-vue3";
+import type { GridApi, GridReadyEvent } from "ag-grid-community";
+import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
+import { hmxDefaultColDef, makeHmxGridTheme, autoSizeOnFirstData } from "@/lib/agGrid";
+import { useToast } from "@/composables/useToast";
+import { useMenuQuery } from "@/lib/menuQuery";
+import {
+  hR4000Api,
+  hR4200Api,
+  hR9000Api,
+  type DtoQueryL2,
+  type DtoThr3010,
+  type TimeRange,
+} from "@/api/mes4ddh/shr.swagger";
+import { bxcomMessageApi, bxcomTestApi } from "@/api/mes4ddh/ddh.swagger";
+import { mainColDefs, tabGridDefs } from "./colDefs";
 
 const theme = makeHmxGridTheme();
-const rows = ref<any[]>([]);
-const querying = ref(false);
-const gridApi = ref<GridApi | null>(null);
+const { toast } = useToast();
+/* 产线：原 cLineCode = QueryString（菜单资源 cQueryString → meta.qs） */
+const { raw: lineCode } = useMenuQuery();
 
-const colDefs = ref<ColDef[]>([
-  { field: "DHandle", headerName: "处理时间", width: 150 },
-  { field: "Slabno", headerName: "板坯号", width: 150 },
-  { field: "Plateno", headerName: "钢板号", width: 150 },
-  { field: "PlateNo", headerName: "板号", width: 150 },
-  { field: "MatNo", headerName: "材料号", width: 150 },
-  { field: "InPlateNo", headerName: "入口钢板号", width: 150 },
-  { field: "TPlateNo", headerName: "头侧板号", width: 150 },
-  { field: "Ocrslabno", headerName: "原始照核板坯号", width: 150 },
-  { field: "HSBheadAveWidth", headerName: "HSB测宽头部平均宽度(冷态)", width: 150 },
-  { field: "Shift", headerName: "班次", width: 150 },
-  { field: "PosNo", headerName: "请求位置", width: 150 },
-  { field: "PosCode", headerName: "下线点", width: 150 },
-  { field: "SubId", headerName: "批号", width: 150 },
-  { field: "SlabNo", headerName: "坯料号", width: 150 },
-  { field: "PrintCode", headerName: "喷印号", width: 150 },
-  { field: "FurNo", headerName: "炉号", width: 150 },
-  { field: "PlanNo", headerName: "计划号", width: 150 },
-  { field: "TotalPass", headerName: "总道次", width: 150 },
-  { field: "TPlateId", headerName: "头侧板号", width: 150 },
-  { field: "SlCode", headerName: "剪切线代码", width: 150 },
-  { field: "L2slabno", headerName: "L2请求板坯号", width: 150 },
-  { field: "Planno", headerName: "计划号", width: 150 },
-  { field: "HSBbodyAveWidth", headerName: "HSB测宽中部平均宽度(冷态)", width: 150 },
-  { field: "Turn", headerName: "班组", width: 150 },
-  { field: "UnloadRsn", headerName: "下线原因", width: 150 },
-  { field: "PlateLen", headerName: "钢板长度", width: 150 },
-  { field: "CPos", headerName: "当前位置", width: 150 },
-  { field: "TableNo", headerName: "辊道号", width: 150 },
-  { field: "MesCallBack", headerName: "MES反馈", width: 150 },
-  { field: "RowNo", headerName: "行号", width: 150 },
-  { field: "SlabFurTime", headerName: "板坯装炉时刻", width: 150 },
-  { field: "Zone", headerName: "位置", width: 150 },
-  { field: "CurrPass", headerName: "当前道次", width: 150 },
-  { field: "BestSurface", headerName: "好面朝向", width: 150 },
-  { field: "DssTemp", headerName: "剪切温度", width: 150 },
-  { field: "DsTemp", headerName: "剪切温度", width: 150 },
-  { field: "CheckEmp", headerName: "检查人员", width: 150 },
-  { field: "Wedge", headerName: "楔形", width: 150 },
-  { field: "Osthickness", headerName: "操作侧厚度曲线", width: 150 },
-  { field: "HSBtailAveWidth", headerName: "HSB测宽尾部平均宽度(冷态)", width: 150 },
-  { field: "Finishtemp", headerName: "终轧温度曲线", width: 150 },
-  { field: "N2Flow1", headerName: "氮气流量1", width: 150 },
-  { field: "UnloadPos", headerName: "下线位置", width: 150 },
-  { field: "HeadCutLen", headerName: "板头", width: 150 },
-  { field: "CBatchNo", headerName: "批号", width: 150 },
-  { field: "L2CallBack", headerName: "L2反馈", width: 150 },
-  { field: "Spare1", headerName: "预留", width: 150 },
-  { field: "SlabFurBefTemp", headerName: "入炉前温度", width: 150 },
-  { field: "SlabStatus", headerName: "BD板坯标识", width: 150 },
-  { field: "Reason", headerName: "异常原因", width: 150 },
-  { field: "EntryTime", headerName: "入炉时间", width: 150 },
-  { field: "Thick", headerName: "厚度", width: 150 },
-  { field: "CsTemp", headerName: "剪切温度", width: 150 },
-  { field: "SampleTime", headerName: "取样时间", width: 150 },
-  { field: "SignEmp", headerName: "签发人员", width: 150 },
-  { field: "Reviser", headerName: "修改人", width: 150 },
-  { field: "Centerthickness", headerName: "中心线厚度曲线", width: 150 },
-  { field: "Dsthickness", headerName: "传动侧厚度曲线", width: 150 },
-  { field: "HSBaveWidth", headerName: "HSB测宽全长平均宽度(冷态)", width: 150 },
-  { field: "N2Pressure1", headerName: "氮气压力1", width: 150 },
-  { field: "TailCutLen", headerName: "板尾", width: 150 },
-  { field: "CStove", headerName: "炉号", width: 150 },
-  { field: "Spare2", headerName: "预留", width: 150 },
-  { field: "StandNo", headerName: "机架号", width: 150 },
-  { field: "ActPassNo", headerName: "当前实际道次号", width: 150 },
-  { field: "EndTime", headerName: "结束时间", width: 150 },
-  { field: "Width", headerName: "宽度", width: 150 },
-  { field: "OperatorId", headerName: "操作者", width: 150 },
-  { field: "DssTime", headerName: "DSS剪切时间", width: 150 },
-  { field: "SamplePos", headerName: "取样位置", width: 150 },
-  { field: "EmpId", headerName: "UST责任者", width: 150 },
-  { field: "Time", headerName: "发送时刻", width: 150 },
-  { field: "RMheadAveWidth", headerName: "RM测宽头部平均宽度(冷态)", width: 150 },
-  { field: "N2Consumption1", headerName: "氮气累计消耗1", width: 150 },
-  { field: "ErrorCode", headerName: "异常代码", width: 150 },
-  { field: "CSgStd", headerName: "钢种标准", width: 150 },
-  { field: "CBatchOrder", headerName: "组批号", width: 150 },
-  { field: "Spare3", headerName: "备用3", width: 150 },
-  { field: "FurType", headerName: "加热炉类型", width: 150 },
-  { field: "SteelGrade", headerName: "钢种", width: 150 },
-  { field: "ActThick", headerName: "当前厚度", width: 150 },
-  { field: "EntryTemp", headerName: "入炉温度", width: 150 },
-  { field: "Length", headerName: "长度", width: 150 },
-  { field: "CsTime", headerName: "CS剪切时间", width: 150 },
-  { field: "PlateId", headerName: "实物钢板号", width: 150 },
-  { field: "DsTime", headerName: "CS剪切时间", width: 150 },
-  { field: "SampleLth", headerName: "取样长度", width: 150 },
-  { field: "UstDt", headerName: "UST测定时间", width: 150 },
-  { field: "RMbodyAveWidth", headerName: "RM测宽中部平均宽度(冷态)", width: 150 },
-  { field: "GasFlow1", headerName: "煤气流量1", width: 150 },
-  { field: "OpBend", headerName: "OP侧镰刀弯量", width: 150 },
-  { field: "CSpec", headerName: "规格", width: 150 },
-  { field: "COrderNo", headerName: "订单号", width: 150 },
-  { field: "Spare4", headerName: "备用4", width: 150 },
-  { field: "InFurnaceShiftNo", headerName: "入炉班次", width: 150 },
-  { field: "ProductCode", headerName: "产品代码", width: 150 },
-  { field: "ActWidth", headerName: "当前宽度", width: 150 },
-  { field: "LevelerSpeed", headerName: "矫直速度", width: 150 },
-  { field: "CoolMode", headerName: "冷却模式", width: 150 },
-  { field: "TPlateThk", headerName: "头侧板厚度", width: 150 },
-  { field: "PlateThk", headerName: "钢板厚度", width: 150 },
-  { field: "UstResult", headerName: "UST结果", width: 150 },
-  { field: "RMtailAveWidth", headerName: "RM测宽尾部平均宽度(冷态)", width: 150 },
-  { field: "GasPressure1", headerName: "煤气压力1", width: 150 },
-  { field: "DrBend", headerName: "DR侧镰刀弯量", width: 150 },
-  { field: "CPieceNo", headerName: "头侧件次号", width: 150 },
-  { field: "Spare5", headerName: "备用5", width: 150 },
-  { field: "InFurnaceShiftGroup", headerName: "入炉班组", width: 150 },
-  { field: "DischargeTime", headerName: "出炉时间", width: 150 },
-  { field: "ActLength", headerName: "当前长度", width: 150 },
-  { field: "BitSpeed", headerName: "位速度", width: 150 },
-  { field: "StartCoolTime", headerName: "开始冷却时间", width: 150 },
-  { field: "TPlateWth", headerName: "头侧板宽度", width: 150 },
-  { field: "PlateWth", headerName: "钢板宽度", width: 150 },
-  { field: "RMaveWidth", headerName: "RM测宽全长平均宽度(冷态)", width: 150 },
-  { field: "GasConsumption1", headerName: "煤气累计消耗1", width: 150 },
-  { field: "OpBendindex", headerName: "OP侧镰刀弯量坐标", width: 150 },
-  { field: "CPrintCode", headerName: "喷号", width: 150 },
-  { field: "Spare6", headerName: "备用6", width: 150 },
-  { field: "OutFurnaceShiftNo", headerName: "出炉班次", width: 150 },
-  { field: "RollingTimeStart", headerName: "轧制开始时间", width: 150 },
-  { field: "EntryGap", headerName: "入口间隙", width: 150 },
-  { field: "FinishCoolTime", headerName: "结束冷却时间", width: 150 },
-  { field: "TPlateLth", headerName: "头侧板长度", width: 150 },
-  { field: "PlateLth", headerName: "钢板长度", width: 150 },
-  { field: "RSLTmaxWidth", headerName: "平直度仪最大宽度(冷态)", width: 150 },
-  { field: "SteamFlow1", headerName: "蒸汽流量1", width: 150 },
-  { field: "DrBendindex", headerName: "DR侧镰刀弯量坐标", width: 150 },
-  { field: "CSgCode", headerName: "钢种", width: 150 },
-  { field: "OutFurnaceShiftGroup", headerName: "出炉班组", width: 150 },
-  { field: "RollingTimeEnd", headerName: "轧制结束时间", width: 150 },
-  { field: "ExitGap", headerName: "出口间隙", width: 150 },
-  { field: "RollAveTemp", headerName: "轧后平均温度", width: 150 },
-  { field: "TPlateWgt", headerName: "头侧板重量", width: 150 },
-  { field: "PlateWgt", headerName: "钢板重量", width: 150 },
-  { field: "RSLTminWidth", headerName: "平直度仪最小宽度(冷态)", width: 150 },
-  { field: "SteamPressure1", headerName: "蒸汽压力1", width: 150 },
-  { field: "NQua", headerName: "支数", width: 150 },
-  { field: "NThick", headerName: "厚度", width: 150 },
-  { field: "TapSlabTempAve", headerName: "出钢时板坯平均温度", width: 150 },
-  { field: "CrCode", headerName: "铬代码", width: 150 },
-  { field: "EntrySideRollGap", headerName: "入口侧辊间隙", width: 150 },
-  { field: "RollMaxTemp", headerName: "轧后温度最大值", width: 150 },
-  { field: "TOrdNum", headerName: "头侧合同数", width: 150 },
-  { field: "RSLTavewidth", headerName: "平直度仪平均宽度(冷态)", width: 150 },
-  { field: "SteamConsumption1", headerName: "蒸汽累计消耗1", width: 150 },
-  { field: "NWidth", headerName: "宽度", width: 150 },
-  { field: "TapSlabTempSrfc", headerName: "出钢时板坯表面温度", width: 150 },
-  { field: "TotalRollingTime", headerName: "总轧制时间", width: 150 },
-  { field: "ExitSideRollGap", headerName: "出口侧辊间隙", width: 150 },
-  { field: "RollMinTemp", headerName: "轧后温度最小值", width: 150 },
-  { field: "TPartMark", headerName: "头侧取板记号", width: 150 },
-  { field: "N2Flow2", headerName: "氮气流量2", width: 150 },
-  { field: "NLen", headerName: "长度", width: 150 },
-  { field: "TapSlabTempCt", headerName: "出钢时板坯中心温度", width: 150 },
-  { field: "RmPass", headerName: "粗轧道次", width: 150 },
-  { field: "Tilt1", headerName: "倾斜1", width: 150 },
-  { field: "EntryAveTemp", headerName: "入炉平均温度", width: 150 },
-  { field: "TProductSum", headerName: "头侧成品板总数", width: 150 },
-  { field: "N2Pressure2", headerName: "氮气压力2", width: 150 },
-  { field: "CInboundNo", headerName: "入库单号", width: 150 },
-  { field: "NWgt", headerName: "重量", width: 150 },
-  { field: "OutTime", headerName: "抽出时刻", width: 150 },
-  { field: "FmPass", headerName: "精轧道次", width: 150 },
-  { field: "DiscAuthor", headerName: "责任者", width: 150 },
-  { field: "Tilt2", headerName: "倾斜2", width: 150 },
-  { field: "EntryMaxTemp", headerName: "最高入炉温度", width: 150 },
-  { field: "TTdsLth", headerName: "头侧剪切长度(头部)", width: 150 },
-  { field: "N2Consumption2", headerName: "氮气累计消耗2", width: 150 },
-  { field: "CSlCode", headerName: "剪切线代码", width: 150 },
-  { field: "NThickPlan", headerName: "轧制厚度", width: 150 },
-  { field: "OutTempAvg", headerName: "抽出平均温度", width: 150 },
-  { field: "RollingStatus", headerName: "轧制状态", width: 150 },
-  { field: "FmAuthorA", headerName: "精轧操作员A", width: 150 },
-  { field: "L2Force", headerName: "矫直力", width: 150 },
-  { field: "EntryMinTemp", headerName: "最低入炉温度", width: 150 },
-  { field: "TBdsLth", headerName: "头侧剪切长度(尾部)", width: 150 },
-  { field: "GasFlow2", headerName: "煤气流量2", width: 150 },
-  { field: "NWidthPlan", headerName: "轧制宽度", width: 150 },
-  { field: "InFurnaceTime", headerName: "在炉时间", width: 150 },
-  { field: "ExitThick", headerName: "出口厚度", width: 150 },
-  { field: "FmAuthorB", headerName: "精轧操作员B", width: 150 },
-  { field: "BendPosition", headerName: "弯曲位置", width: 150 },
-  { field: "TargetFinishTemp", headerName: "目标终轧温度", width: 150 },
-  { field: "TLthMark", headerName: "头侧是否余长标记", width: 150 },
-  { field: "GasPressure2", headerName: "煤气压力2", width: 150 },
-  { field: "NLenPlan", headerName: "计划长度", width: 150 },
-  { field: "PreHtTempAve", headerName: "预热段入口的平均板坯温度", width: 150 },
-  { field: "ExitWidth", headerName: "出口宽度", width: 150 },
-  { field: "RmAuthorA", headerName: "粗轧责任者A", width: 150 },
-  { field: "TorqueMotor", headerName: "扭矩电机", width: 150 },
-  { field: "FinishAveTemp", headerName: "终轧平均温度", width: 150 },
-  { field: "BPlateId", headerName: "尾侧板号", width: 150 },
-  { field: "BPlateNo", headerName: "尾侧板号", width: 150 },
-  { field: "GasConsumption2", headerName: "煤气累计消耗2", width: 150 },
-  { field: "CSgCodePlan", headerName: "订单钢种", width: 150 },
-  { field: "PreHtHotAve", headerName: "预热段入口的板坯均热温度", width: 150 },
-  { field: "ExitLength", headerName: "出口长度", width: 150 },
-  { field: "RmAuthorB", headerName: "粗轧责任者B", width: 150 },
-  { field: "EmptyFlag", headerName: "空标志", width: 150 },
-  { field: "FinishMaxTemp", headerName: "最高终轧温度", width: 150 },
-  { field: "BPlateThk", headerName: "尾侧板厚度", width: 150 },
-  { field: "SteamFlow2", headerName: "蒸汽流量2", width: 150 },
-  { field: "CSgStdPlan", headerName: "订单标准", width: 150 },
-  { field: "PreHtTempSrf", headerName: "预热段入口的板坯表面温度", width: 150 },
-  { field: "OperateUserCode", headerName: "轧制操作人员代码（改规标记1）", width: 150 },
-  { field: "Spare", headerName: "备用", width: 150 },
-  { field: "FinishMinTemp", headerName: "最低终轧温度", width: 150 },
-  { field: "BPlateWth", headerName: "尾侧板宽度", width: 150 },
-  { field: "SteamPressure2", headerName: "蒸汽压力2", width: 150 },
-  { field: "NRateLl", headerName: "理论成材率", width: 150 },
-  { field: "PreHtTempCt", headerName: "预热段入口的板坯中心温度", width: 150 },
-  { field: "CrownMark", headerName: "钢板凸度（实绩标记)", width: 150 },
-  { field: "ScanAveTemp", headerName: "扫描高温计平均温度", width: 150 },
-  { field: "BPlateLth", headerName: "尾侧板长度", width: 150 },
-  { field: "SteamConsumption2", headerName: "蒸汽累计消耗2", width: 150 },
-  { field: "CTol", headerName: "公差", width: 150 },
-  { field: "PreHtAveTemp", headerName: "在预热段时的平均温度", width: 150 },
-  { field: "MeaThickWs", headerName: "西面测量厚度", width: 150 },
-  { field: "ScanMaxTemp", headerName: "扫描高温计最大温度", width: 150 },
-  { field: "BPlateWgt", headerName: "尾侧板重量", width: 150 },
-  { field: "CDn", headerName: "需要堆冷", width: 150 },
-  { field: "PreHtFurPerd", headerName: "预热段在炉时间", width: 150 },
-  { field: "MeaThickDs", headerName: "南面测量厚度", width: 150 },
-  { field: "ScanMinTemp", headerName: "扫描高温计最小温度", width: 150 },
-  { field: "BOrdNum", headerName: "尾侧合同数", width: 150 },
-  { field: "CTrimFlag", headerName: "切边方式", width: 150 },
-  { field: "Ht1SlabTempAve", headerName: "加热段1入口板坯平均温度", width: 150 },
-  { field: "HsbExitTempAvg", headerName: "高压水除鳞出口平均温度", width: 150 },
-  { field: "CoolingRate", headerName: "冷却速率", width: 150 },
-  { field: "BPartMark", headerName: "尾侧取板记号", width: 150 },
-  { field: "CFlawDesc", headerName: "表面缺陷", width: 150 },
-  { field: "Ht1SlabHotAve", headerName: "加热段1入口板坯均热度", width: 150 },
-  { field: "HsbExitTempMax", headerName: "除鳞后温度（最大）", width: 150 },
-  { field: "FluxA", headerName: "熔剂A", width: 150 },
-  { field: "BProductSum", headerName: "尾侧成品板总数", width: 150 },
-  { field: "CSpecialMarkGy", headerName: "特殊标记工艺", width: 150 },
-  { field: "Ht1SlabTempSrfc", headerName: "加热段1入口板坯表面温度", width: 150 },
-  { field: "RmEntTempCal", headerName: "粗轧入口温度计算", width: 150 },
-  { field: "FluxB", headerName: "熔剂B", width: 150 },
-  { field: "BLthMark", headerName: "尾侧是否余长标记", width: 150 },
-  { field: "CDelivyAddress", headerName: "交货地址", width: 150 },
-  { field: "Ht1SlabTempCt", headerName: "加热段1入口板坯中心温度", width: 150 },
-  { field: "RmEntTempAvg", headerName: "粗轧入轧平均温度", width: 150 },
-  { field: "ActFluxA", headerName: "实际熔剂A", width: 150 },
-  { field: "Reserved1", headerName: "预留1", width: 150 },
-  { field: "Reserved0", headerName: "头侧板成品毛长", width: 150 },
-  { field: "COrderNo1", headerName: "订单号1", width: 150 },
-  { field: "Ht1AveTemp", headerName: "在加热段1时的平均温度", width: 150 },
-  { field: "RmEntTempMin", headerName: "粗轧开轧温度（测量最小）", width: 150 },
-  { field: "ActFluxB", headerName: "实际熔剂B", width: 150 },
-  { field: "Reserved2", headerName: "预留2", width: 150 },
-  { field: "COrderNo2", headerName: "订单号2", width: 150 },
-  { field: "Ht1InFurPerd", headerName: "加热段1在炉时段", width: 150 },
-  { field: "RmEntTempMax", headerName: "粗轧开轧温度（测量最大）", width: 150 },
-  { field: "RatioA", headerName: "配比A", width: 150 },
-  { field: "COrderNo3", headerName: "订单号3", width: 150 },
-  { field: "Ht2SlabTempAve", headerName: "加热段2入口板坯平均温度", width: 150 },
-  { field: "RmEntTempDev", headerName: "粗轧开轧温度（测量偏差）", width: 150 },
-  { field: "RatioB", headerName: "配比B", width: 150 },
-  { field: "Reserved3", headerName: "预留3", width: 150 },
-  { field: "COrderNo4", headerName: "订单号4", width: 150 },
-  { field: "Ht2SlabHotAve", headerName: "加热段2入口板坯均热度", width: 150 },
-  { field: "RmExitTempCal", headerName: "粗轧出口温度计算", width: 150 },
-  { field: "ActRatioA", headerName: "实际配比A", width: 150 },
-  { field: "CropCutLenTop", headerName: "CROP", width: 150 },
-  { field: "NLenTq1", headerName: "套切1", width: 150 },
-  { field: "Ht2SlabTempSrfc", headerName: "加热段2入口板坯表面温度", width: 150 },
-  { field: "RmExitTempAvg", headerName: "粗轧出轧平均温度", width: 150 },
-  { field: "ActRatioB", headerName: "实际配比B", width: 150 },
-  { field: "CropCutLenBottom", headerName: "CROP", width: 150 },
-  { field: "NLenTq2", headerName: "套切2", width: 150 },
-  { field: "Ht2SlabTempCt", headerName: "加热段2入口板坯中心温度", width: 150 },
-  { field: "RmExitTempMin", headerName: "粗轧终轧温度（测量最小）", width: 150 },
-  { field: "Speed", headerName: "速度", width: 150 },
-  { field: "NLenTq3", headerName: "套切3", width: 150 },
-  { field: "Ht2AveTemp", headerName: "在加热段2时的平均温度", width: 150 },
-  { field: "RmExitTempMax", headerName: "粗轧终轧温度（测量最大）", width: 150 },
-  { field: "ActSpeed", headerName: "实际速度", width: 150 },
-  { field: "NLenTq4", headerName: "套切4", width: 150 },
-  { field: "Ht2InFurPerd", headerName: "加热段2在炉时段", width: 150 },
-  { field: "RmExitTempDev", headerName: "粗轧终轧温度（测量偏差）", width: 150 },
-  { field: "Aspd", headerName: "喷吹速度", width: 150 },
-  { field: "ActMaxWth", headerName: "头侧宽度最大值（仪表)", width: 150 },
-  { field: "NBc", headerName: "倍尺", width: 150 },
-  { field: "EqSlabTempAve", headerName: "均热段入口板坯平均温度", width: 150 },
-  { field: "RmEntThick", headerName: "粗轧入口厚度", width: 150 },
-  { field: "ActAspd", headerName: "实际喷吹速度", width: 150 },
-  { field: "ActMinWth", headerName: "头侧宽度最小值（仪表)", width: 150 },
-  { field: "CBilletTypeCode", headerName: "铸坯标识", width: 150 },
-  { field: "EqSlabHotAve", headerName: "均热段入口板坯均热度", width: 150 },
-  { field: "FmEntTempCal", headerName: "精轧入口温度计算", width: 150 },
-  { field: "Num", headerName: "数量", width: 150 },
-  { field: "ActAveWth", headerName: "头侧宽度最平均值（仪表)", width: 150 },
-  { field: "CProRemark", headerName: "生产备注", width: 150 },
-  { field: "EqSlabTempSrfc", headerName: "均热段入口板坯表面温度", width: 150 },
-  { field: "FmEntTempAvg", headerName: "精轧入轧平均温度", width: 150 },
-  { field: "UppipeFlow", headerName: "1-28集管上流量", width: 150 },
-  { field: "EqSlabTempCt", headerName: "均热段入口板坯中心温度", width: 150 },
-  { field: "FmEntTempMin", headerName: "精轧开轧温度（测量最小）", width: 150 },
-  { field: "BotpipeFlow", headerName: "1-28集管下流量", width: 150 },
-  { field: "EqAveTemp", headerName: "均热平均温度", width: 150 },
-  { field: "FmEntTempMax", headerName: "精轧开轧温度（测量最大）", width: 150 },
-  { field: "SideCavityFlow1", headerName: "1-10边腔流量", width: 150 },
-  { field: "EqInFurPerd", headerName: "均热在炉时段", width: 150 },
-  { field: "FmEntTempDev", headerName: "精轧开轧温度（测量偏差）", width: 150 },
-  { field: "SideSpary", headerName: "侧喷", width: 150 },
-  { field: "FmExitTempCal", headerName: "精轧出口温度计算", width: 150 },
-  { field: "MidSpary", headerName: "中喷", width: 150 },
-  { field: "FmExitTempAvg", headerName: "精轧出轧平均温度", width: 150 },
-  { field: "HTSIS", headerName: "头尾遮蔽投入信号", width: 150 },
-  { field: "FmExitTempMin", headerName: "精轧终轧温度（测量最小）", width: 150 },
-  { field: "HeadUpLength", headerName: "头部上弯长度", width: 150 },
-  { field: "FmExitTempMax", headerName: "精轧终轧温度（测量最大）", width: 150 },
-  { field: "HeadBotLength", headerName: "头部下弯长度", width: 150 },
-  { field: "FmExitTempDev", headerName: "精轧终轧温度（测量偏差）", width: 150 },
-  { field: "HeadUpCoef", headerName: "头部上弯系数", width: 150 },
-  { field: "FmEntThick", headerName: "精轧入口厚度", width: 150 },
-  { field: "HeadBotCoef", headerName: "头部下弯系数", width: 150 },
-  { field: "FirstConThick", headerName: "第一阶段控制轧制点厚度", width: 150 },
-  { field: "TailUpLength", headerName: "尾部上弯长度", width: 150 },
-  { field: "SecondConThick", headerName: "第二阶段控制轧制点厚度", width: 150 },
-  { field: "TailBotLength", headerName: "尾部下弯长度", width: 150 },
-  { field: "FirstContTemp", headerName: "第一阶段控制轧制点温度", width: 150 },
-  { field: "TailUpCoef", headerName: "尾部上弯系数", width: 150 },
-  { field: "SecondConTemp", headerName: "第二阶段控制轧制点温度", width: 150 },
-  { field: "TailBotCoef", headerName: "尾部下弯系数", width: 150 },
-  { field: "ThickHp", headerName: "厚度液压", width: 150 },
-  { field: "Prh", headerName: "压辊高度A1-10prh", width: 150 },
-  { field: "Broadbef", headerName: "展宽轧制前厚度", width: 150 },
-  { field: "ELPBCD", headerName: "电降平台bcd", width: 150 },
-  { field: "Broadaft", headerName: "展宽轧制后厚度", width: 150 },
-  { field: "TempWater", headerName: "水温", width: 150 },
-  { field: "ShiftNo", headerName: "班次号", width: 150 },
-  { field: "PressWater", headerName: "压力水", width: 150 },
-  { field: "ShiftGroup", headerName: "班次组", width: 150 },
-  { field: "ISpare", headerName: "备用", width: 150 },
-  { field: "ProductTime", headerName: "生产时间", width: 150 },
-  { field: "FSpare", headerName: "备用", width: 150 },
-  { field: "Author", headerName: "作者", width: 150 },
-  { field: "total_flow", headerName: "总水量", width: 150 },
-  { field: "SlabWeight", headerName: "坯料重量", width: 150 },
-  { field: "finishTemp", headerName: "反红温度曲线", width: 150 },
-  { field: "Creator", headerName: "创建人", width: 112 },
-  { field: "CreateTime", headerName: "创建时间", width: 112 },
-  { field: "LastModifier", headerName: "最后修改人", width: 112 },
-  { field: "LastModifyTime", headerName: "最后修改时间", width: 112 },
-]);
-function onGridReady(e: GridReadyEvent) {
-  gridApi.value = e.api;
+/* ---------- 查询条件（DataLayoutControl / dtoQueryThr3000） ---------- */
+const pad2 = (n: number) => String(n).padStart(2, "0");
+function isoLocal(d: Date): string {
+  return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}T${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
+}
+/* 原 Load：默认本月首日至月末最后一秒 */
+function defaultRange(): Date[] {
+  const now = new Date();
+  return [
+    new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0),
+    new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59),
+  ];
+}
+function toTimeRange(dates: Date[] | null): TimeRange | undefined {
+  if (!dates || dates.length < 2) return undefined;
+  return { min: isoLocal(dates[0]), max: isoLocal(dates[dates.length - 1]) };
+}
+
+const input = reactive({
+  cOrderNo: "",
+  cBatchNo: "",
+  cStove: "",
+  slabNo: "",
+  plateNo: "",
+  dates: defaultRange() as Date[] | null,
+});
+
+/* ---------- 主表（gridView1 / DtoThr3010，焦点行驱动页签查询） ---------- */
+const mainRows = ref<DtoThr3010[]>([]);
+const mainLoading = ref(false);
+const mainApi = ref<GridApi | null>(null);
+const currentRow = ref<DtoThr3010 | null>(null);
+function onMainReady(e: GridReadyEvent) {
+  mainApi.value = e.api;
+}
+function onMainSelectionChanged() {
+  const rows = mainApi.value?.getSelectedRows() as DtoThr3010[] | undefined;
+  currentRow.value = rows?.[0] ?? null;
+  void loadActiveTab();
 }
 
 async function onQuery() {
-  querying.value = true;
+  mainLoading.value = true;
   try {
-    rows.value = [];
+    mainRows.value =
+      (await hR9000Api.queryZpSlabs({
+        cLineCode: lineCode || undefined,
+        cOrderNo: input.cOrderNo.trim() || undefined,
+        cBatchNo: input.cBatchNo.trim() || undefined,
+        cStove: input.cStove.trim() || undefined,
+        slabNo: input.slabNo.trim() || undefined,
+        plateNo: input.plateNo.trim() || undefined,
+        dCreateTimeRange: toTimeRange(input.dates),
+      })) ?? [];
+    currentRow.value = null;
+    tabRows.value = tabGridDefs.map(() => []);
+    requestAnimationFrame(() => mainApi.value?.autoSizeAllColumns());
+  } catch {
+    /* 拦截层已 toast */
   } finally {
-    querying.value = false;
+    mainLoading.value = false;
   }
+}
+
+/* ---------- 页签区（24 个独立内容页签，每页一张实绩表） ---------- */
+const activeTab = ref("0");
+const tabRows = ref<Record<string, unknown>[][]>(tabGridDefs.map(() => []));
+const tabLoading = ref<boolean[]>(tabGridDefs.map(() => false));
+const tabApis: (GridApi | null)[] = tabGridDefs.map(() => null);
+function onTabReady(i: number, e: GridReadyEvent) {
+  tabApis[i] = e.api;
+}
+
+/* 原 xtraTabControl1_SelectedPageChanged 的查询入参（部分页签整包替换 dto，逐条照抄） */
+function baseL2(r: DtoThr3010): DtoQueryL2 {
+  return {
+    planNo: r.cOrderNo,
+    slabNo: r.cPieceNo,
+    inPlateNo: r.cPlateNo,
+    plateNo: r.cPlateNo,
+    cPrintCode: r.cPrintCode,
+    cBatchNo: r.cBatchNo,
+  };
+}
+const tabLoaders: ((r: DtoThr3010) => Promise<unknown>)[] = [
+  (r) => hR4200Api.queryTiL2me04s(baseL2(r)), // 上辊道实绩
+  (r) => hR4200Api.queryTiL2me05s({ ...baseL2(r), slabNo: r.cPrintCode }), // 照核记录（原以喷印号查板坯号）
+  (r) => hR4200Api.queryTiL2me06s(baseL2(r)), // 装炉实绩
+  (r) => hR4200Api.queryTiL2me11s(baseL2(r)), // 加热实绩
+  (r) => hR4200Api.queryTiL2me02s(baseL2(r)), // 轧制实绩
+  (r) => hR4200Api.queryTiL2me01s(baseL2(r)), // 轧制异常实绩
+  (r) => hR4200Api.queryTiL2me08s(baseL2(r)), // 预矫直实绩
+  (r) => hR4200Api.queryTiL2me14s(baseL2(r)), // ACC超快冷实绩
+  (r) => hR4200Api.queryTiL2me09s(baseL2(r)), // 热矫直实绩
+  (r) => hR4200Api.queryTiP48j01s(baseL2(r)), // 切头剪CS实绩
+  (r) => hR4200Api.queryTiP48j02s({ cBatchOrder: r.cBatchOrder }), // 双边剪DSS实绩（原整包换组批号）
+  (r) => hR4200Api.queryTiP48j031s(baseL2(r)), // 定尺剪实绩
+  (r) => hR4200Api.queryTiP48j04s({ slabNo: r.cPieceNo, cBatchNo: r.cBatchNo }), // 取大样实绩（原整包换入参）
+  (r) => hR4200Api.queryTiP48j05s(baseL2(r)), // 超声波探伤UST实绩
+  (r) => hR4200Api.queryTiL2me15s(baseL2(r)), // 照核实绩
+  (r) => hR4200Api.queryTiL2me16s(baseL2(r)), // 测厚仪测量曲线1
+  (r) => hR4200Api.queryTiL2me17s(baseL2(r)), // 测厚仪测量曲线2
+  (r) => hR4200Api.queryTiL2me18s(baseL2(r)), // 平直度仪测量实绩
+  (r) => hR4200Api.queryTiL2me19s(baseL2(r)), // 终轧温度曲线实绩
+  (r) => hR4200Api.queryTiL2me12s(baseL2(r)), // 能耗实绩
+  (r) => hR4200Api.queryTiP48j06s(baseL2(r)), // 剪切PDI请求
+  (r) => hR4200Api.queryTiP48j07s(baseL2(r)), // 钢板下线请求
+  (r) => hR4200Api.queryTiP48j09s(baseL2(r)), // 轮廓仪测量实绩
+  (r) => hR4000Api.queryPrintSjs({ cBatchNo: r.cBatchNo, cPieceNoSlab: r.cPieceNo }), // 剪切实绩
+];
+
+async function loadTab(i: number) {
+  const row = currentRow.value;
+  if (!row) {
+    tabRows.value[i] = [];
+    return;
+  }
+  tabLoading.value[i] = true;
+  try {
+    tabRows.value[i] = ((await tabLoaders[i](row)) as Record<string, unknown>[] | null) ?? [];
+    requestAnimationFrame(() => tabApis[i]?.autoSizeAllColumns());
+  } catch {
+    /* 拦截层已 toast */
+  } finally {
+    tabLoading.value[i] = false;
+  }
+}
+function loadActiveTab() {
+  return loadTab(Number(activeTab.value));
+}
+watch(activeTab, () => void loadActiveTab());
+
+/* 原 gridControl10_DoubleClick → FrmHR9201 二级弹窗（待接入） */
+const ROLLING_TAB = 4;
+function onTabRowDbl(i: number) {
+  if (i !== ROLLING_TAB) return;
+  if (!currentRow.value) return;
+  toast("FrmHR9201 轧制实绩明细画面待接入", 2000, "warn");
+}
+
+/* ---------- ShowYesNo 受控确认 ---------- */
+const confirmOpen = ref(false);
+const confirmMsg = ref("");
+let confirmAction: (() => Promise<void>) | null = null;
+function askConfirm(msg: string, action: () => Promise<void>) {
+  confirmMsg.value = msg;
+  confirmAction = action;
+  confirmOpen.value = true;
+}
+async function onConfirmOk() {
+  confirmOpen.value = false;
+  const act = confirmAction;
+  confirmAction = null;
+  if (act) await act();
+}
+
+/* ---------- L2 发送按钮（台账逐条对应，中文提示逐字照抄） ---------- */
+function requireRow(exclaim: boolean): DtoThr3010 | null {
+  if (!currentRow.value) {
+    toast(exclaim ? "请选择后再操作!" : "请选择后再操作", 2000, "warn");
+    return null;
+  }
+  return currentRow.value;
+}
+async function sendAndToast(run: () => Promise<unknown>) {
+  try {
+    await run();
+    toast("发送成功", 2000, "success");
+  } catch {
+    /* 拦截层已 toast */
+  }
+}
+function onSendZz() {
+  const row = requireRow(true);
+  if (!row) return;
+  askConfirm(`确认手动下发板坯${row.cPieceNo}[轧制计划]至L2?`, () =>
+    sendAndToast(() => bxcomMessageApi.sendMEL02(row.cPieceNo ?? undefined)),
+  );
+}
+function onDel() {
+  const row = requireRow(true);
+  if (!row) return;
+  askConfirm(`确认${row.cPieceNo}删除板坯L2轧制计划？`, () =>
+    sendAndToast(() => bxcomMessageApi.sendMEL204(row.cPieceNo ?? undefined)),
+  );
+}
+function onSendJq() {
+  const row = requireRow(true);
+  if (!row) return;
+  askConfirm(`确认手动下发板坯${row.cPieceNo}[剪切计划]至L2`, () =>
+    sendAndToast(() => bxcomMessageApi.send8JP401_2(row.cPieceNo ?? undefined)),
+  );
+}
+function onUp() {
+  const row = requireRow(true);
+  if (!row) return;
+  askConfirm(`确认板坯${row.cPieceNo}[上线]至L2`, () =>
+    sendAndToast(() => bxcomMessageApi.send8JP403({ pieceNo: row.cPieceNo, upOrDown: "1", position: "0" })),
+  );
+}
+function onEnd() {
+  const row = requireRow(true);
+  if (!row) return;
+  askConfirm(`确认手动下发板坯${row.cPieceNo}[下线]至L2`, () =>
+    sendAndToast(() => bxcomMessageApi.send8JP403({ pieceNo: row.cPieceNo, upOrDown: "0", position: "0" })),
+  );
+}
+
+/* ---------- 模拟二级消息（原 AddDemoButtons：DicMsg 弹单 → demo_ReceivedByBxcom） ---------- */
+const demoMenu = ref<InstanceType<typeof Menu> | null>(null);
+/* 原 FrmHR9200.DicMsg，文案逐字照抄（含「-〉」原字符） */
+const DEMO_MSGS: [string, string][] = [
+  ["L2ME05", "L2->PMS钢坯号照核"],
+  ["L2ME15", "板坯照核实绩"],
+  ["L2ME04", "L2->PMS上辊道实绩"],
+  ["L2ME06", "L2->PMS装炉实绩"],
+  ["L2ME11", "HT->MES加热实绩电文"],
+  ["L2ME02", "L2->PMS轧制生产实绩"],
+  ["L2ME08", "L2->PMS预矫直实绩"],
+  ["L2ME09", "L2->PMS热矫直实绩"],
+  ["L2ME14", "L2->ACC超快冷实绩"],
+  ["P48J01", "L2-〉PMS切头剪CS"],
+  ["P48J02", "L2-〉PMS双边剪DSS实绩信息"],
+  ["P48J03", "L2-〉PMS定尺剪DS实绩信息"],
+  ["L2ME01", "L2->PMS轧制计划异常实绩（删除、吊销、轧废、甩坯）"],
+  ["P48J06", "L2-〉PMS剪切PDI请求"],
+  ["P48J07", "L2-〉PMS钢板下线请求"],
+  ["L2ME03", "L2->PMS轧辊实绩值"],
+  ["L2ME12", "HT->MES能耗实绩电文"],
+  ["P48J04", "L2-〉PMS剪切线取大样实绩信息"],
+  ["P48J05", "L2-〉PMS超声波探伤UST实绩信"],
+  ["P48J09", "L2->PMS轮廓仪测量实绩"],
+  ["L2ME16", "测厚仪测量曲线1"],
+  ["L2ME17", "测厚仪测量曲线2"],
+  ["L2ME18", "平直度仪测量实绩"],
+  ["L2ME19", "终轧温度曲线实绩"],
+];
+const demoItems = DEMO_MSGS.map(([key, label]) => ({
+  label,
+  command: () => onDemo(key, label),
+}));
+function onDemo(key: string, label: string) {
+  const row = requireRow(false);
+  if (!row) return;
+  askConfirm(`请确保在测试环境中，确认测试接收二级消息${row.cPieceNo} [${key}-${label}]?`, async () => {
+    try {
+      await bxcomTestApi.demo_ReceivedByBxcom({ ...row, id: key });
+      await onQuery();
+    } catch {
+      /* 拦截层已 toast */
+    }
+  });
 }
 </script>
 
 <template>
   <div class="flex min-h-0 flex-1 flex-col">
+    <!-- 查询条件区（DataLayoutControl：提料计划号/批号/炉号/板坯号/钢板号 + 创建时间区间） -->
+    <div class="grid shrink-0 grid-cols-6 items-center gap-x-3 gap-y-1.5 border-b border-border/60 px-3 py-2">
+      <div class="flex min-w-0 items-center gap-1.5">
+        <label class="w-16 shrink-0 text-xs text-muted-foreground">提料计划号</label>
+        <InputText v-model="input.cOrderNo" class="min-w-0 flex-1" @keydown.enter="onQuery" />
+      </div>
+      <div class="flex min-w-0 items-center gap-1.5">
+        <label class="w-16 shrink-0 text-xs text-muted-foreground">批号</label>
+        <InputText v-model="input.cBatchNo" class="min-w-0 flex-1" @keydown.enter="onQuery" />
+      </div>
+      <div class="flex min-w-0 items-center gap-1.5">
+        <label class="w-16 shrink-0 text-xs text-muted-foreground">炉号</label>
+        <InputText v-model="input.cStove" class="min-w-0 flex-1" @keydown.enter="onQuery" />
+      </div>
+      <div class="flex min-w-0 items-center gap-1.5">
+        <label class="w-16 shrink-0 text-xs text-muted-foreground">板坯号</label>
+        <InputText v-model="input.slabNo" class="min-w-0 flex-1" @keydown.enter="onQuery" />
+      </div>
+      <div class="flex min-w-0 items-center gap-1.5">
+        <label class="w-16 shrink-0 text-xs text-muted-foreground">钢板号</label>
+        <InputText v-model="input.plateNo" class="min-w-0 flex-1" @keydown.enter="onQuery" />
+      </div>
+      <div class="col-span-2 flex min-w-0 items-center gap-1.5">
+        <label class="w-16 shrink-0 text-xs text-muted-foreground">创建时间</label>
+        <DatePicker
+          v-model="input.dates"
+          selection-mode="range"
+          :manual-input="false"
+          date-format="yy-mm-dd"
+          show-time
+          hour-format="24"
+          show-icon
+          placeholder="开始 至 结束"
+          class="min-w-0 flex-1"
+        />
+      </div>
+    </div>
+
+    <!-- 工具栏（stackPanel1 原序：查询/轧制计划下发L2/删除L2轧制计划/剪切计划下发L2/钢板上线发送L2/钢板下线发送L2/模拟二级消息；组标题「计划材料明细」靠右） -->
     <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
-      <Button text size="small" class="shrink-0 whitespace-nowrap" @click="onQuery"
-        ><IconSearch class="h-3.5 w-3.5" />查询</Button
-      >
+      <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="mainLoading" @click="onQuery">
+        <IconSearch class="h-3 w-3" />查询
+      </Button>
+      <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onSendZz">
+        <IconSend class="h-3 w-3" />轧制计划下发L2
+      </Button>
+      <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onDel">
+        <IconTrash class="h-3 w-3" />删除L2轧制计划
+      </Button>
+      <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onSendJq">
+        <IconScissors class="h-3 w-3" />剪切计划下发L2
+      </Button>
+      <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onUp">
+        <IconArrowBarUp class="h-3 w-3" />钢板上线发送L2
+      </Button>
+      <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onEnd">
+        <IconArrowBarDown class="h-3 w-3" />钢板下线发送L2
+      </Button>
+      <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="demoMenu?.toggle($event)">
+        <IconFlask class="h-3 w-3" />模拟二级消息
+      </Button>
+      <span class="ml-auto text-xs font-medium text-muted-foreground">计划材料明细</span>
     </div>
-    <div class="min-h-0 flex-1 overflow-hidden">
-      <AgGridVue
-        class="hmx-ag-grid h-full w-full"
-        :theme="theme"
-        :locale-text="AG_GRID_LOCALE_CN"
-        :default-col-def="hmxDefaultColDef"
-        :column-defs="colDefs"
-        :row-data="rows"
-        row-selection="multiple"
-        @grid-ready="onGridReady"
-      />
-    </div>
+
+    <!-- 上下分栏（splitContainerControl1：SplitterPosition 409/930 → 主表约 44%） -->
+    <Splitter layout="vertical" class="min-h-0 flex-1">
+      <SplitterPanel :size="44" :min-size="20" class="flex flex-col overflow-hidden">
+        <div class="min-h-0 flex-1 overflow-hidden">
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="mainColDefs"
+            :row-data="mainRows"
+            :row-selection="{ mode: 'singleRow', enableClickSelection: true }"
+            :pagination="false"
+            :animate-rows="false"
+            :loading="mainLoading"
+            @grid-ready="onMainReady"
+            @selection-changed="onMainSelectionChanged"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
+        </div>
+      </SplitterPanel>
+      <SplitterPanel :size="56" :min-size="20" class="flex flex-col overflow-hidden">
+        <!-- 原页签在左侧，PrimeVue Tabs 在顶部（已知偏差） -->
+        <Tabs v-model:value="activeTab" class="flex h-full min-h-0 flex-col">
+          <TabList class="shrink-0">
+            <Tab v-for="(t, i) in tabGridDefs" :key="i" :value="String(i)">{{ t.title }}</Tab>
+          </TabList>
+          <TabPanels class="min-h-0 flex-1 overflow-hidden !p-0">
+            <TabPanel v-for="(t, i) in tabGridDefs" :key="i" :value="String(i)" class="h-full overflow-hidden !p-0">
+              <AgGridVue
+                v-if="activeTab === String(i)"
+                class="hmx-ag-grid h-full w-full"
+                :theme="theme"
+                :locale-text="AG_GRID_LOCALE_CN"
+                :default-col-def="hmxDefaultColDef"
+                :column-defs="t.colDefs"
+                :row-data="tabRows[i]"
+                :pagination="false"
+                :animate-rows="false"
+                :loading="tabLoading[i]"
+                @grid-ready="(e) => onTabReady(i, e)"
+                @row-double-clicked="onTabRowDbl(i)"
+                @first-data-rendered="autoSizeOnFirstData"
+              />
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </SplitterPanel>
+    </Splitter>
+
+    <Menu ref="demoMenu" :model="demoItems" popup class="w-72" />
+
+    <Dialog
+      :visible="confirmOpen"
+      modal
+      header="确认"
+      :style="{ width: 'min(26rem, calc(100vw - 2rem))' }"
+      @update:visible="confirmOpen = $event"
+    >
+      <p class="text-xs">{{ confirmMsg }}</p>
+      <template #footer>
+        <Button label="取消" variant="outlined" @click="confirmOpen = false" />
+        <Button label="确定" variant="outlined" autofocus @click="onConfirmOk" />
+      </template>
+    </Dialog>
   </div>
 </template>

@@ -160,6 +160,7 @@ node scripts/audit-ui.mjs                        # 新页面必须 0 命中（R1
 
 ## 实测踩过的坑
 
+- **台账报「服务调用: 无」要先怀疑提取器**。全仓取服务有三种写法：`Svc<I*>.Proxy.M`（676 处）、`SF<I*>.Proxy.M`（67 处）、`dpc.Proxy<I*>().M`（700+ 处）。早期版本只认第一种，于是 50 个窗体里有 42 个被误判成「纯查询无后端」，**照着这份假台账产出了 50 个空壳页**（三方验证：C# 侧 grep 有调用、swagger 侧 Api 对象已在仓库、页面侧 0 个 `Api.` 调用）。现在三种写法都认；仍报「无」时按 `references/extractor.md` §3 的兜底 grep 复核，别直接写成占位。
 - **中文列头必须按绑定实体取**。同名 `FieldName` 在不同实体里含义不同：`NStatus` 在 `Tqmtd10` 是「状态」、在别的实体是「库存状态」；`CProdCode` 是「品名代码」不是「品名」。脚本已按 `gridControl → bindingSource → typeof(Entity)` 定位实体，人工查 `LDisplay` 时也要按实体查，别用全局字典。
 - **隐藏列照样迁**（`Id`、`CNkStlGrd`、审计字段以 `hide: true` 收着），否则列面板与原窗体对不上。
 - **`Selected` 列**常是「转移标记」勾选列，与 AG Grid 行选择 checkbox 不是一回事；不要为行选择手写 checkbox 列。

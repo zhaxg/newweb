@@ -175,31 +175,31 @@ async function query() {
   <div class="flex min-h-0 flex-1 flex-col">
     <div class="grid shrink-0 grid-cols-6 items-center gap-x-3 gap-y-1.5 border-b border-border/60 px-3 py-2">
       <div class="flex min-w-0 items-center gap-1.5">
-        <label class="w-20 shrink-0 text-xs text-muted-foreground">委托单号</label>
+        <label class="w-18 shrink-0 text-xs text-muted-foreground">委托单号</label>
         <InputText v-model="input.cTestNo" class="min-w-0 flex-1" @keydown.enter="query" />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
-        <label class="w-16 shrink-0 text-xs text-muted-foreground">炉号</label>
+        <label class="w-18 shrink-0 text-xs text-muted-foreground">炉号</label>
         <InputText v-model="input.cStove" class="min-w-0 flex-1" @keydown.enter="query" />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
-        <label class="w-16 shrink-0 text-xs text-muted-foreground">批号</label>
+        <label class="w-18 shrink-0 text-xs text-muted-foreground">批号</label>
         <InputText v-model="input.cBatch" class="min-w-0 flex-1" @keydown.enter="query" />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
-        <label class="w-16 shrink-0 text-xs text-muted-foreground">钢种</label>
+        <label class="w-18 shrink-0 text-xs text-muted-foreground">钢种</label>
         <InputText v-model="input.cSgSign" class="min-w-0 flex-1" @keydown.enter="query" />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
-        <label class="w-20 shrink-0 text-xs text-muted-foreground">执行标准</label>
+        <label class="w-18 shrink-0 text-xs text-muted-foreground">执行标准</label>
         <InputText v-model="input.cSgStd" class="min-w-0 flex-1" @keydown.enter="query" />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
-        <label class="w-20 shrink-0 text-xs text-muted-foreground">试验项目种类</label>
+        <label class="w-18 shrink-0 text-xs text-muted-foreground">试验项目种类</label>
         <InputText v-model="input.testItemType" class="min-w-0 flex-1" @keydown.enter="query" />
       </div>
       <div class="col-span-2 flex min-w-0 items-center gap-1.5">
-        <label class="w-16 shrink-0 text-xs text-muted-foreground">检验时间</label>
+        <label class="w-18 shrink-0 text-xs text-muted-foreground">检验时间</label>
         <DatePicker
           v-model="input.completeTime"
           selection-mode="range"

@@ -5,7 +5,7 @@
  *            （HzDataBind——按当前页签选中索引懒加载汇总；xtraTabControl1 SelectedPageChanged 同步重查）
  *  查询条件（原 stackPanel1）：时间范围(UCTimeRange) + 查询；Load 默认=本月 1 日 00:00 ~ 明天 00:00
  *  结构（原 splitContainerControl1 Horizontal=false SplitterPosition=405）：
- *    上=groupControl1「产出信息」gridControl1(MS9200Dtos 17 可见+NCalWgt 隐藏)，
+ *    上=groupControl1「产出信息」gridControl1(MS9200Dtos 17 可见+NCalWgt 隐藏)——纯标题分区头无信息量，web 侧不渲染，
  *    下=groupControl2「汇总信息」xtraTabControl1 四页签：
  *      日信息汇总 gridControl2(7+NCalWgt/CProductStove 隐藏) / 班组产出信息汇总 gridControl3(9+NCalWgt 隐藏) /
  *      炉次信息汇总 gridControl4(8+NCalWgt 隐藏) / 钢种长度信息汇总 gridControl5(10 全可见)
@@ -230,10 +230,6 @@ async function onTabChange(v: string | number) {
     <!-- 上下分栏（原 splitContainerControl1 Horizontal=false SplitterPosition=405） -->
     <div class="flex min-h-0 flex-1 flex-col gap-0 overflow-hidden">
       <div class="flex min-h-0 flex-[57] flex-col overflow-hidden border-b border-border/60">
-        <!-- groupControl1「产出信息」→ 纯标题分区头 h-8 -->
-        <div class="flex h-8 shrink-0 items-center border-b border-border/60 px-2">
-          <span class="text-xs font-medium text-muted-foreground">产出信息</span>
-        </div>
         <div class="min-h-0 flex-1 overflow-hidden">
           <AgGridVue
             class="hmx-ag-grid h-full w-full"

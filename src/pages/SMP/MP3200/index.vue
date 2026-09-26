@@ -67,7 +67,7 @@ const rows = ref<any[]>([]);
 const querying = ref(false);
 const gridApi = ref<GridApi | null>();
 
-/** 原 Load：dtS = 昨天 00:00、dtE = 明天 23:59:59（DateEdit 格式 G） */
+/** 原 Load：dtS = 昨天 00:00、dtE = 明天 23:59:59（DateEdit 格式 G）——改为时间段组件后仍按此默认区间 */
 function dayStart(offset: number) {
   const d = new Date();
   d.setDate(d.getDate() + offset);
@@ -80,8 +80,7 @@ function dayEnd(offset: number) {
   d.setHours(23, 59, 59, 0);
   return d;
 }
-const dtS = ref<Date>(dayStart(-1));
-const dtE = ref<Date>(dayEnd(1));
+const dates = ref<Date[] | null>([dayStart(-1), dayEnd(1)]);
 const sgCode = ref("");
 /** txtDs/txtDe：Designer 声明的 DateTimeOffsetEdit 未加入任何容器（原窗体不可见），按基线保留隐藏渲染 */
 const txtDs = ref<Date | null>(null);
@@ -90,8 +89,13 @@ const txtDe = ref<Date | null>(null);
 async function query() {
   querying.value = true;
   try {
+    const range = dates.value;
     const list =
-      (await tmp2000Api.getCptSlabNo({ cSgCode: sgCode.value || null, dBegin: dtS.value, dEnd: dtE.value })) ?? [];
+      (await tmp2000Api.getCptSlabNo({
+        cSgCode: sgCode.value || null,
+        dBegin: range?.[0] ?? null,
+        dEnd: range?.length ? range[range.length - 1] : null,
+      })) ?? [];
     rows.value = Array.isArray(list) ? list : [];
     await nextTick();
     /* 原勾选列 Selected 字段：查询回填后按数据字段回灌行选择勾选态 */
@@ -135,39 +139,41 @@ onMounted(() => {
 
 <template>
   <div class="flex min-h-0 flex-1 flex-col">
-    <!-- stackPanel1：时间 起 ~ 止 / 钢种 + 查询/打印（顺序照 Controls.Add） -->
-    <div class="flex h-9 shrink-0 items-center gap-1 overflow-x-auto border-b border-border/60 px-2">
-      <label class="shrink-0 text-xs text-muted-foreground">时间</label>
-      <DatePicker
-        v-model="dtS"
-        :manual-input="false"
-        date-format="yy-mm-dd HH:mm:ss"
-        show-time
-        hour-format="24"
-        show-icon
-        class="shrink-0"
-      />
-      <label class="shrink-0 text-xs text-muted-foreground">~</label>
-      <DatePicker
-        v-model="dtE"
-        :manual-input="false"
-        date-format="yy-mm-dd HH:mm:ss"
-        show-time
-        hour-format="24"
-        show-icon
-        class="shrink-0"
-      />
-      <label class="shrink-0 text-xs text-muted-foreground">钢种</label>
-      <InputText v-model="sgCode" placeholder="钢种" class="w-32 shrink-0" />
-      <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="querying" @click="query">
-        <IconSearch class="h-3 w-3" />查询
-      </Button>
-      <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onPrint">
-        <IconPrinter class="h-3 w-3" />打印
-      </Button>
-      <!-- 孤儿字段：原 Designer 声明未挂载 → 隐藏保留（基线：extract 输入控件 5 个） -->
-      <DatePicker v-model="txtDs" disabled class="hidden" />
-      <DatePicker v-model="txtDe" disabled class="hidden" />
+    <!-- stackPanel1：时间范围（时间段组件，占 2 列）/ 钢种 + 查询/打印（顺序照 Controls.Add） -->
+    <div class="grid shrink-0 grid-cols-6 items-center gap-x-3 gap-y-1.5 border-b border-border/60 px-3 py-2">
+      <div class="col-span-2 flex min-w-0 items-center gap-1.5">
+        <label class="w-16 shrink-0 text-xs text-muted-foreground">时间范围</label>
+        <DatePicker
+          v-model="dates"
+          selection-mode="range"
+          :manual-input="false"
+          date-format="yy-mm-dd"
+          show-time
+          hour-format="24"
+          show-icon
+          placeholder="开始 至 结束"
+          class="min-w-0 flex-1"
+        />
+      </div>
+      <div class="flex min-w-0 items-center gap-1.5">
+        <label class="w-16 shrink-0 text-xs text-muted-foreground">钢种</label>
+        <InputText v-model="sgCode" class="min-w-0 flex-1" />
+      </div>
+      <div class="col-span-3 flex min-w-0 items-center gap-1">
+        <Button variant="outlined" class="shrink-0 whitespace-nowrap" :loading="querying" @click="query">
+          <IconSearch class="h-3 w-3" />查询
+        </Button>
+        <Button variant="outlined" class="shrink-0 whitespace-nowrap" @click="onPrint">
+          <IconPrinter class="h-3 w-3" />打印
+        </Button>
+      </div>
+      <!-- 孤儿字段：原 Designer 声明未挂载 → 隐藏保留（基线：extract 输入控件 5 个）。
+           必须包一层 div 再 hidden：Tailwind 4 的 utilities 在 @layer 内，PrimeVue 组件根节点的
+           display 规则不在 layer 中，未分层样式恒赢分层样式，class="hidden" 会被 .p-datepicker 顶掉。 -->
+      <div class="hidden">
+        <DatePicker v-model="txtDs" disabled />
+        <DatePicker v-model="txtDe" disabled />
+      </div>
     </div>
 
     <div class="min-h-0 flex-1 overflow-hidden">

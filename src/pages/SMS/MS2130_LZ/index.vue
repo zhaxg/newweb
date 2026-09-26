@@ -196,6 +196,12 @@ const formFields = [
   { k: "cIsCh", t: "是否投用淬火", m: "s" },
 ];
 
+/** 生产实绩信息面板 90+ 字段要一屏看全，控件统一走 HmxCompact 的 sm 档
+ *  （paddingX 6px / paddingY 2px → 控件高约 24px，比默认紧凑档 28px 再矮 4px）。
+ *  这是 ui-rules R2「禁 size="small"」的刻意例外：默认档按常规表单定，本面板字段密度远超常规。
+ *  收成一个常量而不是在模板里写 6 遍，同时避开 audit 逐行豁免注释被格式化打散。 */
+const micro = { size: "small" } as const;
+
 const ynOptions = [
   { label: "是", value: "Y" },
   { label: "否", value: "N" },
@@ -804,6 +810,7 @@ onBeforeUnmount(() => {
                     <DatePicker
                       v-if="f.m === 'd'"
                       v-model="bof[f.k]"
+                      v-bind="micro"
                       :manual-input="false"
                       date-format="yy-mm-dd"
                       show-time
@@ -811,11 +818,12 @@ onBeforeUnmount(() => {
                       show-icon
                       class="w-full"
                     />
-                    <Textarea v-else-if="f.m === 'm'" v-model="bof[f.k]" :rows="2" class="w-full" />
+                    <Textarea v-else-if="f.m === 'm'" v-model="bof[f.k]" v-bind="micro" :rows="2" class="w-full" />
                     <Checkbox v-else-if="f.m === 'c'" v-model="bof[f.k]" binary :input-id="'f_' + f.k" />
                     <Select
                       v-else-if="f.m === 's'"
                       v-model="bof[f.k]"
+                      v-bind="micro"
                       :options="ynOptions"
                       option-label="label"
                       option-value="value"
@@ -824,13 +832,14 @@ onBeforeUnmount(() => {
                     <div v-else-if="f.m === 'i' || f.m === 'g'" class="w-full">
                       <InputNumber
                         v-model="bof[f.k]"
+                        v-bind="micro"
                         :min-fraction-digits="0"
                         :max-fraction-digits="f.m === 'i' ? 0 : 6"
                         fluid
                         class="w-full"
                       />
                     </div>
-                    <InputText v-else v-model="bof[f.k]" class="w-full" />
+                    <InputText v-else v-model="bof[f.k]" v-bind="micro" class="w-full" />
                   </template>
                 </template>
               </div>

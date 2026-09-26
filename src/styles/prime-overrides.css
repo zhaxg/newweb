@@ -97,3 +97,14 @@ html .p-toast-message.p-toast-message-leave-to {
 .p-toast.p-toast {
   width: min(28rem, calc(100vw - 4rem));
 }
+
+/* 空值下拉框高塌陷（平台级）：PrimeVue 把「选中值 / 占位符」渲染成 label 节点的**文本**，
+   既没选中值又没 placeholder 时该节点是空的 → 没有行盒，框高从 28px 塌到 14px，
+   同一行里比别的控件矮一截（MS2141 流号、HR5200_JC 产线实测复现）。
+   给它一个「有值时」等高的最小行盒：line-height 1.5 × font-size，与是否有值无关。
+   两条声明是单位兜底——`1lh` 更准（直接取自身行高），不支持 lh 单位的浏览器退回 1.5em。 */
+.p-select-label,
+.p-multiselect-label {
+  min-height: 1.5em;
+  min-height: 1lh;
+}

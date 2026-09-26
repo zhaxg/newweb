@@ -565,7 +565,7 @@ async function btnShowQy() {
       <p class="text-xs">{{ confirmMsg }}</p>
       <template #footer>
         <Button label="取消" variant="outlined" @click="confirmOpen = false" />
-        <Button label="确定" variant="outlined" @click="onConfirmOk" />
+        <Button label="确定" variant="outlined" autofocus @click="onConfirmOk" />
       </template>
     </Dialog>
 
@@ -579,7 +579,7 @@ async function btnShowQy() {
     >
       <pre class="text-xs whitespace-pre-wrap">{{ qyMsg }}</pre>
       <template #footer>
-        <Button label="关闭" variant="outlined" @click="qyOpen = false" />
+        <Button label="关闭" variant="outlined" autofocus @click="qyOpen = false" />
       </template>
     </Dialog>
   </div>

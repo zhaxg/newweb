@@ -214,7 +214,7 @@ async function query() {
   <div class="flex min-h-0 flex-1 flex-col">
     <div class="grid shrink-0 grid-cols-6 items-center gap-x-3 gap-y-1.5 border-b border-border/60 px-3 py-2">
       <div class="flex min-w-0 items-center gap-1.5">
-        <label class="w-20 shrink-0 text-xs text-muted-foreground">提料计划号</label>
+        <label class="w-16 shrink-0 text-xs text-muted-foreground">提料计划号</label>
         <InputText v-model="input.cOrderNo" class="min-w-0 flex-1" @keydown.enter="query" />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
@@ -226,11 +226,11 @@ async function query() {
         <InputText v-model="input.cStoveNo" class="min-w-0 flex-1" @keydown.enter="query" />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
-        <label class="w-20 shrink-0 text-xs text-muted-foreground">订单钢种</label>
+        <label class="w-16 shrink-0 text-xs text-muted-foreground">订单钢种</label>
         <InputText v-model="input.cSgCodeOrder" class="min-w-0 flex-1" @keydown.enter="query" />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">
-        <label class="w-20 shrink-0 text-xs text-muted-foreground">坯料钢种</label>
+        <label class="w-16 shrink-0 text-xs text-muted-foreground">坯料钢种</label>
         <InputText v-model="input.cSgCodeLg" class="min-w-0 flex-1" @keydown.enter="query" />
       </div>
       <div class="flex min-w-0 items-center gap-1.5">

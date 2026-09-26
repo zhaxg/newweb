@@ -386,10 +386,14 @@ export interface DtoQuerySlabs {
   cSlCode?: string | null;
   cInboundNo?: string | null;
   cStoreCode?: string | null;
+  cStackType?: StackTypeEnum | null;
   cDestination?: string | null;
   cOrderNo?: string | null;
   cBatchNo?: string | null;
+  cBatchOrder?: string | null;
+  cBatchOrders?: string[] | null;
   cPieceNo?: string | null;
+  cPieceNos?: string[] | null;
   cPieceNoSlab?: string | null;
   cStove?: string | null;
   cSgCode?: string | null;
@@ -406,6 +410,8 @@ export interface DtoQuerySlabs {
   cStack?: string | null;
   cStoreCodes?: string[] | null;
   nProType?: number | null;
+  /** 原 C# `bool CDldq`（是否倒垛，查询条件用） */
+  cDldq?: boolean | null;
 }
 export interface DtoQueryTdm1000 {
   cBearNo?: string | null;
@@ -2614,6 +2620,15 @@ export interface Ti1060Dto {
   cRmAuthorA?: string | null;
   cRmAuthorNameA?: string | null;
 }
+/** 轮廓仪数据汇总排名（原 Ti1060RankDto） */
+export interface Ti1060RankDto {
+  /** 日期 */ dDateTime?: string;
+  /** 班组 */ cShiftGroup?: string | null;
+  /** 块数 */ nQua?: number | null;
+  /** 精轧责任者A */ cRmAuthorA?: string | null;
+  /** 镰刀弯量 */ nSickleBend?: number | null;
+  /** 镰刀弯比例 */ nSickleBendRate?: number | null;
+}
 export interface Ti1070Dto {
   selected?: boolean;
   slabNo?: string | null;
@@ -2724,6 +2739,12 @@ export interface Ti1211Dto {
   superMin?: number | null;
   dRollingTimeStart?: string;
   dRollingTimeEnd?: string;
+}
+/** 命中率排名（原 Ti1211RankDto） */
+export interface Ti1211RankDto {
+  /** 责任者 */ cAuthor?: string | null;
+  /** 班组 */ cShiftGroup?: string | null;
+  /** 平均命中率 */ avgHitRate?: number | null;
 }
 export interface TiL2me01 {
   selected?: boolean;
@@ -4034,6 +4055,13 @@ export const dM1020Api = {
       params: { cId },
     });
   },
+  /** 同步磨削实绩信息（原 SyncTdm1030，FrmDM1020 btnSync_Click） */
+  syncTdm1030(data?: DtoQueryTdm1020) {
+    return requestClient.request<any>("/dDH.Service.SHR.Services.WorkPiece/dM1020/syncTdm1030", {
+      method: "post",
+      data,
+    });
+  },
 };
 
 export const dM1030Api = {
@@ -4045,6 +4073,13 @@ export const dM1030Api = {
   },
   saveTdm1030Changes(data?: Tdm1030SaveChangesData) {
     return requestClient.request<any>("/dDH.Service.SHR.Services.WorkPiece/dM1030/saveTdm1030Changes", {
+      method: "post",
+      data,
+    });
+  },
+  /** 重新处理失败磨削数据（原 AgainHandelTdm1030，FrmDM1030 btnHandle_Click；C# 拼写 Handel 照原样保留） */
+  againHandelTdm1030(data?: string[]) {
+    return requestClient.request<any>("/dDH.Service.SHR.Services.WorkPiece/dM1030/againHandelTdm1030", {
       method: "post",
       data,
     });
@@ -4407,6 +4442,34 @@ export const hR3600Api = {
   },
   endHl(data?: HlDto) {
     return requestClient.request<any>("/dDH.Service.SHR.Services/hR3600/endHl", {
+      method: "post",
+      data,
+    });
+  },
+  /** 指定堆冷默认垛位（原 SetDefaultStack，FrmHR3600 btnSet_Click） */
+  setDefaultStack(data?: SetStackDto) {
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR3600/setDefaultStack", {
+      method: "post",
+      data,
+    });
+  },
+  /** 查询堆冷操作汇总（原 QueryDl，FrmHR3620 btnQuery_Click） */
+  queryDl(data?: TimeRange) {
+    return requestClient.request<DlGroupDto[]>("/dDH.Service.SHR.Services/hR3600/queryDl", {
+      method: "post",
+      data,
+    });
+  },
+  /** 查询缓冷台账（原 QueryHR4510s，FrmHR4510 HzDataBind） */
+  queryHR4510s(data?: DtoQuerySlabs) {
+    return requestClient.request<HR4510HzDto[]>("/dDH.Service.SHR.Services/hR3600/queryHR4510s", {
+      method: "post",
+      data,
+    });
+  },
+  /** 查询当日缓冷台账（原 QueryHR4510ToDays，FrmHR4520 HzDataBind） */
+  queryHR4510ToDays(data?: DtoQuerySlabs) {
+    return requestClient.request<HR4510HzDto[]>("/dDH.Service.SHR.Services/hR3600/queryHR4510ToDays", {
       method: "post",
       data,
     });
@@ -5024,6 +5087,27 @@ export const tI1060Api = {
       data,
     });
   },
+  /** 轮廓仪数据汇总排名查询（原 GetHzTi1060，FrmTI1060 HzDataBind） */
+  getHzTi1060(data?: TimeRange) {
+    return requestClient.request<Ti1060RankDto[]>("/dDH.Service.SHR.Services.InterInfoQuery/tI1060/getHzTi1060", {
+      method: "post",
+      data,
+    });
+  },
+  /** 轮廓仪日班组数据汇总（原 GetTi1060GroupHz，FrmTI1060 HzDataBind） */
+  getTi1060GroupHz(data?: TimeRange) {
+    return requestClient.request<Ti1060RankDto[]>("/dDH.Service.SHR.Services.InterInfoQuery/tI1060/getTi1060GroupHz", {
+      method: "post",
+      data,
+    });
+  },
+  /** 轮廓仪日数据汇总排名查询（原 GetTi1060DayHz，FrmTI1060 HzDataBind） */
+  getTi1060DayHz(data?: TimeRange) {
+    return requestClient.request<Ti1060RankDto[]>("/dDH.Service.SHR.Services.InterInfoQuery/tI1060/getTi1060DayHz", {
+      method: "post",
+      data,
+    });
+  },
 };
 
 export const tI1070Api = {
@@ -5104,6 +5188,26 @@ export const tI1210Api = {
       method: "post",
       data,
     });
+  },
+  /** 查询班组月排名数据（原 GetTi1211MonthRank，FrmTI1210 DataBind） */
+  getTi1211MonthRank(data?: DtoTi1210Query) {
+    return requestClient.request<Ti1211RankDto[]>(
+      "/dDH.Service.SHR.Services.InterInfoQuery/tI1210/getTi1211MonthRank",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+  /** 查询班组个人排名数据（原 GetTi1211AuthorRank，FrmTI1210 DataBind） */
+  getTi1211AuthorRank(data?: DtoTi1210Query) {
+    return requestClient.request<Ti1211RankDto[]>(
+      "/dDH.Service.SHR.Services.InterInfoQuery/tI1210/getTi1211AuthorRank",
+      {
+        method: "post",
+        data,
+      },
+    );
   },
 };
 
@@ -8839,6 +8943,1745 @@ export const hR3800Api = {
   /** 修磨提交（原 FrmHR3800_Add 内部保存） */
   addThr3800(data?: Thr3800Dto) {
     return requestClient.request<any>("/dDH.Service.SHR.Services/hR3800/addThr3800", {
+      method: "post",
+      data,
+    });
+  },
+};
+
+export const tI1202Api = {
+  /** 查询轧制信息（原 GetListAsync，FrmTI1202） */
+  getListAsync(key?: string, data?: TimeRange) {
+    return requestClient.request<TiL2me02[]>("/dDH.Service.SHR.Services.APILogViewer/tI1202/getListAsync", {
+      method: "post",
+      params: { key },
+      data,
+    });
+  },
+};
+
+export const tI1206Api = {
+  /** 查询入炉信息（原 GetListAsync，FrmTI1206） */
+  getListAsync(key?: string, data?: TimeRange) {
+    return requestClient.request<TiL2me06[]>("/dDH.Service.SHR.Services.APILogViewer/tI1206/getListAsync", {
+      method: "post",
+      params: { key },
+      data,
+    });
+  },
+};
+
+export const tI1208Api = {
+  /** 查询预矫直信息（原 GetListAsync，FrmTI1208） */
+  getListAsync(key?: string, data?: TimeRange) {
+    return requestClient.request<TiL2me08[]>("/dDH.Service.SHR.Services.APILogViewer/tI1208/getListAsync", {
+      method: "post",
+      params: { key },
+      data,
+    });
+  },
+};
+
+export const tI1209Api = {
+  /** 查询热矫直信息（原 GetListAsync，FrmTI1209） */
+  getListAsync(key?: string, data?: TimeRange) {
+    return requestClient.request<TiL2me09[]>("/dDH.Service.SHR.Services.APILogViewer/tI1209/getListAsync", {
+      method: "post",
+      params: { key },
+      data,
+    });
+  },
+};
+
+export const tI1211Api = {
+  /** 查询加热实绩信息（原 GetListAsync，FrmTI1211） */
+  getListAsync(key?: string, data?: TimeRange) {
+    return requestClient.request<TiL2me11[]>("/dDH.Service.SHR.Services.APILogViewer/tI1211/getListAsync", {
+      method: "post",
+      params: { key },
+      data,
+    });
+  },
+};
+
+export const tI1214Api = {
+  /** 查询超快冷信息（原 GetListAsync，FrmTI1214） */
+  getListAsync(key?: string, data?: TimeRange) {
+    return requestClient.request<TiL2me14[]>("/dDH.Service.SHR.Services.APILogViewer/tI1214/getListAsync", {
+      method: "post",
+      params: { key },
+      data,
+    });
+  },
+};
+
+/* ---------- TI1220~TI1300 迁移补充（InterInfoQuery） ---------- */
+
+export enum Tdm1060StatusEnum {
+  /** 正常 */
+  Open = 0,
+  /** 失效 */
+  Close = 10,
+}
+export enum Thr3010FcDetailRateEnum {
+  /** 未命中 */
+  NotHit = 0,
+  /** 命中 */
+  Hit = 1,
+}
+
+/** 板坯轧制负差信息（原 Entities/Thr3010Fcdetail.cs） */
+export interface Thr3010Fcdetail {
+  selected?: boolean;
+  /** 主键 */
+  id?: string | null;
+  /** 创建人 */
+  creator?: string | null;
+  /** 创建时间 */
+  createTime?: string | null;
+  /** 最后修改人 */
+  lastModifier?: string | null;
+  /** 最后修改时间 */
+  lastModifyTime?: string | null;
+  /** Thr3010主键 */
+  cMxId?: string | null;
+  /** 组批号 */
+  cBatchNo?: string | null;
+  /** 板坯号 */
+  cPieceNo?: string | null;
+  /** 钢板号 */
+  cPlateNo?: string | null;
+  /** 钢种 */
+  cSgCode?: string | null;
+  /** 实际厚度 */
+  nThickSj?: number | null;
+  /** 实际宽度 */
+  nWidthSj?: number | null;
+  /** 实际长度 */
+  nLenSj?: number | null;
+  /** 订单厚度 */
+  nThick?: number | null;
+  /** 订单宽度 */
+  nWidth?: number | null;
+  /** 订单长度 */
+  nLen?: number | null;
+  /** 订单长度下限 */
+  nLenMin?: number | null;
+  /** 订单长度上限 */
+  nLenMax?: number | null;
+  /** 长度类型 */
+  cLengthType?: string | null;
+  /** 目标厚度下限 */
+  nPlanThickMin?: number | null;
+  /** 目标厚度上限 */
+  nPlanThickMax?: number | null;
+  /** 厚度命中率 */
+  nThickHitrate?: Thr3010FcDetailRateEnum;
+  /** 厚度公差 */
+  nThickTol?: number | null;
+  /** 厚度是否超内控公差范围（C# 原字段名 NThicjTolSwitch，拼写照原样保留） */
+  nThicjTolSwitch?: number | null;
+  /** 目标宽度下限(内控) */
+  nPlanWidthMin?: number | null;
+  /** 目标宽度上限(内控) */
+  nPlanWidthMax?: number | null;
+  /** 宽度公差 */
+  nWidthTol?: number | null;
+  /** 目标长度下限(内控) */
+  nPlanLenMin?: number | null;
+  /** 目标长度上限(内控) */
+  nPlanLenMax?: number | null;
+  /** 长度公差 */
+  nLenTol?: number | null;
+  /** 实际出炉温度 */
+  nExitfurTemp?: number | null;
+  /** 目标出炉温度 */
+  nPlanExitfurTemp?: number | null;
+  /** 出炉温度公差 */
+  nExitfurTempTol?: number | null;
+  /** 实际开轧温度 */
+  nStrollTemp?: number | null;
+  /** 目标开轧温度 */
+  nPlanStrollTemp?: number | null;
+  /** 开轧温度公差 */
+  nStrollTempTol?: number | null;
+  /** 实际开冷温度 */
+  nStcoldTemp?: number | null;
+  /** 目标开冷温度 */
+  nPlanStcoldTemp?: number | null;
+  /** 开冷温度公差 */
+  nStcoldTempTol?: number | null;
+  /** 实际终冷温度 */
+  nEndcoldTemp?: number | null;
+  /** 目标终冷温度 */
+  nPlanendColdTemp?: number | null;
+  /** 终冷温度公差 */
+  nEndcoldTempTol?: number | null;
+  /** 公差 */
+  cTol?: string | null;
+  /** 切边方式 */
+  cTrimFlag?: string | null;
+  /** 生产时间 */
+  dProductTime?: string | null;
+  /** 轧制开始时间 */
+  dRollingTimeStart?: string | null;
+  /** 轧制结束时间 */
+  dRollingTimeEnd?: string | null;
+  /** 轧制班次 */
+  cShiftNo?: string | null;
+  /** 轧制班组 */
+  cShiftGroup?: string | null;
+  /** 抽钢责任者 */
+  cAuthor?: string | null;
+  /** 粗轧责任者A */
+  cRmAuthorA?: string | null;
+  /** 粗轧责任者B */
+  cRmAuthorB?: string | null;
+  /** 精轧责任者A */
+  cFmAuthorA?: string | null;
+  /** 精轧责任者B */
+  cFmAuthorB?: string | null;
+  /** 抽钢责任者姓名 */
+  cAuthorName?: string | null;
+  /** 粗轧责任者A姓名 */
+  cRmAuthorAName?: string | null;
+  /** 粗轧责任者B姓名 */
+  cRmAuthorBName?: string | null;
+  /** 精轧责任者A姓名 */
+  cFmAuthorAName?: string | null;
+  /** 精轧责任者B姓名 */
+  cFmAuthorBName?: string | null;
+  /** 加热炉状态 */
+  nFurStatus?: number | null;
+  /** 轧制状态 */
+  nRollStatus?: number | null;
+  /** 超快冷状态 */
+  nFastcoldStatus?: number | null;
+  /** 订单号 */
+  cOrderNo?: string | null;
+  /** 出炉班次 */
+  cExitfurShiftNo?: string | null;
+  /** 出炉班组 */
+  cExitfurShiftGroup?: string | null;
+  /** 超快冷班次 */
+  cFastcoldShiftNo?: string | null;
+  /** 超快冷班组 */
+  cFastcoldShiftGroup?: string | null;
+  /** 入炉时间 */
+  dFurTime?: string | null;
+  /** 出炉时间 */
+  dExitfurTime?: string | null;
+  /** 开冷时间 */
+  dFastcoldStart?: string | null;
+  /** 终冷时间 */
+  dFastcoldEnd?: string | null;
+  /** 入炉温度 */
+  nInFurTemp?: number | null;
+  /** 入炉班次 */
+  cInFurShiftNo?: string | null;
+  /** 入炉班组 */
+  cInFurShiftGroup?: string | null;
+  /** 目标加热时间 */
+  nPlanFurTime?: number | null;
+  /** 是否冷坯 */
+  cCool?: string | null;
+  /** 板坯实际厚度 */
+  nSlabThick?: number | null;
+  /** 板坯实际宽度 */
+  nSlabWidth?: number | null;
+  /** 板坯实际长度 */
+  nSlabLen?: number | null;
+  /** 国标钢种 */
+  cSgCodeGb?: string | null;
+  /** 在炉时间 */
+  nInFurTime?: number | null;
+}
+
+/** 宽度负差明细/年汇总（原 Dtos/InterInfoQuery/Ti1220Detail.cs） */
+export interface Ti1220Detail {
+  cDateTime?: string | null;
+  createTime?: string | null;
+  nQuaAll?: number | null;
+  nQua1?: number | null;
+  hitRate1?: number | null;
+  nQua2?: number | null;
+  hitRate2?: number | null;
+  nQua3?: number | null;
+  hitRate3?: number | null;
+  nQua4?: number | null;
+  hitRate4?: number | null;
+  nQua5?: number | null;
+  hitRate5?: number | null;
+  nQua6?: number | null;
+  hitRate6?: number | null;
+  cShiftGroup?: string | null;
+  cOutSteelAuthor?: string | null;
+  cFmAuthorA?: string | null;
+  cFmAuthorB?: string | null;
+  cRmAuthorA?: string | null;
+  cRmAuthorB?: string | null;
+  cTrimFlag?: string | null;
+  dRollingTimeStart?: string | null;
+  dRollingTimeEnd?: string | null;
+}
+
+/** 长度负差明细/年汇总（原 Dtos/InterInfoQuery/Ti1230Detail.cs） */
+export interface Ti1230Detail {
+  cDateTime?: string | null;
+  createTime?: string | null;
+  nQuaAll?: number | null;
+  nQua1?: number | null;
+  hitRate1?: number | null;
+  nQua2?: number | null;
+  hitRate2?: number | null;
+  nQua3?: number | null;
+  hitRate3?: number | null;
+  nQua4?: number | null;
+  hitRate4?: number | null;
+  nQua5?: number | null;
+  hitRate5?: number | null;
+  cOutSteelAuthor?: string | null;
+  cFmAuthorA?: string | null;
+  cFmAuthorB?: string | null;
+  cRmAuthorA?: string | null;
+  cRmAuthorB?: string | null;
+  cShiftGroup?: string | null;
+  dRollingTimeStart?: string | null;
+  dRollingTimeEnd?: string | null;
+}
+
+/** 出炉温度负差实绩（原 Dtos/InterInfoQuery/Ti1240Dto.cs） */
+export interface Ti1240Dto {
+  selected?: boolean;
+  cShiftNo?: string | null;
+  cShiftGroup?: string | null;
+  cZpNo?: string | null;
+  cSlabNo?: string | null;
+  nOrderThick?: number | null;
+  nOrderWidth?: number | null;
+  nOrderLen?: number | null;
+  nExitFurTempSj?: number | null;
+  nPlanExitFurTemp?: number | null;
+  tol?: number | null;
+  dFurEndTime?: string | null;
+  dFurStartTime?: string | null;
+  createTime?: string | null;
+}
+
+/** 出炉温度负差明细/年汇总（原 Dtos/InterInfoQuery/Ti1240DetailDto.cs） */
+export interface Ti1240DetailDto {
+  cDateTime?: string | null;
+  nQuaAll?: number | null;
+  nQua1?: number | null;
+  hitRate1?: number | null;
+  nQua2?: number | null;
+  hitRate2?: number | null;
+  nQua3?: number | null;
+  hitRate3?: number | null;
+  nQua4?: number | null;
+  hitRate4?: number | null;
+  cShiftGroup?: string | null;
+  dFurEndTime?: string | null;
+  dFurStartTime?: string | null;
+}
+
+/** 开轧温度负差明细/年汇总（原 Dtos/InterInfoQuery/Ti1250DetailDto.cs） */
+export interface Ti1250DetailDto {
+  cDateTime?: string | null;
+  nQuaAll?: number | null;
+  nQua1?: number | null;
+  hitRate1?: number | null;
+  nQua2?: number | null;
+  hitRate2?: number | null;
+  nQua3?: number | null;
+  hitRate3?: number | null;
+  nQua4?: number | null;
+  hitRate4?: number | null;
+  cOutSteelAuthor?: string | null;
+  cFmAuthorA?: string | null;
+  cFmAuthorB?: string | null;
+  cRmAuthorA?: string | null;
+  cRmAuthorB?: string | null;
+  cShiftGroup?: string | null;
+  dRollingTimeStart?: string | null;
+  dRollingTimeEnd?: string | null;
+}
+
+/** 开冷温度(ACC)负差明细/年汇总（原 Dtos/InterInfoQuery/Ti1260DetailDto.cs） */
+export interface Ti1260DetailDto {
+  cDateTime?: string | null;
+  dDayDate?: string | null;
+  nQuaAll?: number | null;
+  nStartColdQua1?: number | null;
+  startColdHitRate1?: number | null;
+  nStartColdQua2?: number | null;
+  startColdHitRate2?: number | null;
+  nStartColdQua3?: number | null;
+  startColdHitRate3?: number | null;
+  nStartColdQua4?: number | null;
+  startColdHitRate4?: number | null;
+  nEndColdQua1?: number | null;
+  endColdHitRate1?: number | null;
+  nEndColdQua2?: number | null;
+  endColdHitRate2?: number | null;
+  nEndColdQua3?: number | null;
+  endColdHitRate3?: number | null;
+  nEndColdQua4?: number | null;
+  endColdHitRate4?: number | null;
+  nEndColdQua5?: number | null;
+  endColdHitRate5?: number | null;
+  cShiftGroup?: string | null;
+  dColdStartTime?: string | null;
+  dColdEndTime?: string | null;
+}
+
+/** 成材率查询入参（原 Dtos/InterInfoQuery/DtoTi1280Query.cs） */
+export interface DtoTi1280Query {
+  timeRange?: TimeRange | null;
+  /** 切边方式 */
+  cTrimFlag?: string | null;
+  /** 坯料件次号 */
+  cSlabNo?: string | null;
+  /** 成品件次号 */
+  cPieceNo?: string | null;
+}
+
+/** 成材率生产实绩（原 Dtos/InterInfoQuery/Ti1280Dto.cs） */
+export interface Ti1280Dto {
+  selected?: boolean;
+  cShiftNo?: string | null;
+  cShiftGroup?: string | null;
+  cOrderNo?: string | null;
+  cZpNo?: string | null;
+  cSgCode?: string | null;
+  cPieceNo?: string | null;
+  cSpec?: string | null;
+  nOrderThick?: number | null;
+  nOrderWidth?: number | null;
+  nOrderLen?: number | null;
+  cLengthType?: string | null;
+  nLenMin?: number | null;
+  nLenMax?: number | null;
+  cSlabNo?: string | null;
+  cSpecSlab?: string | null;
+  nThickSlab?: number | null;
+  nWidthSlab?: number | null;
+  nLenSlab?: number | null;
+  cTrimFlag?: string | null;
+  nSlabWgt?: number | null;
+  nPlateWgt?: number | null;
+  cPlateNo?: string | null;
+  /** 喷印时间 */
+  dPrint?: string | null;
+  createTime?: string | null;
+}
+
+/** 成材率明细/日班组成材率汇总（原 Dtos/InterInfoQuery/Ti1280DetailDto.cs） */
+export interface Ti1280DetailDto {
+  date?: string | null;
+  dayDateTime?: string | null;
+  cShiftGroup?: string | null;
+  nSlabQua1?: number | null;
+  nSlabWgt1?: number | null;
+  nSlabQua2?: number | null;
+  nSlabWgt2?: number | null;
+  nSlabQua0?: number | null;
+  nSlabWgt0?: number | null;
+  nSlabQuaAll?: number | null;
+  nSlabWgtAll?: number | null;
+  nQua1?: number | null;
+  nWgt1?: number | null;
+  nQua2?: number | null;
+  nWgt2?: number | null;
+  nQua0?: number | null;
+  nWgt0?: number | null;
+  nQuaAll?: number | null;
+  nWgtAll?: number | null;
+  nRate1?: number | null;
+  nRate2?: number | null;
+  nRate0?: number | null;
+  nRateAll?: number | null;
+}
+
+/** 坯料重量偏差（原 Dtos/InterInfoQuery/Ti1280WgtDetailDto.cs） */
+export interface Ti1280WgtDetailDto {
+  date?: string | null;
+  nQua?: number | null;
+  nLlWgt?: number | null;
+  nSjWgt?: number | null;
+  nTol?: number | null;
+  nDcQua?: number | null;
+  nDcLlWgt?: number | null;
+  nDcSjWgt?: number | null;
+  nDcTol?: number | null;
+  nDcBL?: number | null;
+  nFwcQua?: number | null;
+  nFwcLlWgt?: number | null;
+  nFwcSjWgt?: number | null;
+  nFwcTol?: number | null;
+  nFwcBL?: number | null;
+  nQtQua?: number | null;
+  nQtLlWgt?: number | null;
+  nQtSjWgt?: number | null;
+  nQtTol?: number | null;
+  nQtBL?: number | null;
+  nWgtOkQua?: number | null;
+  nWgtOkLlWgt?: number | null;
+  nWgtOkSjWgt?: number | null;
+  nWgtOkTol?: number | null;
+  nWgtOkBL?: number | null;
+}
+
+/** 坯料负差实绩（原 Dtos/InterInfoQuery/Ti1280FcDetailDto.cs） */
+export interface Ti1280FcDetailDto {
+  date?: string | null;
+  nSlabQua?: number | null;
+  nThickFcQua1?: number | null;
+  nThickFcBL1?: number | null;
+  nThickFcQua2?: number | null;
+  nThickFcBL2?: number | null;
+  nWidthFcQua1?: number | null;
+  nWidthFcBL1?: number | null;
+  nWidthFcQua2?: number | null;
+  nWidthFcBL2?: number | null;
+  nDcLenFcQua1?: number | null;
+  nDcLenFcBL1?: number | null;
+  nDcLenFcQua2?: number | null;
+  nDcLenFcBL2?: number | null;
+  nFwcLenFcQua1?: number | null;
+  nFwcLenFcBL1?: number | null;
+  nFwcLenFcQua2?: number | null;
+  nFwcLenFcBL2?: number | null;
+  nQua?: number | null;
+  nBL?: number | null;
+}
+
+/** 成材率日统计（原 Dtos/InterInfoQuery/Ti1280DayProductDto.cs） */
+export interface Ti1280DayProductDto {
+  cSgCode?: string | null;
+  nTpDayAll?: number | null;
+  nTpMonthAll?: number | null;
+  nTpBlAll?: number | null;
+  nTpDayA?: number | null;
+  nTpTotalA?: number | null;
+  nTpDayB?: number | null;
+  nTpTotalB?: number | null;
+  nTpDayC?: number | null;
+  nTpTotalC?: number | null;
+  nSlabDayAll?: number | null;
+  nSlabMonthAll?: number | null;
+  nSlabRateAll?: number | null;
+  nSlabDayA?: number | null;
+  nSlabTotalA?: number | null;
+  nSlabDayB?: number | null;
+  nSlabTotalB?: number | null;
+  nSlabDayC?: number | null;
+  nSlabTotalC?: number | null;
+  nYieldDayAll?: number | null;
+  nYieldMonthAll?: number | null;
+  nYieldRateAll?: number | null;
+  nYieldDayA?: number | null;
+  nYieldTotalA?: number | null;
+  nYieldDayB?: number | null;
+  nYieldTotalB?: number | null;
+  nYieldDayC?: number | null;
+  nYieldTotalC?: number | null;
+}
+
+/** 红送率汇总明细（原 Dtos/InterInfoQuery/Ti1290Dto.cs） */
+export interface Ti1290Dto {
+  cDateTime?: string | null;
+  nQuaAll?: number | null;
+  nQua1?: number | null;
+  hitRate1?: number | null;
+  nQua2?: number | null;
+  hitRate2?: number | null;
+  nQua3?: number | null;
+  hitRate3?: number | null;
+  nQua4?: number | null;
+  hitRate4?: number | null;
+  nQua5?: number | null;
+  hitRate5?: number | null;
+  nQua6?: number | null;
+  hitRate6?: number | null;
+}
+
+/** 产量指标查询入参（原 Dtos/WorkPiece/DtoQueryTdm1060.cs） */
+export interface DtoQueryTdm1060 {
+  /** 时间范围 */
+  timeRange?: TimeRange | null;
+  /** 状态 */
+  nStatus?: Tdm1060StatusEnum | null;
+}
+
+/** 产量指标实绩-目标产量维护（原 Entities/Thr3010PlanProduct.cs） */
+export interface Thr3010PlanProduct {
+  /** 主键 */
+  id?: string | null;
+  /** 创建人 */
+  creator?: string | null;
+  /** 创建时间 */
+  createTime?: string | null;
+  /** 最后修改人 */
+  lastModifier?: string | null;
+  /** 最后修改时间 */
+  lastModifyTime?: string | null;
+  /** 目标产量 */
+  nPlanProduct?: number | null;
+  /** 月份 */
+  dDateMonth?: string | null;
+  /** 总停机时间 */
+  dStopTime?: number | null;
+  /** 剪切线停机时间 */
+  dJqStopTime?: number | null;
+  /** 状态 */
+  nStatus?: Tdm1060StatusEnum;
+}
+export interface Thr3010PlanProductSaveChangesData {
+  addedItems?: Thr3010PlanProduct[] | null;
+  changedItems?: Thr3010PlanProduct[] | null;
+  deletedItems?: Thr3010PlanProduct[] | null;
+}
+
+/** 产量指标板坯完成率（原 Dtos/InterInfoQuery/Ti1300SlabDto.cs） */
+export interface Ti1300SlabDto {
+  date?: string | null;
+  nWorkTime?: number | null;
+  nPlanProduct?: number | null;
+  nSlabQua1?: number | null;
+  nSlabWgt1?: number | null;
+  nSlabQua2?: number | null;
+  nSlabWgt2?: number | null;
+  nSlabQua0?: number | null;
+  nSlabWgt0?: number | null;
+  nSlabQuaAll?: number | null;
+  nSlabWgtAll?: number | null;
+  nPlateQua1?: number | null;
+  nPlateWgt1?: number | null;
+  nPlateQua2?: number | null;
+  nPlateWgt2?: number | null;
+  nPlateQua0?: number | null;
+  nPlateWgt0?: number | null;
+  nPlateQuaAll?: number | null;
+  nPlateWgtAll?: number | null;
+  nRollQua?: number | null;
+  nRollWgt?: number | null;
+  nInHouseQua?: number | null;
+  nInHouseWgt?: number | null;
+  nRate?: number | null;
+}
+
+/** 产量指标剪切线作业率（原 Dtos/InterInfoQuery/Ti1300JQLineDto.cs） */
+export interface Ti1300JQLineDto {
+  date?: string | null;
+  nWorkTime?: number | null;
+  nPlanProduct?: number | null;
+  nOneQua1?: number | null;
+  nOneWgt1?: number | null;
+  nOneQua2?: number | null;
+  nOneWgt2?: number | null;
+  nOneQua0?: number | null;
+  nOneWgt0?: number | null;
+  nOneQuaAll?: number | null;
+  nOneWgtAll?: number | null;
+  nOneTimeQua?: number | null;
+  nOneTimeWgt?: number | null;
+  nTwoQua1?: number | null;
+  nTwoWgt1?: number | null;
+  nTwoQua2?: number | null;
+  nTwoWgt2?: number | null;
+  nTwoQua0?: number | null;
+  nTwoWgt0?: number | null;
+  nTwoQuaAll?: number | null;
+  nTwoWgtAll?: number | null;
+  nTwoTimeQua?: number | null;
+  nTwoTimeWgt?: number | null;
+  nQuaAll?: number | null;
+  nWgtAll?: number | null;
+  nTimeQua?: number | null;
+  nTimeWgt?: number | null;
+}
+
+export const tI1220Api = {
+  /** 获取宽度负差信息（原 QueryTi1220，FrmTI1220 btnQuery_Click） */
+  queryTi1220(data?: DtoTi1210Query) {
+    return requestClient.request<Thr3010Fcdetail[]>("/dDH.Service.SHR.Services.InterInfoQuery/tI1220/queryTi1220", {
+      method: "post",
+      data,
+    });
+  },
+  /** 查询宽度负差明细信息（原 QueryDetail，FrmTI1220 DataBind） */
+  queryDetail(data?: DtoTi1210Query) {
+    return requestClient.request<Ti1220Detail[]>("/dDH.Service.SHR.Services.InterInfoQuery/tI1220/queryDetail", {
+      method: "post",
+      data,
+    });
+  },
+  /** 宽度负差年汇总信息（原 QueryYearDetial，FrmTI1220 DataBind；C# 拼写 Detial 照原样保留） */
+  queryYearDetial(data?: TimeRange) {
+    return requestClient.request<Ti1220Detail[]>("/dDH.Service.SHR.Services.InterInfoQuery/tI1220/queryYearDetial", {
+      method: "post",
+      data,
+    });
+  },
+};
+
+export const tI1230Api = {
+  /** 获取长度负差信息（原 QueryTi1230，FrmTI1230 btnQuery_Click） */
+  queryTi1230(data?: DtoTi1210Query) {
+    return requestClient.request<Thr3010Fcdetail[]>("/dDH.Service.SHR.Services.InterInfoQuery/tI1230/queryTi1230", {
+      method: "post",
+      data,
+    });
+  },
+  /** 查询长度负差明细信息（原 QueryDetail，FrmTI1230 DataBind） */
+  queryDetail(data?: DtoTi1210Query) {
+    return requestClient.request<Ti1230Detail[]>("/dDH.Service.SHR.Services.InterInfoQuery/tI1230/queryDetail", {
+      method: "post",
+      data,
+    });
+  },
+  /** 长度负差年汇总信息（原 QueryYearDetial，FrmTI1230 DataBind；C# 拼写 Detial 照原样保留） */
+  queryYearDetial(data?: TimeRange) {
+    return requestClient.request<Ti1230Detail[]>("/dDH.Service.SHR.Services.InterInfoQuery/tI1230/queryYearDetial", {
+      method: "post",
+      data,
+    });
+  },
+};
+
+export const tI1240Api = {
+  /** 获取出炉温度负差信息（原 QueryTi1240，FrmTI1240 btnQuery_Click） */
+  queryTi1240(data?: DtoTi1210Query) {
+    return requestClient.request<Ti1240Dto[]>("/dDH.Service.SHR.Services.InterInfoQuery/tI1240/queryTi1240", {
+      method: "post",
+      data,
+    });
+  },
+  /** 查询出炉温度负差明细信息（原 QueryDetail，FrmTI1240 DataBind） */
+  queryDetail(data?: DtoTi1210Query) {
+    return requestClient.request<Ti1240DetailDto[]>("/dDH.Service.SHR.Services.InterInfoQuery/tI1240/queryDetail", {
+      method: "post",
+      data,
+    });
+  },
+  /** 出炉温度负差年汇总信息（原 QueryYearDetial，FrmTI1240 DataBind；C# 拼写 Detial 照原样保留） */
+  queryYearDetial(data?: TimeRange) {
+    return requestClient.request<Ti1240DetailDto[]>("/dDH.Service.SHR.Services.InterInfoQuery/tI1240/queryYearDetial", {
+      method: "post",
+      data,
+    });
+  },
+};
+
+export const tI1250Api = {
+  /** 获取开轧温度负差信息（原 QueryTi1250，FrmTI1250 btnQuery_Click） */
+  queryTi1250(data?: DtoTi1210Query) {
+    return requestClient.request<Thr3010Fcdetail[]>("/dDH.Service.SHR.Services.InterInfoQuery/tI1250/queryTi1250", {
+      method: "post",
+      data,
+    });
+  },
+  /** 查询开轧温度负差明细信息（原 QueryDetail，FrmTI1250 DataBind） */
+  queryDetail(data?: DtoTi1210Query) {
+    return requestClient.request<Ti1250DetailDto[]>("/dDH.Service.SHR.Services.InterInfoQuery/tI1250/queryDetail", {
+      method: "post",
+      data,
+    });
+  },
+  /** 开轧温度负差年汇总信息（原 QueryYearDetial，FrmTI1250 DataBind；C# 拼写 Detial 照原样保留） */
+  queryYearDetial(data?: TimeRange) {
+    return requestClient.request<Ti1250DetailDto[]>("/dDH.Service.SHR.Services.InterInfoQuery/tI1250/queryYearDetial", {
+      method: "post",
+      data,
+    });
+  },
+};
+
+export const tI1260Api = {
+  /** 获取ACC温度实绩负差信息（原 QueryTi1260，FrmTI1260 btnQuery_Click） */
+  queryTi1260(data?: DtoTi1210Query) {
+    return requestClient.request<Thr3010Fcdetail[]>("/dDH.Service.SHR.Services.InterInfoQuery/tI1260/queryTi1260", {
+      method: "post",
+      data,
+    });
+  },
+  /** 查询ACC温度实绩负差明细信息（原 QueryDetail，FrmTI1260 DataBind） */
+  queryDetail(data?: DtoTi1210Query) {
+    return requestClient.request<Ti1260DetailDto[]>("/dDH.Service.SHR.Services.InterInfoQuery/tI1260/queryDetail", {
+      method: "post",
+      data,
+    });
+  },
+  /** ACC温度实绩负差年汇总信息（原 QueryYearDetial，FrmTI1260 DataBind；C# 拼写 Detial 照原样保留） */
+  queryYearDetial(data?: TimeRange) {
+    return requestClient.request<Ti1260DetailDto[]>("/dDH.Service.SHR.Services.InterInfoQuery/tI1260/queryYearDetial", {
+      method: "post",
+      data,
+    });
+  },
+};
+
+export const tI1280Api = {
+  /** 查询生产实绩列表（原 GetTi1280s，FrmTI1280 DataBind） */
+  getTi1280s(data?: DtoTi1280Query) {
+    return requestClient.request<Ti1280Dto[]>("/dDH.Service.SHR.Services.InterInfoQuery/tI1280/getTi1280s", {
+      method: "post",
+      data,
+    });
+  },
+  /** 查询成材率（原 Get1280Details，FrmTI1280 TabDataBind；服务段/方法名以数字开头照 C# 原样） */
+  get1280Details(data?: DtoTi1280Query) {
+    return requestClient.request<Ti1280DetailDto[]>("/dDH.Service.SHR.Services.InterInfoQuery/tI1280/get1280Details", {
+      method: "post",
+      data,
+    });
+  },
+  /** 查询成材率日统计信息（原 GetTi1280DayProductDtos，FrmTI1280 TabDataBind） */
+  getTi1280DayProductDtos(data?: DtoTi1280Query) {
+    return requestClient.request<Ti1280DayProductDto[]>(
+      "/dDH.Service.SHR.Services.InterInfoQuery/tI1280/getTi1280DayProductDtos",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+  /** 查询坯料重量偏差（原 GetTi1280WgtDetails，FrmTI1280 TabDataBind） */
+  getTi1280WgtDetails(data?: DtoTi1280Query) {
+    return requestClient.request<Ti1280WgtDetailDto[]>(
+      "/dDH.Service.SHR.Services.InterInfoQuery/tI1280/getTi1280WgtDetails",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+  /** 查询坯料负差实绩信息（原 GetTi1280FcDetails，FrmTI1280 TabDataBind） */
+  getTi1280FcDetails(data?: DtoTi1280Query) {
+    return requestClient.request<Ti1280FcDetailDto[]>(
+      "/dDH.Service.SHR.Services.InterInfoQuery/tI1280/getTi1280FcDetails",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+  /** 查询日班组成材率汇总信息（原 Get1280DayGroupDetails，FrmTI1280 TabDataBind；数字开头照 C# 原样） */
+  get1280DayGroupDetails(data?: DtoTi1280Query) {
+    return requestClient.request<Ti1280DetailDto[]>(
+      "/dDH.Service.SHR.Services.InterInfoQuery/tI1280/get1280DayGroupDetails",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+};
+
+export const tI1290Api = {
+  /** 获取板坯入炉温度信息（原 GetThr3010Fcdetails，FrmTI1290 DataBind） */
+  getThr3010Fcdetails(data?: DtoTi1210Query) {
+    return requestClient.request<Thr3010Fcdetail[]>(
+      "/dDH.Service.SHR.Services.InterInfoQuery/tI1290/getThr3010Fcdetails",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+  /** 获取红送率汇总明细（原 GetTi1290Dtos，FrmTI1290 Ti1290Bind） */
+  getTi1290Dtos(data?: DtoTi1210Query) {
+    return requestClient.request<Ti1290Dto[]>("/dDH.Service.SHR.Services.InterInfoQuery/tI1290/getTi1290Dtos", {
+      method: "post",
+      data,
+    });
+  },
+};
+
+export const tI1300Api = {
+  /** 获取目标产量信息（原 GetThr3010PlanProducts，FrmTI1300 DataBind） */
+  getThr3010PlanProducts(data?: DtoQueryTdm1060) {
+    return requestClient.request<Thr3010PlanProduct[]>(
+      "/dDH.Service.SHR.Services.InterInfoQuery/tI1300/getThr3010PlanProducts",
+      {
+        method: "post",
+        data,
+      },
+    );
+  },
+  /** 添加目标产量信息（原 AddPlanProduct，FrmTI1300 btnAdd_Click） */
+  addPlanProduct(data?: Thr3010PlanProduct) {
+    return requestClient.request<any>("/dDH.Service.SHR.Services.InterInfoQuery/tI1300/addPlanProduct", {
+      method: "post",
+      data,
+    });
+  },
+  /** 保存目标产量信息修改数据（原 SaveChanges(SaveChangesData<Thr3010PlanProduct>)，FrmTI1300 btnSave_Click） */
+  saveChanges(data?: Thr3010PlanProductSaveChangesData) {
+    return requestClient.request<any>("/dDH.Service.SHR.Services.InterInfoQuery/tI1300/saveChanges", {
+      method: "post",
+      data,
+    });
+  },
+  /** 启用/禁用当前数据（原 UpdataNStatus，FrmTI1300 btnOpen/btnClose_Click；C# 拼写 Updata 照原样保留） */
+  updataNStatus(cId?: string, flag?: boolean) {
+    return requestClient.request<any>("/dDH.Service.SHR.Services.InterInfoQuery/tI1300/updataNStatus", {
+      method: "post",
+      params: { cId, flag },
+    });
+  },
+  /** 同步停机时间信息（原 SyncStopTime，FrmTI1300 btnSync_Click） */
+  syncStopTime(data?: TimeRange) {
+    return requestClient.request<any>("/dDH.Service.SHR.Services.InterInfoQuery/tI1300/syncStopTime", {
+      method: "post",
+      data,
+    });
+  },
+  /** 获取产量指标板坯完成率信息（原 GetTi1300Slabs，FrmTI1300 HzDataBind） */
+  getTi1300Slabs(data?: TimeRange) {
+    return requestClient.request<Ti1300SlabDto[]>("/dDH.Service.SHR.Services.InterInfoQuery/tI1300/getTi1300Slabs", {
+      method: "post",
+      data,
+    });
+  },
+  /** 获取产量指标剪切线详情（原 GetTi1300JQs，FrmTI1300 HzDataBind） */
+  getTi1300JQs(data?: TimeRange) {
+    return requestClient.request<Ti1300JQLineDto[]>("/dDH.Service.SHR.Services.InterInfoQuery/tI1300/getTi1300JQs", {
+      method: "post",
+      data,
+    });
+  },
+};
+
+/* ---------- 台账补漏批次（HR3600 补方法见原对象；HR3610/HRPrint/HRSamp/DA0149/DM1050~1070 新建） ---------- */
+
+/** 缓冷台账汇总（原 Dtos/HR4510HzDto.cs，FrmHR4510/HR4520） */
+export interface HR4510HzDto {
+  /** 日期 */
+  date?: string | null;
+  /** 班组 */
+  shiftGroup?: string | null;
+  /** 总堆冷数量 */
+  nAllDlQua?: number | null;
+  /** 总堆冷重量 */
+  nAllDlWgt?: number | null;
+  /** 堆冷坑支数 */
+  nSlabDlQua?: number | null;
+  /** 堆冷坑重量 */
+  nSlabDlWgt?: number | null;
+  /** 堆冷坑到期数量 */
+  nSlabDlFinishQua?: number | null;
+  /** 堆冷坑到期重量 */
+  nSlabDlFinishWgt?: number | null;
+  /** 堆冷坑未到期数量 */
+  nSlabDlNotQua?: number | null;
+  /** 堆冷坑未到期重量 */
+  nSlabDlNotWgt?: number | null;
+  /** 堆冷坑去火切数量 */
+  nSlabDlHqQua?: number | null;
+  /** 堆冷坑去火切重量 */
+  nSlabDlHqWgt?: number | null;
+  /** 成品库到期数量 */
+  nCpDlFinishQua?: number | null;
+  /** 成品库到期重量 */
+  nCpDlFinishWgt?: number | null;
+  /** 成品库未到期数量 */
+  nCpDlNotQua?: number | null;
+  /** 成品库未到期重量 */
+  nCpDlNotWgt?: number | null;
+  /** 火切支数 */
+  nQuaHq?: number | null;
+  /** 火切重量 */
+  nWgtHq?: number | null;
+  /** 剪切支数 */
+  nQuaJq?: number | null;
+  /** 剪切重量 */
+  nWgtJq?: number | null;
+  /** 待入库支数 */
+  nQuaDrk?: number | null;
+  /** 待入库重量 */
+  nWgtDrk?: number | null;
+}
+
+/** 堆冷操作汇总（原 Dtos/DlGroupDto.cs，FrmHR3620） */
+export interface DlGroupDto {
+  /** 日期 */
+  date?: string | null;
+  /** 班组 */
+  shiftGroup?: string | null;
+  /** 开始堆冷数量 */
+  nQuaS?: number | null;
+  /** 开始堆冷重量 */
+  nWgtS?: number | null;
+  /** 结束堆冷数量 */
+  nQuaEnd?: number | null;
+  /** 结束堆冷重量 */
+  nWgtEnd?: number | null;
+  /** 堆冷倒垛块数 */
+  nQuaDd?: number | null;
+  /** 堆冷倒垛重量 */
+  nWgtDd?: number | null;
+  /** 转运块数 */
+  nQuaZy?: number | null;
+  /** 转运重量 */
+  nWgtZy?: number | null;
+  /** 接收块数 */
+  nQuaJs?: number | null;
+  /** 接收重量 */
+  nWgtJs?: number | null;
+}
+
+/** 查询打印日志入参（原 Dtos/QueryPrintDto.cs，FrmHRPrint） */
+export interface QueryPrintDto {
+  /** 件次号 */
+  cPieceNo?: string | null;
+  /** 时间范围 */
+  timeRange?: TimeRange | null;
+}
+
+/** 10KV电力系统数据（原 Dtos/TdaZb149Dto.cs，FrmTdaZb149） */
+export interface TdaZb149Dto {
+  /** 日期 */
+  date?: string | null;
+  /** 时间段 */
+  timeRange?: string | null;
+  /** 轧机10kV电气室Ⅰ段电源进线 */
+  n10Ec001?: number | null;
+  /** 轧机10kV电气室水系统、冷床、矫直1#馈线 */
+  n10Ec002?: number | null;
+  /** 轧机10kV电气室2#双边剪辊道变压器 */
+  n10Ec003?: number | null;
+  /** 轧机10kV电气室1#双边剪辊道变压器 */
+  n10Ec004?: number | null;
+  /** 轧机10kV电气室精轧后辊道变压器 */
+  n10Ec005?: number | null;
+  /** 轧机10kV电气室粗轧压下变压器 */
+  n10Ec006?: number | null;
+  /** 轧机10kV电气室RM励磁变压器 */
+  n10Ec007?: number | null;
+  /** 轧机10kV电气室预矫直变压器 */
+  n10Ec008?: number | null;
+  /** 轧机10kV电气室FM励磁变压器 */
+  n10Ec009?: number | null;
+  /** 轧机10kV电气室精轧运输辊道变压器 */
+  n10Ec010?: number | null;
+  /** 轧机10kV电气室2#煤烟引风机 */
+  n10Ec011?: number | null;
+  /** 轧机10kV电气室2#鼓风机 */
+  n10Ec012?: number | null;
+  /** 轧机10kV电气室3#鼓风机 */
+  n10Ec013?: number | null;
+  /** 轧机10kV电气室2#空烟引风机 */
+  n10Ec014?: number | null;
+  /** 轧机10kV电气室2#提升自吸泵 */
+  n10Ec015?: number | null;
+  /** 轧机10kV电气室2#冲渣自吸泵 */
+  n10Ec016?: number | null;
+  /** 轧机10kV电气室粗精轧除尘风机 */
+  n10Ec017?: number | null;
+  /** 轧机10kV电气室脱硫风机系统 */
+  n10Ec018?: number | null;
+  /** 轧机10kV电气室炉区2#馈线 */
+  n10Ec019?: number | null;
+  /** 轧机10kV电气室2#SVG */
+  n10Ec020?: number | null;
+  /** 轧机10kV电气室2#5次滤波通道 */
+  n10Ec021?: number | null;
+  /** 轧机10kV电气室2#7次滤波通道 */
+  n10Ec022?: number | null;
+  /** 轧机10kV电气室2#11次滤波通道 */
+  n10Ec023?: number | null;
+  /** 轧机10kV电气室Ⅱ段备用1 */
+  n10Ec024?: number | null;
+  /** 轧机10kV电气室Ⅱ段备用2 */
+  n10Ec025?: number | null;
+  /** 轧机10kV电气室#2接地变压器 */
+  n10Ec026?: number | null;
+  /** 轧机10kV电气室粗精轧1#干式动力变压器 */
+  n10Ec027?: number | null;
+  /** 轧机10kV电气室粗精轧3#干式动力变压器 */
+  n10Ec028?: number | null;
+  /** 轧机10kV电气室精轧前辊道变压器 */
+  n10Ec029?: number | null;
+  /** 轧机10kV电气室粗轧前辊道变压器 */
+  n10Ec030?: number | null;
+  /** 轧机10kV电气室粗轧后辊道变压器 */
+  n10Ec031?: number | null;
+  /** 轧机10kV电气室1#煤烟引风机 */
+  n10Ec032?: number | null;
+  /** 轧机10kV电气室1#鼓风机 */
+  n10Ec033?: number | null;
+  /** 轧机10kV电气室1#空烟引风机 */
+  n10Ec034?: number | null;
+  /** 轧机10kV电气室1#提升自吸泵 */
+  n10Ec035?: number | null;
+  /** 轧机10kV电气室3#提升自吸泵 */
+  n10Ec036?: number | null;
+  /** 轧机10kV电气室1#冲渣自吸泵 */
+  n10Ec037?: number | null;
+  /** 轧机10kV电气室高压水除磷泵系统 */
+  n10Ec038?: number | null;
+  /** 轧机10kV电气室炉区1#馈线 */
+  n10Ec039?: number | null;
+  /** 轧机10kV电气室1#SVG */
+  n10Ec040?: number | null;
+  /** 轧机10kV电气室1#5次滤波通道 */
+  n10Ec041?: number | null;
+  /** 轧机10kV电气室1#7次滤波通道 */
+  n10Ec042?: number | null;
+  /** 轧机10kV电气室1#11次滤波通道 */
+  n10Ec043?: number | null;
+  /** 轧机10kV电气室Ⅰ段备用1 */
+  n10Ec044?: number | null;
+  /** 轧机10kV电气室Ⅰ段备用2 */
+  n10Ec045?: number | null;
+  /** 轧机10kV电气室#1接地变压器 */
+  n10Ec046?: number | null;
+  /** 轧机10kV电气室分段 */
+  n10Ec047?: number | null;
+  /** 轧机10kV电气室Ⅱ段电源进线 */
+  n10Ec048?: number | null;
+  /** 轧机10kV电气室水系统、冷床、矫直2#馈线 */
+  n10Ec049?: number | null;
+  /** 轧机10kV电气室1#双边剪变压器 */
+  n10Ec050?: number | null;
+  /** 轧机10kV电气室2#双边剪变压器 */
+  n10Ec051?: number | null;
+  /** 轧机10kV电气室双边剪干式动力变压器 */
+  n10Ec052?: number | null;
+  /** 轧机10kV电气室切头剪变压器 */
+  n10Ec053?: number | null;
+  /** 轧机10kV电气室粗精轧2#干式动力变压器 */
+  n10Ec054?: number | null;
+  /** 轧机10kV电气室粗精轧4#干式动力变压器 */
+  n10Ec055?: number | null;
+  /** 轧机10kV电气室精轧压下变压器 */
+  n10Ec056?: number | null;
+  /** 一段电度表 */
+  n10Ec057?: number | null;
+  /** 二段电度表 */
+  n10Ec058?: number | null;
+  /** 水系统10kV电气室Ⅰ段电源进线 */
+  n10Ec059?: number | null;
+  /** 水系统10kV电气室1# */
+  n10Ec060?: number | null;
+  /** 水系统10kV电气室2# */
+  n10Ec061?: number | null;
+  /** 水系统10kV电气室热矫辊道变压器 */
+  n10Ec062?: number | null;
+  /** 水系统10kV电气室热矫直整流变压器 */
+  n10Ec063?: number | null;
+  /** 水系统10kV电气室冷床1#干式动力变压器 */
+  n10Ec064?: number | null;
+  /** 水系统10kV电气室冷床3#干式动力变压器 */
+  n10Ec065?: number | null;
+  /** 水系统10kV电气室水系统1#动力变压器 */
+  n10Ec066?: number | null;
+  /** 水系统10kV电气室1#超快冷低压供水自吸泵 */
+  n10Ec067?: number | null;
+  /** 水系统10kV电气室1#超快冷侧喷供水自吸泵 */
+  n10Ec068?: number | null;
+  /** 水系统10kV电气室1#超快冷中压供水自吸泵 */
+  n10Ec069?: number | null;
+  /** 水系统10kV电气室3#超快冷中压供水自吸泵 */
+  n10Ec070?: number | null;
+  /** 水系统10kV电气室1#超快冷过滤供水自吸泵 */
+  n10Ec071?: number | null;
+  /** 水系统10kV电气室1#超快冷冷却塔供水自吸泵 */
+  n10Ec072?: number | null;
+  /** 水系统10kV电气室1#轧机净环离心泵 */
+  n10Ec073?: number | null;
+  /** 水系统10kV电气室1#高压浊环离心泵 */
+  n10Ec074?: number | null;
+  /** 水系统10kV电气室1#低压浊环离心泵 */
+  n10Ec075?: number | null;
+  /** 水系统10kV电气室1#浊环上塔供水泵 */
+  n10Ec076?: number | null;
+  /** 水系统10kV电气室Ⅰ段备用1 */
+  n10Ec077?: number | null;
+  /** 水系统10kV电气室Ⅰ段备用2 */
+  n10Ec078?: number | null;
+  /** 水系统10kV电气室分段 */
+  n10Ec079?: number | null;
+  /** 水系统10kV电气室Ⅱ段电源进线 */
+  n10Ec080?: number | null;
+  /** 水系统10kV电气室3# */
+  n10Ec081?: number | null;
+  /** 水系统10kV电气室冷床2#干式动力变压器 */
+  n10Ec082?: number | null;
+  /** 水系统10kV电气室水系统2#动力变压器 */
+  n10Ec083?: number | null;
+  /** 水系统10kV电气室2#超快冷低压供水自吸泵 */
+  n10Ec084?: number | null;
+  /** 水系统10kV电气室2#超快冷侧喷供水自吸泵 */
+  n10Ec085?: number | null;
+  /** 水系统10kV电气室2#超快冷中压供水自吸泵 */
+  n10Ec086?: number | null;
+  /** 水系统10kV电气室2#超快冷过滤供水自吸泵 */
+  n10Ec087?: number | null;
+  /** 水系统10kV电气室3#超快冷过滤供水自吸泵 */
+  n10Ec088?: number | null;
+  /** 水系统10kV电气室2#超快冷冷却塔供水自吸泵 */
+  n10Ec089?: number | null;
+  /** 水系统10kV电气室3#超快冷冷却塔供水自吸泵 */
+  n10Ec090?: number | null;
+  /** 水系统10kV电气室2#轧机净环离心泵 */
+  n10Ec091?: number | null;
+  /** 水系统10kV电气室2#高压浊环离心泵 */
+  n10Ec092?: number | null;
+  /** 水系统10kV电气室2#低压浊环离心泵 */
+  n10Ec093?: number | null;
+  /** 水系统10kV电气室3#低压浊环离心泵 */
+  n10Ec094?: number | null;
+  /** 水系统10kV电气室2#浊环上塔供水泵 */
+  n10Ec095?: number | null;
+  /** 水系统10kV电气室3#浊环上塔供水泵 */
+  n10Ec096?: number | null;
+  /** 水系统10kV电气室预留变压器 */
+  n10Ec097?: number | null;
+  /** 水系统10kV电气室Ⅱ段备用1 */
+  n10Ec098?: number | null;
+  /** 水系统10kV电气室Ⅱ段备用2 */
+  n10Ec099?: number | null;
+  /** 电度表一段 */
+  n10Ec100?: number | null;
+  /** 电度表二段 */
+  n10Ec101?: number | null;
+  /** 炉区10kV电气室Ⅰ段备用 */
+  n10Ec102?: number | null;
+  /** 炉区10kV电气室分段 */
+  n10Ec103?: number | null;
+  /** 炉区10kV电气室Ⅱ段电源进线 */
+  n10Ec104?: number | null;
+  /** 炉区10kV电气室1#定尺剪辊道变压器 */
+  n10Ec105?: number | null;
+  /** 炉区10kV电气室2#定尺剪辊道变压器 */
+  n10Ec106?: number | null;
+  /** 炉区10kV电气室检查台辊道变压器 */
+  n10Ec107?: number | null;
+  /** 炉区10kV电气室加热炉2#干式动力变压器 */
+  n10Ec108?: number | null;
+  /** 炉区10kV电气室加热炉4#干式动力变压器 */
+  n10Ec109?: number | null;
+  /** 炉区10kV电气室Ⅱ段备用 */
+  n10Ec110?: number | null;
+  /** 炉区10kV电气室Ⅰ段电源进线 */
+  n10Ec111?: number | null;
+  /** 炉区10kV电气室入炉辊道变压器 */
+  n10Ec112?: number | null;
+  /** 炉区10kV电气室出炉辊道变压器 */
+  n10Ec113?: number | null;
+  /** 炉区10kV电气室1#定尺剪变压器 */
+  n10Ec114?: number | null;
+  /** 炉区10kV电气室2#定尺剪变压器 */
+  n10Ec115?: number | null;
+  /** 炉区10kV电气室加热炉1#干式动力变压器 */
+  n10Ec116?: number | null;
+  /** 炉区10kV电气室加热炉3#干式动力变压器 */
+  n10Ec117?: number | null;
+  /** 一段电度表 */
+  n10Ec118?: number | null;
+  /** 二段电度表 */
+  n10Ec119?: number | null;
+}
+
+/** 停机维护查询入参（原 Dtos/DtoQueryTdm1050.cs，FrmDM1050） */
+export interface DtoQueryTdm1050 {
+  /** 时间范围 */
+  timeRange?: TimeRange | null;
+  /** 停机类型 */
+  typeEnum?: Tdm1050TypeEnum | null;
+  /** 停机时间 */
+  stopTime?: number | null;
+}
+
+/** 停机维护汇总（原 Dtos/WorkPiece/Tdm1050Dto.cs，FrmDM1050 HzDataBind） */
+export interface Tdm1050Dto {
+  /** 日期 */
+  cDateTime?: string | null;
+  /** 总时间 */
+  nAllTime?: number;
+  /** 检修时间 */
+  nRepairTime?: number | null;
+  /** 1#剪切线换剪刃时间 */
+  nChangeSlTime1?: number | null;
+  /** 2#剪切线换剪刃时间 */
+  nChangeSlTime2?: number | null;
+  /** 工艺停机时间 */
+  nCraftStopTime?: number | null;
+  /** 故障时间 */
+  nGzTime?: number | null;
+  /** 外部停机时间 */
+  nOutStopTime?: number | null;
+  /** 总停机时间 */
+  nAllStopTime?: number | null;
+  /** 作业时间 */
+  nWorkTime?: number | null;
+  /** 设备可开工率 */
+  nStartWorkRate?: number | null;
+  /** 设备作业率 */
+  nWorkRate?: number | null;
+}
+
+/** 能耗消耗信息（原 Dtos/WorkPiece/Tdm1060Dto.cs，FrmDM1060 HzDataBind） */
+export interface Tdm1060Dto {
+  /** 月份 */
+  dMonth?: string | null;
+  /** 煤气入库量 */
+  nGasNum?: number | null;
+  /** 煤气用量 */
+  nGasUseNum?: number | null;
+  /** 煤气单价 */
+  nGasPrice?: number | null;
+  /** 煤气单耗 */
+  nGasSingleNum?: number | null;
+  /** 煤气金额 */
+  nGasAmount?: number | null;
+  /** 用电入库量 */
+  nElecNum?: number | null;
+  /** 用电用量 */
+  nElecUseNum?: number | null;
+  /** 用电单价 */
+  nElecPrice?: number | null;
+  /** 用电单耗 */
+  nElecSingleNum?: number | null;
+  /** 用电金额 */
+  nElecAmount?: number | null;
+  /** 新水入库量 */
+  nWaterNum?: number | null;
+  /** 新水用量 */
+  nWaterUseNum?: number | null;
+  /** 新水单价 */
+  nWaterPrice?: number | null;
+  /** 新水单耗 */
+  nWaterSingleNum?: number | null;
+  /** 新水金额 */
+  nWaterAmount?: number | null;
+  /** 压空入库量 */
+  nAirNum?: number | null;
+  /** 压空用量 */
+  nAirUseNum?: number | null;
+  /** 压空单价 */
+  nAirPrice?: number | null;
+  /** 压空单耗 */
+  nAirSingleNum?: number | null;
+  /** 压空金额 */
+  nAirAmount?: number | null;
+  /** 氧气入库量 */
+  nO2Num?: number | null;
+  /** 氧气用量 */
+  nO2UseNum?: number | null;
+  /** 氧气单价 */
+  nO2Price?: number | null;
+  /** 氧气单耗 */
+  nO2SingleNum?: number | null;
+  /** 氧气金额 */
+  nO2Amount?: number | null;
+  /** 氮气入库量 */
+  nN2Num?: number | null;
+  /** 氮气用量 */
+  nN2UseNum?: number | null;
+  /** 氮气单价 */
+  nN2Price?: number | null;
+  /** 氮气单耗 */
+  nN2SingleNum?: number | null;
+  /** 氮气金额 */
+  nN2Amount?: number | null;
+  /** 累计 */
+  nAllPrice?: number | null;
+}
+
+/** 缓冷工艺（原 Entities/Thr3010HlGy.cs，FrmHR3610） */
+export interface Thr3010HlGy {
+  /** 主键 */
+  id?: string | null;
+  /** 创建人 */
+  creator?: string | null;
+  /** 创建时间 */
+  createTime?: string | null;
+  /** 最后修改人 */
+  lastModifier?: string | null;
+  /** 最后修改时间 */
+  lastModifyTime?: string | null;
+  /** 钢种系列 */
+  cSgCodeType?: string | null;
+  /** 钢种 */
+  cSgCode?: string | null;
+  /** 厚度最小值 */
+  nThickMin?: number | null;
+  /** 厚度区间 */
+  nThickSwitch?: EqualsFlag | null;
+  /** 厚度最大值 */
+  nThickMax?: number | null;
+  /** 下冷床温度最小值 */
+  nDownTempMin?: number | null;
+  /** 下冷床温度区间 */
+  nDownTempSwitch?: EqualsFlag | null;
+  /** 下冷床温度最大值 */
+  nDownTempMax?: number | null;
+  /** 堆冷时间目标值 */
+  nHlHourPlan?: number | null;
+  /** 堆冷时间最小值 */
+  nHlHourMin?: number | null;
+  /** 堆冷时间区间 */
+  nHlHourSwitch?: EqualsFlag | null;
+  /** 堆冷时间最大值 */
+  nHlHourMax?: number | null;
+}
+
+/** 打印日志（原 Entities/ThrPrint.cs，FrmHRPrint） */
+export interface ThrPrint {
+  /** 主键 */
+  id?: string | null;
+  /** 创建人 */
+  creator?: string | null;
+  /** 创建时间 */
+  createTime?: string | null;
+  /** 最后修改人 */
+  lastModifier?: string | null;
+  /** 最后修改时间 */
+  lastModifyTime?: string | null;
+  /** 产线代码 */
+  cLineCode?: string | null;
+  /** 件次号 */
+  cPieceNo?: string | null;
+  /** 钢种 */
+  cSgCode?: string | null;
+  /** 执行标准 */
+  cSgStd?: string | null;
+  /** 规格 */
+  cSpec?: string | null;
+  /** 切边方式 */
+  cTrimFlag?: string | null;
+  /** 入库标识 */
+  cInboundNo?: string | null;
+  /** 手动打印 */
+  cType?: string | null;
+  /** 打印模板 */
+  cPrintCode?: string | null;
+}
+
+/** 试坯打印记录（原 Entities/ThrSamp.cs，FrmHRSamp） */
+export interface ThrSamp {
+  /** 主键 */
+  id?: string | null;
+  /** 创建人 */
+  creator?: string | null;
+  /** 创建时间 */
+  createTime?: string | null;
+  /** 最后修改人 */
+  lastModifier?: string | null;
+  /** 最后修改时间 */
+  lastModifyTime?: string | null;
+  /** 批号 */
+  cBatchNo?: string | null;
+  /** 钢种 */
+  cSgCode?: string | null;
+  /** 炉号 */
+  cStove?: string | null;
+  /** 厚度 */
+  nThick?: number;
+}
+
+/** 停机维护记录（原 Entities/WorkPiece/Tdm1050.cs，FrmDM1050） */
+export interface Tdm1050 {
+  /** 主键 */
+  id?: string | null;
+  /** 创建人 */
+  creator?: string | null;
+  /** 创建时间 */
+  createTime?: string | null;
+  /** 最后修改人 */
+  lastModifier?: string | null;
+  /** 最后修改时间 */
+  lastModifyTime?: string | null;
+  /** 停机时间 */
+  nStopTime?: number | null;
+  /** 停机类型 */
+  nStopType?: Tdm1050TypeEnum;
+}
+
+/** 能耗单价信息（原 Entities/WorkPiece/Tdm1060.cs，FrmDM1060） */
+export interface Tdm1060 {
+  /** 主键 */
+  id?: string | null;
+  /** 创建人 */
+  creator?: string | null;
+  /** 创建时间 */
+  createTime?: string | null;
+  /** 最后修改人 */
+  lastModifier?: string | null;
+  /** 最后修改时间 */
+  lastModifyTime?: string | null;
+  /** 月份 */
+  dMonth?: string | null;
+  /** 煤气入库量 */
+  nGasNum?: number | null;
+  /** 煤气单价 */
+  nGasPrice?: number | null;
+  /** 用电入库量 */
+  nElecNum?: number | null;
+  /** 用电单价 */
+  nElecPrice?: number | null;
+  /** 新水入库量 */
+  nWaterNum?: number | null;
+  /** 新水单价 */
+  nWaterPrice?: number | null;
+  /** 压空入库量 */
+  nAirNum?: number | null;
+  /** 压空单价 */
+  nAirPrice?: number | null;
+  /** 氧气入库量 */
+  nO2Num?: number | null;
+  /** 氧气单价 */
+  nO2Price?: number | null;
+  /** 氮气入库量 */
+  nN2Num?: number | null;
+  /** 氮气单价 */
+  nN2Price?: number | null;
+  /** 状态 */
+  nStatus?: Tdm1060StatusEnum | null;
+}
+
+/** 油品备件（原 Entities/WorkPiece/Tdm1070.cs，FrmDM1070） */
+export interface Tdm1070 {
+  /** 主键 */
+  id?: string | null;
+  /** 创建人 */
+  creator?: string | null;
+  /** 创建时间 */
+  createTime?: string | null;
+  /** 最后修改人 */
+  lastModifier?: string | null;
+  /** 最后修改时间 */
+  lastModifyTime?: string | null;
+  /** 月份日期 */
+  dMonth?: string | null;
+  /** 油品入库量 */
+  nInBound?: number | null;
+  /** 油品前库存 */
+  nBeforeInventory?: number | null;
+  /** 油品本月领取 */
+  nReceive?: number | null;
+  /** 油品月底库存 */
+  nAfterInventory?: number | null;
+  /** 油品实际消耗 */
+  nSjUse?: number | null;
+  /** 油品单耗 */
+  nUse?: number | null;
+  /** 油品金额 */
+  nAmount?: number | null;
+  /** 工作辊消耗量 */
+  nWrollerUseAll?: number | null;
+  /** 工作辊单耗 */
+  nWrollerUse?: number | null;
+  /** 工作辊金额 */
+  nWrollerAmount?: number | null;
+  /** 支撑辊消耗量 */
+  nBrollerUseAll?: number | null;
+  /** 支撑辊单耗 */
+  nBrollerUse?: number | null;
+  /** 支撑辊金额 */
+  nBrollerAmount?: number | null;
+  /** 轧辊累计单耗 */
+  nRollerUse?: number | null;
+  /** 轧辊累计金额 */
+  nRollerAmount?: number | null;
+  /** 备件领取金额 */
+  nSpareReceiveAmount?: number | null;
+  /** 备件单耗 */
+  nSpareUse?: number | null;
+}
+
+/** 垛位类型（原 DDH.Service/SYD/Enums/InventoryStatusEnum.cs；SYD 域暂无对应 swagger 文件，随使用方 SetStackDto 落本文件） */
+export enum StackTypeEnum {
+  /** 真实垛位 */
+  Normal = 0,
+  /** 虚拟垛位 */
+  XL = 10,
+  /** 缓冷坑 */
+  HL = 20,
+  /** 成品堆冷 */
+  DLDW = 21,
+  /** 火切垛位 */
+  HQ = 30,
+}
+
+/** 停机类型（原 SHR/Enums/Tdm1050TypeEnum.cs，FrmDM1050） */
+export enum Tdm1050TypeEnum {
+  /** 检修 */
+  Repair = 0,
+  /** 1#剪切线换剪刃 */
+  ChangeSl1 = 1,
+  /** 2#剪切线换剪刃 */
+  ChangeSl2 = 2,
+  /** 工艺停机 */
+  CraftStop = 3,
+  /** 故障 */
+  Gz = 4,
+  /** 外部停机 */
+  OutStop = 5,
+}
+
+/** 指定堆冷默认垛位入参（原 Services/IHR3600AppService.cs 内 SetStackDto，FrmHR3600 btnSet_Click） */
+export interface SetStackDto {
+  /** 库区 */
+  cStoreCode?: string | null;
+  /** 垛位类型 */
+  cStackType?: StackTypeEnum;
+  /** 默认垛位 */
+  cStackNo?: string | null;
+}
+
+/** 缓冷工艺网格跟踪保存入参（原 SaveChangesData<Thr3010HlGy>，FrmHR3610 btnSave_Click） */
+export interface Thr3010HlGySaveChangesData {
+  addedItems?: Thr3010HlGy[] | null;
+  changedItems?: Thr3010HlGy[] | null;
+  deletedItems?: Thr3010HlGy[] | null;
+}
+
+/** 停机维护网格跟踪保存入参（原 SaveChangesData<Tdm1050>，FrmDM1050 btnSave_Click） */
+export interface Tdm1050SaveChangesData {
+  addedItems?: Tdm1050[] | null;
+  changedItems?: Tdm1050[] | null;
+  deletedItems?: Tdm1050[] | null;
+}
+
+export const hR3610Api = {
+  /** 获取缓冷工艺（原 GetThr3010HlGys，FrmHR3610 DataBind） */
+  getThr3010HlGys(cSgCode?: string) {
+    return requestClient.request<Thr3010HlGy[]>("/dDH.Service.SHR.Services/hR3610/getThr3010HlGys", {
+      method: "post",
+      params: { cSgCode },
+    });
+  },
+  /** 保存缓冷工艺修改（原 SaveChangeThr3010HlGy，FrmHR3610 btnSave_Click） */
+  saveChangeThr3010HlGy(data?: Thr3010HlGySaveChangesData) {
+    return requestClient.request<any>("/dDH.Service.SHR.Services/hR3610/saveChangeThr3010HlGy", {
+      method: "post",
+      data,
+    });
+  },
+};
+
+export const hRPrintApi = {
+  /** 查询打印日志（原 QueryLog，FrmHRPrint btnQuery_Click） */
+  queryLog(data?: QueryPrintDto) {
+    return requestClient.request<ThrPrint[]>("/dDH.Service.SHR.Services/hRPrint/queryLog", {
+      method: "post",
+      data,
+    });
+  },
+};
+
+export const thrSampApi = {
+  /** 查询打印记录（原 QueryLog，FrmHRSamp btnQuery_Click） */
+  queryLog(key?: string) {
+    return requestClient.request<ThrSamp[]>("/dDH.Service.SHR.Services/thrSamp/queryLog", {
+      method: "post",
+      params: { key },
+    });
+  },
+  /** 添加打印记录（原 AddLog，FrmHRSamp btnSave_Click） */
+  addLog(data?: ThrSamp) {
+    return requestClient.request<any>("/dDH.Service.SHR.Services/thrSamp/addLog", {
+      method: "post",
+      data,
+    });
+  },
+};
+
+export const tdaZb149Api = {
+  /** 查询10KV电力系统数据（原 GetTdaZb149s，FrmTdaZb149 DataBind） */
+  getTdaZb149s(data?: DtoTdaZb037Query) {
+    return requestClient.request<TdaZb149Dto[]>("/dDH.Service.SHR.Services.InterInfoQuery/tdaZb149/getTdaZb149s", {
+      method: "post",
+      data,
+    });
+  },
+};
+
+export const dM1050Api = {
+  /** 添加停机信息（原 AddTdm1050，FrmDM1050 btnAdd_Click） */
+  addTdm1050(data?: DtoQueryTdm1050) {
+    return requestClient.request<any>("/dDH.Service.SHR.Services.WorkPiece/dM1050/addTdm1050", {
+      method: "post",
+      data,
+    });
+  },
+  /** 获取停机维护记录（原 GetTdm1050s，FrmDM1050 DataBind） */
+  getTdm1050s(data?: DtoQueryTdm1050) {
+    return requestClient.request<Tdm1050[]>("/dDH.Service.SHR.Services.WorkPiece/dM1050/getTdm1050s", {
+      method: "post",
+      data,
+    });
+  },
+  /** 获取停机维护记录汇总信息（原 GetTdm1050Dtos，FrmDM1050 HzDataBind） */
+  getTdm1050Dtos(data?: DtoQueryTdm1050) {
+    return requestClient.request<Tdm1050Dto[]>("/dDH.Service.SHR.Services.WorkPiece/dM1050/getTdm1050Dtos", {
+      method: "post",
+      data,
+    });
+  },
+  /** 保存停机信息修改（原 SaveTdm1050(SaveChangesData<Tdm1050>)，FrmDM1050 btnSave_Click） */
+  saveTdm1050(data?: Tdm1050SaveChangesData) {
+    return requestClient.request<any>("/dDH.Service.SHR.Services.WorkPiece/dM1050/saveTdm1050", {
+      method: "post",
+      data,
+    });
+  },
+};
+
+export const dM1060Api = {
+  /** 添加时查询是否已包含状态为正常的月份数据（原 GetTdm1060Includeds，FrmDM1060 btnOpen_Click） */
+  getTdm1060Includeds(date?: string) {
+    return requestClient.request<Tdm1060[]>("/dDH.Service.SHR.Services.WorkPiece/dM1060/getTdm1060Includeds", {
+      method: "post",
+      params: { date },
+    });
+  },
+  /** 编辑能耗单价信息状态（原 EditStatusTdm1060，FrmDM1060 btnOpen_Click） */
+  editStatusTdm1060(cIds?: string, flag?: boolean) {
+    return requestClient.request<any>("/dDH.Service.SHR.Services.WorkPiece/dM1060/editStatusTdm1060", {
+      method: "post",
+      params: { cIds, flag },
+    });
+  },
+  /** 查询能耗单价信息（原 GetTdm1060s，FrmDM1060 DataBind） */
+  getTdm1060s(data?: DtoQueryTdm1060) {
+    return requestClient.request<Tdm1060[]>("/dDH.Service.SHR.Services.WorkPiece/dM1060/getTdm1060s", {
+      method: "post",
+      data,
+    });
+  },
+  /** 获取当日能耗分时信息（原 QueryTdm1060DtoDay，FrmDM1060 HzDataBind） */
+  queryTdm1060DtoDay(data?: TimeRange) {
+    return requestClient.request<Tdm1060Dto[]>("/dDH.Service.SHR.Services.WorkPiece/dM1060/queryTdm1060DtoDay", {
+      method: "post",
+      data,
+    });
+  },
+  /** 查询能耗消耗信息（原 GetTdm1060Dtos，FrmDM1060 HzDataBind） */
+  getTdm1060Dtos(data?: DtoQueryTdm1060) {
+    return requestClient.request<Tdm1060Dto[]>("/dDH.Service.SHR.Services.WorkPiece/dM1060/getTdm1060Dtos", {
+      method: "post",
+      data,
+    });
+  },
+};
+
+export const dM1070Api = {
+  /** 查询油品备件数据（原 GetTdm1070，FrmDM1070 DataBind） */
+  getTdm1070(data?: TimeRange) {
+    return requestClient.request<Tdm1070[]>("/dDH.Service.SHR.Services.WorkPiece/dM1070/getTdm1070", {
+      method: "post",
+      data,
+    });
+  },
+  /** 删除油品备件数据（原 DelTdm1070，FrmDM1070 btnDel_Click） */
+  delTdm1070(data?: string[]) {
+    return requestClient.request<any>("/dDH.Service.SHR.Services.WorkPiece/dM1070/delTdm1070", {
       method: "post",
       data,
     });

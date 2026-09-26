@@ -5,7 +5,7 @@
 
 import { requestClient } from "@/api/_core/request";
 import type { NProTypeEnum, SurFaceResultEnum } from "./sqm.swagger";
-import type { Tyd2000Dto } from "./syd.swagger";
+import type { InventoryStatusEnum, Tyd2000Dto, YesNoDefault } from "./syd.swagger";
 import type { FrmQL8100QueryInputDto } from "./shr.swagger";
 
 /* ---------- 枚举 ---------- */
@@ -1893,6 +1893,20 @@ export const qZ5000Api = {
       data,
     });
   },
+  /** 生成重组取样计划（IQZ5000AppService.AddReSamplePlan） */
+  addReSamplePlan(data?: CZInputDto) {
+    return requestClient.request<AddReSampleOutInput>("/dDH.Service.LIMS.Services/qZ5000/addReSamplePlan", {
+      method: "post",
+      data,
+    });
+  },
+  /** 取消重组样计划（IQZ5000AppService.RemoveReSamplePlan，标量参数走 params） */
+  removeReSamplePlan(testNo?: string) {
+    return requestClient.request<any>("/dDH.Service.LIMS.Services/qZ5000/removeReSamplePlan", {
+      method: "post",
+      params: { testNo },
+    });
+  },
 };
 
 /** stoveCFRecordApi（质量判定重迁补齐） */
@@ -1905,6 +1919,234 @@ export const stoveCFRecordApi = {
   },
   queryProcessRecord(data?: unknown) {
     return requestClient.request<any>("/dDH.Service.LIMS.Services/stoveCFRecord/queryProcessRecord", {
+      method: "post",
+      data,
+    });
+  },
+};
+
+/* ---------- 中厚板取样（ITql3900AppService / IQZ5000AppService 台账补齐） ---------- */
+
+/** 取样计划查询参数（DDH.Service.LIMS.Services.Tql3900InputDto） */
+export interface Tql3900InputDto {
+  /** 代表样编号 */ cSameTestNo?: string | null;
+  /** 产线 */ cLineCode?: string | null;
+  /** 批号 */ cBatchNo?: string | null;
+  /** 组批号 */ cZpBatchNo?: string | null;
+  /** 炉号 */ cStove?: string | null;
+  /** 板坯号 */ cPieceNo?: string | null;
+  /** 钢种 */ cSgCode?: string | null;
+  /** 执行标准 */ cSgStd?: string | null;
+  /** 生产时间 */ timeRange?: TimeRange;
+  /** 发送状态 */ cSendStatus?: YesNoDefault;
+}
+
+/** 取样计划数据项（DDH.Service.LIMS.Services.Tql3900ItemDto） */
+export interface Tql3900ItemDto {
+  /** 主键 */ id?: string | null;
+  /** 代表样编号 */ cSameTestNo?: string | null;
+  /** 重组样号 */ cSameTestNoNew?: string | null;
+  /** 原始编号 */ cOldSameTestNo?: string | null;
+  /** 取样备注 */ cQyRemark?: string | null;
+  /** 批次号 */ cBatchNo?: string | null;
+  /** 顺序号 */ nOrder?: number | null;
+  /** 组批号（后端计算列 CBatchNo-NOrder） */ cZpNo?: string | null;
+  /** 炉号 */ cStove?: string | null;
+  /** 板坯号 */ cPieceNo?: string | null;
+  /** 大板号 */ cPlateNo?: string | null;
+  /** 钢种 */ cSgSign?: string | null;
+  /** 执行标准 */ cSgStd?: string | null;
+  /** 组批分类 */ cZpType?: string | null;
+  /** 订单号 */ cOrderNo?: string | null;
+  /** 厚度mm */ nThick?: number | null;
+  /** 宽度mm */ nWth?: number | null;
+  /** 长度mm */ nLen?: number | null;
+  /** 交货状态代码 */ cDelivyStatusCode?: string | null;
+  /** 加工用途代码(用户标准代码) */ cCustStdCode?: string | null;
+  /** 特殊要求 */ cSpecialDesc?: string | null;
+  /** 厚度区间小 */ nThickMin?: number | null;
+  /** 厚度区间大 */ nThickMax?: number | null;
+  /** 吨位 */ nWgt?: number;
+  /** 取样数量 */ nNum?: number;
+  /** 取样间隔（C# 原名 NInteval，拼写保留） */ nInteval?: number;
+  /** 库存状态 */ nStatus?: InventoryStatusEnum | null;
+  /** 材料状态（后端计算列） */ statusStr?: string | null;
+  /** 轧制时间 */ zZTime?: string | null;
+  /** 取样实绩板 */ cQyPlateSJ?: string | null;
+  /** 取样时间 */ time?: string | null;
+  /** 取样长度 */ sampleLth?: number | null;
+  /** 取样实绩主键 */ qySjId?: string | null;
+  /** 是否取样 */ isQY?: string | null;
+  /** 取样板标记 */ cIsQy?: string | null;
+  /** 备注 */ cRemark?: string | null;
+  /** 是否送样 */ cSendStatus?: string | null;
+}
+
+/** 取样实绩信息（DDH.Service.LIMS.Services.Tql3900ItemDetailSJDto） */
+export interface Tql3900ItemDetailSJDto {
+  /** 选择 */ selected?: boolean;
+  /** 主键 */ id?: string | null;
+  /** 代表样编号 */ cSameTestNo?: string | null;
+  /** 重组样号 */ cSameTestNoNew?: string | null;
+  /** 批次号 */ cBatchNo?: string | null;
+  /** 顺序号 */ nOrder?: number | null;
+  /** 组批号（后端计算列 CBatchNo-NOrder） */ cZpNo?: string | null;
+  /** 炉号 */ cStove?: string | null;
+  /** 板坯号 */ cPieceNo?: string | null;
+  /** 钢种 */ cSgSign?: string | null;
+  /** 执行标准 */ cSgStd?: string | null;
+  /** 组批分类 */ cZpType?: string | null;
+  /** 订单号 */ cOrderNo?: string | null;
+  /** 厚度mm */ nThick?: number | null;
+  /** 宽度mm */ nWth?: number | null;
+  /** 长度mm */ nLen?: number | null;
+  /** 交货状态代码 */ cDelivyStatusCode?: string | null;
+  /** 加工用途代码(用户标准代码) */ cCustStdCode?: string | null;
+  /** 特殊要求 */ cSpecialDesc?: string | null;
+  /** 取样实绩板 */ cQyPlateSJ?: string | null;
+  /** 取样时间 */ time?: string | null;
+  /** 取样长度 */ sampleLth?: number | null;
+  /** 是否取样 */ isQY?: string | null;
+  /** 吨位 */ nWgt?: number;
+  /** 取样数量 */ nNum?: number;
+  /** 取样间隔（C# 原名 NInteval，拼写保留） */ nInteval?: number;
+  /** 备注 */ cRemark?: string | null;
+  /** 送样状态 */ cSendStatus?: string | null;
+  /** 送样时间 */ dSendTime?: string | null;
+  /** 送样人 */ cSendUser?: string | null;
+}
+
+/** 重组样复验板信息（DDH.Service.LIMS.Services.Tql3900FYItemDto） */
+export interface Tql3900FYItemDto {
+  /** 选择 */ selected?: boolean;
+  /** tql3910主键 */ id?: string | null;
+  /** 重组样号 */ cSameTestNoNew?: string | null;
+  /** 原代表样编号 */ cSameTestNo?: string | null;
+  /** 批次号 */ cBatchNo?: string | null;
+  /** 顺序号 */ nOrder?: number | null;
+  /** 组批号（后端计算列 CBatchNo-NOrder） */ cZpNo?: string | null;
+  /** 钢种 */ cSgSign?: string | null;
+  /** 执行标准 */ cSgStd?: string | null;
+  /** 炉号 */ cStove?: string | null;
+  /** 取样板 */ cPieceNo?: string | null;
+  /** 厚度mm */ nThick?: number | null;
+  /** 宽度mm */ nWth?: number | null;
+  /** 长度mm */ nLen?: number | null;
+  /** 取样标记（后端计算列） */ cQYStatus?: string | null;
+  /** 取样时间 */ dQyTime?: string | null;
+  /** 取样人 */ cQyUser?: string | null;
+  /** 发送状态 */ cSendStatus?: string | null;
+  /** 发送人 */ cSendUser?: string | null;
+  /** 发送时间 */ dSendTime?: string | null;
+  /** 库区 */ cStore?: string | null;
+  /** 垛位 */ cStackNo?: string | null;
+  /** 层号 */ cStackNum?: string | null;
+  /** 库存状态 */ nStatus?: InventoryStatusEnum;
+}
+
+/** 生成重组取样计划入参（DDH.Service.LIMS.Services.CZInputDto） */
+export interface CZInputDto {
+  /** 代表样编号 */ testNo?: string | null;
+  /** 重组份数（C# 默认 2） */ czNum?: number;
+}
+
+/** 生成重组取样计划出参（DDH.Service.LIMS.Services.AddReSampleOutInput） */
+export interface AddReSampleOutInput {
+  oldTestNo?: string | null;
+  newTestNo?: string | null;
+  success?: boolean;
+  message?: string | null;
+}
+
+/** 中厚板取样（ITql3900AppService，FrmQL3900/3901/3910 台账补齐） */
+export const tql3900Api = {
+  /** 获取取样计划 */
+  queryQyPlan(data?: Tql3900InputDto) {
+    return requestClient.request<Tql3900ItemDto[]>("/dDH.Service.LIMS.Services/tql3900/queryQyPlan", {
+      method: "post",
+      data,
+    });
+  },
+  /** 获取取样计划明细 */
+  queryQl3900(data?: Tql3900InputDto) {
+    return requestClient.request<Tql3900ItemDetailSJDto[]>("/dDH.Service.LIMS.Services/tql3900/queryQl3900", {
+      method: "post",
+      data,
+    });
+  },
+  /** 重组取样批次逻辑，设置取样新样号 */
+  addNewSampleTest(data?: Tql3900ItemDto) {
+    return requestClient.request<any>("/dDH.Service.LIMS.Services/tql3900/addNewSampleTest", {
+      method: "post",
+      data,
+    });
+  },
+  /** 取消重组取样批次 */
+  cancelNewSampleTest(data?: Tql3900ItemDto) {
+    return requestClient.request<any>("/dDH.Service.LIMS.Services/tql3900/cancelNewSampleTest", {
+      method: "post",
+      data,
+    });
+  },
+  /** 添加取样实绩 */
+  addQySj(data?: Tql3900ItemDto) {
+    return requestClient.request<any>("/dDH.Service.LIMS.Services/tql3900/addQySj", {
+      method: "post",
+      data,
+    });
+  },
+  /** 取消取样实绩 */
+  cancelQySj(data?: Tql3900ItemDto) {
+    return requestClient.request<any>("/dDH.Service.LIMS.Services/tql3900/cancelQySj", {
+      method: "post",
+      data,
+    });
+  },
+  /** 获取重组样复验计划 */
+  queryFYPlan(data?: Tql3900InputDto) {
+    return requestClient.request<Tql3900FYItemDto[]>("/dDH.Service.LIMS.Services/tql3900/queryFYPlan", {
+      method: "post",
+      data,
+    });
+  },
+  /** 添加重组样取样实绩 */
+  addFYQySj(data?: Tql3900FYItemDto) {
+    return requestClient.request<any>("/dDH.Service.LIMS.Services/tql3900/addFYQySj", {
+      method: "post",
+      data,
+    });
+  },
+  /** 取消重组样取样实绩 */
+  cancelFYQySj(data?: Tql3900FYItemDto) {
+    return requestClient.request<any>("/dDH.Service.LIMS.Services/tql3900/cancelFYQySj", {
+      method: "post",
+      data,
+    });
+  },
+  /** 发送重组样检验委托 */
+  sendFYSamp(data?: Tql3900FYItemDto) {
+    return requestClient.request<any>("/dDH.Service.LIMS.Services/tql3900/sendFYSamp", {
+      method: "post",
+      data,
+    });
+  },
+  /** 取消重组样检验委托 */
+  cancelSendFYSamp(data?: Tql3900FYItemDto) {
+    return requestClient.request<any>("/dDH.Service.LIMS.Services/tql3900/cancelSendFYSamp", {
+      method: "post",
+      data,
+    });
+  },
+  /** 发送检验委托 */
+  createSamp(data?: Tql3900ItemDetailSJDto) {
+    return requestClient.request<any>("/dDH.Service.LIMS.Services/tql3900/createSamp", {
+      method: "post",
+      data,
+    });
+  },
+  /** 取消发送检验委托 */
+  cancelSamp(data?: Tql3900ItemDetailSJDto) {
+    return requestClient.request<any>("/dDH.Service.LIMS.Services/tql3900/cancelSamp", {
       method: "post",
       data,
     });

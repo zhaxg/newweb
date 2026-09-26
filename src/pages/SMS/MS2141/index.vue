@@ -6,9 +6,12 @@
  *          tms9001Api.mathPlanAndZp（匹配）/ cancelMathPlanAndZp（取消匹配）
  *          systemKeyValueApi.querySysKvItemList（取消原因 / 异常坯类型 / 一厂断面规格字典）
  *  cQueryString：{LineCode,MachineCode} —— LG01 走断面规格下拉并隐藏厚宽；LG02 走厚/宽/长 SpinEdit 并隐藏断面/单重
- *  分栏：顶栏查询 → 上=产出材料(stackPanel4 按钮+gridControl2) | 右上=炉次计划，右下=提料单信息；下=录入参数 dataLayoutControl1
+ *  分栏（照 Designer 的 Dock + Location.Y 顺序）：stackPanel1 查询
+ *      → panelControl2（groupBox1 炉次计划 641 | splitterControl2 | groupBox2 提料单信息 748，左右并排）
+ *      → splitterControl1（上下可拖，310:437）→ dataLayoutControl1 录入参数 → stackPanel4 按钮 → panelControl1(gridControl2 产出材料, Fill)
+ *      —— stackPanel2（dropDownButton1「头/尾/异常坯设置」+ labelControl1「占位控件」）Designer 里 Visible=false，不渲染
  *  列集：gridView1 炉次 23+100 / gridView2 产出 39+23 / gvPlan 提料单 24+6
- *  待接入：二级弹窗占位（班次 ShiftInfo、头尾坯设置菜单、坯料修改窗、机台工位）；
+ *  待接入：二级弹窗占位（班次 ShiftInfo、坯料修改窗、机台工位）；
  *          tms3000Api.setException/cancelException swagger 未生成（标记/取消异常坯暂不可用）；
  *          StorageMatchPlanRule 前端规则校验未迁（依赖 Hmx widget 规则库，交后端 mathPlan 校验）；
  *          断面规格字典 A0000:MS_LG01_LZ_SPEC_VALUE 按 LineCode=LG01 时灌注 */
@@ -648,10 +651,6 @@ async function onUpdatePiece() {
   }
 }
 
-function placeholder(name: string) {
-  toast(`${name}：二级弹窗待接入`, 2000, "warn");
-}
-
 onMounted(async () => {
   try {
     const liu = (await publicKVApi.getMSLZLiu(machineCode)) ?? [];
@@ -705,75 +704,16 @@ onMounted(async () => {
       >
     </div>
 
-    <Splitter layout="vertical" class="min-h-0 flex-1">
-      <!-- 上：左=产出材料，右=炉次计划 + 提料单 -->
-      <SplitterPanel :size="100" :minSize="40" class="min-h-0 overflow-hidden">
-        <Splitter layout="horizontal" class="h-full min-h-0">
-          <SplitterPanel :size="58" :minSize="30" class="flex min-h-0 flex-col overflow-hidden">
-            <!-- 录入参数（原 dataLayoutControl1） -->
-            <div class="flex h-9 shrink-0 items-center gap-2 overflow-x-auto border-b border-border/60 px-2">
-              <label class="shrink-0 text-xs text-muted-foreground">流号</label>
-              <Select
-                v-model="f.liu"
-                :options="liuOptions"
-                option-label="label"
-                option-value="value"
-                class="w-24 shrink-0"
-              />
-              <label class="shrink-0 text-xs text-muted-foreground">添加/删除件次数量</label>
-              <div class="w-24 shrink-0">
-                <InputNumber v-model="f.nums" :min="1" :show-buttons="false" fluid />
-              </div>
-              <template v-if="isLg01">
-                <label class="shrink-0 text-xs text-muted-foreground">断面规格</label>
-                <Select
-                  v-model="f.spec"
-                  :options="specOptions"
-                  option-label="label"
-                  option-value="value"
-                  class="w-28 shrink-0"
-                />
-                <label class="shrink-0 text-xs text-muted-foreground">米单重</label>
-                <div class="w-24 shrink-0">
-                  <InputNumber v-model="f.lenWgt" :min="0" :show-buttons="false" fluid />
-                </div>
-              </template>
-              <template v-else>
-                <label class="shrink-0 text-xs text-muted-foreground">厚度</label>
-                <div class="w-24 shrink-0">
-                  <InputNumber v-model="f.nThick" :min="0" :show-buttons="false" fluid />
-                </div>
-                <label class="shrink-0 text-xs text-muted-foreground">宽度</label>
-                <div class="w-24 shrink-0">
-                  <InputNumber v-model="f.nWth" :min="0" :show-buttons="false" fluid />
-                </div>
-              </template>
-              <label class="shrink-0 text-xs text-muted-foreground">长度</label>
-              <div class="w-28 shrink-0">
-                <InputNumber v-model="f.nLen" :min="0" :show-buttons="false" fluid />
-              </div>
-              <label class="shrink-0 text-xs text-muted-foreground">生产备注</label>
-              <InputText v-model="f.proRemark" class="w-36 shrink-0" />
-            </div>
-            <!-- 头/尾/异常坯设置（原 stackPanel2 + dropDownButton1） -->
-            <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2">
-              <Button text class="shrink-0 whitespace-nowrap" @click="placeholder('头/尾/异常坯设置')"
-                >头/尾/异常坯设置</Button
-              >
-              <span class="ml-auto text-xs font-medium text-muted-foreground">产出材料</span>
-            </div>
-            <!-- stackPanel4 操作按钮 -->
-            <div class="flex h-9 shrink-0 items-center gap-1 overflow-x-auto border-b border-border/60 px-2">
-              <Button text class="shrink-0 whitespace-nowrap" @click="onRefresh">刷新</Button>
+    <!-- 原 stackPanel2（含 dropDownButton1「头/尾/异常坯设置」）Designer 里 Visible=false，整条不渲染 -->
 
-              <Button text class="shrink-0 whitespace-nowrap" @click="onAdd">添加件次</Button>
-              <Button text class="shrink-0 whitespace-nowrap" @click="onRemove">删除件次</Button>
-              <Button text class="shrink-0 whitespace-nowrap" @click="onMatch(false)">匹配</Button>
-              <Button text class="shrink-0 whitespace-nowrap" @click="onMatch(true)">强制匹配</Button>
-              <Button text class="shrink-0 whitespace-nowrap" @click="onCancelMatch">取消匹配</Button>
-              <Button text class="shrink-0 whitespace-nowrap" @click="onSetExp">标记异常坯</Button>
-              <Button text class="shrink-0 whitespace-nowrap" @click="onCancelSetExp">取消异常坯</Button>
-              <Button text class="shrink-0 whitespace-nowrap" @click="onUpdatePiece">坯料修改</Button>
+    <!-- 原 splitterControl1：上=panelControl2（炉次计划 | 提料单信息，310/834）；下=录入参数 + 按钮 + 产出材料 -->
+    <Splitter layout="vertical" class="min-h-0 flex-1">
+      <SplitterPanel :size="42" :minSize="18" class="min-h-0 overflow-hidden">
+        <!-- 原 panelControl2：groupBox1 左 641 / splitterControl2 / groupBox2 右 748 -->
+        <Splitter layout="horizontal" class="h-full min-h-0">
+          <SplitterPanel :size="46" :minSize="20" class="flex min-h-0 flex-col overflow-hidden">
+            <div class="flex h-8 shrink-0 items-center border-b border-border/60 px-2">
+              <span class="text-xs font-medium text-muted-foreground">炉次计划</span>
             </div>
             <div class="min-h-0 flex-1 overflow-hidden">
               <AgGridVue
@@ -781,68 +721,120 @@ onMounted(async () => {
                 :theme="theme"
                 :locale-text="AG_GRID_LOCALE_CN"
                 :default-col-def="hmxDefaultColDef"
-                :column-defs="outCols"
-                :row-data="outs"
+                :column-defs="planCols"
+                :row-data="plans"
                 :pagination="false"
-                :row-selection="{
-                  mode: 'multiRow',
-                  checkboxes: true,
-                  headerCheckbox: true,
-                  enableClickSelection: true,
-                  enableSelectionWithoutKeys: true,
-                }"
-                @grid-ready="onOutReady"
+                :loading="querying"
+                :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
+                @grid-ready="onPlanReady"
                 @first-data-rendered="autoSizeOnFirstData"
+                @row-clicked="onPlanClick"
               />
             </div>
           </SplitterPanel>
 
-          <SplitterPanel :size="42" :minSize="25" class="flex min-h-0 flex-col overflow-hidden">
-            <Splitter layout="vertical" class="min-h-0 flex-1">
-              <SplitterPanel :size="55" :minSize="25" class="flex min-h-0 flex-col overflow-hidden">
-                <div class="flex h-8 shrink-0 items-center border-b border-border/60 px-2">
-                  <span class="text-xs font-medium text-muted-foreground">炉次计划</span>
-                </div>
-                <div class="min-h-0 flex-1 overflow-hidden">
-                  <AgGridVue
-                    class="hmx-ag-grid h-full w-full"
-                    :theme="theme"
-                    :locale-text="AG_GRID_LOCALE_CN"
-                    :default-col-def="hmxDefaultColDef"
-                    :column-defs="planCols"
-                    :row-data="plans"
-                    :pagination="false"
-                    :loading="querying"
-                    :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
-                    @grid-ready="onPlanReady"
-                    @first-data-rendered="autoSizeOnFirstData"
-                    @row-clicked="onPlanClick"
-                  />
-                </div>
-              </SplitterPanel>
-              <SplitterPanel :size="45" :minSize="20" class="flex min-h-0 flex-col overflow-hidden">
-                <div class="flex h-8 shrink-0 items-center border-b border-border/60 px-2">
-                  <span class="text-xs font-medium text-muted-foreground">提料单信息</span>
-                </div>
-                <div class="min-h-0 flex-1 overflow-hidden">
-                  <AgGridVue
-                    class="hmx-ag-grid h-full w-full"
-                    :theme="theme"
-                    :locale-text="AG_GRID_LOCALE_CN"
-                    :default-col-def="hmxDefaultColDef"
-                    :column-defs="orderCols"
-                    :row-data="orders"
-                    :pagination="false"
-                    :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
-                    @grid-ready="onOrderReady"
-                    @first-data-rendered="autoSizeOnFirstData"
-                    @row-clicked="(e: any) => (focusedOrder = e.data)"
-                  />
-                </div>
-              </SplitterPanel>
-            </Splitter>
+          <SplitterPanel :size="54" :minSize="20" class="flex min-h-0 flex-col overflow-hidden">
+            <div class="flex h-8 shrink-0 items-center border-b border-border/60 px-2">
+              <span class="text-xs font-medium text-muted-foreground">提料单信息</span>
+            </div>
+            <div class="min-h-0 flex-1 overflow-hidden">
+              <AgGridVue
+                class="hmx-ag-grid h-full w-full"
+                :theme="theme"
+                :locale-text="AG_GRID_LOCALE_CN"
+                :default-col-def="hmxDefaultColDef"
+                :column-defs="orderCols"
+                :row-data="orders"
+                :pagination="false"
+                :row-selection="{ mode: 'singleRow', checkboxes: false, enableClickSelection: true }"
+                @grid-ready="onOrderReady"
+                @first-data-rendered="autoSizeOnFirstData"
+                @row-clicked="(e: any) => (focusedOrder = e.data)"
+              />
+            </div>
           </SplitterPanel>
         </Splitter>
+      </SplitterPanel>
+
+      <SplitterPanel :size="58" :minSize="25" class="flex min-h-0 flex-col overflow-hidden">
+        <!-- 录入参数（原 dataLayoutControl1） -->
+        <div class="flex h-9 shrink-0 items-center gap-2 overflow-x-auto border-b border-border/60 px-2">
+          <label class="shrink-0 text-xs text-muted-foreground">流号</label>
+          <Select
+            v-model="f.liu"
+            :options="liuOptions"
+            option-label="label"
+            option-value="value"
+            class="w-24 shrink-0"
+          />
+          <label class="shrink-0 text-xs text-muted-foreground">添加/删除件次数量</label>
+          <div class="w-24 shrink-0">
+            <InputNumber v-model="f.nums" :min="1" :show-buttons="false" fluid />
+          </div>
+          <template v-if="isLg01">
+            <label class="shrink-0 text-xs text-muted-foreground">断面规格</label>
+            <Select
+              v-model="f.spec"
+              :options="specOptions"
+              option-label="label"
+              option-value="value"
+              class="w-28 shrink-0"
+            />
+            <label class="shrink-0 text-xs text-muted-foreground">米单重</label>
+            <div class="w-24 shrink-0">
+              <InputNumber v-model="f.lenWgt" :min="0" :show-buttons="false" fluid />
+            </div>
+          </template>
+          <template v-else>
+            <label class="shrink-0 text-xs text-muted-foreground">厚度</label>
+            <div class="w-24 shrink-0">
+              <InputNumber v-model="f.nThick" :min="0" :show-buttons="false" fluid />
+            </div>
+            <label class="shrink-0 text-xs text-muted-foreground">宽度</label>
+            <div class="w-24 shrink-0">
+              <InputNumber v-model="f.nWth" :min="0" :show-buttons="false" fluid />
+            </div>
+          </template>
+          <label class="shrink-0 text-xs text-muted-foreground">长度</label>
+          <div class="w-28 shrink-0">
+            <InputNumber v-model="f.nLen" :min="0" :show-buttons="false" fluid />
+          </div>
+          <label class="shrink-0 text-xs text-muted-foreground">生产备注</label>
+          <InputText v-model="f.proRemark" class="w-36 shrink-0" />
+        </div>
+        <!-- stackPanel4 操作按钮 + 主表标题（gridControl2 无 Caption，标题按仓库惯例挂在按钮行右端） -->
+        <div class="flex h-9 shrink-0 items-center gap-1 overflow-x-auto border-b border-border/60 px-2">
+          <Button text class="shrink-0 whitespace-nowrap" @click="onRefresh">刷新</Button>
+          <Button text class="shrink-0 whitespace-nowrap" @click="onAdd">添加件次</Button>
+          <Button text class="shrink-0 whitespace-nowrap" @click="onRemove">删除件次</Button>
+          <Button text class="shrink-0 whitespace-nowrap" @click="onMatch(false)">匹配</Button>
+          <Button text class="shrink-0 whitespace-nowrap" @click="onMatch(true)">强制匹配</Button>
+          <Button text class="shrink-0 whitespace-nowrap" @click="onCancelMatch">取消匹配</Button>
+          <Button text class="shrink-0 whitespace-nowrap" @click="onSetExp">标记异常坯</Button>
+          <Button text class="shrink-0 whitespace-nowrap" @click="onCancelSetExp">取消异常坯</Button>
+          <Button text class="shrink-0 whitespace-nowrap" @click="onUpdatePiece">坯料修改</Button>
+          <span class="ml-auto shrink-0 text-xs font-medium text-muted-foreground">产出材料</span>
+        </div>
+        <div class="min-h-0 flex-1 overflow-hidden">
+          <AgGridVue
+            class="hmx-ag-grid h-full w-full"
+            :theme="theme"
+            :locale-text="AG_GRID_LOCALE_CN"
+            :default-col-def="hmxDefaultColDef"
+            :column-defs="outCols"
+            :row-data="outs"
+            :pagination="false"
+            :row-selection="{
+              mode: 'multiRow',
+              checkboxes: true,
+              headerCheckbox: true,
+              enableClickSelection: true,
+              enableSelectionWithoutKeys: true,
+            }"
+            @grid-ready="onOutReady"
+            @first-data-rendered="autoSizeOnFirstData"
+          />
+        </div>
       </SplitterPanel>
     </Splitter>
   </div>

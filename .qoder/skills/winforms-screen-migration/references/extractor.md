@@ -30,7 +30,7 @@
 | 属性正则只吃单行 `x.Prop = value;` 与三类已知多行写法 | 其它多行/子属性（`AppearanceOptions.*`、`FormatInfo`）被丢 | 需要格式串时直接搜字段名 |
 | 实体解析依赖同文件的 `DataSource = typeof(X)` | 绑定源在别的 `.cs` 里时打印 `?`，列头退回全局字典（会串味） | 手工按实体核 `[LDisplay]` |
 | 分组表头（BandedGridView 的 band）、列脚合计、运行时灌入的下拉选项 | 不输出（选项写在 `.cs` 里的 `Items.Add`，Designer 抓取不到） | 回读同名 `.cs`，或按枚举定义补 |
-| 台账只认 `Svc<I*>.Proxy.X()` 与 `GetTrackingList<T>()` 两种写法 | 别的取服务方式（DI、帮助类包装、基类方法）不会被列出 | 需要时 `grep -n "Svc<\|Proxy\." Frm<NAME>.cs` 复核；页面查询回填/保存验过才算全 |
+| 台账认三种取服务写法：`Svc<I*>.Proxy.X()`、`SF<I*>.Proxy.X()`、`dpc.Proxy<I*>().X()`，加 `GetTrackingList<T>()` | 其余写法（DI 构造注入、帮助类包装、基类方法）仍不会被列出 | 需要时 `grep -n "Svc<\|SF<\|Proxy" Frm<NAME>.cs` 复核；页面查询回填/保存验过才算全 |
 
 ## 4. 提取后必跑自检
 
