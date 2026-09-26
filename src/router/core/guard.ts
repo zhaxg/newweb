@@ -1,5 +1,6 @@
 import type { RouteRecordRaw, Router } from "vue-router";
 import { toRouteRecords } from "@/router/core/fromMenu";
+import { setAuthFailureHandler } from "@/api/_core/request";
 import { useAuthStore } from "@/stores/authStore";
 import { usePermissionStore } from "@/stores/permissionStore";
 import { useTabsStore } from "@/stores/tabsStore";
@@ -22,6 +23,18 @@ export function setupRouterGuards(
     resetUserRoutes: () => void;
   },
 ) {
+  /* 依赖倒置：传输层判定出认证失败后，由本层负责「清会话 + 回登录页」——它拥有导航，
+     且已在管落到 /login 时的清理（见下方 public 分支）。传输层只负责判定与并发单飞闸。
+     注册时机在此（模块求值时）早于任何请求；此处不调 useAuthStore()，留到处理器执行时再取，
+     因为本文件求值早于 main.ts 的 createPinia。 */
+  setAuthFailureHandler(() => {
+    const auth = useAuthStore();
+    if (auth.session) auth.logout();
+    const current = router.currentRoute.value;
+    if (current.name === "login") return;
+    return router.replace({ name: "login", query: { redirect: current.fullPath } });
+  });
+
   /* 刷新白屏过渡只属于首次导航（含 loadForUser 等异步）；站内 tab 切换瞬时，不插遮罩。
      首个 beforeEach 同步显示（此时动态路由未注册、拿不到目标 meta.loading，白底遮罩先挂无成本，
      导航落地后按最终 meta 决定淡出或直除） */
@@ -34,8 +47,8 @@ export function setupRouterGuards(
 
     if (to.meta.public) {
       /* 落到登录页 = 登出或会话失效，**就地清理**（perm.reset / resetUserRoutes 均幂等）。
-         这是「清理」的唯一触发点：调用方（MainLayout 登出、request 的 401）只负责导航到
-         /login，不必各自 import 动态路由清理——外部对 router 的依赖因此只剩 bridge 一个叶模块。
+         这是「清理」的唯一触发点：调用方（MainLayout 登出、传输层的认证失败处理）只负责
+         导航到 /login，不必各自 import 动态路由清理——外部对 router 的依赖因此降为零。
          注意顺序：已登录访问 /login 是「回首页」而非登出，那种情况不能清。 */
       if (to.name === "login") {
         if (auth.session) return { path: "/home", replace: true };

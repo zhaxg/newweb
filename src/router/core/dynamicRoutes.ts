@@ -7,17 +7,18 @@
  * 就是 router → guard → index 的反向环。放在这里，guard 与 index 都只依赖本模块，无环。
  *
  * 引用约束：⛔ **router 内部模块**（现消费方：@/router/index、core/guard）。
- * 外部**不需要也不应该**引用它——权限与动态路由的清理已由守卫在「落到 /login」时就地接管
- * （见 guard.ts 的 public 分支），登出方（MainLayout）与 401 方（api/_core/request）
- * 都只负责导航到 /login。全仓唯一可从 router 外部引用的叶模块是 bridge.ts。
+ * `src/router/` 整体对外零消费方——权限与动态路由的清理已由守卫在「落到 /login」时就地接管
+ * （见 guard.ts 的 public 分支），登出方（MainLayout）与认证失败方（api/_core/request）
+ * 都只负责导航到 /login。request 要的 router 实例也改为注入（见其 setAuthFailureHandler），
+ * 原先为破环而设的 core/bridge.ts 已删除。
  *
- * 为什么 layoutName 是参数而不是 import 进来：默认布局名住在 @/layouts/composables/layouts，
- * 而那个文件静态引入 MainLayout.vue——import 它会造出一条 layouts → MainLayout → router 的回边。
- * 故由 index 装配时绑定后传入（见 index 的 setupRouterGuards 注入），本模块对布局注册表零依赖。
+ * 为什么 router 与 layoutName 都是参数而不是 import 进来：两者分别住在 @/router/index 与
+ * @/layouts/composables/layouts，而 layouts 静态引入 MainLayout.vue——import 任一都会造回边
+ * （前者 router → guard → index；后者 layouts → MainLayout → router）。
+ * 故由 index 装配时绑定后经守卫注入，本模块对两者零依赖。
  */
-import type { RouteRecordRaw } from "vue-router";
+import type { RouteRecordRaw, Router } from "vue-router";
 import { setUserMenuRoutes } from "@/layouts/composables/menuFromRoutes";
-import { getRouter } from "@/router/core/bridge";
 
 /* 阶段二挂接时记录各 addRoute 返回的移除回调；由 resetUserRoutes 整体执行
    （触发点是守卫的 public 分支——落到 /login 即清理，见 guard.ts） */
@@ -33,10 +34,13 @@ function trackUserRoutes(removers: (() => void)[]): void {
  * records 由 @/router/core/fromMenu 从 menuRescTree 的菜单树转换而来（文件夹 = 无 component 的
  * 分组记录，叶子 = 页面记录）。addRoute 返回各自的移除回调，交给阶段三清理。
  * 幂等起点：先 resetUserRoutes()，重复调用不会叠加。
+ *
+ * router 与 layoutName 都是参数而非 import：两者分别住在 index 与 layouts 注册表，
+ * import 任一都会造回边（见文件头）。由 index 装配时绑定后经守卫注入。
  */
-export function registerUserRoutes(layoutName: string, records: RouteRecordRaw[]): void {
+export function registerUserRoutes(router: Router, layoutName: string, records: RouteRecordRaw[]): void {
   resetUserRoutes();
-  trackUserRoutes(records.map((record) => getRouter().addRoute(layoutName, record)));
+  trackUserRoutes(records.map((record) => router.addRoute(layoutName, record)));
   setUserMenuRoutes(records);
 }
 

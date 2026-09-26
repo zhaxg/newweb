@@ -35,7 +35,8 @@ useSettingsStore();
 app.use(router);
 app.use(hmxErrorPlugin);
 app.use(hmxClickGuardPlugin);
-app.use(hmxPermissionPlugin);
+/* 传入 router：本插件要用 currentRoute 反查 pageId，靠注入而非 import @/router（避免把路由骨架拖进指令层） */
+app.use(hmxPermissionPlugin, { router });
 /* ag-grid 模块注册/License/全局 gridOptions 不在这里：main.ts 静态引入 lib/agGrid 会把
    ag-grid community+enterprise 全家桶拖进首屏 entry chunk，初始化改随首个表格页的 lib/agGrid 求值执行 */
 app.use(hmxPrimePlugin);

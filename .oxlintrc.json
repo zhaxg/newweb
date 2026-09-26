@@ -23,11 +23,11 @@
         "paths": [
           {
             "name": "@/router",
-            "message": "勿从 router 外部 import 路由 index：它会拉进 guard → store → api，形成 request → router → guard → store → api → request 循环依赖（AGENTS §4.2）。要 router 实例请用 @/router/core/bridge —— 全仓唯一可从 router 外部引用的叶模块。"
+            "message": "src/router 对外零消费方，勿 import 路由 index：它会拉进 guard → store → api，形成 request → router → guard → store → api → request 循环依赖（AGENTS §4.2）。需要 router 实例请走注入——传输层用 setAuthFailureHandler，指令层用 app.use 插件选项。"
           },
           {
             "name": "@/router/index",
-            "message": "同上：用 @/router/core/bridge（唯一叶模块），或由 main.ts 走相对路径 ./router。"
+            "message": "同上：src/router 对外零消费方，router 实例一律走注入（见 AGENTS「依赖倒置」）。"
           }
         ]
       }

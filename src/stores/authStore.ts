@@ -5,6 +5,7 @@
 import { ref, watch } from "vue";
 import { defineStore } from "pinia";
 import { authApi } from "@/api/admin/request";
+import { setTokenProvider } from "@/api/_core/request";
 import { CaptchaType } from "@/api/admin/enums";
 import { readJson, writeJson } from "@/lib/encryptedStorage";
 
@@ -44,6 +45,13 @@ function loadHistory(): LoginHistory {
 export const useAuthStore = defineStore("auth", () => {
   const session = ref<AuthSession | null>(loadSession());
   const history = ref<LoginHistory>(loadHistory());
+
+  /* 依赖倒置：把 token 供给传输层（见 api/_core/request.ts 的 setTokenProvider）。
+     本模块原被传输层反向 import，构成 `request ↔ authStore` 双向环（AGENTS 挂了很久的待办）；
+     改为注入后箭头单向：authStore → 传输。
+     注册时机 = 本 store 首次实例化（Pinia 要求 active pinia，故不能放模块顶层）；
+     守卫在首次导航就调 useAuthStore()，早于任何业务请求，见 core/guard.ts 的 beforeEach。 */
+  setTokenProvider(() => session.value?.token);
 
   watch(session, (value) => writeJson(SESSION_KEY, value ?? undefined));
 

@@ -224,9 +224,9 @@ src/
 │   ├── admin/              # 系统管理各子页（dept/user/role/resc/kvs/jobs/gen/settings）（平台自有）
 │   └── DDH|LIMS|SHR|SMP|SMS|SQM|SYD|Widgets/   # 业务组模块（示例，迁移中）
 ├── router/                 # index 阶段一装配 + 注入守卫 · builtin 骨架页 · business 业务静态路由
-│   └── core/               # 机制层（不常改）：bridge router 实例桥(✅唯一叶模块) · routeMeta 类型增强
-│                           #   dynamicRoutes 阶段二挂接+阶段三移除 · guard 守卫 · fromMenu 后端资源→路由编译
-│                           #   ⛔ 外部只准 import @/router/core/bridge，其余均为 router 内部模块
+│   └── core/               # 机制层（不常改）：routeMeta 类型增强 · fromMenu 后端资源→路由编译
+│                           #   dynamicRoutes 阶段二挂接+阶段三移除 · guard 守卫+认证失败处理器
+│                           #   ⛔ src/router 对外零消费方：router 实例一律走注入，见「依赖倒置」
 ├── stores/                 # auth · permission · tabs · settings
 └── styles/                 # tokens(设计 token) · globals(字阶 @theme) · prime-overrides · agGrid · scrollbar
 
@@ -265,7 +265,7 @@ RouteRecordRaw
 - **加布局**：只往 `layouts/composables/layouts.ts` 的注册表加一条，不动 `router/index`。
 - **加业务页**：写 `src/router/business.ts`；会进菜单的页走后端资源下发，不写这里。
 - **循环依赖边界**：MainLayout / request / usePermission 等消费方只准 import 叶模块
-  `router/core/dynamicRoutes.ts`（动态路由清理）与 `router/core/bridge.ts`（router 实例桥）；
+  router 实例一律走**注入**（传输层 `setAuthFailureHandler`、指令层 `app.use` 插件选项）——`src/router/` 对外零消费方；
   反向 import `@/router`（index）会成环。
 - **懒加载边界**：只有 `router/builtin.ts` 的骨架页（登录/首页/403）和 `layouts.ts` 的布局父记录
   允许静态 import；业务页一律走 `fromMenu.ts` 的 `import.meta.glob` 懒加载。重型依赖

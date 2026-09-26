@@ -7,7 +7,6 @@ import { businessRoutes } from "@/router/business";
 import { layouts, defaultLayoutName } from "@/layouts/composables/layouts";
 import { initMenuShell } from "@/layouts/composables/menuFromRoutes";
 import { setupRouterGuards } from "@/router/core/guard";
-import { attachRouter } from "@/router/core/bridge";
 import { registerUserRoutes, resetUserRoutes } from "@/router/core/dynamicRoutes";
 
 /* ══ 阶段一 · 登录前：静态路由表 ══════════════════════════════════════════════════
@@ -35,17 +34,17 @@ const routes: RouteRecordRaw[] = [rootRedirectRoute, loginRoute, ...layoutParent
 
 export const router = createRouter({ history: createWebHistory(), routes });
 
-/* 桥挂载：request / usePermission 等只「用」router 实例，反向 import 本文件会成环
-   （request → 本文件 → guard → store → api → request），改经叶模块 @/router/core/bridge 取实例 */
-attachRouter(router);
-
 /* ══ 阶段二 / 三 · 动态路由的挂接与移除 ══════════════════════════════════════════
-   实现与状态都在 @/router/core/dynamicRoutes（router 内部模块）。
-   那里对布局注册表零依赖（import 它就是 router → layouts → MainLayout → 本模块那条环），
-   故默认布局名在此绑定后注入。 */
+   实现与状态都在 @/router/core/dynamicRoutes。那里对 router 实例与布局注册表都零依赖
+   （import 任一会造回边：前者 router → guard → 本模块，后者 router → layouts → MainLayout → 本模块），
+   故两者都在此绑定后注入。
+
+   注：router 实例不再对外暴露——request 走 setAuthFailureHandler 注入（见 core/guard），
+   usePermission 走 app.use 的插件选项（见 main.ts）。**src/router/ 对外零消费方**，
+   原先为破环而设的 core/bridge.ts 已删除。 */
 
 setupRouterGuards(router, {
-  registerUserRoutes: (records) => registerUserRoutes(defaultLayoutName, records),
+  registerUserRoutes: (records) => registerUserRoutes(router, defaultLayoutName, records),
   resetUserRoutes,
 });
 

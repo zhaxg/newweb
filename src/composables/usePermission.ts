@@ -12,18 +12,27 @@
  * 改用 `permStore.hasPermission(code, pageId)` 包一层 computed。
  */
 import type { App, Plugin } from "vue";
-/* 取实例走叶桥不 import index——与 request 同一条防环边界：只有 main.ts 与 router 自身 import index */
-import { getRouter } from "@/router/core/bridge";
+import type { Router } from "vue-router";
 import { usePermissionStore } from "@/stores/permissionStore";
+
+/** router 实例由 main.ts 在 app.use 时注入（见下）——本模块不 import @/router（index），
+ *  那条路径会把整个路由骨架拖进这里。 */
+let router: Router | null = null;
 
 /** 当前路由的 pageId（取不到 = 静态路由，不参与资源权限） */
 function currentPageId(): string | undefined {
-  const pageId = getRouter().currentRoute.value.meta.pageId;
+  const pageId = router?.currentRoute.value.meta.pageId;
   return typeof pageId === "string" ? pageId : undefined;
 }
 
+/** 插件选项：main.ts 传 { router }（它本来就持有实例） */
+export interface HmxPermissionPluginOptions {
+  router?: Router;
+}
+
 export const hmxPermissionPlugin: Plugin = {
-  install(app: App) {
+  install(app: App, options?: HmxPermissionPluginOptions) {
+    router = options?.router ?? null;
     app.directive("hp", {
       mounted(el: HTMLElement, binding) {
         if (!binding.value) return;

@@ -94,51 +94,68 @@ RouteRecordRaw
 
 ```
 src/router/
-├─ index.ts          # 阶段一装配 + 绑定默认布局名注入守卫（加布局/改装配动这里）
+├─ index.ts          # 阶段一装配 + 绑定 router/布局名注入守卫（加布局/改装配动这里）
 ├─ builtin.ts        # 登录/首页/403/404 骨架页
 ├─ business.ts       # 业务静态路由
 └─ core/             # 机制层，日常不动
-   ├─ bridge.ts         ✅ 唯一的叶模块 —— 外部只准引它
    ├─ routeMeta.ts      RouteMeta 类型增强（纯类型，靠 index 的 side-effect import 生效）
-   ├─ dynamicRoutes.ts  ⛔ router 内部（阶段二 register + 阶段三 reset）
-   ├─ guard.ts          ⛔ router 内部
-   └─ fromMenu.ts       ⛔ router 内部
+   ├─ dynamicRoutes.ts  阶段二 register + 阶段三 reset
+   ├─ guard.ts          守卫：导航拦截 + 落到 /login 的清理 + 认证失败处理器注册
+   └─ fromMenu.ts       后端资源 → 路由记录编译
 ```
 
-> ✅ **一句话规则：router 外部只准 import `@/router/core/bridge`。** 其余全部是 router 内部模块。
-> 外部实际只有两处：`api/_core/request.ts`（认证失败后要导航回登录页）与 `composables/usePermission.ts`
-> ——它们都只要一个 router 实例，bridge 就是为此存在的（10 行、只依赖 vue-router 类型）。
+> ✅ **一句话规则：`src/router/` 对外零消费方。** 需要 router 实例一律走**注入**，不 import——
+> 传输层用 `setAuthFailureHandler`（由 guard 注册），指令层用 `app.use(hmxPermissionPlugin, { router })`
+> （由 main.ts 传入）。原先为破环而设的 `core/bridge.ts` 已删除。
 
-> **这条边界已由 lint 强制**：`.oxlintrc.json` 的 `no-restricted-imports` 禁掉 `@/router` 与
-> `@/router/index`（`src/main.ts` 例外，它本就该拿 index），写错当场报 error。
-> 禁的是「import index 这个动作」——它才是成环的原因，见下方 re-export 说明。
+> **这条边界由 lint 强制**：`.oxlintrc.json` 的 `no-restricted-imports` 禁掉 `@/router` 与
+> `@/router/index`（`src/main.ts` 例外，它本就该拿 index）。禁的是「import index 这个动作」——
+> 它才是成环的原因，见下方 re-export 说明。
 
-> **为什么不用 re-export 表达这条边界**：在 index 里 `export { getRouter } from "@/router/core/bridge"`
-> 看似提供了安全入口，实则更危险——消费方仍得 `import ... from "@/router"`，而**import index 这个动作
-> 本身**就会拉进 guard → permissionStore → menuRescTree → api/admin/request → _core/request，精确复现
-> 那条环。re-export 只是把叶模块伪装成安全的，改不了 index 的静态依赖图。
+### 4.2.1 依赖倒置：传输层不认识 store 与 router
 
-> **为什么 bridge 不合并进 index**（同一个问题的另一种问法，已被问过两次）：把 bridge 的代码搬进
-> index 比 re-export **更糟**——它连「零依赖叶模块」这个性质都丢了，直接继承 index 的全部 import，
-> 环照旧。**要真正删掉 bridge，得让 `src/router/` 对外零消费方**：`request` 的认证失败改为导出
-> `setUnauthorizedHandler(fn)` 由 index 装配时注册，`usePermission` 改为 `app.use(插件, { router })`
-> 从 main.ts 拿实例。两条都反转后环消失、bridge 可删、index 成为唯一入口。
-> **评估过但不做**：这是用「间接层」换掉 10 行叶模块——认证失败会从自包含变成「必须在别处接线才工作」
-> （漏接即静默失效，正是 7f33d06 那类 bug 的形状）。现方案的成本是 10 行 + 2 处 import + 1 条 lint 规则，
-> 收益是认证失败自包含、未挂载即抛不静默。
+`api/_core/request.ts` 是依赖图最底层（`api/common/menuRescTree` → `api/admin/request` → 它），
+**反向 import store / router 必成环**。曾经有两处这样的回边：
+
+| 曾经的环 | 现状 |
+|---|---|
+| `request → @/router`（认证失败要导航） | 改为 `setAuthFailureHandler` 注入，由 guard 注册 |
+| `request ↔ authStore`（读 token / 登出） | 改为 `setTokenProvider` 注入，由 authStore 注册 |
+
+`authStore → api/admin/request → _core/request → authStore` 是**真实的双向环**（AGENTS 挂了很久的
+「余下 request↔store 同族环另行处理」）。倒置后箭头单向：**应用 → 传输**。
+
+```ts
+// _core/request.ts —— 只声明，不认识 store/router
+let tokenProvider = () => notWired("tokenProvider");   // 未接线即抛，不静默「请求不带 token」
+export function setTokenProvider(fn) { ... }
+export function setAuthFailureHandler(fn) { ... }
+
+// authStore（拥有 token）：首次实例化时注册
+setTokenProvider(() => session.value?.token);
+
+// router/core/guard（拥有导航）：模块求值时注册
+setAuthFailureHandler(() => { auth.logout(); return router.replace({ name: "login", ... }); });
+```
+
+这是 soybean-admin `@sa/axios` 的做法——那个包对应用**零知识**，行为全由 `onRequest` /
+`isBackendSuccess` / `onBackendFail` 等 hook 注入。判定与并发单飞闸留在传输层（它的关注点），
+「怎么做」交给注入方。
+
+> **为什么不用 re-export 表达这条边界**：在 index 里 `export { getRouter } from "..."` 看似提供了
+> 安全入口，实则更危险——消费方仍得 `import ... from "@/router"`，而**import index 这个动作本身**
+> 就会拉进 guard → permissionStore → menuRescTree → api/admin/request → _core/request，精确复现那条环。
+> re-export 只是把叶模块伪装成安全的，改不了 index 的静态依赖图。**把桥的代码合并进 index 更糟**——
+> 连「零依赖」这个性质都丢了。正解是倒置，让消费方根本不需要那个实例。
 
 > **为什么清理挂在守卫而不是调用方**（曾经不是）：早先 `MainLayout.logout()` 与 `request` 的认证失败
-> 各自调 `resetUserRoutes()` + `perm.reset()`，于是这两个**外部**文件都得 import router 内部模块，
-> 才被迫需要两个叶模块。改为「落到 `/login` 就地清理」后，调用方只负责导航，外部依赖收敛到 bridge 一个。
-> 对标 tdesign-starter 后确认这是更简的路子——它干脆不处理认证失败（token 过期静默失败），所以连 bridge
-> 都不需要；我们保留「认证失败自动登出」，代价就是这一个叶模块。
+> 各自调 `resetUserRoutes()` + `perm.reset()`，于是这两个**外部**文件都得 import router 内部模块。
+> 改为「落到 `/login` 就地清理」后，调用方只负责导航。对标 tdesign-starter 确认这是更简的路子。
 
-> `dynamicRoutes.ts` 的 `registerUserRoutes(layoutName, records)` **把默认布局名做成参数**，正是因为
-> 布局名住在 `layouts.ts`（静态引入 MainLayout.vue）——import 它会造出 layouts → MainLayout → router 的回边。
+> `dynamicRoutes.ts` 的 `registerUserRoutes(router, layoutName, records)` **把 router 与布局名都做成
+> 参数**，正是因为两者分别住在 `@/router/index` 与 `@/layouts/composables/layouts`——import 任一都会造回边。
 > 绑定在 `index.ts` 的 `setupRouterGuards` 注入处完成。
 
-**循环依赖边界**：消费方只准 import `@/router/core/bridge`（router 实例桥）；反向 import `@/router`（index）
-会成环（index 依赖 layouts 注册表、request 经 guard→store→api 绕回）。
 **加布局**只改 `src/layouts/composables/layouts.ts` 的注册表，不动 index。
 **加业务页**写 `src/router/business.ts`（会进菜单的页走后端资源下发，不写这里）。
 
