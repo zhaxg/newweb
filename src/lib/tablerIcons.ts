@@ -9,13 +9,20 @@ import { defineAsyncComponent, type Component } from "vue";
  *
  * 下面的 glob 是**小映射**（白名单见模式里的花括号），覆盖四处：
  *   ① 后端资源种子的 cIcon（菜单图标）——`src/mock/admin/data/rescs.ts`（43 个）+
- *      `src/mock/carbon/data/rescs.ts`（47 个，系从 JNPF 自绘图标语义映射来，原名见其行尾注释）
+ *      `src/mock/carbon/data/rescs.ts`（47 个，系从 JNPF 自绘图标语义映射来，原名见其行尾注释）+
+ *      `src/mock/equipment/data/rescs.ts`（41 个，设备域自己起的名字）+
+ *      `src/mock/energy/data/rescs.ts`（32 个，能源域自己起的名字）
  *   ② 静态路由的 meta.icon——`src/router/builtin.ts`（Home）+ `src/router/business.ts`（Blocks/Books/Wind）
  *   ③ 兜底图标 File
  *   ④ admin/gen 页硬编码用到的几个（Check/Copy/FileCode/Loader/Sparkles）
- * 重新生成①②（三者求并集后写回花括号，当前 83 个）：
+ * 重新生成①②（求并集后写回花括号，当前 95 个）：
  *   grep -hoE 'cIcon: "[^"]*"' src/mock/admin/data/rescs.ts src/mock/carbon/data/rescs.ts | sed -E 's/.*cIcon: "([^"]*)"/\1/' | sort -u
  *   grep -hoE 'icon: "[^"]*"' src/router/builtin.ts src/router/business.ts | sort -u
+ *   ⚠️ 设备域与能源域的种子走 leaf()/folder() 工厂，图标是**位置参数**，上面那条 `cIcon: "` 抓不到它们；
+ *      改按「对应的 Icon 文件是否真的存在」当判据筛末段引号串（顺带完成存在性校验）：
+ *   for n in $(grep -oE '"[A-Z][A-Za-z0-9]+"\)[,;]?$|"[A-Z][A-Za-z0-9]+",?$' src/mock/equipment/data/rescs.ts src/mock/energy/data/rescs.ts | tr -d '",)' | sort -u); do [ -e "node_modules/@tabler/icons-vue/dist/esm/icons/Icon$n.mjs" ] && printf "%s," "$n"; done
+ *   ⚠️ 加名字前要确认 `node_modules/@tabler/icons-vue/dist/esm/icons/Icon<Name>.mjs` 真的存在，
+ *      写进 glob 的文件不存在时 Vite 不会报错，只是那个图标静默缺席（曾因此踩到过构建）。
  *
  * ⚠️ **这份白名单漏了不会坏**——未收录的名字会走 tablerIcon() 的兜底路径动态拉全量注册表，
  * 只是那一次多下一个 chunk（之后进 cache）。所以它是**性能白名单，不是正确性依赖**。
@@ -25,7 +32,7 @@ import { defineAsyncComponent, type Component } from "vue";
  * ⚠️ glob 的模式必须是**单个字符串字面量**（Vite 靠静态分析收集），不能用变量或模板串拼接。
  */
 const loaders = import.meta.glob(
-  "/node_modules/@tabler/icons-vue/dist/esm/icons/Icon{Adjustments,AlertTriangle,Api,Apps,ArrowsJoin2,Atom2,Bell,Blocks,Bolt,Books,Box,Briefcase,Building,BuildingEstate,BuildingFactory,BuildingWarehouse,Calculator,Calendar,CalendarMonth,CalendarStats,Certificate,ChartBar,ChartDots,ChartLine,ChartPie,Check,Checks,CircleCheck,ClipboardCheck,Clock,Cloud,Code,Coins,Copy,CreditCard,Cube,Database,DeviceMobile,DeviceTv,Droplet,Exchange,File,FileCode,FileDescription,FileText,Flame,Flask,Folder,Headset,History,Home,Key,LayoutDashboard,Leaf,Loader,News,Package,Pencil,Printer,Receipt,Recycle,ReportAnalytics,Route,Router,Ruler,Scale,Scan,Scissors,Settings,ShieldCheck,ShieldLock,Sparkles,Stack2,Table,Target,TargetArrow,Tool,TrendingDown,Truck,User,UsersGroup,Wallet,Wind}.mjs",
+  "/node_modules/@tabler/icons-vue/dist/esm/icons/Icon{Activity,Adjustments,AlertCircle,AlertTriangle,Api,Apps,ArrowsJoin2,Atom2,Basket,Bell,Blocks,Bolt,Books,Box,Brain,Briefcase,Building,BuildingEstate,BuildingFactory,BuildingWarehouse,Calculator,Calendar,CalendarMonth,CalendarStats,Certificate,ChartBar,ChartDots,ChartLine,ChartPie,Check,Checks,CircleCheck,ClipboardCheck,ClipboardList,Clock,ClockHour4,Cloud,CloudDataConnection,Code,Coins,Copy,CreditCard,Cube,Database,DeviceMobile,DeviceTv,Droplet,Exchange,File,FileCode,FileDescription,FileText,Flame,Flask,Folder,Gauge,Hammer,Headset,History,Home,Key,LayoutDashboard,Leaf,Loader,News,Package,Pencil,Printer,Receipt,Recycle,ReportAnalytics,Route,Router,Ruler,Scale,Scan,Scissors,Settings,ShieldCheck,ShieldLock,Sitemap,Sparkles,Stack2,Table,Target,TargetArrow,Tool,TrendingDown,Truck,User,Users,UsersGroup,Wallet,WaveSine,Wind}.mjs",
 );
 
 const loaderByPascal = new Map<string, () => Promise<{ default: Component }>>();

@@ -1,6 +1,6 @@
 import type { AxiosResponse, InternalAxiosRequestConfig } from "axios";
 
-import { envelope, fail, respond, type RouteMap, API_BASE } from "./admin/core";
+import { envelope, fail, respond, type Handler, type RouteMap, API_BASE } from "./admin/core";
 import { authRoutes } from "./admin/auth";
 import { departmentRoutes } from "./admin/department";
 import { userRoutes } from "./admin/users";
@@ -19,6 +19,8 @@ import { sydRoutes } from "./mes4ddh/syd";
 import { smsRoutes } from "./mes4ddh/sms";
 import { printReportRoutes } from "./mes4ddh/printReport";
 import { carbonRoutes } from "./carbon";
+import { equipmentRoutes } from "./equipment";
+import { energyRoutes } from "./energy";
 import { mesPlaceholderRoutes } from "./mes4ddh/placeholders";
 
 /**
@@ -48,6 +50,8 @@ const routes: RouteMap = {
   ...smsRoutes,
   ...printReportRoutes,
   ...carbonRoutes,
+  ...equipmentRoutes,
+  ...energyRoutes,
   // 迁移占位放最后：同名端点若域文件里已有手写 mock，手写优先，占位只兜「还没注册」的那些
   ...mesPlaceholderRoutes,
 };
