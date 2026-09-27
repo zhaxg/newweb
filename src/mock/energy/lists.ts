@@ -1,6 +1,6 @@
 import type { RouteMap } from "../admin/core";
-import { ems } from "./store";
-import { allOf, eq, hasOne, like, listHandler } from "./query";
+import { ems, unitTree } from "./store";
+import { allOf, dayRange, eq, hasOne, like, listHandler } from "./query";
 
 /**
  * 能源域列表端点（`POST /ems/<实体>/listPage` → `{total, rows}`）。
@@ -14,7 +14,8 @@ import { allOf, eq, hasOne, like, listHandler } from "./query";
  *    状态类字段用模糊会把「已生成」的行留在「已」这个半截输入下，看着像筛选坏了。
  * 4. 数组列（`mediaCodes`）走 `hasOne`，既不吃 `["ELEC"]` 的方括号噪声，也不要求整串相等。
  *
- * 本文件只覆盖 **P1 的 EG 三页**。后续阶段加页面时往这里补端点，
+ * 本文件覆盖 **P1 的 EG 三页与 P2 的 EC 四张表**（EC0005 是曲线页、没有列表端点）。
+ * 后续阶段加页面时往这里补端点，
  * 但**不预先铺空路由**：没人调用的端点等于没人验证过的代码，本域没有类型门槛兜它。
  */
 export const energyListRoutes: RouteMap = {
@@ -80,6 +81,93 @@ export const energyListRoutes: RouteMap = {
           ["keyword", "effectiveMonth"],
         ]),
         eq(q, [["enabled", "enabled"]]),
+      ),
+  ),
+
+  /* ── EC0001 计量网络（左树右表）────────────────────────────────────── */
+  "post /ems/meterPoint/listPage": listHandler(
+    () => ems.meterPoints,
+    (q) => {
+      /**
+       * `subtreeOf` = 只列某个用能单元**整棵子树**上的点。
+       * 为什么不能只用 `unitId` 精确匹配：计量点只挂在最末级单元上，
+       * 点「炼钢厂」若按 `unitId = EU-04` 筛，结果恒为 0 行——客户会以为厂里没有表。
+       * 子树用 `unitTree()` 现取（它就是为这件事存在的：已按 path 深度优先铺平），
+       * 于是树上的数字与右表的行数天然是同一批点。
+       */
+      const sub = q.subtreeOf ? new Set(unitTree(String(q.subtreeOf)).map((u) => u.id)) : null;
+      return allOf(
+        like(q, [
+          ["keyword", "id"],
+          ["keyword", "name"],
+          ["keyword", "accuracy"],
+        ]),
+        eq(q, [
+          ["mediaCode", "mediaCode"],
+          ["unitId", "unitId"],
+          ["channelId", "channelId"],
+          ["level", "level"],
+          ["dataKind", "dataKind"],
+          ["isSettlement", "isSettlement"],
+        ]),
+        (row) => !sub || sub.has(row.unitId),
+      );
+    },
+  ),
+
+  /* ── EC0002 采集通道 ──────────────────────────────────────────────── */
+  "post /ems/channel/listPage": listHandler(
+    () => ems.channels,
+    (q) =>
+      allOf(
+        like(q, [
+          ["keyword", "id"],
+          ["keyword", "stationName"],
+          ["keyword", "owner"],
+        ]),
+        eq(q, [
+          ["protocol", "protocol"],
+          ["status", "status"],
+          ["cacheMode", "cacheMode"],
+        ]),
+      ),
+  ),
+
+  /* ── EC0003 数据质量工单 ──────────────────────────────────────────── */
+  "post /ems/quality/listPage": listHandler(
+    () => ems.tickets,
+    (q) =>
+      allOf(
+        like(q, [
+          ["keyword", "id"],
+          ["keyword", "pointId"],
+        ]),
+        eq(q, [
+          ["rule", "rule"],
+          ["status", "status"],
+          ["pointId", "pointId"],
+          ["date", "date"],
+        ]),
+      ),
+  ),
+
+  /* ── EC0004 仪表台账 ──────────────────────────────────────────────── */
+  "post /ems/instrument/listPage": listHandler(
+    () => ems.instruments,
+    (q) =>
+      allOf(
+        like(q, [
+          ["keyword", "id"],
+          ["keyword", "name"],
+          ["keyword", "type"],
+          ["keyword", "pointId"],
+          ["keyword", "installPos"],
+        ]),
+        eq(q, [
+          ["status", "status"],
+          ["forcedVerify", "forcedVerify"],
+        ]),
+        dayRange(q, "nextVerifyAt"),
       ),
   ),
 };

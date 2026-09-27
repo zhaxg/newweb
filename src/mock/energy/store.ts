@@ -18,6 +18,9 @@ import type {
   KeyEquip,
   MediumCode,
   MeterPoint,
+  PointHistoryResult,
+  PointReading,
+  PointSeries,
   PriceTemplate,
   QualityTicket,
   Quota,
@@ -536,6 +539,10 @@ export function bootstrap() {
   refreshKeyEquipCoal(effect);
   ems.plans = [buildPlan("2026-09", M.PEOPLE.assess, "执行中"), buildPlan("2026-10", M.PEOPLE.assess, "编制中")];
   ems.seq.plan = 2;
+  /* 质量工单先跑一遍「当日异常」：EC0003 打开就有待补录的单据可点，
+     而不是先要求演示者去按一次「▶生成当日异常」（`genQualityIssues` 按 点+日+规则 去重，
+     再按一次只会补上新组合，不会把同一张单开两遍）。 */
+  genQualityIssues();
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -1470,7 +1477,7 @@ export function recalcPlan(id: string, factor = M.NEXT_PLAN_OUTPUT_FACTOR) {
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
-   11. 主数据与仪表
+   11. 检定扫描与通用行操作（仪表的增删改在 §13）
    ══════════════════════════════════════════════════════════════════════════ */
 
 /** 幂等：仪表检定到期扫描（装配时跑一次，之后只有 `refreshVerify` 会主动触发） */
@@ -1497,17 +1504,6 @@ export function scanVerifyDeadlines() {
   }
   ems.verified = true;
   return { ok: true, msg: `检定扫描：超期 ${overdue} 台、临期 ${soon} 台`, data: { overdue, soon } };
-}
-
-/** 检定登记（EC0004「检定」按钮）：填下次检定日，状态当场重算 */
-export function verifyInstrument(id: string, nextVerifyAt: string, by = M.PEOPLE.assess) {
-  const ins = find(ems.instruments, id);
-  if (!ins) return { ok: false, msg: "仪表不存在" };
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(nextVerifyAt)) return { ok: false, msg: "下次检定日期格式应为 YYYY-MM-DD" };
-  ins.lastVerifyAt = M.DEMO_TODAY;
-  ins.nextVerifyAt = nextVerifyAt;
-  ins.status = verifyStatusOf(ins, M.DEMO_T0 + ems.step * TICK_MS);
-  return { ok: true, msg: `${ins.name} 检定登记完成（${by}），下次 ${nextVerifyAt}`, data: ins };
 }
 
 export function toggleInstrumentFault(id: string) {
@@ -1855,3 +1851,310 @@ const tupleOf = (p: MeterPoint) => `${p.unitId}|${p.mediaCode}|${p.direction ?? 
 
 /** 方向常量（EP 系列的列头与筛选候选，从 model 的七向联合派生，不在页面各写一遍） */
 export const FLOW_DIRECTIONS: FlowDirection[] = ["购入", "自产", "转换", "消耗", "回收", "损失", "外供"];
+
+/* ══════════════════════════════════════════════════════════════════════════
+   13. 采集层（EC0001/0002/0004 写操作 · EC0005 实时读数与历史）
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/**
+ * 序号型主键的下一个值：取**现有最大号 + 1**，不是 `length + 1`。
+ * 删掉中间一行之后 `length+1` 会重新发已存在的 id，而 EC0005 的曲线、EP0002 的实绩
+ * 全按 id 找点——撞号的表现是"两条曲线重叠"，比报错更难查。
+ */
+function nextId(list: Array<{ id: string }>, prefix: string, width: number) {
+  const max = list.reduce((a, r) => {
+    const n = Number(r.id.slice(prefix.length));
+    return Number.isFinite(n) && n > a ? n : a;
+  }, 0);
+  return `${prefix}${pad(max + 1, width)}`;
+}
+
+/**
+ * 通道的挂点数一律从测点表反推（seed 也是这么算的）。
+ * 新增/删除计量点后不回写，EC0002 显示的「影响 12 个点」就和 EC0001 树上的数不一致，
+ * 而 `commBreak` 判定"整条元组是否全断"用的正是这个关系。
+ */
+function syncChannelPointCounts() {
+  for (const c of ems.channels) c.pointCount = ems.meterPoints.filter((p) => p.channelId === c.id).length;
+}
+
+/** 计量点新增/改名（EC0001） */
+export function saveMeterPoint(data: Partial<MeterPoint> & { id?: string }) {
+  const missing = ["name", "mediaCode", "unitId", "channelId", "dataKind", "accuracy"].filter(
+    (k) => data[k as keyof MeterPoint] === undefined || data[k as keyof MeterPoint] === "",
+  );
+  if (missing.length) return { ok: false, msg: `请填：${missing.join("、")}` };
+  if (!find(ems.units, String(data.unitId))) return { ok: false, msg: `用能单元 ${data.unitId} 不存在` };
+  if (!find(ems.channels, String(data.channelId))) return { ok: false, msg: `采集通道 ${data.channelId} 不存在` };
+
+  if (data.id) {
+    const hit = find(ems.meterPoints, data.id);
+    if (hit) {
+      const moved = hit.channelId !== data.channelId;
+      Object.assign(hit, data);
+      /* 计量体系级别跟着挂载单元走（seed 同一口径），否则树上的 3 级点会去筛 4 级的账 */
+      hit.level = (M.UNIT_MAP[hit.unitId]?.level ?? hit.level) as MeterPoint["level"];
+      if (moved) syncChannelPointCounts();
+      return { ok: true, msg: `${hit.name} 已保存${moved ? "（挂点数已重算）" : ""}`, data: hit };
+    }
+  }
+  const row: MeterPoint = {
+    id: data.id ?? nextId(ems.meterPoints, "MP-", 5),
+    name: String(data.name),
+    mediaCode: data.mediaCode as MediumCode,
+    unitId: String(data.unitId),
+    level: (M.UNIT_MAP[String(data.unitId)]?.level ?? 3) as MeterPoint["level"],
+    accuracy: String(data.accuracy),
+    isSettlement: data.isSettlement ?? false,
+    channelId: String(data.channelId),
+    dataKind: data.dataKind as MeterPoint["dataKind"],
+    direction: data.direction,
+  };
+  ems.meterPoints.unshift(row);
+  syncChannelPointCounts();
+  return { ok: true, msg: `已新增计量点 ${row.name}（${row.id}）`, data: row };
+}
+
+/**
+ * 删除计量点。**挂着报警规则或仪表就拒绝**：
+ * 规则会指向一个不存在的表号（EM0005 报警中心当场少一条能解释的报警），
+ * 仪表的 `pointId` 会悬空（EC0004 台账上那台表的"对应计量点"变空白）。
+ * 宁可让人先去解绑，也不留一张缺角的网络图。
+ */
+export function removeMeterPoint(id: string) {
+  const p = find(ems.meterPoints, id);
+  if (!p) return { ok: false, msg: "计量点不存在" };
+  const rules = ems.alarmRules.filter((r) => r.pointId === id);
+  if (rules.length) return { ok: false, msg: `${p.name} 挂着 ${rules.length} 条报警规则，先在 EG0003 删除规则` };
+  const insts = ems.instruments.filter((i) => i.pointId === id);
+  if (insts.length) return { ok: false, msg: `${p.name} 已绑定仪表 ${insts[0].id}，先在 EC0004 改绑` };
+  removeRow(ems.meterPoints, id);
+  syncChannelPointCounts();
+  return { ok: true, msg: `${p.name} 已删除（通道挂点数已重算）` };
+}
+
+/** 采集通道新增/编辑（EC0002） */
+export function saveChannel(data: Partial<CollectChannel> & { id?: string }) {
+  if (!data.stationName || !data.protocol || !data.owner) return { ok: false, msg: "请填站所名称、通讯规约与责任人" };
+  if (data.id) {
+    const hit = find(ems.channels, data.id);
+    if (hit) {
+      Object.assign(hit, data);
+      return { ok: true, msg: `${hit.stationName} 已保存`, data: hit };
+    }
+  }
+  const row: CollectChannel = {
+    id: data.id ?? nextId(ems.channels, "CH-", 3),
+    stationName: String(data.stationName),
+    protocol: data.protocol as CollectChannel["protocol"],
+    pointCount: 0,
+    status: "在线",
+    heartbeatAt: nowStamp(),
+    cacheMode: data.cacheMode ?? true,
+    pendingUpload: 0,
+    owner: String(data.owner),
+    note: data.note,
+  };
+  ems.channels.push(row);
+  return { ok: true, msg: `已新增通道 ${row.stationName}（${row.id}，暂无挂点）`, data: row };
+}
+
+export function removeChannel(id: string) {
+  const c = find(ems.channels, id);
+  if (!c) return { ok: false, msg: "通道不存在" };
+  const pts = ems.meterPoints.filter((p) => p.channelId === id);
+  if (pts.length) return { ok: false, msg: `${c.stationName} 还挂着 ${pts.length} 个计量点，先在 EC0001 改通道` };
+  removeRow(ems.channels, id);
+  return { ok: true, msg: `${c.stationName} 已删除` };
+}
+
+/** 仪表台账新增/编辑（EC0004） */
+export function saveInstrument(data: Partial<Instrument> & { id?: string }) {
+  const missing = ["name", "type", "pointId", "verifyCycleDays", "lastVerifyAt", "installPos"].filter(
+    (k) => !data[k as keyof Instrument],
+  );
+  if (missing.length) return { ok: false, msg: `请填：${missing.join("、")}` };
+  if (!find(ems.meterPoints, String(data.pointId))) return { ok: false, msg: `计量点 ${data.pointId} 不存在` };
+  const last = Date.parse(String(data.lastVerifyAt));
+  const next = data.nextVerifyAt ? Date.parse(String(data.nextVerifyAt)) : NaN;
+  if (data.nextVerifyAt && !Number.isFinite(next)) return { ok: false, msg: "下次检定日格式应为 YYYY-MM-DD" };
+  if (Number.isFinite(next) && next <= last) return { ok: false, msg: "下次检定日必须晚于上次检定日" };
+
+  if (data.id) {
+    const hit = find(ems.instruments, data.id);
+    if (hit) {
+      Object.assign(hit, data);
+      hit.status = verifyStatusOf(hit, M.DEMO_T0 + ems.step * TICK_MS);
+      return { ok: true, msg: `${hit.name} 已保存（状态按检定日重算为 ${hit.status}）`, data: hit };
+    }
+  }
+  const cycle = Number(data.verifyCycleDays);
+  const row: Instrument = {
+    id: data.id ?? nextId(ems.instruments, "INST-", 4),
+    name: String(data.name),
+    type: String(data.type),
+    pointId: String(data.pointId),
+    rangeVal: data.rangeVal ?? "—",
+    installPos: String(data.installPos),
+    verifyCycleDays: cycle,
+    lastVerifyAt: String(data.lastVerifyAt),
+    nextVerifyAt: data.nextVerifyAt ? String(data.nextVerifyAt) : M.stampOf(last + cycle * 86_400_000).slice(0, 10),
+    status: "正常",
+    forcedVerify: data.forcedVerify ?? false,
+  };
+  row.status = verifyStatusOf(row, M.DEMO_T0 + ems.step * TICK_MS);
+  ems.instruments.push(row);
+  /* 计量点上的 `instId` 是反方向的引用（seed 里也是仪表建完再回填），补上它 EC0001 才看得到表 */
+  const p = find(ems.meterPoints, row.pointId);
+  if (p && !p.instId) p.instId = row.id;
+  return { ok: true, msg: `已新增仪表 ${row.name}（${row.id}，${row.status}）`, data: row };
+}
+
+/**
+ * 检定登记。**下次检定日可省**：省下去按 `lastVerifyAt + 检定周期` 自己算——
+ * 现场检定证书上给的就是周期，让页面去猜这个日期等于把强检周期的口径搬出账本。
+ */
+export function verifyInstrument(id: string, nextVerifyAt?: string, by = M.PEOPLE.assess) {
+  const ins = find(ems.instruments, id);
+  if (!ins) return { ok: false, msg: "仪表不存在" };
+  let next = nextVerifyAt;
+  if (!next) next = M.stampOf(Date.parse(ins.lastVerifyAt) + ins.verifyCycleDays * 86_400_000).slice(0, 10);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(next)) return { ok: false, msg: "下次检定日期格式应为 YYYY-MM-DD" };
+  ins.lastVerifyAt = M.DEMO_TODAY;
+  ins.nextVerifyAt = next;
+  ins.status = verifyStatusOf(ins, M.DEMO_T0 + ems.step * TICK_MS);
+  return { ok: true, msg: `${ins.name} 检定登记完成（${by}），下次 ${next}`, data: ins };
+}
+
+/* ── EC0005 实时读数与历史曲线 ──────────────────────────────────────────── */
+
+/** 24 小时负荷基线的均值：实时读数只取**比值**，于是绝对规模仍由 model 说了算 */
+const LOAD_MEAN = M.LOAD_CURVE_MW.reduce((a, b) => a + b, 0) / M.LOAD_CURVE_MW.length;
+
+/** 演示时钟的当前小时（含分钟小数）。tick 每拍推进一分钟，所以它自己就是单调的 */
+function demoHour() {
+  const d = new Date(M.DEMO_T0 + ems.step * TICK_MS);
+  return d.getHours() + d.getMinutes() / 60;
+}
+
+/**
+ * 该点应有日均 ÷ 同元组挂点数 = 这个点摊到的量（`dayValueOf` 已经做完这件事）。
+ * 在它之上只乘两类系数：**日累积比例**（累计量表盘的物理定义）和**当小时负荷系数**
+ * （瞬时率跟着全厂负荷走，凌晨与吹炼高峰不是一个数）。
+ * 通道非在线的点直接给 `null`——把最后一次读数冒充当前值，是实时页最丢人的假数据。
+ */
+export function liveReadings(pointIds?: string[]): PointReading[] {
+  const hour = demoHour();
+  const loadRatio = M.LOAD_CURVE_MW[Math.floor(hour) % 24] / LOAD_MEAN;
+  const ids = pointIds?.length ? new Set(pointIds) : null;
+  const at = nowStamp();
+  return ems.meterPoints
+    .filter((p) => !ids || ids.has(p.id))
+    .map((p) => {
+      const ch = find(ems.channels, p.channelId);
+      const status: CollectChannel["status"] = ch?.status ?? "离线";
+      const base: PointReading = {
+        pointId: p.id,
+        name: p.name,
+        mediaCode: p.mediaCode,
+        unitId: p.unitId,
+        dataKind: p.dataKind,
+        value: null,
+        unit: "",
+        channelStatus: status,
+        pendingUpload: ch?.pendingUpload ?? 0,
+        at,
+      };
+      if (status !== "在线") return base;
+      if (p.dataKind === "状态量") {
+        /* 状态量没有"量"的口径：运行/停止就是它的全部信息，硬算一个数反而假 */
+        return { ...base, value: 1, unit: "", on: true };
+      }
+      const day = dayValueOf(p.id);
+      if (day === undefined || day <= 0) return base;
+      if (p.dataKind === "累计量") {
+        /* 表盘读数 = 日量 × 今日已过比例：只增不减，所以**不加抖动**（加了会倒退，表盘打脸） */
+        const d = M.toDisp(p.mediaCode, (day * hour) / 24);
+        return { ...base, value: d.value, unit: d.unit };
+      }
+      const r = M.toRateDisp(p.mediaCode, (day / 24) * loadRatio * (1 + jitter() * 0.01));
+      return { ...base, value: r.value, unit: r.unit };
+    });
+}
+
+/**
+ * 逐日历史曲线。**日份额一律出自 `M.daySplit`**，也就是 EP0002 那条日实行的同一个算法：
+ * 曲线最后一天与实绩表的日行、以及人工校正/补录改过的值完全一致（`daySplit` 的末位覆盖），
+ * 两处若各摊一遍，客户把曲线和表格并排打开就看出矛盾——这是本域唯一红线。
+ *
+ * 均摊到点的比例与 `dayValueOf` 同一条逻辑（同元组挂点数），所以树上看到的点和曲线是一条线。
+ */
+export function pointHistory(pointIds: string[], days = M.MONTH_ELAPSED_DAYS): PointHistoryResult {
+  const dates = M.DAY_DATES.slice(-days);
+  const series: PointSeries[] = [];
+  for (const id of pointIds) {
+    const p = find(ems.meterPoints, id);
+    if (!p) continue;
+    const direction = p.direction ?? "消耗";
+    let unitId: string | undefined = p.unitId;
+    let monthQty = 0;
+    let lastDay: number | null = null;
+    let missing = false;
+    while (unitId) {
+      const rows = ems.actuals.filter(
+        (x) => x.unitId === unitId && x.mediaCode === p.mediaCode && x.direction === direction,
+      );
+      const m = rows.find((x) => x.granularity === "month");
+      const d = rows.find((x) => x.granularity === "day");
+      if (m) {
+        monthQty = m.value;
+        lastDay = d ? (d.missing ? null : d.value) : null;
+        missing = d?.missing ?? false;
+        break;
+      }
+      unitId = M.UNIT_MAP[unitId]?.parentId;
+    }
+    const unit = M.DISP[p.mediaCode].unit;
+    if (!monthQty) {
+      series.push({
+        pointId: id,
+        name: p.name,
+        mediaCode: p.mediaCode,
+        unit,
+        values: dates.map(() => null),
+        stats: { avg: null, max: null, min: null, std: null },
+      });
+      continue;
+    }
+    const peers =
+      ems.meterPoints.filter(
+        (x) =>
+          x.mediaCode === p.mediaCode &&
+          (x.direction ?? "消耗") === direction &&
+          (x.unitId === unitId || (M.UNIT_MAP[x.unitId]?.path.startsWith(`${M.UNIT_MAP[unitId!].path}/`) ?? false)),
+      ).length || 1;
+    const daily = M.daySplit(monthQty, lastDay ?? undefined).map((v) => round(v / peers, M.DISP[p.mediaCode].digits));
+    /* 中断那天的数不存在（不是 0）：补 0 会把日均拉低，客户拿计算器一复核就露馅 */
+    if (missing) daily[daily.length - 1] = null;
+    const vals = daily.slice(-days);
+    const have = vals.filter((v): v is number => v !== null);
+    const avg = have.length ? round(have.reduce((a, b) => a + b, 0) / have.length, M.DISP[p.mediaCode].digits) : null;
+    series.push({
+      pointId: id,
+      name: p.name,
+      mediaCode: p.mediaCode,
+      unit,
+      values: vals,
+      stats: {
+        avg,
+        max: have.length ? round(Math.max(...have), M.DISP[p.mediaCode].digits) : null,
+        min: have.length ? round(Math.min(...have), M.DISP[p.mediaCode].digits) : null,
+        std:
+          avg === null || have.length < 2
+            ? null
+            : round(Math.sqrt(have.reduce((a, b) => a + (b - avg) ** 2, 0) / have.length), M.DISP[p.mediaCode].digits),
+      },
+    });
+  }
+  return { dates, series };
+}

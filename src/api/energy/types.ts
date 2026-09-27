@@ -459,3 +459,49 @@ export interface Person {
   role: string;
   dept: string;
 }
+
+/* ── 采集层的读数与历史（EC0005）───────────────────────────────────────── */
+
+/**
+ * 计量点实时读数。**只有「点 + 通道状态」两件事是查表得来的，数值全是现算的**：
+ *
+ * 实时值不配落库——存了就有两份账，tick 抖一次改一次，月账和它迟早分叉。
+ * 所以这个对象是 `dayValueOf()`（该点应有日均）÷ 24h × 当前小时的负荷系数现算出来的，
+ * 通道离线的点 `value` 给 `null`（画面画断点），并把断点续传的待补条数一起回，
+ * 免得 EC0005 拿最后一次读数冒充"当前值"、而 EC0002 那边写着离线。
+ */
+export interface PointReading {
+  pointId: string;
+  name: string;
+  mediaCode: MediumCode;
+  unitId: string;
+  dataKind: MeterPoint["dataKind"];
+  /** 展示值，已过 `model.DISP` 换算（页面不再自己乘一万）；断点时为 `null` */
+  value: number | null;
+  /** 展示单位，与 `value` 同级（万kWh / m³/h / …） */
+  unit: string;
+  /** 通道状态原样带出来：读数的可信度是它的一部分，不是另开一张表查的事 */
+  channelStatus: CollectChannel["status"];
+  pendingUpload: number;
+  /** `YYYY-MM-DD HH:mm:ss`，演示时钟口径 */
+  at: string;
+  /** 状态量点的 1/0；非状态量点为 `undefined` */
+  on?: boolean;
+}
+
+/** 一个计量点的历史序列 + 三个统计量（EC0005 下半区那张小表） */
+export interface PointSeries {
+  pointId: string;
+  name: string;
+  mediaCode: MediumCode;
+  unit: string;
+  /** 与 `days` 等长；缺失日为 `null`（断点续传期间没数，画断线而不是补 0——补 0 会把日均拉低） */
+  values: Array<number | null>;
+  stats: { avg: number | null; max: number | null; min: number | null; std: number | null };
+}
+
+/** `POST /ems/point/history` 的响应：日期轴给一次，各点只给等长数组 */
+export interface PointHistoryResult {
+  dates: string[];
+  series: PointSeries[];
+}

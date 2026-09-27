@@ -343,10 +343,44 @@ export const DISP: Record<MediumCode, { unit: string; scale: number; digits: num
   PULV: { unit: "t", scale: 1, digits: 0 },
 };
 
-/** 实物量 → 展示值 */
+/**
+ * 实物量 → 展示值
+ */
 export function toDisp(media: MediumCode, qty: number) {
   const d = DISP[media];
   return { value: Math.round((qty / d.scale) * 10 ** d.digits) / 10 ** d.digits, unit: d.unit };
+}
+
+/**
+ * **速率**口径（EC0005 实时读数、EM 系列的瞬时流量用）：`DISP` 是"量"的口径，
+ * 把 万m³ 套在每小时的率上会印出「9.6 万m³」这种既没量纲也没意义的东西。
+ *
+ * 电的率就是功率：kWh/h 数值上等于 kW，所以这里 scale 给 1、单位写 kW，
+ * 不再往「MW」跳一档——跳档要在页面里写 1e3，那就又是两处口径。
+ */
+export const RATE_DISP: Record<MediumCode, { unit: string; scale: number; digits: number }> = {
+  ELEC: { unit: "kW", scale: 1, digits: 0 },
+  BFG: { unit: "m³/h", scale: 1, digits: 0 },
+  COG: { unit: "m³/h", scale: 1, digits: 0 },
+  LDG: { unit: "m³/h", scale: 1, digits: 0 },
+  MIG: { unit: "m³/h", scale: 1, digits: 0 },
+  AIR: { unit: "m³/h", scale: 1, digits: 0 },
+  O2: { unit: "m³/h", scale: 1, digits: 0 },
+  N2: { unit: "m³/h", scale: 1, digits: 0 },
+  AR: { unit: "m³/h", scale: 1, digits: 0 },
+  STEAM: { unit: "t/h", scale: 1, digits: 1 },
+  WATER: { unit: "m³/h", scale: 1, digits: 0 },
+  NG: { unit: "m³/h", scale: 1, digits: 0 },
+  COAL: { unit: "t/h", scale: 1, digits: 2 },
+  COKE: { unit: "t/h", scale: 1, digits: 2 },
+  PULV: { unit: "t/h", scale: 1, digits: 2 },
+};
+
+/** 实物量（日量）→ 小时速率的展示值 */
+export function toRateDisp(media: MediumCode, perHour: number) {
+  const d = RATE_DISP[media];
+  const f = 10 ** d.digits;
+  return { value: Math.round((perHour / d.scale) * f) / f, unit: d.unit };
 }
 
 /**
@@ -1862,8 +1896,46 @@ export function purchaseCost(effect: FlowEffect = {}) {
    ══════════════════════════════════════════════════════════════════════════ */
 
 /**
- * 月实绩：厂 × 介质 × 方向 一条；日实绩 = 月量 ÷ 当月天数。
- * 日值**故意不叠加随机**——`recalcActual()` 重算的是统计节点层，
+ * 日分布形状：把一个月量摊到 `MONTH_ELAPSED_DAYS` 天上的**份额**（归一化到和为 1）。
+ *
+ * 它存在的唯一理由是让 EP0002 的日行与 EC0005 的历史曲线出自同一次分摊。此前日行是
+ * 「月量 ÷ 26」这一份、曲线若另起炉灶就是第二份，客户把曲线最后一格和实绩表并排一看
+ * 就当场对不上——这是本域唯一禁止的东西。形状本身只是给曲线一点起伏
+ * （两个不同周期的正弦叠加，不是随机：随机数每次刷新曲线就换一副样子），
+ * **不参与任何月账口径**：月行始终 = Σ日份额，摊得多陡都不改总量。
+ */
+export const DAILY_SHAPE: number[] = (() => {
+  const raw = Array.from({ length: MONTH_ELAPSED_DAYS }, (_, i) => {
+    const t = (i + 1) * ((2 * Math.PI) / 7);
+    const u = (i + 1) * ((2 * Math.PI) / 13);
+    return 1 + 0.045 * Math.sin(t) + 0.03 * Math.cos(u);
+  });
+  const sum = raw.reduce((a, b) => a + b, 0);
+  return raw.map((v) => v / sum);
+})();
+
+/** 日期轴：`2026-09-01 … 2026-09-26`，末位恒等于 `DEMO_YESTERDAY`（账上那条日行的日期） */
+export const DAY_DATES: string[] = Array.from(
+  { length: MONTH_ELAPSED_DAYS },
+  (_, i) => `${DEMO_MONTH}-${String(i + 1).padStart(2, "0")}`,
+);
+
+/**
+ * 月量 → 逐日量。`lastOverride` 给的是**账上已有的末日值**（人工校正、补录都会改它）：
+ * 末日照抄，其余日按形状重新分摊到剩下的量——于是曲线上那一天显示的就是校正值本身，
+ * 而 Σ日行 仍等于月行。少了这个入参，EC0005 会把 EP0002 校正过的日子又"分"回平均值。
+ */
+export function daySplit(monthQty: number, lastOverride?: number): number[] {
+  if (lastOverride === undefined || lastOverride === null) return DAILY_SHAPE.map((s) => round(monthQty * s, 2));
+  const rest = monthQty - lastOverride;
+  const tail = DAILY_SHAPE.slice(0, -1);
+  const tailSum = tail.reduce((a, b) => a + b, 0);
+  return [...tail.map((s) => round((rest * s) / tailSum, 2)), round(lastOverride, 2)];
+}
+
+/**
+ * 月实绩：厂 × 介质 × 方向 一条 + 一条**代表日**行（日期 = `DEMO_YESTERDAY`）。
+ * 日值走 `daySplit` 的形状、**故意不叠加随机**——`recalcActual()` 重算的是统计节点层，
  * 若日值随机，重算一次页面就跳一遍数，客户会觉得数据不可靠。
  */
 export function buildActualRecords(month = DEMO_MONTH, effect: FlowEffect = {}): ActualRecord[] {
@@ -1887,13 +1959,14 @@ export function buildActualRecords(month = DEMO_MONTH, effect: FlowEffect = {}):
   for (const f of l.flows.values()) {
     const source: ActualRecord["source"] = f.quotaId ? "采集" : "公式";
     push(f, "month", `${month}-01`, f.qty, source);
-    /* 日实绩 = 月量 ÷ **已过天数**（不是 ÷30）：除以 30 会让「日均 × 30 = 月量」在页面上对不上，
-       而日行的日期标在 09-30 更是直接穿过演示时钟。 */
+    /* 日实绩取 `daySplit` 的末日份额（≈ 月量 ÷ 已过天数，带一点起伏）：
+       除以 30 会让「日均 × 30 = 月量」在页面上对不上，而日行日期标在 09-30 更是直接穿过演示时钟。
+       非演示月（上月对比数据）没有曲线需求，摊平即可。 */
     push(
       f,
       "day",
       month === DEMO_MONTH ? DEMO_YESTERDAY : `${month}-${String(MONTH_DAYS).padStart(2, "0")}`,
-      f.qty / (month === DEMO_MONTH ? MONTH_ELAPSED_DAYS : MONTH_DAYS),
+      month === DEMO_MONTH ? daySplit(f.qty)[MONTH_ELAPSED_DAYS - 1] : f.qty / MONTH_DAYS,
       source,
     );
   }

@@ -1,6 +1,6 @@
 import { ref } from "vue";
 
-import { mediumApi, unitApi } from "@/api/energy";
+import { channelApi, mediumApi, unitApi } from "@/api/energy";
 
 /**
  * 外键 → 名称的前端翻译表（能源域自带一份）。
@@ -16,12 +16,8 @@ import { mediumApi, unitApi } from "@/api/energy";
  * 每页各拉一次就是重复请求。`GET /ems/unit/list`、`/ems/medium/list` 就是为这件事存在的端点
  * （不分页取全量）。
  *
- * **不翻译的两类值**：
- * - 计量点 `MP-00001` 这类 id 直接显示即可——行里本来就有 `name` 列，id 列只是主键，再拉一张
- *   几百行的测点表进缓存是给浏览器添堵；
- * - 采集通道 `channelId` → 站所名**暂缓**：端点（`/ems/channel/list`）还没开，P2 接入时在
- *   `ensureLoaded` 里加一路 `channelApi.list()`、在返回值里加 `channelName/channelMap` 即可——
- *   页面侧的 spec 都是 computed，加一个键不改任何页面签名。
+ * **不翻译的一类值**：计量点 `MP-00001` 这类 id 直接显示即可——行里本来就有 `name` 列，
+ * id 列只是主键，再拉一张几百行的测点表进缓存是给浏览器添堵。
  *
  * ⚠️ 名称到位后页面要**重查一次列表**（`ListPage` 的 `reload`）：AG Grid 的 `valueFormatter`
  * 只在单元格渲染时跑，缓存表是后到的，不重查就会有一屏 id。
@@ -29,15 +25,19 @@ import { mediumApi, unitApi } from "@/api/energy";
 
 const unitNames = ref<Record<string, string>>({});
 const mediumNames = ref<Record<string, string>>({});
+const channelNames = ref<Record<string, string>>({});
 
 let loading: Promise<void> | null = null;
 
 function ensureLoaded(): Promise<void> {
   if (!loading) {
-    loading = Promise.all([unitApi.list(), mediumApi.list()])
-      .then(([units, media]) => {
+    loading = Promise.all([unitApi.list(), mediumApi.list(), channelApi.list()])
+      .then(([units, media, channels]) => {
         for (const u of units) unitNames.value[u.id] = u.name;
         for (const m of media) mediumNames.value[m.code] = m.name;
+        /* 通道 → 站所名：EC0001 的「采集通道」列和 EC0002 的影响面文案都读它。
+           十几条通道，缓存成本可以忽略，而 EC0001 显示 `CH-003` 是客户一定看不懂的一列。 */
+        for (const c of channels) channelNames.value[c.id] = c.stationName;
       })
       .catch(() => {
         // 拉不到就保持空表：列会退回显示 id/编码，比整页报错强；下次再进页面会重新拉
@@ -58,6 +58,8 @@ export function useNameMaps() {
     unitName: (id: unknown) => unitNames.value[String(id ?? "")] ?? String(id ?? "—"),
     /** 介质名（`BFG` → 高炉煤气；找不到回编码本身，介质字典缺行时表仍可读） */
     mediumName: (code: unknown) => mediumNames.value[String(code ?? "")] ?? String(code ?? "—"),
+    /** 采集通道 → 无人值守站所名（`CH-003` → 「高炉鼓风站」） */
+    channelName: (id: unknown) => channelNames.value[String(id ?? "")] ?? String(id ?? "—"),
     /**
      * 原始映射表，给**详情弹窗的 `map`** 用：`DetailSection.fields[].map` 要的是
      * 「编码 → 文案」一张表，不是函数。这里返回的是同一份缓存引用（不复制），
@@ -65,5 +67,6 @@ export function useNameMaps() {
      */
     unitMap: unitNames,
     mediumMap: mediumNames,
+    channelMap: channelNames,
   };
 }

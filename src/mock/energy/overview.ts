@@ -23,4 +23,15 @@ export const energyOverviewRoutes: RouteMap = {
   "get /ems/unit/list": listAll(() => ems.units),
   /** 层级树：`rootId` 不给就是全厂；给了则连子树一起返回、已按 path 深度优先排序 */
   "get /ems/unit/tree": getHandler((q) => unitTree(q.rootId ? String(q.rootId) : undefined)),
+
+  /* ── EC 采集层的候选（P2）───────────────────────────────────────────── */
+
+  /**
+   * 计量点全量。EC0001 的网络树要在**一次请求**里把点挂到单元树上（树深度 4 级、点 200+，
+   * 走 listPage 分页拼不出完整树），EC0005 的测点选择器和 EC0004 的"对应计量点"下拉也读它。
+   */
+  "get /ems/meterPoint/list": listAll(() => ems.meterPoints),
+
+  /** 通道下拉（EC0001 给计量点指定通道、EC0002 顶部统计现算「在线 / 异常 / 离线」） */
+  "get /ems/channel/list": listAll(() => ems.channels),
 };

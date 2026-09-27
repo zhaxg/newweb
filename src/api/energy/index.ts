@@ -1,6 +1,20 @@
 import { requestClient } from "@/api/_core/request";
 
-import type { ActionResult, AlarmRule, EnergyMedium, PageResult, Person, PriceTemplate, UsingUnit } from "./types";
+import type {
+  ActionResult,
+  AlarmRule,
+  CollectChannel,
+  EnergyMedium,
+  Instrument,
+  MeterPoint,
+  PageResult,
+  Person,
+  PointHistoryResult,
+  PointReading,
+  PriceTemplate,
+  QualityTicket,
+  UsingUnit,
+} from "./types";
 
 /**
  * 能源管理（EMS）演示域接口层。
@@ -92,4 +106,65 @@ export const priceTemplateApi = {
   save: (d: Record<string, any>) => emsPost<ActionResult<PriceTemplate>>("/priceTemplate/save", d),
   /** 启停：同一时刻只允许一个生效模板，端点里做互斥（两个都"生效"是电价页最丢人的错误） */
   toggle: (id: string) => emsPost<ActionResult<PriceTemplate>>("/priceTemplate/toggle", { id }),
+};
+
+/* ── EC 采集层 ──────────────────────────────────────────────────────────── */
+
+/** 计量点（EC0001 网络树叶子、EC0005 曲线来源、EP0002 重算输入） */
+export const meterPointApi = {
+  list: () => emsGet<MeterPoint[]>("/meterPoint/list"),
+  page: emsList<MeterPoint>("/meterPoint"),
+  save: (d: Record<string, any>) => emsPost<ActionResult<MeterPoint>>("/meterPoint/save", d),
+  remove: (id: string) => emsPost<ActionResult>("/meterPoint/remove", { id }),
+};
+
+export const channelApi = {
+  list: () => emsGet<CollectChannel[]>("/channel/list"),
+  page: emsList<CollectChannel>("/channel"),
+  save: (d: Record<string, any>) => emsPost<ActionResult<CollectChannel>>("/channel/save", d),
+  remove: (id: string) => emsPost<ActionResult>("/channel/remove", { id }),
+  /** ▶模拟中断：整站影响面最大的一个按钮（关联实绩置缺失、待补传累积、发级别3报警） */
+  break: (id: string) => emsPost<ActionResult>("/channel/break", { id }),
+  /** ▶瞬间抖动：掉一拍立刻自恢复，走的是"恢复回填"那条支路 */
+  flap: (id: string) => emsPost<ActionResult>("/channel/flap", { id }),
+  /** 一键复归：所有非在线通道恢复 + 回填中断期间的缺失实绩 */
+  restore: () => emsPost<ActionResult>("/channel/restore", {}),
+};
+
+export const instrumentApi = {
+  page: emsList<Instrument>("/instrument"),
+  save: (d: Record<string, any>) => emsPost<ActionResult<Instrument>>("/instrument/save", d),
+  /** 检定登记：`nextVerifyAt` 省略则按台账上的强检周期自己推算（周期只在 EC0004 一处） */
+  verify: (id: string, nextVerifyAt?: string) =>
+    emsPost<ActionResult<Instrument>>("/instrument/verify", nextVerifyAt ? { id, nextVerifyAt } : { id }),
+  fault: (id: string) => emsPost<ActionResult<Instrument>>("/instrument/fault", { id }),
+  /**
+   * 手动重扫检定有效期：逐台按下次检定日**重算状态**并回计数。
+   * 超期报警在装配时已由 `scanVerifyDeadlines()` 发过一轮（同点同级的未关闭报警不重复发），
+   * 所以这个按钮给的是「现在扫一遍是什么结果」，不是「再制造一批报警」。
+   */
+  scan: () => emsPost<ActionResult<{ overdue: number; soon: number }>>("/instrument/scan", {}),
+};
+
+export const qualityApi = {
+  page: emsList<QualityTicket>("/quality"),
+  /** ▶生成当日异常：判据与倍率在 `model.QUALITY_INJECT`，页面不给数 */
+  gen: (date?: string) => emsPost<ActionResult>("/quality/gen", date ? { date } : {}),
+  fill: (id: string, value?: number) => emsPost<ActionResult<QualityTicket>>("/quality/fill", { id, value }),
+  check: (id: string) => emsPost<ActionResult<QualityTicket>>("/quality/check", { id }),
+  invalid: (id: string, reason?: string) => emsPost<ActionResult>("/quality/void", { id, reason }),
+};
+
+/**
+ * 实时读数与历史曲线（EC0005）。三个都是 POST：测点 id 列表可能上百个，塞 query 会撞 URL 长度。
+ *
+ * `tick`（推进演示时钟一拍）与 `realtime`（读当前读数）**刻意是两个端点**：
+ * 合并成一个的话，任何"只想看一眼"的调用都在偷偷推全站时钟——柜位、负荷、待补传一起走，
+ * EP0002 的"当日"会在客户眼皮底下变成第二天。月账层不受影响（`tickRealtime` 只动实时层）。
+ */
+export const pointApi = {
+  tick: () => emsPost<{ step: number; ldgPct: number }>("/point/tick", {}),
+  realtime: (pointIds: string[] = []) => emsPost<PointReading[]>("/point/realtime", { pointIds }),
+  history: (pointIds: string[], days?: number) =>
+    emsPost<PointHistoryResult>("/point/history", days ? { pointIds, days } : { pointIds }),
 };

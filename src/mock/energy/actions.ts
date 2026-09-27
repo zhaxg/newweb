@@ -1,18 +1,36 @@
 import type { RouteMap } from "../admin/core";
 import {
+  checkTicket,
+  commBreak,
+  commFlap,
+  commRestore,
+  ems,
+  fillTicket,
+  genQualityIssues,
+  liveReadings,
   moveUnit,
+  pointHistory,
+  removeChannel,
   removeMedium,
+  removeMeterPoint,
   removeRow,
   saveAlarmRule,
+  saveChannel,
+  saveInstrument,
   saveMedium,
+  saveMeterPoint,
   savePriceTemplate,
   saveUnit,
+  scanVerifyDeadlines,
   toggleIn,
+  toggleInstrumentFault,
   togglePriceTemplate,
-  ems,
+  tickRealtime,
+  verifyInstrument,
+  voidTicket,
 } from "./store";
 import { postHandler } from "./query";
-import type { ActionResult } from "@/api/energy/types";
+import type { ActionResult, PointHistoryResult, PointReading } from "@/api/energy/types";
 
 /**
  * 能源域的写端点。
@@ -50,6 +68,64 @@ export const energyActionRoutes: RouteMap = {
   "post /ems/priceTemplate/save": postHandler((b) => savePriceTemplate(b)),
   "post /ems/priceTemplate/toggle": postHandler((b) => togglePriceTemplate(String(b.id))),
 
+  /* ── EC0001 计量点 ────────────────────────────────────────────────── */
+  "post /ems/meterPoint/save": postHandler((b) => saveMeterPoint(b)),
+  "post /ems/meterPoint/remove": postHandler((b) => removeMeterPoint(String(b.id))),
+
+  /* ── EC0002 采集通道 ──────────────────────────────────────────────── */
+  "post /ems/channel/save": postHandler((b) => saveChannel(b)),
+  "post /ems/channel/remove": postHandler((b) => removeChannel(String(b.id))),
+  /**
+   * 三个"后果"按钮。`break` 是全链路的引信：置离线 → 挂点读数变空 →
+   * 该元组的实绩置缺失 → 发级别3「通讯中断」报警 → 待补传条数随 tick 累积。
+   * `restore` 是把这条链整个倒着走一遍（回填缺失实绩 + 关报警），
+   * 所以**必须**成对出现：只给中断不给复归，页面上就留下一个演示无法收拾的残局。
+   */
+  "post /ems/channel/break": postHandler((b) => commBreak(String(b.id))),
+  "post /ems/channel/flap": postHandler((b) => commFlap(String(b.id))),
+  "post /ems/channel/restore": postHandler(() => commRestore()),
+
+  /* ── EC0004 仪表台账 ──────────────────────────────────────────────── */
+  "post /ems/instrument/save": postHandler((b) => saveInstrument(b)),
+  /** 下次检定日可省——省略即按台账的强检周期推算（周期口径只允许住在 EC0004 一处） */
+  "post /ems/instrument/verify": postHandler((b) =>
+    verifyInstrument(String(b.id), b.nextVerifyAt ? String(b.nextVerifyAt) : undefined),
+  ),
+  "post /ems/instrument/fault": postHandler((b) => toggleInstrumentFault(String(b.id))),
+  /**
+   * 重扫检定有效期。装配时已经扫过一轮（`index.ts`），这里的价值是**演示节奏**：
+   * 讲完台账当场点一下，回 EM0005 就能看到那条级别 4 的超期报警。
+   * 幂等由 `scanVerifyDeadlines` 自己兜——同点同级的未关闭报警不重复发。
+   */
+  "post /ems/instrument/scan": postHandler(() => scanVerifyDeadlines()),
+
+  /* ── EC0003 数据质量工单 ──────────────────────────────────────────── */
+  "post /ems/quality/gen": postHandler((b) => genQualityIssues(b.date ? String(b.date) : undefined)),
+  /** 补录值空串 = 用建议值（页面把 `suggestValue` 直接填进表单，改不改都由这里兜住） */
+  "post /ems/quality/fill": postHandler((b) =>
+    fillTicket(String(b.id), b.value === undefined || b.value === "" ? undefined : Number(b.value)),
+  ),
+  "post /ems/quality/check": postHandler((b) => checkTicket(String(b.id))),
+  "post /ems/quality/void": postHandler((b) => voidTicket(String(b.id), b.reason ? String(b.reason) : "")),
+
+  /* ── EC0005 实时读数与历史曲线 ────────────────────────────────────── */
+  /**
+   * 三个端点分两种角色：`tick` 是**唯一有副作用**的（推柜位均值回归、走负荷、跑剧本、越红线发报警），
+   * `realtime`/`history` 只读、**零落库**——读数按当小时负荷系数推，历史按 `M.daySplit` 摊。
+   * 一旦把读数存成字段，tick 与人工校正就会各写一份，曲线和 EP0002 立刻分家。
+   *
+   * 为什么不把 tick 合进 realtime：合了就是任何"只想看一眼"的调用都在偷偷推全站时钟，
+   * EP0002 的"当日"会在客户眼皮底下变成第二天。**月账层本来就不受 tick 影响**，这里只动实时层。
+   *
+   * `pointIds` 为空 = 全量读数（EC0005 的表格模式要「一眼看全厂哪些点断了」）。
+   * 读取两个端点返回**数据本身**而不是 `ActionResult`：这不是动作，没有 ok/msg 可说。
+   */
+  "post /ems/point/tick": postHandler(() => tickRealtime()),
+  "post /ems/point/realtime": postHandler((b): PointReading[] => liveReadings((b.pointIds ?? []) as string[])),
+  "post /ems/point/history": postHandler((b): PointHistoryResult =>
+    pointHistory((b.pointIds ?? []) as string[], Number(b.days) || undefined),
+  ),
+
   /* ── 导出（模拟）─────────────────────────────────────────────────── */
   /**
    * 只回一个**文件名**，不落盘、不生成内容。
@@ -83,4 +159,9 @@ const EXPORT_NAMES: Record<string, string> = {
   EG0002: "用能单元",
   EG0003: "报警规则",
   priceTemplate: "分时电价模板",
+  EC0001: "计量网络",
+  EC0002: "采集通道",
+  EC0003: "数据质量工单",
+  EC0004: "计量仪表台账",
+  EC0005: "计量点历史数据",
 };

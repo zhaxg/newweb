@@ -112,11 +112,19 @@ const TAG_BASE =
   "inline-flex max-w-full items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium whitespace-nowrap overflow-hidden";
 
 /**
+ * 状态词 → 色标 class。AG Grid 的 `tagRenderer` 与**手绘表格**（EC0005 的实时读数表就不是
+ * AG Grid，它是一张要跟着 3s 心跳重画的表）都调这一个函数：色标的圆角、内距、字号只在这里
+ * 定义一次，两处画出来的才是同一个标签。查不到词表回中性——**不隐藏、不变红**，
+ * 新增状态词时页面照常出数据，只是暂时没配色，比漏渲染一行好排查。
+ */
+export function tagClass(word: string, local: Record<string, string> = {}, base: Record<string, string> = TAG_CLASS) {
+  return `${TAG_BASE} ${local[word] ?? base[word] ?? MUTE}`;
+}
+
+/**
  * 状态列的 cellRenderer：把单元格文案画成色标。
  *
  * 用 DOM 构造而不是 Vue 组件（同 `rowActions.actionRenderer`，理由见那里）。
- * 取不到词表的值原样显示为中性色——**不隐藏、不变红**：新增一个状态词时
- * 页面照常出数据，只是暂时没配色，比漏渲染一行好排查。
  *
  * 上色读的是 `valueFormatted`（列上同时给了 `valueFormatter` 时）而不是原始值：
  * 报警 `level` 行里存的是数字 1~5，先由 formatter 翻成「事故/重大/…」再查色，
@@ -127,7 +135,7 @@ export function tagRenderer(local: Record<string, string> = {}, base: Record<str
     const v = p.valueFormatted ?? p.value;
     const text = v === null || v === undefined || v === "" ? "—" : String(v);
     const wrap = document.createElement("span");
-    wrap.className = `${TAG_BASE} ${local[text] ?? base[text] ?? MUTE}`;
+    wrap.className = tagClass(text, local, base);
     wrap.textContent = text;
     return wrap;
   };
