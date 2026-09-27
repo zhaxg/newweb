@@ -230,6 +230,261 @@ export interface DispatchSuggestion {
   createdAt: string;
 }
 
+/* ── 监控域（EM0001~0004 / EM0007） ─────────────────────────────────────── */
+
+/**
+ * 一个数该不该变色。**阈值在 `model.monitorStats()` 里，不在这份契约里，更不在页面里**——
+ * 页面写 `v > 90 ? "bad" : "ok"` 就是给同一个量造第二个真源，EM0001 的黄条与大屏的红条立刻不同步。
+ */
+export type StatTone = "ok" | "warn" | "bad";
+
+/** 画布图元：几何 + 已经解析成数值的监测量 + （柜类图元）实时柜位 */
+export interface TopoNodeDto {
+  id: string;
+  label: string;
+  kind: "bus" | "box" | "gen" | "load" | "holder" | "valve";
+  x: number;
+  y: number;
+  w?: number;
+  h?: number;
+  /** 关联的计量点 id 或煤气柜 id */
+  ref?: string;
+  /** `ref` 指到柜时带的实时柜位（%），页面据此画柜体填充高度 */
+  holder?: GasHolder;
+  value?: number;
+  unit?: string;
+  tone: StatTone;
+}
+
+export interface TopoEdgeDto {
+  from: string;
+  to: string;
+  style?: "solid" | "dash" | "thick";
+  via?: Array<[number, number]>;
+  /** 介质专色。颜色真源是 `model.MEDIUMS[].color`，在这里解析完，页面不再查介质表 */
+  color?: string;
+}
+
+export interface TopoViewDto {
+  viewBox: string;
+  nodes: TopoNodeDto[];
+  edges: TopoEdgeDto[];
+}
+
+/** 一张监控页共用的右侧信息 */
+export interface MonitorBaseDto {
+  scene: TopoViewDto;
+  /** 当前活动报警（未关闭），按级别升序、时间降序 */
+  alarms: EnergyAlarm[];
+  /** 演示时钟 */
+  stamp: string;
+  step: number;
+}
+
+/** EM0001 供配电一次图 */
+export interface PowerViewDto extends MonitorBaseDto {
+  nowMw: number;
+  hour: number;
+  /** 负荷近 60 拍历史（MW），页面直接画实时折线 */
+  history: number[];
+  curve: Array<{ hour: number; mw: number; tier: string; price: number }>;
+  feeders: Array<{ unitId: string; name: string; kw: number; sharePct: number; tone: StatTone }>;
+  transformers: Array<{
+    id: string;
+    name: string;
+    ratedMVA: number;
+    loadMVA: number;
+    ratioPct: number;
+    tone: StatTone;
+  }>;
+  demand: { declaredKVA: number; limitMw: number; appMva: number; utilPct: number; maxUtilPct: number; tone: StatTone };
+  pf: { actual: number; target: number; tone: StatTone };
+  selfGen: { mw: number; ratePct: number; purchaseKw: number; tone: StatTone };
+  genUnits: Array<{
+    id: string;
+    name: string;
+    media: MediumCode;
+    running: boolean;
+    mw: number;
+    maxMw: number;
+    loadRatioPct: number;
+    fuelM3h: number;
+    tone: StatTone;
+  }>;
+  recoveries: Array<{ id: string; name: string; kwh: number; mw: number }>;
+  price: { tier: string; now: number; avg: number };
+}
+
+/** 一条煤气总管的月均口径 + 实时柜位 */
+export interface GasLineDto {
+  media: MediumCode;
+  name: string;
+  color: string;
+  incomeM3h: number;
+  processUseM3h: number;
+  genUseM3h: number;
+  exportM3h: number;
+  ventM3h: number;
+  ventRatePct: number;
+  /** 该介质柜组的柜容加权平均柜位（%） */
+  levelPct: number;
+  tone: StatTone;
+}
+
+/** EM0002 煤气管网 */
+export interface GasViewDto extends MonitorBaseDto {
+  lines: GasLineDto[];
+  holders: GasHolder[];
+  ventTotalM3h: number;
+  ventRatePct: number;
+  /** 当前剧本场景（what-if 的初始值），滑杆改的是它、不是落库数据 */
+  scenario: GasScenarioDto;
+  /** 该场景的仿真结果 */
+  sim: GasSimDto;
+  suggestions: DispatchSuggestion[];
+  /** 未确认报警条数（大屏与角标用） */
+  unacked: number;
+}
+
+/** 煤气 what-if 场景参数（对应 `model.GasScenario`，页面只发这份 JSON） */
+export interface GasScenarioDto {
+  media?: "BFG" | "COG" | "LDG";
+  /** 追加转炉煤气瞬时进气 m³/min */
+  extraLdgM3min?: number;
+  /** 追加高炉煤气瞬时发生 m³/min */
+  extraBfgM3min?: number;
+  /** CCPP 目标出力 MW */
+  ccppMw?: number;
+  /** CFB 投运台数 0/1/2 */
+  cfbUnits?: number;
+  /** 烧结点火用气变化 %：正=多用气（消纳富余） */
+  sinterUsePct?: number;
+  /** 关注的柜 id */
+  holderId?: string;
+}
+
+/** 仿真结果（EM0002 / EM0007 共用一份，两页的倒计时因此是同一个数） */
+export interface GasSimDto {
+  media: "BFG" | "COG" | "LDG";
+  holderId: string;
+  holderName: string;
+  levelPct: number;
+  hiLimitPct: number;
+  ventM3min: number;
+  ventM3h: number;
+  netFillM3min: number;
+  /** 触顶倒计时 min；`null` = 柜位不在上涨 */
+  minutesToHigh: number | null;
+  baseVentM3min: number;
+  surplusM3min: number;
+  fillCapM3min: number;
+  headroomM3: number;
+  ccppMw: number;
+  ccppMaxMw: number;
+  cfbUnits: number;
+  cfbNewSinkM3min: number;
+  sinterDeltaM3min: number;
+  gainMonth: number;
+}
+
+/** EM0003 蒸汽与水平衡 */
+export interface SteamViewDto extends MonitorBaseDto {
+  sources: Array<{
+    id: string;
+    name: string;
+    tier: string;
+    offNetwork: boolean;
+    note: string;
+    perUnitTph: number;
+    units: number;
+    totalTph: number;
+    value: number;
+    tone: StatTone;
+  }>;
+  uses: Array<{ unitId: string; dir: string; name: string; tph: number; sharePct: number }>;
+  tiers: Array<{ id: string; name: string; mpa: number; tempC: number; prodTph: number }>;
+  header: { mpa: number; tempC: number; tph: number };
+  drums: Array<{ id: string; name: string; pct: number; mpa: number }>;
+  total: { producedTph: number; usedTph: number; lossTph: number; lossPct: number; tone: StatTone };
+  water: {
+    newWaterM3h: number;
+    lossPct: number;
+    circTotalM3h: number;
+    loops: Array<{ id: string; name: string; circM3h: number; makeupM3h: number; supplyC: number; returnC: number }>;
+    users: Array<{ unitId: string; name: string; m3h: number }>;
+  };
+}
+
+/** EM0004 氧氮氩 */
+export interface GasPlantViewDto extends MonitorBaseDto {
+  units: Array<{
+    id: string;
+    name: string;
+    o2Nm3h: number;
+    capLoadPct: number;
+    kwhPerNm3: number;
+    kw: number;
+    tone: StatTone;
+  }>;
+  purity: Record<"O2" | "N2" | "AR", { pct: number; specPct: number }>;
+  products: Array<{
+    media: MediumCode;
+    name: string;
+    color: string;
+    selfNm3h: number;
+    useNm3h: number;
+    exportNm3h: number;
+    kwhPerNm3: number;
+    lossPct: number;
+  }>;
+  headers: Array<{
+    id: string;
+    media: MediumCode;
+    name: string;
+    mpa: number;
+    loMpa: number;
+    hiMpa: number;
+    flowNm3h: number;
+  }>;
+  tanks: Array<{ id: string; media: MediumCode; name: string; capM3: number; pct: number }>;
+  exportArNm3h: number;
+}
+
+/** what-if 滑杆的一档量程（真源是 `model.whatIfBounds()`，页面照它摆控件） */
+export interface SimBoundDto {
+  min: number;
+  max: number;
+  step: number;
+}
+
+/** EM0007 煤气平衡仿真：预测曲线 + 建议 + what-if */
+export interface GasSimViewDto {
+  stamp: string;
+  step: number;
+  load: Array<{ hour: number; mw: number; tier: string; band: number }>;
+  gas: Array<{ hour: number; bfg: number; cog: number; ldg: number }>;
+  scenario: GasScenarioDto;
+  sim: GasSimDto;
+  /** 未处置基线（同一柜位、同样的旋钮全部归零），建议卡的削减量与它比 */
+  unmitigated: GasSimDto;
+  suggestions: DispatchSuggestion[];
+  holders: GasHolder[];
+  levelPct: number;
+  /** 五支滑杆的量程。页面一个 min/max 都不写：满量程是机组参数派生的物理上限，
+   *  抄在页面上就会出现「滑杆拖到头、仿真说超许可」的页间矛盾（见 `model.whatIfBounds()`） */
+  bounds: Record<"extraLdgM3min" | "extraBfgM3min" | "ccppMw" | "cfbUnits" | "sinterUsePct", SimBoundDto>;
+}
+
+/** EM0005 报警中心看板 */
+export interface AlarmBoardDto {
+  stamp: string;
+  step: number;
+  /** 按级别 1..5 分桶（措辞在展示层 `cells.ALARM_LEVEL_NAME`，这里只给级别与数） */
+  levels: Array<{ level: AlarmLevel; total: number; unacked: number; rows: EnergyAlarm[] }>;
+  rows: EnergyAlarm[];
+  stats: { total: number; unacked: number; acked: number; closed: number; today: number; toDispatch: number };
+}
+
 /* ── 管理域 ───────────────────────────────────────────────────────────── */
 
 /**

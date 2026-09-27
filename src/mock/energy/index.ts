@@ -2,6 +2,7 @@ import type { RouteMap } from "../admin/core";
 import * as M from "./data/model";
 import { energyActionRoutes } from "./actions";
 import { energyListRoutes } from "./lists";
+import { energyMonitorRoutes } from "./monitor";
 import { energyOverviewRoutes } from "./overview";
 import { bootstrap, scanVerifyDeadlines } from "./store";
 
@@ -16,6 +17,7 @@ import { bootstrap, scanVerifyDeadlines } from "./store";
  *   store.ts        唯一的可变状态与全部跨模块联动
  *   query.ts        分页 + 条件过滤助手
  *   lists.ts        有分页的列表端点
+ *   monitor.ts      EM 监控与调度：四张画布的组合 DTO、what-if 仿真、剧本入口、报警与调度令闭环
  *   overview.ts     无分页的聚合读取（下拉候选、单元树、人名）
  *   actions.ts      写操作与状态机推进
  *
@@ -29,6 +31,7 @@ import { bootstrap, scanVerifyDeadlines } from "./store";
 export const energyRoutes: RouteMap = {
   /* 查询在前：动作端点里若有与查询同名的路径，查询必须赢（当前没有同名，顺序是防御性的） */
   ...energyListRoutes,
+  ...energyMonitorRoutes,
   ...energyOverviewRoutes,
   ...energyActionRoutes,
 };

@@ -107,6 +107,16 @@ export const TAG_CLASS: Record<string, string> = {
   异常: BAD,
 };
 
+/**
+ * 报警五级中文措辞（`AlarmLevel` 注释的那批词）。
+ *
+ * 措辞住在**展示层**、和上面那五个色标键挨在一起，是因为这两半必须同步：
+ * 加一个级别而忘了配色，那一级的行就会静默变灰（查不到词表回中性），
+ * 五级失去意义这种错在页面上看起来像「数据本来就这样」。
+ * 真源在此，EG0003 / EM0005 / 大屏都从这里取，不再各写一份 `LEVEL_TEXT`。
+ */
+export const ALARM_LEVEL_NAME: Record<string, string> = { 1: "事故", 2: "重大", 3: "一般", 4: "提示", 5: "告知" };
+
 /** 标签底色 + 前缀点：不加边框，密集表格里边框会把行高撑开 */
 const TAG_BASE =
   "inline-flex max-w-full items-center gap-1 rounded px-1.5 py-0.5 text-xs font-medium whitespace-nowrap overflow-hidden";

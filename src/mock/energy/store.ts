@@ -2,6 +2,7 @@ import { reactive } from "vue";
 
 import type {
   ActualRecord,
+  AlarmBoardDto,
   AlarmLevel,
   AlarmRule,
   AssessRow,
@@ -14,6 +15,11 @@ import type {
   EnergyMedium,
   FlowDirection,
   GasHolder,
+  GasLineDto,
+  GasPlantViewDto,
+  GasScenarioDto,
+  GasSimViewDto,
+  GasViewDto,
   Instrument,
   KeyEquip,
   MediumCode,
@@ -21,11 +27,14 @@ import type {
   PointHistoryResult,
   PointReading,
   PointSeries,
+  PowerViewDto,
   PriceTemplate,
   QualityTicket,
   Quota,
   ReportTemplate,
   SettlementBill,
+  SteamViewDto,
+  TopoViewDto,
   UsingUnit,
 } from "@/api/energy/types";
 
@@ -39,8 +48,13 @@ import {
   POINT_ID,
   PRICE_TEMPLATES,
   REPORT_TEMPLATES,
+  TOPO_GAS,
+  TOPO_GASPLANT,
+  TOPO_POWER,
+  TOPO_STEAM,
   verifyStatusOf,
 } from "./data/seed";
+import type { TopoScene } from "./data/seed";
 
 /**
  * 能源域 mock 的**唯一状态源**：实时层积分、状态机、按需落库的月账都在这里。
@@ -160,6 +174,9 @@ export interface EmsState {
   surge: Surge | null;
   /** 当前负荷 MW（EM0001/EM0004/大屏的"当前点"），围绕当小时基线抖 */
   loadMw: number;
+  /** 负荷近 60 拍历史（MW）：EM0001 的实时迷你曲线。与柜位 history 同理——
+   *  现场只有一条会走的线，幕 8「处置后斜率真的变了」要靠它被客户肉眼看见 */
+  loadHistory: number[];
   /** 各机组当前出力 MW（EM0001 机组柱图），围绕月账派生值抖 */
   unitMw: Record<string, number>;
   /** 建议 id → 生成时锁存的 scenario（`acceptSuggestion` 搬到单、`execDone` 兑现） */
@@ -196,6 +213,7 @@ export const ems = reactive({
   holders: [],
   surge: null,
   loadMw: 0,
+  loadHistory: [],
   unitMw: {},
   sugScenario: {},
   orderScenario: {},
@@ -404,11 +422,11 @@ function seedAlarms() {
     [string, MediumCode, string, AlarmLevel, EnergyAlarm["type"], string, EnergyAlarm["status"], number]
   > = [
     ["P-HOL-GH-LDG1", "LDG", M.PLANTS.STEEL, 1, "柜位高危", "1#转炉煤气柜位 87.4%，接近放散高限", "已关闭", 430],
-    ["P-POW-G0", "ELEC", M.PLANTS.POWER, 2, "需量超限", "申报需量利用率 96%，正向超限逼近", "已关闭", 400],
+    ["P-POW-G0", "ELEC", M.PLANTS.POWER_AUX, 2, "需量超限", "申报需量利用率 96%，正向超限逼近", "已关闭", 400],
     ["P-SINT-B1", "BFG", M.PLANTS.SINTER, 4, "越限", "烧结点火炉高炉煤气瞬时超定额 12%", "已关闭", 340],
     ["P-STEL-O0", "O2", M.PLANTS.STEEL, 2, "越限", "氧气总管压力瞬时低限", "已关闭", 300],
     ["P-IRON-01", "ELEC", M.PLANTS.IRON, 4, "通讯中断", "高炉鼓风计量通讯掉线 3 分钟，已续传", "已关闭", 260],
-    ["P-POW-W1", "WATER", M.PLANTS.POWER, 3, "数据异常", "新水管网流量突增，疑似夜间泄漏", "已转调度令", 200],
+    ["P-POW-W1", "WATER", M.PLANTS.POWER_AUX, 3, "数据异常", "新水管网流量突增，疑似夜间泄漏", "已转调度令", 200],
     ["P-STEL-L0", "LDG", M.PLANTS.STEEL, 3, "数据异常", "转炉煤气回收量骤降 34%", "已确认", 150],
     ["P-HOL-GH-BFG1", "BFG", M.PLANTS.IRON, 2, "柜位高危", "1#高炉煤气柜位 84%，上升中", "已确认", 90],
     ["P-COK-C1", "COG", M.PLANTS.COKE, 3, "越限", "焦炉煤气柜出口压力偏高", "活动", 60],
@@ -495,7 +513,7 @@ function seedOrders() {
       "降压限用",
       "新水管网流量突增，先降压排查",
       "执行中",
-      [{ unitId: M.PLANTS.POWER, instruction: "北区新水主管压力降至 0.35MPa，组织巡线", expectEffect: "查漏管段" }],
+      [{ unitId: M.PLANTS.POWER_AUX, instruction: "北区新水主管压力降至 0.35MPa，组织巡线", expectEffect: "查漏管段" }],
       200,
       M.PEOPLE.power,
       to?.id,
@@ -537,6 +555,7 @@ export function bootstrap() {
     ...M.computeSettlement(M.DEMO_MONTH, effect),
   ];
   refreshKeyEquipCoal(effect);
+  initLoad();
   ems.plans = [buildPlan("2026-09", M.PEOPLE.assess, "执行中"), buildPlan("2026-10", M.PEOPLE.assess, "编制中")];
   ems.seq.plan = 2;
   /* 质量工单先跑一遍「当日异常」：EC0003 打开就有待补录的单据可点，
@@ -650,10 +669,23 @@ export function simulateMedia(media: M.GasMedia) {
   return M.simulateGasBalance(currentScenario(media));
 }
 
+/**
+ * 装配时先把实时层铺平：负荷当前点、迷你曲线、机组出力各就各位。
+ *
+ * 不在 `bootstrap` 里铺的话，页面打开的头 3 秒（一拍都没走）会看到「外购负荷 0 MW」——
+ * 而 0 MW 会让需量那条判据以为一切正常，正好在最该显示基线的一刻显示一个假绿。
+ */
+function initLoad() {
+  ems.loadMw = round(M.loadBaseline(new Date(M.DEMO_T0).getHours()), 1);
+  ems.loadHistory = Array.from({ length: HISTORY_LEN }, () => ems.loadMw);
+  for (const u of M.selfGeneration(ems.effect).units) ems.unitMw[u.id] = u.mw;
+}
+
 /** 负荷与机组出力的当前点：围绕**当小时基线**抖（非积分对象，裸 jitter 就够） */
 function tickLoad() {
   const hour = new Date(M.DEMO_T0 + ems.step * TICK_MS).getHours();
   ems.loadMw = round(M.loadBaseline(hour) * (1 + jitter() * 0.012), 1);
+  ems.loadHistory = [...ems.loadHistory.slice(-(HISTORY_LEN - 1)), ems.loadMw];
   const gen = M.selfGeneration(ems.effect);
   for (const u of gen.units) ems.unitMw[u.id] = round(u.mw * (1 + jitter() * 0.008), 1);
 }
@@ -772,7 +804,7 @@ function checkDemandAlarm() {
     const rule = ems.alarmRules.find((r) => r.pointId === POINT_ID["P-POW-G0"] && r.kind === "高限");
     alarmFire({
       mediaCode: "ELEC",
-      unitId: M.PLANTS.POWER,
+      unitId: M.PLANTS.POWER_AUX,
       pointId: rule?.pointId,
       level: rule?.level ?? 2,
       type: "需量超限",
@@ -1115,7 +1147,7 @@ export function commBreak(channelId: string) {
   if (!pts.some((p) => ems.alarmRules.some((r) => r.pointId === p.id && r.kind === "通讯"))) {
     alarmFire({
       mediaCode: pts[0]?.mediaCode ?? "ELEC",
-      unitId: pts[0]?.unitId ?? M.PLANTS.POWER,
+      unitId: pts[0]?.unitId ?? M.PLANTS.POWER_AUX,
       level: 4,
       type: "通讯中断",
       message: `${c.stationName}（${c.protocol}）通讯中断，影响 ${pts.length} 个计量点`,
@@ -1494,7 +1526,7 @@ export function scanVerifyDeadlines() {
       if (!ems.verified)
         alarmFire({
           mediaCode: ems.meterPoints.find((p) => p.id === ins.pointId)?.mediaCode ?? "ELEC",
-          unitId: ems.meterPoints.find((p) => p.id === ins.pointId)?.unitId ?? M.PLANTS.POWER,
+          unitId: ems.meterPoints.find((p) => p.id === ins.pointId)?.unitId ?? M.PLANTS.POWER_AUX,
           pointId: ins.pointId,
           level: 4,
           type: "数据异常",
@@ -1514,7 +1546,7 @@ export function toggleInstrumentFault(id: string) {
   if (next === "故障")
     alarmFire({
       mediaCode: ems.meterPoints.find((p) => p.id === ins.pointId)?.mediaCode ?? "ELEC",
-      unitId: ems.meterPoints.find((p) => p.id === ins.pointId)?.unitId ?? M.PLANTS.POWER,
+      unitId: ems.meterPoints.find((p) => p.id === ins.pointId)?.unitId ?? M.PLANTS.POWER_AUX,
       pointId: ins.pointId,
       level: 3,
       type: "数据异常",
@@ -1792,24 +1824,6 @@ export function refreshKpiBoard() {
     pendingTickets: ems.tickets.filter((t) => t.status === "待补录").length,
     step: ems.step,
     at: nowStamp(),
-  };
-}
-
-/** 报警看板数字（EM0005 头部、首页角标、大屏同一处） */
-export function alarmBoard() {
-  const by = (st: EnergyAlarm["status"]) => ems.alarms.filter((a) => a.status === st).length;
-  const byLevel = (n: AlarmLevel) => ems.alarms.filter((a) => a.status !== "已关闭" && a.level === n).length;
-  return {
-    total: ems.alarms.length,
-    活动: by("活动"),
-    已确认: by("已确认"),
-    已转调度令: by("已转调度令"),
-    已关闭: by("已关闭"),
-    l1: byLevel(1),
-    l2: byLevel(2),
-    l3: byLevel(3),
-    l4: byLevel(4),
-    l5: byLevel(5),
   };
 }
 
@@ -2157,4 +2171,307 @@ export function pointHistory(pointIds: string[], days = M.MONTH_ELAPSED_DAYS): P
     });
   }
   return { dates, series };
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   14. 监控视图装配（EM0001~0004 / EM0005 / EM0007）
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/**
+ * 端点回给页面的**一张画布**：几何来自 seed、数值来自 model、柜位来自实时层。
+ *
+ * 三层在这里汇成一份 DTO，页面因此拿到的是「已经能画的东西」——它自己不 import model、
+ * 不 import seed、不查介质色表、不判阈值。这条边界是「只有 model 允许出现业务数字」
+ * 在**页面侧**的落地方式：不是靠自觉不写数，而是页面根本拿不到写数所需的东西。
+ */
+function buildScene(scene: TopoScene, stats: Record<string, M.MonitorStat>): TopoViewDto {
+  return {
+    viewBox: scene.viewBox,
+    nodes: scene.nodes.map((n) => {
+      const s = n.stat ? stats[n.stat] : undefined;
+      const holder = n.ref && n.kind === "holder" ? holderOf(n.ref) : undefined;
+      return {
+        id: n.id,
+        label: n.label,
+        kind: n.kind,
+        x: n.x,
+        y: n.y,
+        w: n.w,
+        h: n.h,
+        ref: n.ref,
+        holder,
+        value: s ? round(s.value, 2) : undefined,
+        unit: s?.unit,
+        tone: s?.tone ?? "ok",
+      };
+    }),
+    /* 连线只带颜色、不带流量：管线上标数字会把图元挤成一团表格，
+       而「哪路在放散」这件事柜体和放散塔已经用颜色说了 */
+    edges: scene.edges.map((e) => ({
+      from: e.from,
+      to: e.to,
+      style: e.style,
+      via: e.via,
+      color: e.media ? M.MEDIUMS[e.media].color : undefined,
+    })),
+  };
+}
+
+/** 活动报警（未关闭）：级别升序、时间降序。监控页右栏与大屏的报警流共用这一个排序口径 */
+export function activeAlarms(media?: MediumCode) {
+  return ems.alarms
+    .filter((a) => a.status !== "已关闭" && (!media || a.mediaCode === media))
+    .toSorted((a, b) => a.level - b.level || (a.time < b.time ? 1 : -1));
+}
+
+const base = () => ({ stamp: nowStamp(), step: ems.step, alarms: activeAlarms() });
+
+/** EM0001 供配电：外购负荷用**实时点**覆盖月账派生值，其余（主变、需量、机组）仍是 model 的口径 */
+export function powerMonitorView(): PowerViewDto {
+  const mw = ems.loadMw;
+  const p = M.powerMonitor(mw, ems.effect);
+  const stats = M.monitorStats({ power: p });
+  const toneOfStat = (key: string) => stats[key]?.tone ?? "ok";
+  /* 机组出力画实时点，不画月均值：月均那根柱在演示中一动不动，客户会以为页面没在刷 */
+  const liveMw = (id: string) => ems.unitMw[id] ?? 0;
+  return {
+    ...base(),
+    scene: buildScene(TOPO_POWER, stats),
+    nowMw: round(mw, 1),
+    hour: p.hour,
+    history: ems.loadHistory,
+    curve: p.curve.map((c) => ({ hour: c.hour, mw: round(c.mw, 1), tier: c.tier, price: c.price })),
+    feeders: p.feeders.map((f) => ({ ...f, kw: round(f.kw, 0), sharePct: round(f.sharePct, 1) })),
+    transformers: p.transformers.map((t) => ({
+      ...t,
+      loadMVA: round(t.loadMVA, 1),
+      ratioPct: round(t.ratioPct, 1),
+      tone: toneOfStat(`p-${t.id}`),
+    })),
+    demand: {
+      declaredKVA: p.demand.declaredKVA,
+      limitMw: round(p.demand.limitMw, 1),
+      appMva: round(p.demand.appMva, 1),
+      utilPct: round(p.demand.utilPct, 1),
+      maxUtilPct: round(p.demand.maxUtilPct, 1),
+      tone: toneOfStat("p-demand"),
+    },
+    /** `tone` 全部来自 `monitorStats`：**页面拿到什么色就画什么色**。
+       若这里不给，页面就得自己写 `pf >= target ? ok : warn`——同一个量两个地方判色，
+       调一档阈值要改两个文件，那正是本域红线要挡住的"页间矛盾"。 */
+    pf: { ...p.pf, tone: toneOfStat("p-pf") },
+    selfGen: {
+      mw: round(p.selfGen.mw, 1),
+      ratePct: round(p.selfGen.ratePct, 1),
+      purchaseKw: round(mw * 1000, 0),
+      tone: toneOfStat("p-self"),
+    },
+    genUnits: p.genUnits.map((u) => ({
+      id: u.id,
+      name: u.name,
+      media: u.media,
+      running: u.running,
+      mw: round(liveMw(u.id), 1),
+      maxMw: u.maxMw,
+      loadRatioPct: round(u.maxMw > 0 ? (liveMw(u.id) / u.maxMw) * 100 : 0, 1),
+      fuelM3h: round(u.fuelM3h, 0),
+      tone: u.running ? (toneOfStat(`p-${u.id}`) === "warn" ? "warn" : "ok") : "bad",
+    })),
+    recoveries: p.recoveries.map((r) => ({ ...r, mw: round(r.mw, 1) })),
+    price: { tier: p.price.tier, now: p.price.now, avg: round(p.price.avg, 3) },
+  };
+}
+
+/**
+ * EM0002 煤气管网。三路的月均量 + 五口柜的实时柜位 + 当班放散。
+ *
+ * ⚠️ `lines[].ventM3h` 是**月均**（来自蒸汽/煤气账的残差），`sim.ventM3h` 是**当班**（瞬时富余）。
+ * 两个数并存是刻意的：文件头「月均放散 vs 当班放散」那条说了为什么不能合成一个。
+ * 页面上它们各占一格、各标各的口径，谁也不会把 416 m³/min 当成 1916 去复核。
+ */
+export function gasMonitorView(media: M.GasMedia = "LDG"): GasViewDto {
+  const g = M.gasBalance(ems.effect);
+  const stats = M.monitorStats({ gas: M.gasHourlyFlows(ems.effect) });
+  const lines: GasLineDto[] = (
+    [
+      ["BFG", g.bfg],
+      ["COG", g.cog],
+      ["LDG", g.ldg],
+    ] as const
+  ).map(([code, l]) => ({
+    media: code,
+    name: l.name,
+    color: l.color,
+    incomeM3h: round(l.incomeM3h, 0),
+    processUseM3h: round(l.processUseM3 / M.MONTH_HOURS, 0),
+    genUseM3h: round(l.genUseM3 / M.MONTH_HOURS, 0),
+    exportM3h: round(l.exportM3 / M.MONTH_HOURS, 0),
+    ventM3h: round(l.ventM3 / M.MONTH_HOURS, 0),
+    ventRatePct: round(l.ventRatePct, 2),
+    levelPct: liveLevelPct(code),
+    tone: liveLevelPct(code) >= 88 ? "bad" : liveLevelPct(code) >= 80 ? "warn" : "ok",
+  }));
+  const sc = currentScenario(media);
+  const sim = M.simulateGasBalance(sc);
+  return {
+    ...base(),
+    scene: buildScene(TOPO_GAS, stats),
+    lines,
+    holders: ems.holders,
+    ventTotalM3h: round(g.ventTotalM3 / M.MONTH_HOURS, 0),
+    ventRatePct: round(g.ventTotalRatePct, 2),
+    scenario: sc,
+    sim,
+    suggestions: ems.suggestions,
+    unacked: ems.alarms.filter((a) => a.status === "活动").length,
+  };
+}
+
+/** EM0003 蒸汽与水：产源/用汽两张表直接给 model 的行，画布数值走 `stat` */
+export function steamMonitorView(): SteamViewDto {
+  const s = M.steamMonitor(ems.effect);
+  const stats = M.monitorStats({ steam: s });
+  return {
+    ...base(),
+    scene: buildScene(TOPO_STEAM, stats),
+    sources: s.sources.map((x) => ({
+      id: x.id,
+      name: x.name,
+      tier: x.tier,
+      offNetwork: x.offNetwork,
+      note: x.note,
+      perUnitTph: round(x.perUnitTph, 1),
+      units: x.units,
+      totalTph: round(x.totalTph, 1),
+      /** 画布上并联锅炉显示自己那份，合计行显示总量：一个来源、两种摊法，不另算一遍 */
+      value: round(x.units > 1 ? x.perUnitTph : x.totalTph, 1),
+      tone: "ok" as const,
+    })),
+    uses: s.uses.map((u) => ({
+      unitId: u.unitId,
+      dir: u.dir,
+      name: u.name,
+      tph: round(u.tph, 1),
+      sharePct: round(u.sharePct, 1),
+    })),
+    tiers: s.tiers.map((t) => ({ ...t, prodTph: round(t.prodTph, 1) })),
+    header: { mpa: s.header.mpa, tempC: s.header.tempC, tph: round(s.header.tph, 1) },
+    drums: s.drums.map((d) => ({ id: d.id, name: d.name, pct: d.basePct, mpa: d.mpa })),
+    total: {
+      producedTph: round(s.total.producedTph, 1),
+      usedTph: round(s.total.usedTph, 1),
+      lossTph: round(s.total.lossTph, 1),
+      lossPct: round(s.total.lossPct, 1),
+      tone: stats["s-loss"]?.tone ?? "ok",
+    },
+    water: {
+      newWaterM3h: round(s.water.newWaterM3h, 0),
+      lossPct: s.water.lossPct,
+      circTotalM3h: round(s.water.circTotalM3h, 0),
+      loops: s.water.loops.map((w) => ({ ...w, circM3h: round(w.circM3h, 0), makeupM3h: round(w.makeupM3h, 0) })),
+      users: s.water.users.map((u) => ({ ...u, m3h: round(u.m3h, 0) })),
+    },
+  };
+}
+
+/** EM0004 氧氮氩 */
+export function gasPlantMonitorView(): GasPlantViewDto {
+  const g = M.gasPlantMonitor(ems.effect);
+  const stats = M.monitorStats({ gasPlant: g });
+  return {
+    ...base(),
+    scene: buildScene(TOPO_GASPLANT, stats),
+    units: g.units.map((u) => ({
+      id: u.id,
+      name: u.name,
+      o2Nm3h: round(u.o2Nm3h, 0),
+      capLoadPct: round(u.capLoadPct, 1),
+      kwhPerNm3: u.kwhPerNm3,
+      kw: round(u.kw, 0),
+      tone: stats[`g-${u.id}`]?.tone ?? "ok",
+    })),
+    purity: g.purity,
+    products: g.products.map((p) => ({
+      media: p.media,
+      name: p.name,
+      color: M.MEDIUMS[p.media].color,
+      selfNm3h: round(p.selfNm3h, 0),
+      useNm3h: round(p.useNm3h, 0),
+      exportNm3h: round(p.exportNm3h, 0),
+      kwhPerNm3: p.kwhPerNm3,
+      lossPct: p.lossPct,
+    })),
+    headers: g.headers.map((h) => ({ ...h, flowNm3h: round(h.flowNm3h, 0) })),
+    tanks: g.tanks.map((t) => ({ id: t.id, media: t.media, name: t.name, capM3: t.capM3, pct: t.basePct })),
+    exportArNm3h: round(g.exportArNm3h, 0),
+  };
+}
+
+/**
+ * EM0007 煤气平衡仿真：预测曲线 + what-if + 未处置基线。
+ *
+ * ⚠️ `sim` 与 `unmitigated` 必须是**同一次请求里的两次纯函数调用**。
+ * 未处置基线若从 `sc` 反推（早期实现就是这样），R4「放缓吹炼」改的正是进气量，
+ * 反推回去会把进气增量一起采纳，得到 cut=0 —— 建议卡说省 4.5 万、仿真说省 0。
+ */
+export function gasSimView(sc: GasScenarioDto = {}): GasSimViewDto {
+  const media = (sc.media ?? "LDG") as M.GasMedia;
+  /** 柜位永远取实时值：滑杆里没有 `levelPct`，页面也不该能伪造它 */
+  const live: M.GasScenario = {
+    ...sc,
+    media,
+    levelPct: liveLevelPct(media),
+    holderId: sc.holderId ?? focusHolderId(media),
+  };
+  const unmit: M.GasScenario = {
+    media,
+    levelPct: live.levelPct,
+    holderId: live.holderId,
+    extraLdgM3min: currentScenario(media).extraLdgM3min,
+    extraBfgM3min: currentScenario(media).extraBfgM3min,
+  };
+  const sim = M.simulateGasBalance(live);
+  const unmitigated = M.simulateGasBalance(unmit);
+  /** 月增效由「本手 vs 未处置」的放散差额折电算出（`scenarioGain` 的注释说了为什么不能从 `sc` 反推） */
+  sim.gainMonth = M.scenarioGain(live, unmit).amount * 24 * 30;
+  return {
+    stamp: nowStamp(),
+    step: ems.step,
+    load: M.loadForecast(24),
+    gas: M.gasForecast(24),
+    scenario: sc,
+    sim,
+    unmitigated,
+    suggestions: ems.suggestions,
+    holders: ems.holders,
+    levelPct: live.levelPct,
+    bounds: M.whatIfBounds(),
+  };
+}
+
+/** EM0005 报警中心：五级分桶 + 状态计数（看板与统计条一次给全，页面不再自己 group by） */
+export function alarmBoard(level: AlarmLevel | 0 = 0, status = ""): AlarmBoardDto {
+  const all = ems.alarms;
+  const active = all.filter((a) => a.status !== "已关闭");
+  const levels = ([1, 2, 3, 4, 5] as AlarmLevel[]).map((lv) => {
+    const rows = active.filter((a) => a.level === lv).toSorted((a, b) => (a.time < b.time ? 1 : -1));
+    return { level: lv, total: rows.length, unacked: rows.filter((a) => a.status === "活动").length, rows };
+  });
+  let rows = level ? all.filter((a) => a.level === level) : [...all];
+  if (status) rows = rows.filter((a) => a.status === status);
+  rows.toSorted((a, b) => a.level - b.level || (a.time < b.time ? 1 : -1));
+  return {
+    stamp: nowStamp(),
+    step: ems.step,
+    levels,
+    rows: rows.slice(0, 200),
+    stats: {
+      total: all.length,
+      unacked: all.filter((a) => a.status === "活动").length,
+      acked: all.filter((a) => a.status === "已确认").length,
+      closed: all.filter((a) => a.status === "已关闭").length,
+      today: all.filter((a) => a.time.startsWith(M.DEMO_TODAY)).length,
+      toDispatch: all.filter((a) => a.status === "已转调度令").length,
+    },
+  };
 }

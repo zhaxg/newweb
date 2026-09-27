@@ -9,7 +9,7 @@
  * 规格书（`temp/energy.md`）的原话是「系数允许口径争议，但不允许页间矛盾」；
  * 这里把这句话从「靠自觉」降级成「结构上写不出来」。
  *
- * ## 与规格书 B3 的九处偏离（都是「照抄就露馅」的地方）
+ * ## 与规格书 B3 的十处偏离（都是「照抄就露馅」的地方）
  *
  * 规格书的表是给人读的功能清单，量级对、加和不封闭。要**当场算给客户看**就必须改：
  *
@@ -40,6 +40,11 @@
  *    按掺烧解释才互洽：煤气只贡献约一半电量（`per=3.57`），其余是煤粉——所以
  *    **CFB 的调度指标是煤气消纳率、不是 kwh/铭牌出力**（见 `selfGeneration()`），
  *    而煤粉那部分电量**不进自发电率**（它烧的是外购煤，记成余能回收就是把成本算成收益）。
+ *
+ * 10. **CFB 主蒸汽不进蒸汽平衡账**。规格书把「130 t/h 产汽」和「25MW 汽机」并列，容易被抄成
+ *    两笔收入：电量已经由燃料（`per=3.57` + 煤粉）算过一遍，再把主蒸汽记成蒸汽收入，
+ *    账上就出现一个「全厂最大的产汽源、却没有任何用汽户」的假管损（EP0003 的残差会撑到 83%）。
+ *    现在按现场事实处理：**主蒸汽自供本厂汽机、不并入全厂蒸汽网**，画面上仍显示它（见 `steamMonitor()`）。
  *
  * ## 两层时钟（严格分离）
  *
@@ -132,6 +137,21 @@ const GRID_CARBON = 0.5703;
 export const ELECTRICITY_PER_MEDIUM = { O2: 0.65, N2: 0.366, AR: 5.45, AIR: 0.1025, WATER: 0.7 };
 /** 空分凝结器与循环水补水量 m³/Nm³氧（气体厂的水耗全部由制氧量派生，不单独给定额行） */
 export const SEPARATION_WATER_PER_O2 = 0.05;
+/**
+ * 各气体/水介质的**管网损耗率**（%）。Ar 抽出量小、损耗率高；新水最高（含跑冒滴漏）。
+ *
+ * 从 `deriveSecondarySupply()` 里提到输入层，是因为 EM0003 的「损耗率仪表」必须和
+ * EP0003 平衡表的损失列**同一个数**：页面自己再写一个 5.5，两页就对不上了。
+ */
+export const MEDIA_LOSS_PCT: Partial<Record<MediumCode, number>> = {
+  O2: 2,
+  N2: 3,
+  AR: 5,
+  AIR: 4,
+  WATER: 5.5,
+};
+/** 介质损耗率取值（未列出的介质按 2% 的通用管损） */
+export const lossPctOf = (media: MediumCode) => MEDIA_LOSS_PCT[media] ?? 2;
 
 /**
  * 介质表。固体燃料的折标/折碳以 **t 为单位**，故系数写成 kgce/t（0.9714 tce/t → 971.4）。
@@ -825,8 +845,12 @@ function baseLoadScale() {
 /** 某小时的负荷基线（MW，已缩放到月账） */
 export const loadBaseline = (hour: number) => LOAD_CURVE_MW[hour % 24] * baseLoadScale();
 
-/** 申报需量对应的最大允许负荷（MW），EM0001 需量告警条的红线 */
-export const DEMAND_LIMIT_MW = (ELEC_PRICE.demandKVA * 0.93) / 1000;
+/**
+ * 申报需量折算的最大允许有功负荷（MW），EM0001 需量告警条与「需量超限」报警的同一条红线。
+ * 换算因子取 `pfActual`：这样「利用率 100%」与「loadMw 越过红线」是**同一个事件**，
+ * 不会出现条子满了而报警不响（或反过来）这种当场被看穿的错位。
+ */
+export const DEMAND_LIMIT_MW = (ELEC_PRICE.demandKVA * ELEC_PRICE.pfActual) / 1000;
 
 /** 机组：`per` 是气耗率 m³/kWh，`maxMw` 是铭牌出力；**电量一律由燃料量派生** */
 export const GEN_UNITS = [
@@ -1180,12 +1204,10 @@ function buildLedger(effect: FlowEffect = {}): Ledger {
  * 水的损耗率最高（5.5%）：浊环/净环的循环量不计入新水平衡，这里算的是补水，漏损全在新水侧。
  */
 function deriveSecondarySupply(l: Ledger) {
-  /** 气体介质的目标管损/放散率（%）——Ar 抽出量小、损耗率高 */
-  const LOSS_PCT: Partial<Record<MediumCode, number>> = { O2: 2, N2: 3, AR: 5, AIR: 4, WATER: 5.5 };
   const putSupply = (media: MediumCode, unitId: string) => {
     const use = sumMedia(l, media, "消耗") + sumMedia(l, media, "转换");
     const exp = sumMedia(l, media, "外供");
-    const pct = (LOSS_PCT[media] ?? 2) / 100;
+    const pct = lossPctOf(media) / 100;
     /* 自产与损失**成对写入**：只放大收入不记损耗，平衡恒等式当场破掉
      * （selfCheck 会报「收入−用+损 = 那个损耗率」，而不是报出真正的错处） */
     put(
@@ -1348,16 +1370,11 @@ function residualGasGen(l: Ledger) {
   );
   put(l, PLANTS.COKE, "COG", "损失", Math.max(0, cogSurplus - ccppCogM3), "焦炉煤气放散（安全放散，计入考核）");
 
-  /* 厂用电 2.5% × 自发电量；CFB 产汽进全厂蒸汽网，CCPP 产汽全部供本厂汽机 */
+  /* 厂用电 2.5% × 自发电量。⚠️ **CFB 产汽不进蒸汽账**：它的电量已经由燃料算过一遍
+   *  （偏离清单第 10 条），再把 130 t/h 主蒸汽记成收入，蒸汽平衡就凭空多出一笔
+   *  「全厂最大的用汽户却没人用汽」的假管损——EP0003 的平衡残差会被它撑成 83%。
+   *  画面上 CFB 主蒸汽仍然显示（`steamMonitor()` 直接从铭牌给），但标明「不并网、自供汽机」。 */
   put(l, PLANTS.GEN, "ELEC", "消耗", genKwh * 0.025, `厂用电 = 自发电量 ${fmt(genKwh)} kWh × 厂用电率 2.5%`);
-  put(
-    l,
-    PLANTS.GEN,
-    "STEAM",
-    "自产",
-    cfbRunning * CFB_STEAM_T_H * MONTH_HOURS,
-    `CFB×${cfbRunning} 产汽 ${CFB_STEAM_T_H} t/h × ${MONTH_HOURS} h`,
-  );
   put(
     l,
     PLANTS.GEN,
@@ -1787,8 +1804,12 @@ export function elecTimeUse(effect: FlowEffect = {}) {
     totalAmount: energyAmount + demandCharge() + pfAdjCharge(),
     maxMw,
     minMw: Math.min(...LOAD_CURVE_MW) * scale,
-    /** 最大负荷对应的需量利用率（EM0001 的需量告警条） */
-    demandRatioPct: (maxMw * 1000) / ELEC_PRICE.demandKVA / 0.93,
+    /**
+     * 最大负荷对应的需量利用率（%），EM0001 的需量告警条。
+     * 换算因子用 `pfActual` 而不是另写一个 0.93——**必须与 `DEMAND_LIMIT_MW` 同一个数**，
+     * 否则「黄条逼近」与「需量超限报警」会在两个不同的负荷值上各自触发。
+     */
+    demandRatioPct: (maxMw * 1e5) / (ELEC_PRICE.pfActual * ELEC_PRICE.demandKVA),
   };
 }
 
@@ -2228,7 +2249,7 @@ export function kpiBoard(effect: FlowEffect = {}) {
     elecAmount: Math.round(e.totalAmount),
     energyPurchasedTce: round(comp.purchasedTce, 0),
     maxMw: e.maxMw,
-    demandRatioPct: round(e.demandRatioPct * 100, 1),
+    demandRatioPct: round(e.demandRatioPct, 1),
     steelT: l.prod.STEEL,
     targets: KPI_TARGETS,
   };
@@ -2262,6 +2283,31 @@ export interface GasScenario {
   levelPct?: number;
   /** 关注的柜 id（默认 1#LDG 柜） */
   holderId?: string;
+}
+
+/**
+ * EM0007 的 what-if 滑杆量程。
+ *
+ * 为什么住在 model 而不是页面里写 min/max：滑杆的**满量程是由机组参数派生的物理上限**——
+ * CCPP 的铭牌出力、CFB 的总台数、一轮吹炼高峰的进气量、一台 CFB 的满耗气量。
+ * 页面抄一份数字，机组一改就会出现「滑杆能拖到头、仿真却说超许可」的自相矛盾，
+ * 而本域唯一红线就是页间矛盾。`step` 只是手感疏密，不承载任何业务口径。
+ */
+export function whatIfBounds() {
+  const ccpp = GEN_UNITS.find((u) => u.id === "GU-CCPP")!;
+  const cfbTotal = GEN_UNITS.filter((u) => u.id !== "GU-CCPP").length;
+  const ldgNotch = SIM_LDG_SURGE.extraInM3min;
+  const bfgNotch = Math.round(CFB_GAS_M3_H / 60);
+  return {
+    /** 吹炼高峰以「一轮剧本进气量」为一格，最多叠四格（四座转炉同时吹炼的极限工况） */
+    extraLdgM3min: { min: -ldgNotch, max: ldgNotch * 4, step: 50 },
+    /** 高炉侧以「一台 CFB 的满耗气量」为一格 */
+    extraBfgM3min: { min: -bfgNotch, max: bfgNotch * 3, step: 100 },
+    ccppMw: { min: 0, max: ccpp.maxMw, step: 1 },
+    cfbUnits: { min: 0, max: cfbTotal, step: 1 },
+    /** 烧结点火炉用气变化幅度：需求侧最快的一条，但没人会把点火气砍一半以上 */
+    sinterUsePct: { min: -50, max: 50, step: 5 },
+  };
 }
 
 export function simulateGasBalance(sc: GasScenario = {}) {
@@ -2518,10 +2564,13 @@ export function dispatchRules(base: GasScenario) {
 
 /** 预测曲线（ER0003 / EM0007）：负荷曲线外推 + 置信带宽度，形状与月账同源 */
 export function loadForecast(hours = 24, startHour = new Date(DEMO_T0).getHours()) {
+  const scale = baseLoadScale();
   return Array.from({ length: hours }, (_, i) => {
     const h = (startHour + i) % 24;
-    const v = LOAD_CURVE_MW[h];
-    return { hour: h, mw: v, tier: hourToTier(h), band: Math.round(v * 0.04 * 10) / 10 };
+    /** 必须乘 `baseLoadScale()`：`LOAD_CURVE_MW` 是**形状**不是量级。
+     *  直接返回它会得到一条 98–142 的曲线，而 EM0001 同一时刻画的是 140.6——两条预测线差一个缩放因子 */
+    const v = LOAD_CURVE_MW[h] * scale;
+    return { hour: h, mw: v, tier: hourToTier(h), band: v * 0.04 };
   });
 }
 
@@ -2544,7 +2593,468 @@ export function gasForecast(hours = 24, startHour = new Date(DEMO_T0).getHours()
 const MONTH_MINUTES = MONTH_HOURS * 60;
 
 /* ══════════════════════════════════════════════════════════════════════════
-   13. 桑基 / 报表 / 计量点的派生入口（页面不自己算，一律走这里）
+   13. 瞬时监测层：EM0001 / EM0003 / EM0004 画布的「中心值」
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/**
+ * 画布图元上刷的一个数。`tone` 只说「要不要变色」，**阈值也在这里**——
+ * 页面写 `v > 90 ? "bad" : "ok"` 就是第二个真源，EM0001 的黄条和大屏的红条会不同步。
+ */
+export interface MonitorStat {
+  label: string;
+  value: number;
+  unit: string;
+  tone: "ok" | "warn" | "bad";
+}
+
+/** 按「离红线的距离」分三档：`warnAt`/`badAt` 都是月账派生值或铭牌口径，不给页面 */
+function toneOf(v: number, warnAt: number, badAt: number): MonitorStat["tone"] {
+  return v >= badAt ? "bad" : v >= warnAt ? "warn" : "ok";
+}
+const stat = (label: string, value: number, unit: string, tone: MonitorStat["tone"] = "ok"): MonitorStat => ({
+  label,
+  value,
+  unit,
+  tone,
+});
+
+/**
+ * 主变铭牌（MVA）。⚠️ 这里是 **3 台 63MVA**，不是 B3 暗示的两台：
+ * 申报需量 175MVA 对应峰值负荷约 153MVA，两台 63（共 126）会让 EM0001 的负载率永远红在 121%，
+ * 「主变负载率柱图」当场变成一张故障演示。300 万吨级钢厂的 110kV 总降本就是三台主变分列运行。
+ * 另外 seed 的拓扑图元标签里**不重复写容量数字**——那个 63 只能有一个家。
+ */
+export const MAIN_TRANSFORMERS = [
+  { id: "t1", name: "1#主变", ratedMVA: 63 },
+  { id: "t2", name: "2#主变", ratedMVA: 63 },
+  { id: "t3", name: "3#主变", ratedMVA: 63 },
+];
+
+/**
+ * 空分装置铭牌制氧能力（Nm³/h）。**只当容量负荷率的分母**，不参与月账——
+ * 账上的氧气自产由消耗反推（偏离清单第 7 条），比 B3 那句「氧气 1900 万 Nm³」大得多，
+ * 所以铭牌必须按反推结果定容：1# 是两套 32000 并联、2# 一套，合计 96000，
+ * 负荷率约 68%（真实空分就是按这个区间选的，写小了画面当场超 100%）。
+ */
+export const ASU_UNITS = [
+  { id: "as1", name: "1#空分装置", o2CapNm3h: 64000 },
+  { id: "as2", name: "2#空分装置", o2CapNm3h: 32000 },
+];
+export const ASU_O2_CAP_TOTAL_M3H = ASU_UNITS.reduce((s, u) => s + u.o2CapNm3h, 0);
+
+/** 产品气纯度（%）。EM0004 的第二条命门：纯度掉到设计值外，画面再动也不合格 */
+export const GAS_PURITY: Record<"O2" | "N2" | "AR", { pct: number; specPct: number }> = {
+  O2: { pct: 99.6, specPct: 99.5 },
+  N2: { pct: 99.999, specPct: 99.99 },
+  AR: { pct: 99.99, specPct: 99.95 },
+};
+/** 气体总管运行压力 MPa 与其报警区间（低限规则 AR-009 的口径来源） */
+export const GAS_HEADERS: Array<{
+  id: string;
+  media: MediumCode;
+  name: string;
+  mpa: number;
+  loMpa: number;
+  hiMpa: number;
+}> = [
+  { id: "bus-o2", media: "O2", name: "氧气总管", mpa: 0.6, loMpa: 0.45, hiMpa: 0.8 },
+  { id: "bus-n2", media: "N2", name: "氮气总管", mpa: 0.4, loMpa: 0.3, hiMpa: 0.6 },
+  { id: "bus-ar", media: "AR", name: "氩气总管", mpa: 0.8, loMpa: 0.6, hiMpa: 1.0 },
+];
+/** 液体储罐（调峰与外供液化用），`basePct` 是柜位那样的均值回归中心，由 tick 抖 */
+export const LIQ_TANKS = [
+  { id: "tk-lo2", media: "O2", name: "1#液氧储罐", capM3: 500, basePct: 62 },
+  { id: "tk-ln2", media: "N2", name: "1#液氮储罐", capM3: 500, basePct: 55 },
+  { id: "tk-lar", media: "AR", name: "液氩储罐", capM3: 200, basePct: 48 },
+];
+
+/** 放散塔：点火能力与「持续放散」报警的计时口径（EM0002 的放散塔状态读它） */
+export const VENT_STACK = { capM3h: 120000, igniteGas: "COG" as MediumCode, warnMin: 10 };
+
+/** 干熄焦并联台数（把厂级产汽摊到画面上的两台锅炉，与 seed 的 s-cdq1/s-cdq2 一一对应） */
+const CDQ_UNITS = 2;
+
+/** 蒸汽压力分级（MPa/℃）。EM0003 的「压力分级」就是这三条母管 */
+export const STEAM_TIERS = [
+  { id: "H", name: "高压蒸汽", mpa: 3.82, tempC: 435 },
+  { id: "M", name: "中压蒸汽", mpa: 1.27, tempC: 300 },
+  { id: "L", name: "低压蒸汽", mpa: 0.2, tempC: 133 },
+] as const;
+export type SteamTierId = (typeof STEAM_TIERS)[number]["id"];
+
+/** 蓄热器的工作压力 MPa（充汽/放汽端的中心值）。必须先于 `STEAM_DRUMS` 声明 */
+export const ACCUMULATOR_MPA = { work: 1.6, hi: 1.9, lo: 1.1 };
+
+/** 汽包 / 蓄热器的水位基线（%）——积分对象之外的**展示量**，tick 只抖不归积。`mpa` 是它的工作压力 */
+export const STEAM_DRUMS = [
+  { id: "dr-cdq", name: "干熄焦汽包", basePct: 55, mpa: STEAM_TIERS[0].mpa },
+  { id: "dr-evap", name: "汽化冷却汽包", basePct: 52, mpa: STEAM_TIERS[1].mpa },
+  { id: "acc", name: "蒸汽蓄热器", basePct: 68, mpa: ACCUMULATOR_MPA.work },
+];
+
+/** 循环水系统的循环倍率：现场用「循环量 ÷ 补水」说话，倍率是设备口径、不是账 */
+export const WATER_LOOPS = [
+  { id: "w-clean", name: "净环水系统", circFactor: 6 },
+  { id: "w-dirty", name: "浊环水系统", circFactor: 3.5 },
+];
+/** 给水与凝结水温度（℃），只给画面上的回水温度一个家 */
+export const WATER_TEMP_C = { supply: 32, returnC: 42 };
+
+/**
+ * EM0001 供配电。入参是**当前外购有功 MW**（实时层给），其余全部由月账派生。
+ *
+ * 需量、主变负载率的分子分母都在此处一次算完：EM0001 的黄条、EP0004 的需量电费、
+ * EO0001 的自发电率因此共用同一个 `purchase` 与同一张负荷曲线。
+ */
+export function powerMonitor(mw: number, effect: FlowEffect = {}) {
+  const l = buildLedger(effect);
+  const e = elecTimeUse(effect);
+  const gen = selfGeneration(l);
+  const appMva = mw / ELEC_PRICE.pfActual;
+  const perMva = appMva / MAIN_TRANSFORMERS.length;
+  const feeders = Object.values(PLANTS)
+    .map((unitId) => ({
+      unitId,
+      name: UNIT_MAP[unitId]?.name ?? unitId,
+      kw: get(l, unitId, "ELEC", "消耗") / MONTH_HOURS,
+    }))
+    .filter((f) => f.kw > 0)
+    .toSorted((a, b) => b.kw - a.kw);
+  const feederTotal = feeders.reduce((s, f) => s + f.kw, 0);
+  return {
+    hour: new Date(DEMO_T0).getHours(),
+    /** 当前外购有功（MW），实时层覆盖值 */
+    nowMw: mw,
+    /** 24 点负荷曲线（MW）+ 每小时的时段与电价：EM0001 的曲线与峰谷底色同源 */
+    curve: LOAD_CURVE_MW.map((shape, hour) => ({
+      hour,
+      mw: shape * baseLoadScale(),
+      tier: hourToTier(hour),
+      price: tierPrice(hour),
+    })),
+    feeders: feeders.map((f) => ({ ...f, sharePct: feederTotal > 0 ? (f.kw / feederTotal) * 100 : 0 })),
+    transformers: MAIN_TRANSFORMERS.map((t) => ({
+      ...t,
+      loadMVA: perMva,
+      ratioPct: (perMva / t.ratedMVA) * 100,
+    })),
+    demand: {
+      declaredKVA: ELEC_PRICE.demandKVA,
+      limitMw: DEMAND_LIMIT_MW,
+      appMva,
+      /** 当前点的需量利用率（%）：越过 100 与 `checkDemandAlarm` 的红线是同一个事件 */
+      utilPct: (appMva * 1e5) / ELEC_PRICE.demandKVA,
+      /** 计费口径的需量利用率：本月最大负荷，EP0004 的需量电费看它 */
+      maxUtilPct: e.demandRatioPct,
+    },
+    pf: { actual: ELEC_PRICE.pfActual, target: ELEC_PRICE.pfTarget },
+    selfGen: {
+      mw: gen.totalKwh / MONTH_HOURS / 1000,
+      ratePct: gen.selfGenRatePct,
+      purchaseKw: mw * 1000,
+    },
+    genUnits: gen.units.map((u) => ({
+      id: u.id,
+      name: u.name,
+      media: u.media,
+      running: u.running,
+      mw: u.mw,
+      maxMw: u.maxMw,
+      fuelM3h: u.fuelM3 / MONTH_HOURS,
+      gasCapM3h: u.gasCapM3 / MONTH_HOURS,
+      loadRatioPct: u.loadRatio * 100,
+      perKwh: u.per,
+      ramp: u.note,
+    })),
+    recoveries: gen.recoveries.map((r) => ({ ...r, mw: r.kwh / MONTH_HOURS / 1000 })),
+    price: {
+      tier: hourToTier(new Date(DEMO_T0).getHours()),
+      now: tierPrice(new Date(DEMO_T0).getHours()),
+      avg: e.avgPrice,
+    },
+  };
+}
+
+/**
+ * 产源表（模块级：`steamMonitor` 用它算数、`TOPO_STAT_KEYS` 用它列 key，一处声明）。
+ * `unitId + direction` 定位月账那一条，`tier` 决定它并到哪级母管；
+ * `offNetwork` 的那一行**不在账上**（CFB 主蒸汽自供本厂汽机，见 `residualGasGen` 的说明），
+ * 画布上要显示它，但绝不能计进「Σ产汽」，否则蒸汽平衡当场凭空多出一笔假管损。
+ */
+const STEAM_SOURCE_ROWS: Array<{
+  id: string;
+  name: string;
+  tier: SteamTierId;
+  unitId: string;
+  dir: FlowDirection;
+  n?: number;
+  /** 不并网的铭牌派生量（t/h）：给了它就不读月账，所以要做成账的函数而不是常数 */
+  ownTph?: (l: Ledger) => number;
+  note?: string;
+}> = [
+  { id: "st-cdq", name: "干熄焦余热锅炉", tier: "H", unitId: PLANTS.COKE, dir: "自产", n: CDQ_UNITS },
+  {
+    id: "st-cfb",
+    name: "CFB 锅炉主蒸汽",
+    tier: "H",
+    unitId: PLANTS.GEN,
+    dir: "自产",
+    ownTph: (l) => l.cfbRunning * CFB_STEAM_T_H,
+    note: "全部供本厂汽机，不并入全厂蒸汽网",
+  },
+  { id: "st-bfg", name: "高炉汽化冷却", tier: "M", unitId: PLANTS.IRON, dir: "回收" },
+  { id: "st-ldg", name: "转炉汽化冷却", tier: "M", unitId: PLANTS.STEEL, dir: "回收" },
+  { id: "st-hrz", name: "加热炉汽化冷却", tier: "L", unitId: PLANTS.ROLL, dir: "回收" },
+];
+
+/**
+ * EM0003 蒸汽与水。**产汽量与用汽量都从蒸汽账上读**，不在这里重算一遍：
+ * 画面上「Σ产汽 − Σ用汽 = 管损」这条等式因此与 EP0003 的蒸汽行天然成立。
+ */
+export function steamMonitor(effect: FlowEffect = {}) {
+  const l = buildLedger(effect);
+  const tph = (unitId: string, dir: FlowDirection) => get(l, unitId, "STEAM", dir) / MONTH_HOURS;
+  const sources = STEAM_SOURCE_ROWS.map((s) => {
+    const offNetwork = s.ownTph !== undefined;
+    const qty = offNetwork ? s.ownTph!(l) : tph(s.unitId, s.dir);
+    const n = s.n ?? 1;
+    return {
+      id: s.id,
+      name: s.name,
+      tier: s.tier,
+      unitId: s.unitId,
+      offNetwork,
+      note: s.note ?? "",
+      /** 厂级量摊到并联台数：两台同规格干熄焦各占一半，摊完 Σ 仍等于账上的量 */
+      perUnitTph: qty / n,
+      units: n,
+      totalTph: qty,
+    };
+  });
+  const onNetwork = (x: (typeof sources)[number]) => !x.offNetwork;
+  const produced = sources.filter(onNetwork).reduce((s, x) => s + x.totalTph, 0);
+  const useRows = Object.values(PLANTS)
+    .flatMap((unitId) =>
+      (["消耗", "转换", "外供"] as FlowDirection[]).map((dir) => ({
+        unitId,
+        dir,
+        name: `${UNIT_MAP[unitId]?.name ?? unitId}·${dir === "外供" ? "外供汽" : dir === "消耗" ? "用汽" : "转换"}`,
+        tph: get(l, unitId, "STEAM", dir) / MONTH_HOURS,
+      })),
+    )
+    .filter((r) => r.tph > 0)
+    .toSorted((a, b) => b.tph - a.tph);
+  const used = useRows.reduce((s, r) => s + r.tph, 0);
+  const loss = Math.max(0, produced - used);
+  return {
+    sources,
+    uses: useRows.map((r) => ({ ...r, sharePct: used > 0 ? (r.tph / used) * 100 : 0 })),
+    tiers: STEAM_TIERS.map((t) => ({
+      ...t,
+      prodTph: sources.filter((s) => s.tier === t.id && onNetwork(s)).reduce((a, s) => a + s.totalTph, 0),
+    })),
+    header: { mpa: STEAM_TIERS[0].mpa, tempC: STEAM_TIERS[0].tempC, tph: produced },
+    drums: STEAM_DRUMS.map((d) => ({ ...d })),
+    total: { producedTph: produced, usedTph: used, lossTph: loss, lossPct: produced > 0 ? (loss / produced) * 100 : 0 },
+    water: (() => {
+      const makeup = get(l, PLANTS.POWER_AUX, "WATER", "自产") / MONTH_HOURS;
+      const loops = WATER_LOOPS.map((w) => ({
+        id: w.id,
+        name: w.name,
+        circM3h: makeup * w.circFactor,
+        makeupM3h: makeup,
+        supplyC: WATER_TEMP_C.supply,
+        returnC: WATER_TEMP_C.returnC,
+      }));
+      return {
+        newWaterM3h: makeup,
+        loops,
+        lossPct: lossPctOf("WATER"),
+        circTotalM3h: loops.reduce((a, w) => a + w.circM3h, 0),
+        users: Object.values(PLANTS)
+          .map((unitId) => ({
+            unitId,
+            name: UNIT_MAP[unitId]?.name ?? unitId,
+            m3h: get(l, unitId, "WATER", "消耗") / MONTH_HOURS,
+          }))
+          .filter((u) => u.m3h > 0)
+          .toSorted((a, b) => b.m3h - a.m3h),
+      };
+    })(),
+  };
+}
+
+/**
+ * EM0004 氧氮氩。制氧电耗单耗**从账上除回来**（`ELECTRICITY_PER_MEDIUM` 是它的分子分母同源），
+ * 所以 EM0004 的空耗电耗与 EP0001 定额、EP0005 考核三个数永远一致。
+ */
+export function gasPlantMonitor(effect: FlowEffect = {}) {
+  const l = buildLedger(effect);
+  const self = (media: MediumCode) => get(l, PLANTS.GASPLANT, media, "自产") / MONTH_HOURS;
+  const capLoadPct = ASU_O2_CAP_TOTAL_M3H > 0 ? (self("O2") / ASU_O2_CAP_TOTAL_M3H) * 100 : 0;
+  const plantKw = get(l, PLANTS.GASPLANT, "ELEC", "消耗") / MONTH_HOURS;
+  return {
+    /** 两台空分按铭牌能力分产（同型号同负荷率），分产之和 ≡ 账上的氧气自产 */
+    units: ASU_UNITS.map((u) => ({
+      ...u,
+      o2Nm3h: (self("O2") * u.o2CapNm3h) / ASU_O2_CAP_TOTAL_M3H,
+      capLoadPct,
+      /** 制氧电耗 kWh/Nm³：与定额表同源，页面不再写 0.65 */
+      kwhPerNm3: ELECTRICITY_PER_MEDIUM.O2,
+      kw: (plantKw * u.o2CapNm3h) / ASU_O2_CAP_TOTAL_M3H,
+    })),
+    purity: GAS_PURITY,
+    products: (["O2", "N2", "AR", "AIR"] as MediumCode[]).map((media) => ({
+      media,
+      name: MEDIUMS[media].name,
+      selfNm3h: self(media),
+      useNm3h: (sumMedia(l, media, "消耗") + sumMedia(l, media, "转换")) / MONTH_HOURS,
+      exportNm3h: sumMedia(l, media, "外供") / MONTH_HOURS,
+      kwhPerNm3: ELECTRICITY_PER_MEDIUM[media as "O2" | "N2" | "AR" | "AIR"],
+      lossPct: lossPctOf(media),
+    })),
+    headers: GAS_HEADERS.map((h) => ({ ...h, flowNm3h: self(h.media) })),
+    tanks: LIQ_TANKS.map((t) => ({ ...t })),
+    /** O/Ar 联供提示：氩气外供走液体槽车，画面右下角那条提示的数就来自这里 */
+    exportArNm3h: sumMedia(l, "AR", "外供") / MONTH_HOURS,
+  };
+}
+
+/**
+ * 画布图元 → 实时数值的一张表。**key 由 seed 的 `TopoNode.stat` 声明**，
+ * 于是「哪个格子上显示什么数」住在图元定义里、数值本身住在这里，两边各一处、不会打架。
+ */
+export function monitorStats(view: {
+  power?: ReturnType<typeof powerMonitor>;
+  steam?: ReturnType<typeof steamMonitor>;
+  gasPlant?: ReturnType<typeof gasPlantMonitor>;
+  gas?: ReturnType<typeof gasHourlyFlows>;
+}) {
+  const out: Record<string, MonitorStat> = {};
+  const p = view.power;
+  if (p) {
+    out["p-grid"] = stat("外购负荷", p.nowMw, "MW", toneOf(p.demand.utilPct, 85, 100));
+    out["p-self"] = stat("自发电出力", p.selfGen.mw, "MW");
+    out["p-demand"] = stat("需量利用率", p.demand.utilPct, "%", toneOf(p.demand.utilPct, 85, 100));
+    out["p-pf"] = stat("功率因数", p.pf.actual, "", p.pf.actual >= p.pf.target ? "ok" : "warn");
+    p.transformers.forEach((t) => {
+      out[`p-${t.id}`] = stat(t.name, t.ratioPct, "%", toneOf(t.ratioPct, 80, 95));
+    });
+    p.feeders.forEach((f) => {
+      out[`p-${f.unitId}`] = stat(f.name, f.kw, "kW");
+    });
+    p.genUnits.forEach((u) => {
+      out[`p-${u.id}`] = stat(u.name, u.mw, "MW", u.running ? "ok" : "warn");
+    });
+    /** 画布上 1#/2#CFB 合成一个格子，TRT×2 与烧结余热各自一个：按名字归并，绝不在 seed 里重抄一遍功率 */
+    out["p-gen-cfb"] = stat(
+      "CFB 锅炉发电",
+      p.genUnits.filter((u) => u.id.startsWith("GU-CFB")).reduce((a, u) => a + u.mw, 0),
+      "MW",
+      p.genUnits.some((u) => u.id.startsWith("GU-CFB") && u.running) ? "ok" : "warn",
+    );
+    p.recoveries.forEach((r) => {
+      if (r.id === "RG-TRT") out["p-re-trt"] = stat("TRT 余压发电", r.mw, "MW");
+      if (r.id === "RG-SJW") out["p-re-sjw"] = stat("烧结余热发电", r.mw, "MW");
+    });
+  }
+  const s = view.steam;
+  if (s) {
+    out["s-header"] = stat("母管流量", s.header.tph, "t/h");
+    out["s-loss"] = stat("管损率", s.total.lossPct, "%", toneOf(s.total.lossPct, 8, 15));
+    out["s-new"] = stat("全厂新水", s.water.newWaterM3h, "m³/h");
+    s.water.loops.forEach((w) => {
+      out[`s-${w.id}`] = stat(w.name, w.circM3h, "m³/h");
+    });
+    /** 产源摊到画布上的并联台数：干熄焦两炉各画自己那份，与 seed 的 s-cdq1/s-cdq2 对齐 */
+    s.sources.forEach((x) => {
+      out[`s-${x.id}`] = stat(x.name, x.totalTph, "t/h");
+      for (let k = 0; k < x.units; k++) {
+        out[`s-${x.id}-${k + 1}`] = stat(`${x.name}${x.units > 1 ? ` ${k + 1}#` : ""}`, x.perUnitTph, "t/h");
+      }
+    });
+    s.drums.forEach((d) => {
+      out[`s-${d.id}`] = stat(d.name, d.basePct, "%");
+    });
+  }
+  const g = view.gasPlant;
+  if (g) {
+    g.units.forEach((u) => {
+      out[`g-${u.id}`] = stat(u.name, u.o2Nm3h, "Nm³/h", toneOf(u.capLoadPct, 85, 95));
+    });
+    g.headers.forEach((h) => {
+      out[h.id] = stat(h.name, h.mpa, "MPa");
+    });
+    g.tanks.forEach((t) => {
+      out[`g-${t.id}`] = stat(t.name, t.basePct, "%");
+    });
+    const air = g.products.find((x) => x.media === "AIR");
+    out["g-air"] = stat("压缩空气", air?.selfNm3h ?? 0, "Nm³/h");
+  }
+  const gas = view.gas;
+  if (gas) {
+    for (const key of ["bfg", "cog", "ldg"] as const) {
+      const media = key.toUpperCase() as MediumCode;
+      out[`gas-src-${key}`] = stat(`${MEDIUMS[media].name}发生`, gas[key].in, "m³/h");
+    }
+    const vent = gas.bfg.vent + gas.cog.vent + gas.ldg.vent;
+    const income = gas.bfg.in + gas.cog.in + gas.ldg.in;
+    const ventPct = income > 0 ? (vent / income) * 100 : 0;
+    /** 放散塔那条线的颜色用**放散率**判，不用绝对流量：负荷低的夜班放散量小但率照样能超标 */
+    out["gas-vent"] = stat(
+      "煤气放散",
+      vent,
+      "m³/h",
+      toneOf(ventPct, KPI_TARGETS.ventRatePct, KPI_TARGETS.ventRatePct * 2),
+    );
+  }
+  return out;
+}
+
+/**
+ * seed 的 `TopoNode.stat` 允许引用的 key 全集（跨四张画布唯一的一份）。
+ *
+ * 只列出名字、不列值——值仍由 `monitorStats()` 现场派生。它存在的唯一理由是：
+ * 图元里写一个 model 不发出来的 key，页面上就是一片空白，而这类错在浏览器里长得和「数据还没到」一模一样。
+ * 于是由 `assertSeed()` 在 dev 装配时把它拦下来。
+ */
+export const TOPO_STAT_KEYS: ReadonlySet<string> = new Set([
+  /* EM0001 供配电 */
+  "p-grid",
+  "p-self",
+  "p-demand",
+  "p-pf",
+  ...MAIN_TRANSFORMERS.map((t) => `p-${t.id}`),
+  ...Object.values(PLANTS).map((u) => `p-${u}`),
+  "p-GU-CCPP",
+  "p-gen-cfb",
+  "p-re-trt",
+  "p-re-sjw",
+  /* EM0002 煤气 */
+  "gas-src-bfg",
+  "gas-src-cog",
+  "gas-src-ldg",
+  "gas-vent",
+  /* EM0003 蒸汽与水 */
+  "s-header",
+  "s-loss",
+  "s-new",
+  ...WATER_LOOPS.map((w) => `s-${w.id}`),
+  ...STEAM_DRUMS.map((d) => `s-${d.id}`),
+  /** 每个产源一个合计 key，并联台数再各给一个 `…-1`/`…-2` */
+  ...STEAM_SOURCE_ROWS.flatMap((s) => [
+    `s-${s.id}`,
+    ...Array.from({ length: s.n ?? 1 }, (_, k) => `s-${s.id}-${k + 1}`),
+  ]),
+  /* EM0004 氧氮氩 */
+  ...ASU_UNITS.map((u) => `g-${u.id}`),
+  ...GAS_HEADERS.map((h) => h.id),
+  ...LIQ_TANKS.map((t) => `g-${t.id}`),
+  "g-air",
+]);
+
+/* ══════════════════════════════════════════════════════════════════════════
+   14. 桑基 / 报表 / 计量点的派生入口（页面不自己算，一律走这里）
    ══════════════════════════════════════════════════════════════════════════ */
 
 /** 能流网络（EO0003 桑基）：购入/自产 → 转换 → 消耗 → 回收/放散/外供，节点值全部来自 flows() */

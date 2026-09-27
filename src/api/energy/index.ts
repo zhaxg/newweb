@@ -2,17 +2,29 @@ import { requestClient } from "@/api/_core/request";
 
 import type {
   ActionResult,
+  AlarmBoardDto,
+  AlarmLevel,
   AlarmRule,
   CollectChannel,
+  DispatchOrder,
+  DispatchSuggestion,
+  EnergyAlarm,
   EnergyMedium,
+  GasHolder,
+  GasPlantViewDto,
+  GasScenarioDto,
+  GasSimViewDto,
+  GasViewDto,
   Instrument,
   MeterPoint,
   PageResult,
   Person,
   PointHistoryResult,
   PointReading,
+  PowerViewDto,
   PriceTemplate,
   QualityTicket,
+  SteamViewDto,
   UsingUnit,
 } from "./types";
 
@@ -167,4 +179,85 @@ export const pointApi = {
   realtime: (pointIds: string[] = []) => emsPost<PointReading[]>("/point/realtime", { pointIds }),
   history: (pointIds: string[], days?: number) =>
     emsPost<PointHistoryResult>("/point/history", days ? { pointIds, days } : { pointIds }),
+};
+
+/* ── EM 监控与调度 ──────────────────────────────────────────────────────── */
+
+/**
+ * 四张画布。一个端点回「几何 + 已解析的数值 + 右侧表格」一整份，页面不发第二个请求。
+ *
+ * 为什么读端点全是 POST：`/gas` 要带介质，`/gas/simulate` 要带嵌套的 what-if 场景对象，
+ * query 表达不了；本仓真实后端也是「查询走 POST」（AGENTS §6 网络层）。
+ */
+export const monitorApi = {
+  power: () => emsPost<PowerViewDto>("/monitor/power", {}),
+  gas: (media?: string) => emsPost<GasViewDto>("/monitor/gas", media ? { media } : {}),
+  steam: () => emsPost<SteamViewDto>("/monitor/steam", {}),
+  gasPlant: () => emsPost<GasPlantViewDto>("/monitor/gasplant", {}),
+  /** 柜与柜位（下拉与柜体填充用；画布里的柜位已随 scene 给出） */
+  holders: () => emsGet<GasHolder[]>("/holder/list"),
+  /** 24 点负荷/煤气预测线（EM0001 的次日计划线与 EM0007 的预测图同一个来源） */
+  forecast: () => emsGet<{ load: GasSimViewDto["load"]; gas: GasSimViewDto["gas"] }>("/gas/forecast"),
+  /**
+   * 推进实时层一拍。**刻意复用 `/point/tick` 而不是新开一个端点**：
+   * 全站只有一个演示时钟，多一个名字就是多一处「谁在推时钟」的疑问（AGENTS 网络层那条也说了查询走 POST）。
+   */
+  tick: () => emsPost<{ step: number; ldgPct: number }>("/point/tick", {}),
+};
+
+/**
+ * EM0007 煤气平衡仿真 + 8 幕剧本的入口。
+ *
+ * `simulate` 是**纯读**：它按传入场景跑一遍 `model.simulateGasBalance`，不写柜位、不写落库数据，
+ * 所以滑杆可以任意拖。只有 `surge`（剧本）和 `accept`（采纳建议）才有副作用，
+ * 且两者都直接回一份新快照——按钮与随后的画面必须是同一个数，不能靠两次请求碰运气对齐。
+ */
+export const gasSimApi = {
+  simulate: (scenario: GasScenarioDto = {}) => emsPost<GasSimViewDto>("/gas/simulate", { scenario }),
+  /** ▶模拟转炉吹炼高峰（幕 2）：柜位 30s 内爬到触顶 */
+  surge: (media?: string) => emsPost<ActionResult<GasSimViewDto>>("/gas/surge", media ? { media } : {}),
+  /** 提前收剧本：柜位停在当前值，交给均值回归 */
+  surgeStop: () => emsPost<ActionResult>("/gas/surgeStop", {}),
+};
+
+/** 调度建议（规则引擎的产物，EM0002 右栏与 EM0007 共用） */
+export const suggestionApi = {
+  /** ▶生成调度建议：手动跑一次规则引擎（正常路径由 tick 在柜位越线时自动跑） */
+  gen: (media?: string) => emsPost<ActionResult<DispatchSuggestion[]>>("/suggestion/gen", media ? { media } : {}),
+  /** 采纳 → 调度令草拟单，自动填动作与接收人（幕 3→5） */
+  accept: (id: string) => emsPost<ActionResult<DispatchOrder>>("/suggestion/accept", { id }),
+};
+
+/** EM0005 报警中心 */
+export const alarmApi = {
+  page: emsList<EnergyAlarm>("/alarm"),
+  /** 五级分桶 + 状态计数：看板一次给全，页面不再自己 group by */
+  board: (level?: AlarmLevel | 0, status?: string) =>
+    emsPost<AlarmBoardDto>("/alarm/board", { level: level ?? 0, status: status ?? "" }),
+  /** 活动报警流：监控四页右栏那一列 */
+  active: () => emsGet<EnergyAlarm[]>("/alarm/active"),
+  ack: (id: string) => emsPost<ActionResult<EnergyAlarm>>("/alarm/ack", { id }),
+  ackAll: () => emsPost<ActionResult>("/alarm/ackAll", {}),
+  close: (id: string) => emsPost<ActionResult<EnergyAlarm>>("/alarm/close", { id }),
+  /** 报警转调度令（幕 4→5）：带级别与柜位上下文，不用人再抄一遍 */
+  toDispatch: (alarmId: string) => emsPost<ActionResult<DispatchOrder>>("/alarm/toDispatch", { alarmId }),
+};
+
+/** EM0006 调度令五态闭环：草拟 → 已下达 → 执行中 → 已完成 → 已回执 */
+export const dispatchApi = {
+  page: emsList<DispatchOrder>("/dispatch"),
+  stat: () =>
+    emsGet<{
+      total: number;
+      draft: number;
+      issued: number;
+      running: number;
+      done: number;
+      receipt: number;
+      overdue: number;
+    }>("/dispatch/stat"),
+  issue: (id: string) => emsPost<ActionResult<DispatchOrder>>("/dispatch/issue", { id }),
+  /** 执行完毕：**在这里兑现采纳时挂上的柜位基线**，幕 7 之后回 EM0002/大屏才看得到数字回落 */
+  exec: (id: string) => emsPost<ActionResult<DispatchOrder>>("/dispatch/exec", { id }),
+  receipt: (id: string) => emsPost<ActionResult<DispatchOrder>>("/dispatch/receipt", { id }),
 };

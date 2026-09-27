@@ -8,7 +8,17 @@ import type {
   PriceTemplate,
   ReportTemplate,
 } from "@/api/energy/types";
-import { DEMAND_LIMIT_MW, DEMO_T0, ELEC_PRICE, HOLDER_ROWS, PEOPLE, PLANTS, UNIT_LIST, stampOf } from "./model";
+import {
+  DEMAND_LIMIT_MW,
+  DEMO_T0,
+  ELEC_PRICE,
+  HOLDER_ROWS,
+  PEOPLE,
+  PLANTS,
+  TOPO_STAT_KEYS,
+  UNIT_LIST,
+  stampOf,
+} from "./model";
 
 /**
  * 非派生种子：`model.ts` 管「数从哪来」，这里管「厂子里有哪些东西」。
@@ -450,6 +460,8 @@ function assertSeed(holderIds: string[]) {
     for (const n of sc.nodes)
       if (n.ref && !known.has(n.ref) && !holderIds.includes(n.ref))
         bad.push(`拓扑图元 ${n.id} 引用了未知表号 ${n.ref}`);
+    for (const n of sc.nodes)
+      if (n.stat && !TOPO_STAT_KEYS.has(n.stat)) bad.push(`拓扑图元 ${n.id} 的 stat "${n.stat}" 无出处`);
   }
   for (const k of KEY_EQUIPS)
     if (!UNIT_LIST.some((u) => u.id === k.unitId)) bad.push(`重点设备 ${k.name} 挂了不存在的单元 ${k.unitId}`);
@@ -736,6 +748,14 @@ export interface TopoNode {
   h?: number;
   /** 关联的计量点/柜 id：实时数值就地刷进图元（页面按此取 store 的实时层） */
   ref?: string;
+  /**
+   * 关联的监测量 key（`model.monitorStats()` 的字典键）。
+   *
+   * 图元的**位置与措辞**住在这里、**数值**住在 model，两边各一处。
+   * 反过来把数字写进 label（原先的「1#主变 63MVA」「CCPP 150MW」）就是给同一个量造第二个家——
+   * 铭牌一改，一次图与柱图立刻两个数。
+   */
+  stat?: string;
 }
 export interface TopoEdge {
   from: string;
@@ -753,32 +773,135 @@ export interface TopoScene {
   edges: TopoEdge[];
 }
 
-/** 供配电一次图：外网 → 110kV 母线 → 两台主变 → 35kV 母线 → 各厂 + 三台自发电并网 */
+/** 供配电一次图：外网 → 110kV 母线 → 三台主变 → 35kV 母线 → 各厂 + 四路自发电并网 */
 export const TOPO_POWER: TopoScene = {
   viewBox: "0 0 1000 620",
   nodes: [
-    { id: "grid", label: "电力系统 110kV", kind: "box", x: 80, y: 30, w: 180, h: 46, ref: "P-POW-G0" },
+    { id: "grid", label: "电力系统 110kV", kind: "box", x: 80, y: 30, w: 180, h: 46, ref: "P-POW-G0", stat: "p-grid" },
     { id: "bus110", label: "110kV 单母分段", kind: "bus", x: 300, y: 120, w: 400, ref: "P-POW-G0" },
-    { id: "t1", label: "1#主变 63MVA", kind: "box", x: 340, y: 190, w: 150, h: 44 },
-    { id: "t2", label: "2#主变 63MVA", kind: "box", x: 530, y: 190, w: 150, h: 44 },
+    { id: "t1", label: "1#主变", kind: "box", x: 250, y: 190, w: 130, h: 44, stat: "p-t1" },
+    { id: "t2", label: "2#主变", kind: "box", x: 435, y: 190, w: 130, h: 44, stat: "p-t2" },
+    { id: "t3", label: "3#主变", kind: "box", x: 620, y: 190, w: 130, h: 44, stat: "p-t3" },
     { id: "bus35", label: "35kV 配电所母线", kind: "bus", x: 250, y: 290, w: 500, ref: "P-POW-G1" },
-    { id: "l-coke", label: "焦化厂", kind: "load", x: 180, y: 370, w: 110, h: 40, ref: "P-COKE-T01" },
-    { id: "l-sinter", label: "烧结厂", kind: "load", x: 310, y: 370, w: 110, h: 40, ref: "P-SINT-T01" },
-    { id: "l-iron", label: "炼铁厂", kind: "load", x: 440, y: 370, w: 110, h: 40, ref: "P-IRON-T01" },
-    { id: "l-steel", label: "炼钢厂", kind: "load", x: 570, y: 370, w: 110, h: 40, ref: "P-STEL-T01" },
-    { id: "l-roll", label: "轧钢厂", kind: "load", x: 700, y: 370, w: 110, h: 40, ref: "P-ROLL-T01" },
-    { id: "l-aux", label: "动力/公辅", kind: "load", x: 830, y: 370, w: 110, h: 40, ref: "P-OTH-01" },
-    { id: "g-ccpp", label: "CCPP 150MW", kind: "gen", x: 210, y: 500, w: 150, h: 44, ref: "P-GEN-01" },
-    { id: "g-cfb", label: "1#CFB 25MW", kind: "gen", x: 400, y: 500, w: 150, h: 44, ref: "P-GEN-02" },
-    { id: "g-trt", label: "TRT×2 36MW", kind: "gen", x: 590, y: 500, w: 150, h: 44, ref: "P-IRON-41" },
-    { id: "g-sjw", label: "烧结余热 30MW", kind: "gen", x: 780, y: 500, w: 150, h: 44, ref: "P-SINT-03" },
+    {
+      id: "l-coke",
+      label: "焦化厂",
+      kind: "load",
+      x: 180,
+      y: 370,
+      w: 110,
+      h: 40,
+      ref: "P-COKE-T01",
+      stat: "p-EU-0100",
+    },
+    {
+      id: "l-sinter",
+      label: "烧结厂",
+      kind: "load",
+      x: 310,
+      y: 370,
+      w: 110,
+      h: 40,
+      ref: "P-SINT-T01",
+      stat: "p-EU-0200",
+    },
+    {
+      id: "l-iron",
+      label: "炼铁厂",
+      kind: "load",
+      x: 440,
+      y: 370,
+      w: 110,
+      h: 40,
+      ref: "P-IRON-T01",
+      stat: "p-EU-0300",
+    },
+    {
+      id: "l-steel",
+      label: "炼钢厂",
+      kind: "load",
+      x: 570,
+      y: 370,
+      w: 110,
+      h: 40,
+      ref: "P-STEL-T01",
+      stat: "p-EU-0400",
+    },
+    {
+      id: "l-roll",
+      label: "轧钢厂",
+      kind: "load",
+      x: 700,
+      y: 370,
+      w: 110,
+      h: 40,
+      ref: "P-ROLL-T01",
+      stat: "p-EU-0500",
+    },
+    {
+      id: "l-aux",
+      label: "动力/公辅",
+      kind: "load",
+      x: 830,
+      y: 370,
+      w: 110,
+      h: 40,
+      ref: "P-OTH-01",
+      stat: "p-EU-0600",
+    },
+    {
+      id: "g-ccpp",
+      label: "CCPP 机组",
+      kind: "gen",
+      x: 210,
+      y: 500,
+      w: 150,
+      h: 44,
+      ref: "P-GEN-01",
+      stat: "p-GU-CCPP",
+    },
+    {
+      id: "g-cfb",
+      label: "1#/2#CFB",
+      kind: "gen",
+      x: 400,
+      y: 500,
+      w: 150,
+      h: 44,
+      ref: "P-GEN-02",
+      stat: "p-gen-cfb",
+    },
+    {
+      id: "g-trt",
+      label: "TRT 余压发电",
+      kind: "gen",
+      x: 590,
+      y: 500,
+      w: 150,
+      h: 44,
+      ref: "P-IRON-41",
+      stat: "p-re-trt",
+    },
+    {
+      id: "g-sjw",
+      label: "烧结余热发电",
+      kind: "gen",
+      x: 780,
+      y: 500,
+      w: 150,
+      h: 44,
+      ref: "P-SINT-03",
+      stat: "p-re-sjw",
+    },
   ],
   edges: [
     { from: "grid", to: "bus110", style: "thick", via: [[170, 120]] },
-    { from: "bus110", to: "t1", via: [[415, 120]] },
-    { from: "bus110", to: "t2", via: [[605, 120]] },
-    { from: "t1", to: "bus35", via: [[415, 290]] },
-    { from: "t2", to: "bus35", via: [[605, 290]] },
+    { from: "bus110", to: "t1", via: [[315, 120]] },
+    { from: "bus110", to: "t2", via: [[500, 120]] },
+    { from: "bus110", to: "t3", via: [[685, 120]] },
+    { from: "t1", to: "bus35", via: [[315, 290]] },
+    { from: "t2", to: "bus35", via: [[500, 290]] },
+    { from: "t3", to: "bus35", via: [[685, 290]] },
     ...["l-coke", "l-sinter", "l-iron", "l-steel", "l-roll", "l-aux"].map((id) => ({ from: "bus35", to: id })),
     ...["g-ccpp", "g-cfb", "g-trt", "g-sjw"].map((id) => ({ from: id, to: "bus35", style: "dash" as const })),
   ],
@@ -788,9 +911,39 @@ export const TOPO_POWER: TopoScene = {
 export const TOPO_GAS: TopoScene = {
   viewBox: "0 0 1000 620",
   nodes: [
-    { id: "src-bfg", label: "高炉煤气总管", kind: "box", x: 40, y: 60, w: 160, h: 44, ref: "P-IRON-B0" },
-    { id: "src-cog", label: "焦炉煤气总管", kind: "box", x: 40, y: 210, w: 160, h: 44, ref: "P-COKE-C1" },
-    { id: "src-ldg", label: "转炉煤气总管", kind: "box", x: 40, y: 360, w: 160, h: 44, ref: "P-STEL-L0" },
+    {
+      id: "src-bfg",
+      label: "高炉煤气总管",
+      kind: "box",
+      x: 40,
+      y: 60,
+      w: 160,
+      h: 44,
+      ref: "P-IRON-B0",
+      stat: "gas-src-bfg",
+    },
+    {
+      id: "src-cog",
+      label: "焦炉煤气总管",
+      kind: "box",
+      x: 40,
+      y: 210,
+      w: 160,
+      h: 44,
+      ref: "P-COKE-C1",
+      stat: "gas-src-cog",
+    },
+    {
+      id: "src-ldg",
+      label: "转炉煤气总管",
+      kind: "box",
+      x: 40,
+      y: 360,
+      w: 160,
+      h: 44,
+      ref: "P-STEL-L0",
+      stat: "gas-src-ldg",
+    },
     { id: "h-bfg1", label: "1#高炉柜", kind: "holder", x: 270, y: 40, w: 130, h: 54, ref: "GH-BFG1" },
     { id: "h-bfg2", label: "2#高炉柜", kind: "holder", x: 270, y: 110, w: 130, h: 54, ref: "GH-BFG2" },
     { id: "h-cog1", label: "焦炉柜", kind: "holder", x: 270, y: 220, w: 130, h: 54, ref: "GH-COG1" },
@@ -802,7 +955,7 @@ export const TOPO_GAS: TopoScene = {
     { id: "u-sinter", label: "烧结点火", kind: "load", x: 560, y: 255, w: 150, h: 40, ref: "P-SINT-B1" },
     { id: "u-roll", label: "加热炉（MIG）", kind: "load", x: 560, y: 330, w: 150, h: 40, ref: "P-ROLL-M1" },
     { id: "u-ladle", label: "钢包烘烤", kind: "load", x: 560, y: 395, w: 150, h: 40, ref: "P-STEL-B1" },
-    { id: "vent", label: "放散塔", kind: "valve", x: 830, y: 340, w: 130, h: 44, ref: "P-GEN-V1" },
+    { id: "vent", label: "放散塔", kind: "valve", x: 830, y: 340, w: 130, h: 44, ref: "P-GEN-V1", stat: "gas-vent" },
   ],
   edges: [
     { from: "src-bfg", to: "h-bfg1", style: "thick", media: "BFG" },
@@ -870,41 +1023,96 @@ export const TOPO_GAS: TopoScene = {
   ],
 };
 
-/** 蒸汽与水平衡：余能产汽 → 蒸汽母管 → 用户；新水 → 净环/浊环 → 用户 */
+/**
+ * 蒸汽与水平衡：产源 → 蒸汽母管 → 用户；新水 → 净环/浊环 → 用户。
+ * 产源必须与 `steamMonitor().sources` 一一对应，数值一律走 `stat`。
+ * `ref` 只在**采集网上真有一块表**时才给——转炉/加热炉汽化冷却目前没有独立蒸汽表，
+ * 硬配一个别的介质的测点 id 等于让 EM0003 把煤气表读数当蒸汽画。
+ */
 export const TOPO_STEAM: TopoScene = {
   viewBox: "0 0 1000 620",
   nodes: [
-    { id: "s-cdq1", label: "1#干熄焦", kind: "gen", x: 40, y: 50, w: 150, h: 44, ref: "P-COKE-S1" },
-    { id: "s-cdq2", label: "2#干熄焦", kind: "gen", x: 40, y: 115, w: 150, h: 44, ref: "P-COKE-S2" },
-    { id: "s-sjw", label: "烧结余热锅炉", kind: "gen", x: 40, y: 180, w: 150, h: 44, ref: "P-SINT-03" },
-    { id: "s-evap", label: "高炉汽化冷却", kind: "gen", x: 40, y: 245, w: 150, h: 44, ref: "P-POW-S1" },
-    { id: "s-header", label: "3.8MPa 蒸汽母管", kind: "bus", x: 300, y: 160, w: 300, ref: "P-COKE-S1" },
-    { id: "s-use1", label: "汽机发电", kind: "load", x: 690, y: 60, w: 150, h: 44, ref: "P-GEN-02" },
-    { id: "s-use2", label: "采暖与制冷", kind: "load", x: 690, y: 135, w: 150, h: 44 },
-    { id: "s-use3", label: "工艺用汽", kind: "load", x: 690, y: 210, w: 150, h: 44 },
-    { id: "w-new", label: "全厂新水", kind: "box", x: 40, y: 400, w: 150, h: 44, ref: "P-POW-W1" },
-    { id: "w-clean", label: "净环水系统", kind: "bus", x: 300, y: 380, w: 260, ref: "P-POW-01" },
-    { id: "w-dirty", label: "浊环水系统", kind: "bus", x: 300, y: 470, w: 260, ref: "P-POW-02" },
-    { id: "w-use1", label: "高炉冷却", kind: "load", x: 690, y: 340, w: 150, h: 40 },
-    { id: "w-use2", label: "轧钢层冷", kind: "load", x: 690, y: 405, w: 150, h: 40, ref: "P-ROLL-W1" },
-    { id: "w-use3", label: "炼钢除尘", kind: "load", x: 690, y: 470, w: 150, h: 40 },
+    {
+      id: "s-cdq1",
+      label: "1#干熄焦锅炉",
+      kind: "gen",
+      x: 40,
+      y: 140,
+      w: 170,
+      h: 44,
+      ref: "P-COKE-S1",
+      stat: "s-st-cdq-1",
+    },
+    {
+      id: "s-cdq2",
+      label: "2#干熄焦锅炉",
+      kind: "gen",
+      x: 40,
+      y: 195,
+      w: 170,
+      h: 44,
+      ref: "P-COKE-S2",
+      stat: "s-st-cdq-2",
+    },
+    { id: "s-cfb", label: "CFB 主蒸汽", kind: "gen", x: 40, y: 250, w: 170, h: 44, stat: "s-st-cfb" },
+    {
+      id: "s-bfg",
+      label: "高炉汽化冷却",
+      kind: "gen",
+      x: 40,
+      y: 305,
+      w: 170,
+      h: 44,
+      ref: "P-POW-S1",
+      stat: "s-st-bfg",
+    },
+    { id: "s-ldg", label: "转炉汽化冷却", kind: "gen", x: 40, y: 360, w: 170, h: 44, stat: "s-st-ldg" },
+    { id: "s-hrz", label: "加热炉汽化冷却", kind: "gen", x: 40, y: 415, w: 170, h: 44, stat: "s-st-hrz" },
+    { id: "s-header", label: "高压蒸汽母管", kind: "bus", x: 340, y: 270, w: 280, stat: "s-header" },
+    { id: "s-dr-cdq", label: "干熄焦汽包", kind: "holder", x: 300, y: 50, w: 145, h: 44, stat: "s-dr-cdq" },
+    { id: "s-dr-evap", label: "汽化冷却汽包", kind: "holder", x: 470, y: 50, w: 145, h: 44, stat: "s-dr-evap" },
+    { id: "s-acc", label: "蒸汽蓄热器", kind: "holder", x: 640, y: 50, w: 145, h: 44, stat: "s-acc" },
+    { id: "s-use1", label: "汽机发电", kind: "load", x: 700, y: 150, w: 170, h: 40 },
+    { id: "s-use2", label: "采暖与制冷", kind: "load", x: 700, y: 215, w: 170, h: 40 },
+    { id: "s-use3", label: "工艺用汽", kind: "load", x: 700, y: 280, w: 170, h: 40 },
+    { id: "s-use4", label: "外供汽", kind: "load", x: 700, y: 345, w: 170, h: 40 },
+    { id: "s-vent", label: "放空与管损", kind: "valve", x: 700, y: 410, w: 170, h: 40, stat: "s-loss" },
+    { id: "w-new", label: "全厂新水", kind: "box", x: 40, y: 490, w: 170, h: 44, ref: "P-POW-W1", stat: "s-new" },
+    { id: "w-clean", label: "净环水系统", kind: "bus", x: 340, y: 465, w: 280, ref: "P-POW-01", stat: "s-w-clean" },
+    { id: "w-dirty", label: "浊环水系统", kind: "bus", x: 340, y: 555, w: 280, ref: "P-POW-02", stat: "s-w-dirty" },
+    { id: "w-use1", label: "高炉冷却", kind: "load", x: 700, y: 460, w: 170, h: 36, ref: "P-IRON-W1" },
+    { id: "w-use2", label: "轧钢层冷", kind: "load", x: 700, y: 512, w: 170, h: 36, ref: "P-ROLL-W1" },
+    { id: "w-use3", label: "炼钢除尘", kind: "load", x: 700, y: 564, w: 170, h: 36, ref: "P-STEL-W1" },
   ],
   edges: [
-    { from: "s-cdq1", to: "s-header", media: "STEAM" },
-    { from: "s-cdq2", to: "s-header", media: "STEAM" },
-    { from: "s-sjw", to: "s-header", media: "STEAM" },
-    { from: "s-evap", to: "s-header", media: "STEAM" },
-    { from: "s-header", to: "s-use1", style: "thick", media: "STEAM" },
+    { from: "s-cdq1", to: "s-header", style: "thick", media: "STEAM" },
+    { from: "s-cdq2", to: "s-header", style: "thick", media: "STEAM" },
+    { from: "s-bfg", to: "s-header", media: "STEAM" },
+    { from: "s-ldg", to: "s-header", media: "STEAM" },
+    { from: "s-hrz", to: "s-header", media: "STEAM" },
+    /** CFB 主蒸汽自供本厂汽机，虚线不接母管——画成实线就等于把它记进蒸汽账 */
+    {
+      from: "s-cfb",
+      to: "s-use1",
+      style: "dash",
+      media: "STEAM",
+      via: [
+        [660, 272],
+        [660, 170],
+      ],
+    },
     { from: "s-header", to: "s-use2", media: "STEAM" },
-    { from: "s-header", to: "s-use3", media: "STEAM" },
-    { from: "w-new", to: "w-clean", media: "WATER" },
+    { from: "s-header", to: "s-use3", style: "thick", media: "STEAM" },
+    { from: "s-header", to: "s-use4", media: "STEAM" },
+    { from: "s-header", to: "s-vent", style: "dash", media: "STEAM" },
+    { from: "w-new", to: "w-clean", style: "thick", media: "WATER" },
     {
       from: "w-new",
       to: "w-dirty",
       media: "WATER",
       via: [
-        [250, 422],
-        [250, 492],
+        [290, 512],
+        [290, 555],
       ],
     },
     { from: "w-clean", to: "w-use1", style: "thick", media: "WATER" },
@@ -913,16 +1121,19 @@ export const TOPO_STEAM: TopoScene = {
   ],
 };
 
-/** 氧氮氩管网：两套空分 → 三种气体总管 → 用户 + 外供 */
+/** 氧氮氩管网：两套空分 → 三种气体总管 → 液体储罐 → 用户 + 外供 */
 export const TOPO_GASPLANT: TopoScene = {
-  viewBox: "0 0 1000 500",
+  viewBox: "0 0 1000 560",
   nodes: [
-    { id: "as1", label: "1#空分 2×32000", kind: "gen", x: 40, y: 60, w: 180, h: 48, ref: "P-GAS-O1" },
-    { id: "as2", label: "2#空分", kind: "gen", x: 40, y: 150, w: 180, h: 48, ref: "P-GAS-O2" },
-    { id: "bo1", label: "1#离心空压机", kind: "box", x: 40, y: 250, w: 180, h: 44, ref: "P-GAS-01" },
-    { id: "bus-o2", label: "氧气总管 0.6MPa", kind: "bus", x: 330, y: 70, w: 300, ref: "P-STEL-O0" },
-    { id: "bus-n2", label: "氮气总管", kind: "bus", x: 330, y: 190, w: 300, ref: "P-GAS-N1" },
-    { id: "bus-ar", label: "氩气总管", kind: "bus", x: 330, y: 310, w: 300, ref: "P-GAS-A1" },
+    { id: "as1", label: "1#空分装置", kind: "gen", x: 40, y: 60, w: 180, h: 48, ref: "P-GAS-O1", stat: "g-as1" },
+    { id: "as2", label: "2#空分装置", kind: "gen", x: 40, y: 150, w: 180, h: 48, ref: "P-GAS-O2", stat: "g-as2" },
+    { id: "bo1", label: "1#离心空压机", kind: "box", x: 40, y: 250, w: 180, h: 44, ref: "P-GAS-01", stat: "g-air" },
+    { id: "bus-o2", label: "氧气总管", kind: "bus", x: 330, y: 70, w: 300, ref: "P-STEL-O0", stat: "bus-o2" },
+    { id: "bus-n2", label: "氮气总管", kind: "bus", x: 330, y: 190, w: 300, ref: "P-GAS-N1", stat: "bus-n2" },
+    { id: "bus-ar", label: "氩气总管", kind: "bus", x: 330, y: 310, w: 300, ref: "P-GAS-A1", stat: "bus-ar" },
+    { id: "tk-lo2", label: "1#液氧储罐", kind: "holder", x: 330, y: 420, w: 130, h: 48, stat: "g-tk-lo2" },
+    { id: "tk-ln2", label: "1#液氮储罐", kind: "holder", x: 480, y: 420, w: 130, h: 48, stat: "g-tk-ln2" },
+    { id: "tk-lar", label: "液氩储罐", kind: "holder", x: 630, y: 420, w: 130, h: 48, stat: "g-tk-lar" },
     { id: "u-steel", label: "转炉吹氧", kind: "load", x: 720, y: 50, w: 150, h: 40, ref: "P-STEL-O1" },
     { id: "u-blast", label: "高炉富氧", kind: "load", x: 720, y: 110, w: 150, h: 40 },
     { id: "u-cover", label: "连铸保护气", kind: "load", x: 720, y: 175, w: 150, h: 40 },
@@ -975,6 +1186,37 @@ export const TOPO_GASPLANT: TopoScene = {
     { from: "bus-n2", to: "u-purge", media: "N2" },
     { from: "bus-ar", to: "u-weld", media: "AR" },
     { from: "bus-ar", to: "u-export", style: "dash", media: "AR" },
+    /* 三座液体槽车挂在各自总管下方：调峰与外供液化走的就是这三条支管 */
+    {
+      from: "bus-o2",
+      to: "tk-lo2",
+      style: "dash",
+      media: "O2",
+      via: [
+        [300, 82],
+        [300, 444],
+      ],
+    },
+    {
+      from: "bus-n2",
+      to: "tk-ln2",
+      style: "dash",
+      media: "N2",
+      via: [
+        [310, 202],
+        [310, 444],
+      ],
+    },
+    {
+      from: "bus-ar",
+      to: "tk-lar",
+      style: "dash",
+      media: "AR",
+      via: [
+        [620, 322],
+        [620, 400],
+      ],
+    },
   ],
 };
 

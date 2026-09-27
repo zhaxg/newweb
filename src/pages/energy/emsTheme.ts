@@ -22,6 +22,8 @@
  * 一律写成完整字面量；与上面的常量是「同一颜色的两种写法」，改色要两处一起看。
  */
 
+import type { StatTone } from "@/api/energy/types";
+
 /* ── TS 面（给 ECharts series、内联 style 用）───────────────────────────── */
 
 export const EMS_BG = "#0B1220";
@@ -53,6 +55,27 @@ export const emsHeaderTextClass = "text-base font-semibold text-[#38BDF8]";
 
 /** 深色区强调数字（大屏 KPI）：科技蓝 + 等宽数字，切 tabular 是为了刷新时数字不左右抖动 */
 export const emsMetricClass = "text-base font-semibold tabular-nums text-[#38BDF8]";
+
+/**
+ * 三档语义色的**文字 class**（`StatTone` → class）。监控页每一张数字卡、每一条负载率条都读它。
+ *
+ * 为什么放这份文件而不是各页各写一个 `Record`：色标的圆角字号只在 `cells.ts` 定义一次是同样的道理——
+ * 「预警」在 EM0001 的卡上是琥珀色、在 EM0002 的表格里变成别的颜色，客户不会说这是配色不一致，
+ * 他会说**这个系统两个地方显示的同一个状态不一样**。
+ * 完整字面量是必须的：Tailwind 扫的是字符串，`text-[${EMS_WARN}]` 拼不出来。
+ */
+export const TONE_TEXT: Record<StatTone, string> = {
+  ok: "text-[#22C55E]",
+  warn: "text-[#F59E0B]",
+  bad: "text-[#EF4444]",
+};
+
+/** 同三档的**底色** class：给进度条、状态条这类要占一块面积的地方用 */
+export const TONE_BG: Record<StatTone, string> = {
+  ok: "bg-[#22C55E]",
+  warn: "bg-[#F59E0B]",
+  bad: "bg-[#EF4444]",
+};
 
 /* ── ECharts 通用配置 ───────────────────────────────────────────────────── */
 

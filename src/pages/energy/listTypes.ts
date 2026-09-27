@@ -82,6 +82,12 @@ export interface RowAct {
   /** 弹窗标题，默认取 `label` */
   title?: string;
   /**
+   * `kind=run` 的二次确认文案：给了就先弹确认框再调 `run`。
+   * 状态机页面上「模拟中断」「下达调度令」这类**一按就改到别的页**的动作必须给——
+   * 客户点完才发现画面变了，会以为是误触，而不是"这个系统会连带做什么"。
+   */
+  confirm?: string;
+  /**
    * 动作本体。返回值若是 `ActionResult`，由 `ListPage` 统一判定：
    * `ok=false` → warn toast 报出 `msg`（业务拒绝）且不刷新；`ok=true` → success toast + 刷新列表。
    */

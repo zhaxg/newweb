@@ -21,8 +21,8 @@
  * 丢弃会让页面永远看不出少配了哪列（不可诊断）。页面传了自己的 columns/detail 时**整段替换**，
  * 不做合并：合并语义要记住「谁覆盖谁」，替换一眼看懂。每条列表带「导出」动作（走 `/ems/export`，见下）。
  *
- * 对外两个口子：`defineExpose({ reload })` 给「名称表后到、要重查一次」的页面；
- * `emit("changed")` 给「左树 + 右表是同一批行」的页面（EG0002/EC0001）——写成功之后树不跟着重拉，
+ * 对外三个口子：`defineExpose({ reload, setQuery })`——`reload` 给「名称表后到、要重查一次」的页面，
+ * `setQuery` 给「看板卡点击即筛选」（EM0005 的五级卡）；`emit("changed")` 给「左树 + 右表是同一批行」。的页面（EG0002/EC0001）——写成功之后树不跟着重拉，
  * 刚新增的下级就只在表里、不在树上，客户会当成系统两处数据不一致。
  */
 import { computed, onMounted, reactive, ref } from "vue";
@@ -363,7 +363,27 @@ async function query() {
 }
 
 /** 供页面外部（父组件通过 ref）触发重查：跨页联动演示时「我刚在别的页确认了报警，这页也要立刻见到」 */
-defineExpose({ reload: query });
+defineExpose({ reload: query, setQuery });
+
+/**
+ * 从页面外部把某个查询条件设成给定值并重查——**看板卡点击**是这套骨架里唯一的入口。
+ *
+ * 为什么要留这个口子而不是让页面自己维护一份过滤状态：那样就有两份查询条件
+ * （卡里一份、条件区一份），客户点完卡再去条件区改下拉，看到的就会是「两个条件同时生效」
+ * 的第三种结果。这里把值**写回同一个 `model`**，条件区的下拉因此会跟着变成点中的那一项，
+ * 再点一次同一张卡则清空——页面和骨架看到的是同一份状态。
+ *
+ * 传的是**展示文案**（「重大」而不是 `2`），`valueMap` 在 `buildParams` 里统一翻，
+ * 页面不需要知道后端编码。
+ */
+function setQuery(key: string, text: string | null) {
+  const f = spec.value.query.find((x) => x.key === key);
+  if (!f) return;
+  /** 再点同一张卡 = 取消该条件，符合"筛选是开关"的直觉 */
+  model[key] = text !== null && model[key] === text ? "" : (text ?? "");
+  page.value = 1;
+  void query();
+}
 
 function reset() {
   for (const f of spec.value.query) model[f.key] = f.kind === "range" ? null : "";
@@ -497,6 +517,17 @@ async function runRowAct(a: RowAct, row: any) {
       actionLabel: "确定",
       submit: (payload) => a.run!(row, payload),
     });
+    return;
+  }
+  /** 状态机动作可以要二次确认（`▶模拟中断`、`下达` 这类一按就改全站的事）。
+   *  和 `ToolAct.confirm` 同一套确认框、同样不标红：红色只留给「删除」这种收不回的动作 */
+  if (a.confirm) {
+    confirmState.value = {
+      text: a.confirm,
+      okMsg: a.okMsg ?? "操作成功",
+      danger: false,
+      run: () => a.run!(row, {}),
+    };
     return;
   }
   await exec(() => a.run!(row, {}), a.okMsg ?? "操作成功", a.refresh !== false);

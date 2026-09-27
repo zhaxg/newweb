@@ -27,6 +27,26 @@ function summarize(err: unknown): string {
   return "";
 }
 
+/**
+ * 浏览器的 ResizeObserver「这一帧没派发完」提示——**不是应用错误**。
+ *
+ * 只要有个 ResizeObserver 回调在被观察元素里改了布局（图表 resize、滚动容器、缩放画布都会），
+ * Chrome 就把这句话当成一次未捕获错误抛到 `window.onerror`，`e.message` 是纯文本、
+ * 没有堆栈、也没有任何可处置的语义。把它弹成「脚本执行异常」有两个害处：
+ * 盖住真错误、以及让客户以为大屏坏了。
+ *
+ * 所以这里整条吞掉（含 `preventDefault()`——不调它 Chrome 自己还会在控制台再印一行），
+ * 但**每 60 秒留一次 warn**：真出现「回调无限成环」时那是在烧 CPU，不能一点痕迹都没有。
+ */
+const BENIGN_WINDOW_ERRORS = [
+  "ResizeObserver loop completed with undelivered notifications.",
+  "ResizeObserver loop limit exceeded",
+];
+let benignSeenAt = 0;
+function isBenignWindowError(msg: unknown): boolean {
+  return typeof msg === "string" && BENIGN_WINDOW_ERRORS.some((m) => msg.startsWith(m));
+}
+
 function report(label: string, err: unknown) {
   const msg = summarize(err);
   const now = Date.now();
@@ -68,6 +88,14 @@ export const hmxErrorPlugin: Plugin = {
     });
     // 未捕获的同步错误
     window.addEventListener("error", (e) => {
+      if (isBenignWindowError(e.message)) {
+        e.preventDefault();
+        if (Date.now() - benignSeenAt >= 60_000) {
+          benignSeenAt = Date.now();
+          console.warn("[WindowError] 已忽略浏览器 ResizeObserver 成环提示", e.message);
+        }
+        return;
+      }
       console.error("[WindowError]", e.message, e.filename, e.lineno);
       report("脚本执行异常", e.message);
     });
