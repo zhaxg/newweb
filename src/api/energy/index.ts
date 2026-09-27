@@ -6,6 +6,15 @@ import type {
   AlarmLevel,
   AlarmRule,
   CollectChannel,
+  RegionStatDto,
+  SettlementBill,
+  Quota,
+  ReportTemplate,
+  KeyEquip,
+  EnergyPlan,
+  BalanceSheet,
+  AssessRow,
+  ActualRecord,
   DispatchOrder,
   DispatchSuggestion,
   EnergyAlarm,
@@ -21,6 +30,8 @@ import type {
   Person,
   PointHistoryResult,
   PointReading,
+  KpiBoardDto,
+  SankeyDto,
   PowerViewDto,
   PriceTemplate,
   QualityTicket,
@@ -260,4 +271,208 @@ export const dispatchApi = {
   /** 执行完毕：**在这里兑现采纳时挂上的柜位基线**，幕 7 之后回 EM0002/大屏才看得到数字回落 */
   exec: (id: string) => emsPost<ActionResult<DispatchOrder>>("/dispatch/exec", { id }),
   receipt: (id: string) => emsPost<ActionResult<DispatchOrder>>("/dispatch/receipt", { id }),
+};
+
+/* ══════════════════════════════════════════════════════════════════════════
+   EP 能源管理（P4 六页）。写操作**全部转发给 store**（见 mock/energy/plan.ts），
+   端点只做 HTTP body → 参数的搬运；拒绝（已定稿/已平衡/状态非法）由 store 判。
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/** EP0001 产品能源定额（工序 × 介质 单耗定额） */
+export const quotaApi = {
+  page: emsList<Quota>("/quota"),
+};
+
+/** 月度能源计划（B2-3：编制中→已提交→已批准→执行中→已归档） */
+export const planApi = {
+  page: emsList<EnergyPlan>("/plan"),
+  /** 状态流转；非法转移回 `HTTP 200 + {ok:false,msg}`，页面 applyResult 弹 */
+  status: (id: string, to: EnergyPlan["status"], by?: string) =>
+    emsPost<ActionResult<EnergyPlan>>("/plan/status", by ? { id, to, by } : { id, to }),
+  /** 按预测产量重算计划明细（只对「编制中」开放，须先退回编制） */
+  recalc: (id: string, factor?: number) =>
+    emsPost<ActionResult<EnergyPlan>>("/plan/recalc", factor === undefined ? { id } : { id, factor }),
+};
+
+/** EP0002 能源实绩（计量点 + 统计节点，公式追溯在 `formulaTrace` 上） */
+export const actualApi = {
+  page: emsList<ActualRecord>("/actual"),
+  /** 人工校正留痕；该月已定稿则被 store 拒绝 */
+  correct: (id: string, value: number, by?: string, reason?: string) =>
+    emsPost<ActionResult<ActualRecord>>("/actual/correct", { id, value, by, reason }),
+  /** ▶重算昨日实绩（幕 6 第一步） */
+  recalc: (date?: string) => emsPost<ActionResult>("/actual/recalc", date ? { date } : {}),
+};
+
+/** EP0003 能源平衡表（月度必出报表） */
+export const balanceApi = {
+  page: emsList<BalanceSheet>("/balance"),
+  /** ▶执行平衡分摊（幕 6）：只动「损失/平衡差」，已平的表回「无残差可摊」 */
+  run: (month?: string) => emsPost<ActionResult<BalanceSheet>>("/balance/run", month ? { month } : {}),
+};
+
+/** EP0004 结算单（已生成→已核对→已定稿；定稿后锁死该月实绩） */
+export const settlementApi = {
+  page: emsList<SettlementBill>("/settlement"),
+  /** ▶生成本月结算（幕 7） */
+  generate: (month?: string) => emsPost<ActionResult<SettlementBill[]>>("/settlement/generate", month ? { month } : {}),
+  status: (id: string, to: SettlementBill["status"], by?: string) =>
+    emsPost<ActionResult<SettlementBill>>("/settlement/status", by ? { id, to, by } : { id, to }),
+};
+
+/** EP0005 能耗考核与对标 */
+export const assessApi = {
+  page: emsList<AssessRow>("/assess"),
+  /** ▶生成考核月报（基准分 − 超标扣分 + 节能加分 + 排名） */
+  generate: (month?: string) => emsPost<ActionResult<AssessRow[]>>("/assess/generate", month ? { month } : {}),
+};
+
+/** EP0006 重点用能设备（九大类 + 能效评级） */
+export const keyEquipApi = {
+  page: emsList<KeyEquip>("/keyEquip"),
+  /** 单机能耗曲线（近 6 月，由 `model.monthSeries` 派生，页面不自己抖） */
+  curve: (id: string) => emsPost<Array<{ monthStdCoal: number; intensity: number }>>("/keyEquip/curve", { id }),
+};
+
+/* ══════════════════════════════════════════════════════════════════════════
+   ER 报表统计（P5 四页）。读的是 model 的派生函数，页面不直连 mock（红线：分层）。
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/** ER0001 能耗统计报表 */
+export const reportApi = {
+  /** 区域能耗（工序 × 介质），`model.regionStat` 已派生产量/折标/成本 */
+  regionStat: () => emsPost<RegionStatDto[]>("/report/region-stat", {}),
+  /**
+   * 分项能耗。
+   *
+   * ⚠️ 回**对象不是数组**：`mediumCost()` 的形状是
+   * `{rows, byMedium, byUnit, total, perTonSteel, fixed, elecTotal}`——
+   * 一个端点喂三处（表、图、页脚）。早期声明成 `Array`，页面 `.rows` 直接
+   * `Property does not exist`（`rows` 只存在于对象上）。
+   */
+  subStat: () =>
+    emsPost<{
+      rows: Array<{ unitId: string; mediaCode: string; qty: number; price: number; amount: number; priceType: string }>;
+      byMedium: Record<string, number>;
+      byUnit: Record<string, number>;
+      total: number;
+      perTonSteel: number;
+      fixed: number;
+      elecTotal: number;
+    }>("/report/sub-stat", {}),
+  /**
+   * 峰平谷电能。
+   *
+   * ⚠️ 返回**对象**不是数组：`tiers`（四时段合计）与 `hourlyKWh`（24 点负荷形状）
+   * 是**两个量纲**，页面各画各的图。早期声明成 `Array` 会让页面 `.map` 一个对象，
+   * 运行期才炸。
+   */
+  elecTimeUse: () =>
+    emsPost<{
+      totalKWh: number;
+      purchaseKWh: number;
+      avgPrice: number;
+      innerPrice: number;
+      tiers: Array<{ tier: string; price: number; hours: string; qtyKWh: number; amount: number }>;
+      hourlyKWh: number[];
+      energyAmount: number;
+      demandCharge: number;
+      pfAdjCharge: number;
+      totalAmount: number;
+      maxMw: number;
+      minMw: number;
+    }>("/report/elec-time-use", {}),
+  /** 分区域报表的介质下拉（只列进平衡表的） */
+  mediaOptions: () => emsGet<Array<{ code: string; name: string; color: string }>>("/report/mediaOptions"),
+  /** 分区域报表的用能单元下拉（只给厂级——报表行就是厂级粒度） */
+  unitOptions: () => emsGet<Array<{ id: string; name: string }>>("/report/unitOptions"),
+  /** 排名：基于吨钢综合能耗/成本的口径 */
+  ranking: () => emsPost<Record<string, any>>("/report/ranking", {}),
+  /** ER0002 单耗多维对比——与 `subStat` **同源同形状**（同一批账的两个切面，见端点注释） */
+  efficiency: () =>
+    emsPost<{
+      rows: Array<{ unitId: string; mediaCode: string; qty: number; price: number; amount: number; priceType: string }>;
+      byMedium: Record<string, number>;
+      byUnit: Record<string, number>;
+      total: number;
+      perTonSteel: number;
+      fixed: number;
+      elecTotal: number;
+    }>("/report/efficiency", {}),
+  /** ER0002 损耗分析（供水−用 的不平衡量与线损，按 日×介质 分组） */
+  lossAnalysis: () =>
+    emsPost<Array<{ date: string; mediaCode: string; supply: number; use: number; loss: number; lossPct: number }>>(
+      "/report/loss-analysis",
+      {},
+    ),
+};
+
+/** ER0003 负荷与煤气预测 */
+export const forecastApi = {
+  /**
+   * 负荷预测。`band` 是**置信带宽度**：页面按「值 ± band」画带——
+   * 只画中线答不了「预测可不可信」，而 ER0003 的原话是「证明预测可用是调度可信的前提」。
+   */
+  load: (hours = 24) =>
+    emsPost<Array<{ hour: number; mw: number; tier: string; band: number }>>("/report/load-forecast", { hours }),
+  gas: (hours = 24) =>
+    emsPost<Array<{ hour: number; bfg: number; cog: number; ldg: number }>>("/report/gas-forecast", { hours }),
+  /**
+   * 预测精度（MAPE + 按周趋势）。
+   * MAPE **从置信带反推**（端点算好，页面不另算），`note` 是「模型自评非实测」那句——
+   * 页面必须显示它，把自评写成实测是最坏的一种说谎。
+   */
+  accuracy: () =>
+    emsPost<{
+      loadMape: number;
+      gasMape: number;
+      weeks: Array<{ week: string; loadMape: number; gasMape: number }>;
+      note: string;
+    }>("/report/forecast-accuracy", {}),
+};
+
+/** ER0004 自定义报表 */
+export const templateApi = {
+  /**
+   * 模板列表（真源 `ems.reportTemplates`，EG 里维护）。
+   * **回裸数组不是 `{data:[…]}`**——`postHandler` 已放进信封，再包一层页面就得
+   * `res.data` 解两次，写错一层就是「undefined 不是数组」在运行期炸。
+   */
+  list: () => emsPost<ReportTemplate[]>("/report/templates", {}),
+  /** 简易组态预览：只回表格骨架（columns/metrics/granularity），**行留空**（见端点注释） */
+  config: (dimensions: string[], metrics: string[], granularity: "时" | "日" | "月") =>
+    emsPost<{ columns: string[]; metrics: string[]; granularity: string; rows: any[] }>("/report/config", {
+      dimensions,
+      metrics,
+      granularity,
+    }),
+  /** 日报发布（模拟：回单号） */
+  publish: () => emsPost<{ success: boolean; id: string }>("/report/publish", {}),
+};
+
+/* ══════════════════════════════════════════════════════════════════════════
+   EO 总览（P6）。三处读同一个 `refreshKpiBoard()`，永远同数。
+   ══════════════════════════════════════════════════════════════════════════ */
+
+export const overviewApi = {
+  /** EO0001 大屏 / EO0002 看板共用（月账现算 + 实时态，两边都不存字段） */
+  kpi: () => emsPost<KpiBoardDto>("/overview/kpi", {}),
+  /** EO0003 能流桑基；`media` 是介质编码，非法值服务端回落 BFG */
+  sankey: (media: string) => emsPost<SankeyDto>("/overview/sankey", { media }),
+  /** 首页顶栏四个实时口径（从 kpi 里取子集，不重复算） */
+  home: () =>
+    emsGet<{
+      month: string;
+      ventRatePct: number;
+      ventTarget: number;
+      selfGenRatePct: number;
+      selfGenTarget: number;
+      activeAlarms: number;
+      urgentAlarms: number;
+      openOrders: number;
+      pendingTickets: number;
+      compositeKgce: number;
+      compositeTarget: number;
+      at: string;
+    }>("/overview/home"),
 };

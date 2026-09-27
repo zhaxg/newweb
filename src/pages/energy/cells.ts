@@ -287,6 +287,24 @@ export function unitFmt(unit: string, digits = 0) {
   };
 }
 
+/**
+ * 编码 → 名称的格式化器（`nameMaps` 的 `unitMap`/`mediumMap` 这类 id→名 表）。
+ *
+ * 为什么需要它：列表端点回的是**外键本身**（`Quota.unitId`、`MediaCode`），
+ * 客户读的是「7#高炉 / 高炉煤气」。翻译在展示层做一次（不进 mock 字段冗余，
+ * 否则 mock 变成按页面长相定制的假数据）。
+ *
+ * **取不到回编码本身、不回破折号**：漏配名称时看到 `EU-0301` 能立刻定位，
+ * 显示成「—」会让人以为这行本来就没值——两者排查成本差一个量级。
+ */
+export function codeFmt(map: Record<string, string>) {
+  return (p: { value: unknown }) => {
+    if (p.value === null || p.value === undefined || p.value === "") return "—";
+    const s = String(p.value);
+    return map[s] ?? s;
+  };
+}
+
 /** 空值兜底成破折号（时间戳、可选项文本这类没值比空着好读） */
 export function dashFmt(p: { value: unknown }) {
   return p.value === null || p.value === undefined || p.value === "" ? "—" : String(p.value);

@@ -475,6 +475,106 @@ export interface GasSimViewDto {
   bounds: Record<"extraLdgM3min" | "extraBfgM3min" | "ccppMw" | "cfbUnits" | "sinterUsePct", SimBoundDto>;
 }
 
+/* ══════════════════════════════════════════════════════════════════════════
+   EO 总览（大屏 / KPI 看板 / 桑基图）
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/**
+ * EO0001 大屏与 EO0002 看板共用的 KPI 聚合。
+ *
+ * 形状**由 `store.refreshKpiBoard()` 决定**——它把月账（现算于 `model.kpiBoard`）
+ * 与实时态（柜位/活动报警/负荷/待办）合在一处，三个消费方（大屏、看板、首页）
+ * 读同一个函数。所以这里声明的是它的契约，不是另立一份。
+ */
+export interface KpiBoardDto {
+  month: string;
+  /** 全厂放散率 %（B4 幕 1 的 2.1%、幕 8 的 1.3% 都是它） */
+  ventRatePct: number;
+  bfgVentRatePct: number;
+  ventTotalM3: number;
+  /** 自发电率 %（幕 1 的 49%） */
+  selfGenRatePct: number;
+  selfGenKwh: number;
+  purchaseKwh: number;
+  genMw: number;
+  /** 吨钢综合能耗 kgce/t（幕 1 的 57.3 —— 注意单位是 kgce 不是 tce） */
+  compositeKgce: number;
+  elecPerTonSteel: number;
+  /** 外购口径元/t 钢（真金白银），与 EP0004 内结结算单的合计**不是同一个口径** */
+  costPerTonSteel: number;
+  costInnerPerTonSteel: number;
+  /** 转炉煤气回收 m³/t 钢（幕 7 的「96 创标杆」） */
+  ldgRecoveryM3PerTon: number;
+  elecAmount: number;
+  energyPurchasedTce: number;
+  maxMw: number;
+  demandRatioPct: number;
+  steelT: number;
+  /** 目标值（`model.KPI_TARGETS`）。看板的「目标线 + 同比」读它，**页面不写目标数** */
+  targets: Record<string, number>;
+  /* — 实时态（`store.refreshKpiBoard` 补的） — */
+  /** 各煤气柜当前柜位（大屏的环形图读它） */
+  holderLevels: Array<{
+    id: string;
+    name: string;
+    mediaCode: string;
+    levelPct: number;
+    hiLimit: number;
+    loLimit: number;
+  }>;
+  activeAlarms: number;
+  urgentAlarms: number;
+  loadMw: number;
+  openOrders: number;
+  pendingTickets: number;
+  step: number;
+  at: string;
+}
+
+/**
+ * EO0003 能流桑基图。
+ *
+ * `nodes` 里除首节点（介质名）外，名字形如 `<工序>·<方向>`（真源 `model.sankeyNodeName`）——
+ * 所以 `legends` 给出「方向 → 颜色/中文」的对照表，**页面不自己拆名字**：
+ * 拆错了颜色就与平衡表的方向列对不上（本域红线：页间口径必须一致）。
+ */
+export interface SankeyDto {
+  /**
+   * 节点与色。**颜色由服务端按「方向」填**（真源 `emsTheme.FLOW_CHART` 的 hex 镜像），
+   * 因为桑基的节点名是 `<工序>·<方向>`，方向决定颜色——让页面从名字里拆方向再查色表，
+   * 就是把 `model.sankeyNodeName` 的拼接规则复制到展示层（改拼接就漏一处）。
+   * 首节点（介质名）用介质专色（`MEDIUMS[].color`），一眼看出这张图在讲哪种介质。
+   */
+  nodes: Array<{ name: string; itemStyle?: { color: string } }>;
+  links: Array<{ source: string; target: string; value: number }>;
+  unit: string;
+  scale: number;
+  /**
+   * 本图里**实际出现**的方向（按流向顺序），页面据此画图例。
+   *
+   * 只回 `dirs` 不回颜色：**颜色是展示层的事**（`emsTheme.FLOW_LEGEND`），
+   * 而 `cells.TAG_CLASS` 里已经有一份方向 → 色标的对应——把 hex 放进 DTO
+   * 就是第三处管同一件事，两页对同一个方向给不同颜色，正是本域红线里的页间矛盾。
+   * 不出现的方向不给（如纯购入介质不会有「损失」），图例里就不会挂着一条空项。
+   */
+  dirs: FlowDirection[];
+}
+
+/**
+ * ER0001 / EO0002 的区域能耗行（`model.regionStat`）。
+ * 一行一个厂：产量、各介质消耗、折标煤、单耗、能源成本。
+ */
+export interface RegionStatDto {
+  unitId: string;
+  unitName: string;
+  productName: string;
+  outputT: number;
+  mediaList: Array<{ mediaCode: string; mediaName: string; qty: number; color: string }>;
+  stdCoalTce: number;
+  intensity: number;
+  cost: number;
+}
+
 /** EM0005 报警中心看板 */
 export interface AlarmBoardDto {
   stamp: string;

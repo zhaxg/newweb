@@ -77,6 +77,30 @@ export const TONE_BG: Record<StatTone, string> = {
   bad: "bg-[#EF4444]",
 };
 
+/* ── 流向七向的**图表**色 ──────────────────────────────────────────────── */
+
+/**
+ * 七向 → **hex**（ECharts 只认 hex/rgba，不认 Tailwind class）。
+ *
+ * 与 `cells.TAG_CLASS` 里那七条**必须同值**——那是列表里的色标、这是图里的填充，
+ * 同一个「消耗」在桑基图和平衡表里必须是一个颜色。两边各自维护就会
+ * 一个琥珀一个紫，客户问「这两个是同一回事吗」就答不上来。
+ * 新增方向时**两处一起改**（这条注释就是给那个未来的人看的）。
+ */
+export const FLOW_CHART: Record<string, string> = {
+  购入: "#38BDF8",
+  自产: "#22C55E",
+  转换: "#A78BFA",
+  消耗: "#F59E0B",
+  回收: "#94A3B8",
+  损失: "#FB923C",
+  外供: "#EF4444",
+};
+
+/** 图例用的 `{label, color}`：EO0003 桑基的图例直接照它画，不在页面里再列一遍 */
+export const FLOW_LEGEND = (dirs: string[]): Array<{ label: string; color: string }> =>
+  dirs.map((d) => ({ label: d, color: FLOW_CHART[d] ?? "#64748B" }));
+
 /* ── ECharts 通用配置 ───────────────────────────────────────────────────── */
 
 /**

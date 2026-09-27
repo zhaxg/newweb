@@ -4,6 +4,8 @@ import { energyActionRoutes } from "./actions";
 import { energyListRoutes } from "./lists";
 import { energyMonitorRoutes } from "./monitor";
 import { energyOverviewRoutes } from "./overview";
+import { energyReportRoutes } from "./report";
+import { energyPlanRoutes } from "./plan";
 import { bootstrap, scanVerifyDeadlines } from "./store";
 
 /**
@@ -34,6 +36,8 @@ export const energyRoutes: RouteMap = {
   ...energyMonitorRoutes,
   ...energyOverviewRoutes,
   ...energyActionRoutes,
+  ...energyPlanRoutes,
+  ...energyReportRoutes,
 };
 
 bootstrap();
