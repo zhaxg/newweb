@@ -8,7 +8,7 @@
 ## 1. 这是什么
 
 给业务团队用的**前端基础设施平台**（Vue 3 + TS + Vite 8 + PrimeVue 5 + Tailwind 4 + AG Grid 36）。
-`src/pages` 下的大写目录是各业务组的模块，平台负责壳层、路由、权限、主题、表格、mock、构建。
+`src/pages/mes4ddh/` 下的目录是各业务组的模块，平台负责壳层、路由、权限、主题、表格、mock、构建。
 
 评价标准是**业务组挑不出毛病**：美观、简洁、好用、成熟、稳定。改框架层时按这个标准自检。
 
@@ -17,7 +17,7 @@
 ## 2. 最重要的一条边界
 
 ```
-src/pages/  DDH  LIMS  SHR  SMP  SMS  SQM  SYD  Widgets   ← 业务组的【未写完示例】
+src/pages/  mes4ddh/{DDH LIMS SHR SMP SMS SQM SYD Widgets}   ← 业务组的【未写完示例】
 ```
 
 - **不要评审、不要建议重构、不要在这几个目录里做"顺手清理"。**

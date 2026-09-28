@@ -63,14 +63,16 @@ export const businessRoutes: RouteRecordRaw[] = [
   {
     path: "print-designer",
     name: "print-designer",
-    component: defineAsyncComponent(() => import("@/pages/Widgets/XtraReportTemplateManager/PrintDesignPage.vue")),
+    component: defineAsyncComponent(
+      () => import("@/pages/mes4ddh/Widgets/XtraReportTemplateManager/PrintDesignPage.vue"),
+    ),
     meta: { layout: "blank", title: "打印模板设计", loading: false, hidden: true },
   },
   /* 库位图设计：YD1010Map 新窗；Univer 按需加载 */
   {
     path: "map-designer",
     name: "map-designer",
-    component: defineAsyncComponent(() => import("@/pages/SYD/YD1010Map/MapDesignPage.vue")),
+    component: defineAsyncComponent(() => import("@/pages/mes4ddh/SYD/YD1010Map/MapDesignPage.vue")),
     meta: { layout: "blank", title: "库位图设计", loading: false, hidden: true },
   },
 ];

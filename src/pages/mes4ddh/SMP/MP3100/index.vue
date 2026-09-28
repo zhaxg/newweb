@@ -34,8 +34,8 @@ import { useToast } from "@/composables/useToast";
 import { useMenuQuery } from "@/lib/menuQuery";
 import { tmp2000Api, type Tmp2005Dto, type QueryCptJC, type InputTmp2000Dto } from "@/api/mes4ddh/smp.swagger";
 import type { Tyd2000Dto } from "@/api/mes4ddh/syd.swagger";
-import BatchIdInput from "@/pages/Widgets/BatchIdInput/index.vue";
-import { parseBatchIds } from "@/pages/Widgets/BatchIdInput/parse";
+import BatchIdInput from "@/pages/mes4ddh/Widgets/BatchIdInput/index.vue";
+import { parseBatchIds } from "@/pages/mes4ddh/Widgets/BatchIdInput/parse";
 
 const { toast } = useToast();
 const theme = makeHmxGridTheme();

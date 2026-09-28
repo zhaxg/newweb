@@ -1,6 +1,6 @@
 import { getBody, getParams, ok, type RouteMap } from "../admin/core";
 import type { PrintTemplateRow } from "@/api/mes4ddh/printReport";
-import { ensureSeedPrintTemplates } from "@/pages/Widgets/XtraReportTemplateManager/printSeedTemplates";
+import { ensureSeedPrintTemplates } from "@/pages/mes4ddh/Widgets/XtraReportTemplateManager/printSeedTemplates";
 
 /**
  * IPrintReportAppService mock：TS_PRINT_TEMPLATE 列表 localStorage 持久化。

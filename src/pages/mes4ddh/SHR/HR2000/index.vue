@@ -15,8 +15,8 @@ import Select from "primevue/select";
 import Splitter from "primevue/splitter";
 import SplitterPanel from "primevue/splitterpanel";
 import { IconSearch } from "@tabler/icons-vue";
-import BatchIdInput from "@/pages/Widgets/BatchIdInput/index.vue";
-import { parseBatchIds } from "@/pages/Widgets/BatchIdInput/parse";
+import BatchIdInput from "@/pages/mes4ddh/Widgets/BatchIdInput/index.vue";
+import { parseBatchIds } from "@/pages/mes4ddh/Widgets/BatchIdInput/parse";
 import { AgGridVue } from "ag-grid-vue3";
 import type {
   ColDef,

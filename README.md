@@ -35,11 +35,11 @@
 
 | 目录 | 域 |
 |---|---|
-| `SHR` / `SMP` / `SMS` / `SQM` / `SYD` / `LIMS` / `DDH` | 各生产业务域（按 WinForms 画面迁移，规模见下） |
-| `Widgets` | 通用控件型页面（报表模板、表结构、接口配置等） |
+| `mes4ddh/{DDH,LIMS,SHR,SMP,SMS,SQM,SYD,Widgets}` | 各生产业务域 + 通用控件型页面（按 WinForms 画面迁移，规模见下） |
 
 > 已落地画面数（各域 `*/index.vue` 计数）：SHR 110 · SMP 42 · SMS 37 · SQM 29 · SYD 19 · LIMS 18 · Widgets 16 · DDH 2，合计 **273**。
-> 后端资源种子表（`src/mock/admin/data/rescs.ts`）共 **809** 条：517 条菜单/目录 + 288 条按钮级 + 4 条其它，全部 `cNsCode=TDWEB`。
+> 后端资源种子表（`src/mock/mes4ddh/data/rescs.ts`）共 **810** 条：518 条菜单/目录（含新增的 `mes4ddh` 域根）+ 288 条按钮级 + 4 条其它，全部 `cNsCode=TDWEB`。
+> `src/pages/mes4ddh/` 下的页面（七业务域 + Widgets）资源行 `cResSubPath` 一律带 `/mes4ddh/` 前缀；业务根统一挂在 `mes4ddh` 文件夹下 → 路由 `/<pageId>` = `/mes4ddh/<模块>/…`。
 
 ### 基础架构（平台能力）
 - 登录/登出、验证码（MathPow 工作量证明）、"记住我"历史
@@ -224,13 +224,13 @@ src/
 │                           # yitIdHelper · primeLcmgr(许可桩)
 ├── mock/
 │   ├── admin/              # 系统管理域：*.ts 路由（auth/crud/users/roles/resc/kv/jobs/department/settings/codegen/store）
-│   │   └── data/           #   种子（一表一文件：depts · kvs · rescs · roles · users）
-│   ├── mes4ddh/            # MES4DDH 六域（lims/shr/smp/sms/sqm/syd + printReport）+ data/
+│   │   └── data/           #   种子（一表一文件：depts · kvs · roles · users）
+│   ├── mes4ddh/            # MES4DDH 六域（lims/shr/smp/sms/sqm/syd + printReport）+ data/（含整表 rescs）
 │   └── mockAdapter.ts      # 各域 RouteMap 合并 + 认证失败门/404 门（形状对齐真实后端）
 ├── pages/
 │   ├── _core/              # 登录(LoginPage/LoginCard/FlowBg)、首页(HomePage)、个人中心(ModifyPasswd)（平台自有）
 │   ├── admin/              # 系统管理各子页（dept/user/role/resc/kvs/jobs/gen/settings）（平台自有）
-│   └── DDH|LIMS|SHR|SMP|SMS|SQM|SYD|Widgets/   # 业务组模块（示例，迁移中）
+│   └── mes4ddh/            # 业务组八域 DDH|LIMS|SHR|SMP|SMS|SQM|SYD|Widgets（示例，迁移中）
 ├── router/                 # index 阶段一装配 + 注入守卫 · builtin 骨架页 · business 业务静态路由
 │   └── core/               # 机制层（不常改）：routeMeta 类型增强 · fromMenu 后端资源→路由编译
 │                           #   dynamicRoutes 阶段二挂接+阶段三移除 · guard 守卫+认证失败处理器

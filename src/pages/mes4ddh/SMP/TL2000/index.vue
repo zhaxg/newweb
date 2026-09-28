@@ -37,8 +37,8 @@ import {
 } from "@/api/mes4ddh/smp.swagger";
 import { useMenuQuery } from "@/lib/menuQuery";
 import { useToast } from "@/composables/useToast";
-import BatchIdInput from "@/pages/Widgets/BatchIdInput/index.vue";
-import { parseBatchIds } from "@/pages/Widgets/BatchIdInput/parse";
+import BatchIdInput from "@/pages/mes4ddh/Widgets/BatchIdInput/index.vue";
+import { parseBatchIds } from "@/pages/mes4ddh/Widgets/BatchIdInput/parse";
 
 const { toast } = useToast();
 const { raw: menuQs } = useMenuQuery();

@@ -6,7 +6,7 @@
 
 ### 0.1 定位（由菜单资源表驱动）
 
-侧栏每个 type=2 菜单在资源种子 `src/mock/admin/data/rescs.ts` 中指向原窗体：
+侧栏每个 type=2 菜单在资源种子 `src/mock/mes4ddh/data/rescs.ts` 中指向原窗体：
 
 - `cResPath` = 源程序集名（如 `DDH.Winforms.SYD.dll`）→ 决定源项目与目标目录；迁移完成后改写为语义段（如 `yd2001`），它同时是**路由层级的真源**：`menuRescTree` 按祖先链拼出 `pageId`，`router/core/fromMenu` 按它建记录 → 最终 URL `/<pageId>`；
 - `cResSubPath` = 窗体全名（如 `DDH.Winforms.SYD.Forms.FrmYD2001`）→ 最后一段类名即窗体文件；
@@ -18,11 +18,11 @@
 | 源项目 | 位置 | 目标目录 |
 |---|---|---|
 | Hmx.WinForms | rmes.core | `src/pages/admin` |
-| Hmx.WinForms.Widgets | rmes.core | `src/pages/Widgets` |
-| DDH.Winforms | rmes.winform | `src/pages/DDH` |
-| DDH.Winforms.LIMS / SHR / SMP / SMS / SQM / SYD | rmes.winform | `src/pages/<同名段>` |
+| Hmx.WinForms.Widgets | rmes.core | `src/pages/mes4ddh/Widgets` |
+| DDH.Winforms | rmes.winform | `src/pages/mes4ddh/DDH` |
+| DDH.Winforms.LIMS / SHR / SMP / SMS / SQM / SYD | rmes.winform | `src/pages/mes4ddh/<同名段>` |
 
-即 `DDH.Winforms.<X>` → `src/pages/<X>`。
+即 `DDH.Winforms.<X>` → `src/pages/mes4ddh/<X>`。
 
 ### 0.3 产出文件
 
@@ -32,7 +32,7 @@
 
 ### 0.4 路由接线（每迁完一个菜单）
 
-1. 种子行 `cResPath` 改语义段、`cResSubPath` 改 vue 组件路径（相对 `src/pages`，如 `/SYD/YD2001/index.vue`）；
+1. 种子行 `cResPath` 改语义段、`cResSubPath` 改 vue 组件路径（相对 `src/pages`，如 `/mes4ddh/SYD/YD2001/index.vue`）；
 2. `src/mock/admin/store.ts` 的 `RESCS_KEY` 版本号 +1（强制 localStorage 重播种）——**一批页面集中改、只 +1 一次**；
 3. **不写路由表、不改 `menuRescTree`**：菜单与路由同源于后端资源，`menuRescTree` 出树 → `router/core/fromMenu` 转 `RouteRecordRaw` → `router/index` 挂进壳层 → `router/menu` 投影出侧栏。组件路径未命中 `import.meta.glob` 时回落 `PlaceholderPage`（建设中，不整站报错）；
 4. 静态校验（见 SKILL.md §7）。浏览器画面验收由用户自行打开检查，迁移流程不跑无头截图。
@@ -92,13 +92,13 @@ npm run audit:ui      # scripts/audit-ui.mjs，零依赖，扫 src/pages|layouts
 | XtraForm / UserControl 壳 | Vue 页面（页签、面包屑由壳层负责，页面只管内容区） |
 | GridView（列 Caption/宽度/样式） | AG Grid Enterprise colDefs（沿用 @/lib/agGrid 全站约定：hmxDefaultColDef 等） |
 | BarManager / 工具栏按钮 | 页面顶部 Button 组（名称、顺序、位置照原样） |
-| XtraTabControl（独立内容页签） | PrimeVue `Tabs` + `TabList`/`Tab` + `TabPanels`/`TabPanel`（**PrimeVue 5 无 `TabView`**）；用法 `src/pages/Widgets/InterfaceCallLog/index.vue` |
-| XtraTabControl（录入模式切换，页签下各为一组左右双表） | PrimeVue `SelectButton`（`v-model` 切模式，**不用 Tabs**）；工具栏与双表布局见 §6「模式切换工具栏 + 左右双表」，样例 `src/pages/LIMS/QL4000/index.vue` |
+| XtraTabControl（独立内容页签） | PrimeVue `Tabs` + `TabList`/`Tab` + `TabPanels`/`TabPanel`（**PrimeVue 5 无 `TabView`**）；用法 `src/pages/mes4ddh/Widgets/InterfaceCallLog/index.vue` |
+| XtraTabControl（录入模式切换，页签下各为一组左右双表） | PrimeVue `SelectButton`（`v-model` 切模式，**不用 Tabs**）；工具栏与双表布局见 §6「模式切换工具栏 + 左右双表」，样例 `src/pages/mes4ddh/LIMS/QL4000/index.vue` |
 | TextEdit / SpinEdit / DateEdit / CheckEdit / LookUpEdit | InputText / **InputNumber（定宽必须 容器+`fluid`，见 §6）** / DatePicker / Checkbox / Select |
 | ImageComboBoxEdit（下拉候选写死在 Designer） | Select + 选项表（候选值来自提取摘要的 `下拉[文本=枚举值]`） |
 | Panel / GroupControl / SplitContainer | Tailwind flex/grid + Card + PrimeVue Splitter |
 | 窗体内嵌弹窗（GridFilter、选择器） | 对应 Dialog 组件 |
-| **MemoExEdit / 多行批量录入**（批量计划号、批量订单号、合同号等「批量xx号」） | **`src/pages/Widgets/BatchIdInput/index.vue`**（只读触发框 + 弹出 Dialog 逗号/换行粘贴，`v-model` 为逗号串）；`label`/`unit` 传入字段名（如 `label="批量订单号"`、`label="合同号"`），**禁止在页面内再手写同构 Dialog**；解析可用 `Widgets/BatchIdInput/parse` 的 `parseBatchIds`。样例：`src/pages/SHR/HR2000/index.vue` |
+| **MemoExEdit / 多行批量录入**（批量计划号、批量订单号、合同号等「批量xx号」） | **`src/pages/mes4ddh/Widgets/BatchIdInput/index.vue`**（只读触发框 + 弹出 Dialog 逗号/换行粘贴，`v-model` 为逗号串）；`label`/`unit` 传入字段名（如 `label="批量订单号"`、`label="合同号"`），**禁止在页面内再手写同构 Dialog**；解析可用 `Widgets/BatchIdInput/parse` 的 `parseBatchIds`。样例：`src/pages/mes4ddh/SHR/HR2000/index.vue` |
 
 Designer 里没有的控件**一律不许发明**（历史上凭空加过"查找"快速过滤行，属违规）。
 
@@ -168,7 +168,7 @@ Designer 里没有的控件**一律不许发明**（历史上凭空加过"查找
   ```
 
   标题文字 `<span class="text-xs font-medium text-muted-foreground">`；分栏比例 = `SplitterPosition` ÷ 容器高度 → `:size` 百分比；**勿手写 mousemove 分割条**；
-- **模式切换工具栏 + 左右双表**（原 `XtraTabControl` 只切「批量/单行」等录入模式、页签下各为同一对左右分栏表时，**不要用 Tabs**，验收样例 `src/pages/LIMS/QL4000/index.vue`）：
+- **模式切换工具栏 + 左右双表**（原 `XtraTabControl` 只切「批量/单行」等录入模式、页签下各为同一对左右分栏表时，**不要用 Tabs**，验收样例 `src/pages/mes4ddh/LIMS/QL4000/index.vue`）：
 
   ```
   [顶部工具栏 h-9：查询条件 + 主表操作按钮 ……… 主表标题 右侧]

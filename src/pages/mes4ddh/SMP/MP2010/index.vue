@@ -12,8 +12,8 @@ import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/a
 import { useToast } from "@/composables/useToast";
 import { useMenuQuery } from "@/lib/menuQuery";
 import { tmp2010Api, OrderReviewEnum, type InputTmp2010Dto, type Tmp2010Dto } from "@/api/mes4ddh/smp.swagger";
-import BatchIdInput from "@/pages/Widgets/BatchIdInput/index.vue";
-import { parseBatchIds } from "@/pages/Widgets/BatchIdInput/parse";
+import BatchIdInput from "@/pages/mes4ddh/Widgets/BatchIdInput/index.vue";
+import { parseBatchIds } from "@/pages/mes4ddh/Widgets/BatchIdInput/parse";
 
 /** 对应 FrmMP2010（计划评审）：DDH.Winforms.SMP.Forms.FrmMP2010
  *  已接入：tmp2010Api.queryOrder（查询）/ reviewOrder（评审）/ cancleReviewOrder（撤销评审）/

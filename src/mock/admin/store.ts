@@ -11,7 +11,7 @@ import type {
 import { HmxJobMisfiredEnums, YesNo } from "@/api/admin/enums";
 import { seedDeptsData } from "./data/depts";
 import { seedKvsData } from "./data/kvs";
-import { seedRescsData } from "./data/rescs";
+import { seedRescsData } from "../mes4ddh/data/rescs";
 import { seedRolesData } from "./data/roles";
 import { seedUsersData } from "./data/users";
 
@@ -22,8 +22,9 @@ interface UserRowLite {
 }
 
 /**
- * mock「数据库」：localStorage 持久层。表数据一律来自 ./data（一表一文件，
- * 手造或后端导出的区别只在于 seed 文件内容）；首次读取时落盘，之后保存即回写。
+ * mock「数据库」：localStorage 持久层。表数据一表一文件：users/roles/depts/kvs 在 ./data，
+ * rescs（中厚板 MES 整表，含 7 业务域）在 ../mes4ddh/data/rescs —— 跟租户走，不在这里；
+ * 手造或后端导出的区别只在于 seed 文件内容；首次读取时落盘，之后保存即回写。
  * 只有 mock 路由代码依赖本模块，页面一律走接口层（request.ts）。
  */
 
@@ -31,7 +32,7 @@ const USERS_KEY = "hmx.users.v3";
 const ROLES_KEY = "hmx.roles.v2";
 const USER_ROLES_KEY = "hmx.user_roles.v3";
 const DEPTS_KEY = "hmx.departments.v3";
-const RESCS_KEY = "hmx.rescs.v17";
+const RESCS_KEY = "hmx.rescs.v18";
 const KVS_KEY = "hmx.kv.v2";
 const SETTINGS_KEY = "hmx.settings";
 const JOBS_KEY = "hmx.jobs";

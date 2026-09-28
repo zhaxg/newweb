@@ -51,9 +51,9 @@ argument-hint: <菜单代码或 Frm 类名>
 
 ### 1. 定位窗体
 
-在 `src/mock/admin/data/rescs.ts` 里按 `cCode`（菜单代码，如 `QM3006`）或 `cTitle` 搜种子行：
+在 `src/mock/mes4ddh/data/rescs.ts` 里按 `cCode`（菜单代码，如 `QM3006`）或 `cTitle` 搜种子行：
 
-- `cResSubPath` 已是 `/SQM/Tqmtd10/index.vue` → 页面已存在，本次是**修订**（先 diff 现有 vue，缺的接口/逻辑补上就是本次的活）；
+- `cResSubPath` 已是 `/mes4ddh/SQM/Tqmtd10/index.vue` → 页面已存在，本次是**修订**（先 diff 现有 vue，缺的接口/逻辑补上就是本次的活）；
 - `cResSubPath` 还是 `DDH.Winforms.X.Forms.FrmYyy` → 待迁，最后一段类名即窗体文件；
 - 种子行已被改写、需要回溯原始窗体 → 查 `temp/HMX_RES.json` 的 `C_RES_SUB_PATH`。
 
@@ -97,7 +97,7 @@ node .qoder/skills/winforms-screen-migration/scripts/extract-screen.mjs \
 
 ### 4. 产出 index.vue
 
-路径 `src/pages/<模块>/<CODE>/index.vue`，`<script setup>` 开头写来源注释（这是该画面的接口台账）：
+路径 `src/pages/mes4ddh/<模块>/<CODE>/index.vue`，`<script setup>` 开头写来源注释（这是该画面的接口台账）：
 
 ```ts
 /** 对应 FrmHR1000（轧钢计划管理）：DDH.Winforms.SHR.Forms.FrmHR1000
@@ -109,11 +109,11 @@ node .qoder/skills/winforms-screen-migration/scripts/extract-screen.mjs \
 
 | 画面形态 | 样例 |
 |---|---|
-| 上下主子表 + 页签 + 候选/明细转移列 | `src/pages/SQM/Tqmtd10/index.vue` |
-| 单表格 + 工具栏 | `src/pages/Widgets/Tpa1000/index.vue` |
-| 左右主子表 | `src/pages/Widgets/Tax1100/index.vue` |
-| 页签（PrimeVue 5 无 TabView） | `src/pages/Widgets/InterfaceCallLog/index.vue` |
-| **SelectButton 模式切换 + 共用工具栏 + 左右双表**（页签只切录入模式、不套 Tabs） | `src/pages/LIMS/QL4000/index.vue`（布局规则见 `references/ui-rules.md` §6） |
+| 上下主子表 + 页签 + 候选/明细转移列 | `src/pages/mes4ddh/SQM/Tqmtd10/index.vue` |
+| 单表格 + 工具栏 | `src/pages/mes4ddh/Widgets/Tpa1000/index.vue` |
+| 左右主子表 | `src/pages/mes4ddh/Widgets/Tax1100/index.vue` |
+| 页签（PrimeVue 5 无 TabView） | `src/pages/mes4ddh/Widgets/InterfaceCallLog/index.vue` |
+| **SelectButton 模式切换 + 共用工具栏 + 左右双表**（页签只切录入模式、不套 Tabs） | `src/pages/mes4ddh/LIMS/QL4000/index.vue`（布局规则见 `references/ui-rules.md` §6） |
 | **行内编辑 + 增删改保存（TrackableList 全套）** | `src/pages/admin/role/index.vue` |
 
 布局、控件映射、字阶密度、colDefs 写法 → `references/ui-rules.md`（**凡含按钮的工具栏一律 `h-9`**，按钮与表标题共用一行时按钮左、标题右 `ml-auto`；查询条件区 `grid grid-cols-6`、`hmx-ag-grid`、`autoSizeOnFirstData`、`rowSelection` 对象写法、Splitter 等全部照它执行）。**产出前自检结构**：对照提取摘要勾一遍「控件都在不在、父子对不对、上下左右/Splitter 轴向对不对」——不核对 `Location` 坐标。

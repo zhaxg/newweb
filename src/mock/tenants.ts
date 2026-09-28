@@ -24,7 +24,7 @@ export interface MockTenant {
 }
 
 export const MOCK_TENANTS: Record<string, MockTenant> = {
-  /** 中厚板 MES：admin 域资源表（localStorage 可编辑的 loadRescs） */
+  /** 中厚板 MES：`mock/mes4ddh/data/rescs.ts` 整表（localStorage 可编辑的 loadRescs） */
   gzmes: { userName: "超级管理员", rescs: loadRescs },
   /** 特钢 MES */
   tqmes: { userName: "超级管理员", rescs: () => tqmesRescs },

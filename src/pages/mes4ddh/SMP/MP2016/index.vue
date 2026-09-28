@@ -17,8 +17,8 @@ import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/a
 import { useToast } from "@/composables/useToast";
 import { useMenuQuery } from "@/lib/menuQuery";
 import { tLApi, OrderTlEnum, type Tmp2005Dto, type InputTmp2010Dto } from "@/api/mes4ddh/smp.swagger";
-import BatchIdInput from "@/pages/Widgets/BatchIdInput/index.vue";
-import { parseBatchIds } from "@/pages/Widgets/BatchIdInput/parse";
+import BatchIdInput from "@/pages/mes4ddh/Widgets/BatchIdInput/index.vue";
+import { parseBatchIds } from "@/pages/mes4ddh/Widgets/BatchIdInput/parse";
 
 const { toast } = useToast();
 const theme = makeHmxGridTheme();

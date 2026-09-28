@@ -30,8 +30,8 @@ import { tms9001Api, type MS3000SjInputDto, type Tms9000MatchDto, type Tyd2000Dt
 import { tLApi, OrderTlEnum, type InputTmp2010Dto, type Tmp2005Dto } from "@/api/mes4ddh/smp.swagger";
 import { useMenuQuery } from "@/lib/menuQuery";
 import { useToast } from "@/composables/useToast";
-import BatchIdInput from "@/pages/Widgets/BatchIdInput/index.vue";
-import { parseBatchIds } from "@/pages/Widgets/BatchIdInput/parse";
+import BatchIdInput from "@/pages/mes4ddh/Widgets/BatchIdInput/index.vue";
+import { parseBatchIds } from "@/pages/mes4ddh/Widgets/BatchIdInput/parse";
 
 const { toast } = useToast();
 const { raw: menuQs, json: menuJson } = useMenuQuery();

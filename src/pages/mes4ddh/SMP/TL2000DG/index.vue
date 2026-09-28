@@ -22,8 +22,8 @@ import type { ColDef, GridApi, GridReadyEvent, ValueGetterParams, ValueSetterPar
 import { AG_GRID_LOCALE_CN } from "@ag-grid-community/locale";
 import { autoSizeOnFirstData, hmxDefaultColDef, makeHmxGridTheme } from "@/lib/agGrid";
 import { tLApi, tLZG02Api, OrderTlEnum, type InputTmp2010Dto, type Tmp2005Dto } from "@/api/mes4ddh/smp.swagger";
-import BatchIdInput from "@/pages/Widgets/BatchIdInput/index.vue";
-import { parseBatchIds } from "@/pages/Widgets/BatchIdInput/parse";
+import BatchIdInput from "@/pages/mes4ddh/Widgets/BatchIdInput/index.vue";
+import { parseBatchIds } from "@/pages/mes4ddh/Widgets/BatchIdInput/parse";
 import { useMenuQuery } from "@/lib/menuQuery";
 import { useToast } from "@/composables/useToast";
 

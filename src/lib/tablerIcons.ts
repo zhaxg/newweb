@@ -8,7 +8,7 @@ import { defineAsyncComponent, type Component } from "vue";
  * 映射，实测占 entry chunk **1,177,347 B（约 70%）**；而壳层（侧栏/顶栏）实际只需菜单用到的那批。
  *
  * 下面的 glob 是**小映射**（白名单见模式里的花括号），覆盖四处：
- *   ① 后端资源种子的 cIcon（菜单图标）——`src/mock/admin/data/rescs.ts`（43 个）+
+ *   ① 后端资源种子的 cIcon（菜单图标）——`src/mock/mes4ddh/data/rescs.ts`（43 个）+
  *      `src/mock/carbon/data/rescs.ts`（47 个，系从 JNPF 自绘图标语义映射来，原名见其行尾注释）+
  *      `src/mock/equipment/data/rescs.ts`（41 个，设备域自己起的名字）+
  *      `src/mock/energy/data/rescs.ts`（32 个，能源域自己起的名字）
@@ -16,7 +16,7 @@ import { defineAsyncComponent, type Component } from "vue";
  *   ③ 兜底图标 File
  *   ④ admin/gen 页硬编码用到的几个（Check/Copy/FileCode/Loader/Sparkles）
  * 重新生成①②（求并集后写回花括号，当前 95 个）：
- *   grep -hoE 'cIcon: "[^"]*"' src/mock/admin/data/rescs.ts src/mock/carbon/data/rescs.ts | sed -E 's/.*cIcon: "([^"]*)"/\1/' | sort -u
+ *   grep -hoE 'cIcon: "[^"]*"' src/mock/mes4ddh/data/rescs.ts src/mock/carbon/data/rescs.ts | sed -E 's/.*cIcon: "([^"]*)"/\1/' | sort -u
  *   grep -hoE 'icon: "[^"]*"' src/router/builtin.ts src/router/business.ts | sort -u
  *   ⚠️ 设备域与能源域的种子走 leaf()/folder() 工厂，图标是**位置参数**，上面那条 `cIcon: "` 抓不到它们；
  *      改按「对应的 Icon 文件是否真的存在」当判据筛末段引号串（顺带完成存在性校验）：

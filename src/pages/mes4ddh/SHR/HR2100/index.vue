@@ -1,15 +1,16 @@
 <script setup lang="ts">
-/** 对应 FrmHR2110（特殊要求日计划查询）：DDH.Winforms.SHR.Forms.FrmHR2110
- *  已接入：hR2000Api.queryThr2000Dtos（批量计划号/提料计划号/熔炼号/时间区间；固定 nStatus=Open、isTsOrder=true）
+/** 对应 FrmHR2100（轧钢日计划查询）：DDH.Winforms.SHR.Forms.FrmHR2100
+ *  已接入：hR2000Api.queryThr2000Dtos（批量计划号/计划状态/提料计划号/熔炼号/时间区间）
  *  待接入：无
- *  偏差：默认时间范围为「本月1日 ~ 本月末」，与原 C# Load 一致；cLineCode 取菜单 QueryString（本菜单 ZG01）；
- *        原窗体固定 IsTsOrder=true（特殊要求单），DtoQueryThr2000 未声明该字段，此处透传扩展属性；
- *        无「计划状态」下拉（NStatus 后端固定 Open，列隐藏）；编码列显示原值（nStatus 已按枚举转文本） */
+ *  偏差：默认时间范围为「本月1日 ~ 本月末」，与原 C# Load 一致；cLineCode 取菜单 QueryString（本菜单为空 = 不限产线）；
+ *        计划状态下拉原 AddEnum 首项为「全部」（不传 nStatus）；
+ *        CCool/CLengthType/CSteelType/CLineCode/CTrimFlag 等编码列原为运行时 CodeFormatter 转文本，此处显示原值（nStatus 已按枚举转文本） */
 
 import { reactive, ref, shallowRef } from "vue";
 import Button from "primevue/button";
 import DatePicker from "primevue/datepicker";
 import InputText from "primevue/inputtext";
+import Select from "primevue/select";
 import { IconSearch } from "@tabler/icons-vue";
 import { AgGridVue } from "ag-grid-vue3";
 import type { ColDef, GridApi, GridReadyEvent } from "ag-grid-community";
@@ -24,12 +25,12 @@ import {
   type Thr2000Dto,
   type TimeRange,
 } from "@/api/mes4ddh/shr.swagger";
-import BatchIdInput from "@/pages/Widgets/BatchIdInput/index.vue";
-import { parseBatchIds } from "@/pages/Widgets/BatchIdInput/parse";
+import BatchIdInput from "@/pages/mes4ddh/Widgets/BatchIdInput/index.vue";
+import { parseBatchIds } from "@/pages/mes4ddh/Widgets/BatchIdInput/parse";
 
 const theme = makeHmxGridTheme();
 const { parts: menuQs } = useMenuQuery();
-const cLineCode = menuQs[0] ?? "ZG01";
+const cLineCode = menuQs[0] ?? "";
 
 function pad2(n: number): string {
   return String(n).padStart(2, "0");
@@ -49,8 +50,15 @@ function monthRange(): Date[] {
   return [first, last];
 }
 
+const statusOptions = [
+  { label: "全部", value: null as number | null },
+  { label: "已开启", value: Thr2000StatusEnum.Open as number },
+  { label: "已关闭", value: Thr2000StatusEnum.Close as number },
+];
+
 const input = reactive({
   orders: "",
+  nStatus: null as number | null,
   cOrderNo: "",
   cPieceNo: "",
   dates: monthRange() as Date[] | null,
@@ -73,8 +81,6 @@ const colDefs: ColDef[] = [
   { colId: "nOrder", field: "nOrder", headerName: "生产顺序", width: 112 },
   { colId: "cPlanTime", field: "cPlanTime", headerName: "计划日期", width: 112 },
   { colId: "cCool", field: "cCool", headerName: "是否冷坯计划", width: 112 },
-  { colId: "cIsGcd", field: "cIsGcd", headerName: "是否工程单", width: 150 },
-  { colId: "cConRemark", field: "cConRemark", headerName: "合同备注", width: 112 },
   { colId: "createTime", field: "createTime", headerName: "创建时间", width: 112 },
   { colId: "creator", field: "creator", headerName: "创建人", width: 112 },
   { colId: "cOrderNo", field: "cOrderNo", headerName: "提料计划号", width: 112 },
@@ -133,6 +139,7 @@ const colDefs: ColDef[] = [
   { colId: "nLenMax", field: "nLenMax", headerName: "长度上限", width: 112, hide: true },
   { colId: "cCustStdCode", field: "cCustStdCode", headerName: "加工用途代码", width: 112, hide: true },
   { colId: "dJhqTime", field: "dJhqTime", headerName: "交货期", width: 112, hide: true },
+  { colId: "cConRemark", field: "cConRemark", headerName: "合同备注", width: 112, hide: true },
   { colId: "cDesignNo", field: "cDesignNo", headerName: "质量设计号", width: 112, hide: true },
   { colId: "cMsc", field: "cMsc", headerName: "冶金规范", width: 112, hide: true },
   { colId: "cMscLineNo", field: "cMscLineNo", headerName: "冶金规范产线号", width: 112, hide: true },
@@ -145,6 +152,7 @@ const colDefs: ColDef[] = [
   { colId: "cOverstepBl", field: "cOverstepBl", headerName: "短溢装比例", width: 112, hide: true },
   { colId: "cInboundNo", field: "cInboundNo", headerName: "入库标识", width: 112, hide: true },
   { colId: "cShape", field: "cShape", headerName: "形状代码", width: 112, hide: true },
+  { colId: "cIsMerge", field: "cIsMerge", headerName: "是否合并提料", width: 112, hide: true },
 ];
 
 async function query() {
@@ -157,10 +165,9 @@ async function query() {
       cOrderNo: input.cOrderNo.trim() || null,
       cOrderNos: orders.length ? orders : [],
       cPieceNo: input.cPieceNo.trim() || null,
-      nStatus: Thr2000StatusEnum.Open,
+      nStatus: input.nStatus ?? undefined,
     };
-    // 原窗体固定 IsTsOrder=true（特殊要求单），Dto 类型未声明该字段，透传扩展属性
-    rows.value = (await hR2000Api.queryThr2000Dtos({ ...dto, isTsOrder: true } as DtoQueryThr2000)) ?? [];
+    rows.value = (await hR2000Api.queryThr2000Dtos(dto)) ?? [];
     requestAnimationFrame(() => api.value?.autoSizeAllColumns());
   } catch {
     /* 拦截层已 toast */
@@ -174,6 +181,16 @@ async function query() {
   <div class="flex min-h-0 flex-1 flex-col">
     <div class="grid shrink-0 grid-cols-6 items-center gap-x-3 gap-y-1.5 border-b border-border/60 px-3 py-2">
       <BatchIdInput v-model="input.orders" label="批量计划号" />
+      <div class="flex min-w-0 items-center gap-1.5">
+        <label class="w-16 shrink-0 text-xs text-muted-foreground">计划状态</label>
+        <Select
+          v-model="input.nStatus"
+          :options="statusOptions"
+          option-label="label"
+          option-value="value"
+          class="min-w-0 flex-1"
+        />
+      </div>
       <div class="flex min-w-0 items-center gap-1.5">
         <label class="w-16 shrink-0 text-xs text-muted-foreground">提料计划号</label>
         <InputText v-model="input.cOrderNo" class="min-w-0 flex-1" @keydown.enter="query" />
