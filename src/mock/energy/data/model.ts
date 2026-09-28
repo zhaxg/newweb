@@ -776,7 +776,9 @@ PLANT_UNITS.forEach((u) => {
 UNIT_LIST.filter((u) => u.level >= 3).forEach((u) => {
   const acc = new Set<MediumCode>();
   let p: UsingUnit | undefined = u;
-  while ((p = p?.parentId ? UNIT_MAP[p.parentId] : undefined)) acc.add(...p.mediaCodes);
+  /* `Set#add` 只收一个参数——`add(...arr)` 在 TS 是 TS2556（spread 需 rest 形参），
+     运行期还会只把第一个元素加进去。改成 forEach 逐个加，语义才是「继承祖先全部介质」 */
+  while ((p = p?.parentId ? UNIT_MAP[p.parentId] : undefined)) p.mediaCodes.forEach((c) => acc.add(c));
   u.mediaCodes = [...acc];
 });
 
@@ -2474,6 +2476,10 @@ export interface DispatchRule {
  * `base` 就是当前的富余状态（含实时柜位与剧本增量），每条建议只是它的一个补丁。
  */
 export function dispatchRules(base: GasScenario) {
+  /** `base.media` 是**可选**的（省略时按增量推断，见 GasScenario 注释）。
+   *  下面 R3 要 `MEDIUMS[media]` 当**索引**用，可选值会 TS2538。
+   *  这里收一次口：推断逻辑与 `simulateGasBalance` 同源（默认 LDG），后续一律用 `media`。 */
+  const media = base.media ?? "LDG";
   const sim = simulateGasBalance(base);
   const s = selfGeneration();
   const ccpp = s.units.find((u) => u.id === "GU-CCPP")!;
@@ -2536,11 +2542,11 @@ export function dispatchRules(base: GasScenario) {
   out.push(
     mk(
       "R3 可调节用户提掺烧",
-      `通知烧结厂点火炉提高${MEDIUMS[base.media].name}掺烧 20%（限时 30min）`,
-      `点火炉按 ${MEDIUMS[base.media].name} 定额 ${QUOTA_ROWS.find((r) => r[0] === PLANTS.SINTER && r[1] === base.media)?.[4] ?? 0} ${MEDIUMS[base.media].unit}/t，提 20% 即时生效；比点炉快、比限产轻`,
+      `通知烧结厂点火炉提高${MEDIUMS[media].name}掺烧 20%（限时 30min）`,
+      `点火炉按 ${MEDIUMS[media].name} 定额 ${QUOTA_ROWS.find((r) => r[0] === PLANTS.SINTER && r[1] === media)?.[4] ?? 0} ${MEDIUMS[media].unit}/t，提 20% 即时生效；比点炉快、比限产轻`,
       10,
       PLANTS.SINTER,
-      `烧结点火炉${MEDIUMS[base.media].name}掺烧量提高 20%，限时 30 分钟`,
+      `烧结点火炉${MEDIUMS[media].name}掺烧量提高 20%，限时 30 分钟`,
       PEOPLE.sinter,
       { sinterUsePct: 20 },
     ),

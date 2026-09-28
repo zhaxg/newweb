@@ -75,4 +75,13 @@ export const businessRoutes: RouteRecordRaw[] = [
     component: defineAsyncComponent(() => import("@/pages/mes4ddh/SYD/YD1010Map/MapDesignPage.vue")),
     meta: { layout: "blank", title: "库位图设计", loading: false, hidden: true },
   },
+  /* 设备档案 H5：AE0001 / AE0005 屏上二维码的落地页（地址构造见 @/pages/equipment/h5Url.ts）。
+     `public` 是这条路由存在的全部理由——手机扫码时**没有会话**，走壳层会被守卫弹回登录页，
+     演示现场就断了；设备编码不是凭证，档案页只读，所以免登录在这里是成立的。 */
+  {
+    path: "eam/eq",
+    name: "eam-eq-h5",
+    component: defineAsyncComponent(() => import("@/pages/equipment/EqArchiveH5.vue")),
+    meta: { layout: "blank", title: "设备档案", loading: false, hidden: true, public: true },
+  },
 ];

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * V2 监控页的共用外壳（EM0001~0004 四张画布页）：深色容器 + 顶栏 + 左画布右信息 + 3s 心跳。
+ * V2 监控页的共用外壳（EM0001~0004 四张画布页）：容器 + 顶栏 + 左画布右信息 + 3s 心跳。
  *
  * 版式来自规格书附录 B 的 V2：**左 70% 拓扑/曲线，右 30% 报警流与数字卡**。
  * 这四页的区别只在「画什么图元、右侧摆哪几张卡、顶部有哪几个剧本按钮」，
@@ -20,8 +20,8 @@
  * 写到页面里就是四份会各自漂移的复制品；而它又必须在这一层（而不是 `AlarmStream`——
  * 那张纯展示的列表在大屏和首页也会用，不该有能力改状态机）。
  *
- * 深浅：根容器 `emsDarkClass` 带字面量 `dark`，借 `primeTheme` 的 `darkModeSelector: ".dark"`
- * 让 PrimeVue 变量随自定义属性继承一并翻深。外壳切浅色不影响这块区域。
+ * 深浅：跟随外壳主题（2026-09 起本域除大屏外全部如此）——面板走 `emsPanelClass`
+ * 的 `bg-card`/`border-border`，token 挂在 `.dark` 上自动两档换肤，切主题即跟。
  */
 import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 import Button from "primevue/button";
@@ -30,7 +30,7 @@ import AlarmStream from "../AlarmStream.vue";
 import { alarmApi } from "@/api/energy";
 import type { EnergyAlarm } from "@/api/energy/types";
 import { useToast } from "@/composables/useToast";
-import { emsDarkClass, emsPanelClass } from "../emsTheme";
+import { emsPanelClass } from "../emsTheme";
 import { applyResult } from "../rowActions";
 
 const props = defineProps<{
@@ -86,11 +86,11 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div :class="[emsDarkClass, 'flex min-h-0 flex-1 flex-col gap-2 p-2']">
+  <div :class="['flex min-h-0 flex-1 flex-col gap-2 p-2']">
     <header :class="[emsPanelClass, 'flex shrink-0 flex-wrap items-center gap-3 px-3 py-2']">
       <div class="flex min-w-0 items-baseline gap-2">
         <span class="text-xs tabular-nums text-muted-foreground">{{ props.code }}</span>
-        <span class="truncate text-base font-semibold text-sky-400">{{ props.name }}</span>
+        <span class="truncate text-base font-semibold text-primary">{{ props.name }}</span>
       </div>
       <div class="flex flex-wrap items-center gap-2">
         <slot name="tools" />

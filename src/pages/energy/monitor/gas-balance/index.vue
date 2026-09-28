@@ -24,6 +24,7 @@
  *  页面不自己定斜率（那会是第二份口径），斜率由服务端给的三个数反推：
  *  `(hiLimit - level) / minutesToHigh`。倒计时为 `null` = 柜位不在上涨，此时不画外推。
  *  待接入：柜位与放散的秒级 SCADA 采样（演示按分钟推进）。 */
+import { isDark } from "@/composables/useAppTheme";
 import { computed, onMounted, ref } from "vue";
 import Button from "primevue/button";
 import Slider from "primevue/slider";
@@ -191,10 +192,15 @@ const forecastOption = computed<EChartsOption>(() => {
     backgroundColor: "transparent",
     animation: false,
     grid: { left: 62, right: 16, top: 34, bottom: 24 },
-    legend: { top: 2, textStyle: { color: "#CBD5E1", fontSize: 12 } },
+    legend: { top: 2, textStyle: { color: isDark.value ? "#CBD5E1" : "#475569", fontSize: 12 } },
     tooltip: { trigger: "axis", valueFormatter: (v) => `${Number(v).toLocaleString("zh-CN")} m³/h` },
-    xAxis: { type: "category", boundaryGap: false, data: x, ...emsChartAxis(true) },
-    yAxis: { type: "value", name: "m³/h", nameTextStyle: { color: "#64748B", fontSize: 12 }, ...emsChartAxis(true) },
+    xAxis: { type: "category", boundaryGap: false, data: x, ...emsChartAxis(isDark.value) },
+    yAxis: {
+      type: "value",
+      name: "m³/h",
+      nameTextStyle: { color: isDark.value ? "#64748B" : "#94A3B8", fontSize: 12 },
+      ...emsChartAxis(isDark.value),
+    },
     series: [
       /** 置信下界：不画线只填色（透明度低一档），它存在的意义是给上界一个底 */
       {
@@ -262,7 +268,7 @@ const holderOption = computed<EChartsOption>(() => {
         silent: true,
         symbol: "none",
         lineStyle: { type: "dashed", color: "#EF4444" },
-        label: { color: "#94A3B8", fontSize: 12 },
+        label: { color: isDark.value ? "#94A3B8" : "#64748B", fontSize: 12 },
         data: [{ yAxis: s.hiLimitPct, name: `高限 ${s.hiLimitPct}%` }],
       },
     });
@@ -271,23 +277,23 @@ const holderOption = computed<EChartsOption>(() => {
     backgroundColor: "transparent",
     animation: false,
     grid: { left: 46, right: 18, top: 26, bottom: 24 },
-    legend: { top: 2, textStyle: { color: "#CBD5E1", fontSize: 12 } },
+    legend: { top: 2, textStyle: { color: isDark.value ? "#CBD5E1" : "#475569", fontSize: 12 } },
     tooltip: { trigger: "axis", valueFormatter: (v) => `${v}%` },
     xAxis: {
       type: "value",
       name: "分钟后",
-      nameTextStyle: { color: "#64748B", fontSize: 12 },
+      nameTextStyle: { color: isDark.value ? "#64748B" : "#94A3B8", fontSize: 12 },
       min: 0,
       max: 30,
-      ...emsChartAxis(true),
+      ...emsChartAxis(isDark.value),
     },
     yAxis: {
       type: "value",
       name: "%",
       min: 0,
       max: 100,
-      nameTextStyle: { color: "#64748B", fontSize: 12 },
-      ...emsChartAxis(true),
+      nameTextStyle: { color: isDark.value ? "#64748B" : "#94A3B8", fontSize: 12 },
+      ...emsChartAxis(isDark.value),
     },
     series: [
       /** 现状点：一个孤零零的散点，用来给「从哪儿开始算」一个视觉锚 */
@@ -343,12 +349,12 @@ const suggestions = computed(() =>
     <div class="flex min-h-0 flex-1 gap-2">
       <section :class="[emsPanelClass, 'flex min-w-0 flex-[3] flex-col']">
         <div :class="[emsHeaderTextClass, 'shrink-0 px-2.5 py-1.5']">未来 4 小时发生量预测（带 ±5% 置信带）</div>
-        <EChart :option="forecastOption" force-dark class="min-h-0 flex-1" />
+        <EChart :option="forecastOption" class="min-h-0 flex-1" />
       </section>
 
       <section :class="[emsPanelClass, 'flex min-w-0 flex-[2] flex-col']">
         <div :class="[emsHeaderTextClass, 'shrink-0 px-2.5 py-1.5']">柜位外推 · {{ view?.sim.holderName ?? "" }}</div>
-        <EChart :option="holderOption" force-dark class="min-h-0 flex-1" />
+        <EChart :option="holderOption" class="min-h-0 flex-1" />
         <div
           class="shrink-0 px-2.5 pb-1.5 text-xs"
           :class="countdown.startsWith('已触顶') ? TONE_TEXT.bad : TONE_TEXT.warn"
@@ -366,7 +372,7 @@ const suggestions = computed(() =>
           <div v-for="sl in SLIDERS" :key="sl.key">
             <div class="flex items-baseline gap-1.5">
               <span class="text-body text-foreground">{{ sl.label }}</span>
-              <span class="ml-auto text-body tabular-nums text-sky-400">
+              <span class="ml-auto text-body tabular-nums text-primary">
                 {{ knobs[sl.key] }}
                 <span class="text-xs text-muted-foreground">{{ sl.unit }}</span>
               </span>
@@ -399,7 +405,7 @@ const suggestions = computed(() =>
           </span>
         </div>
         <ul class="min-h-0 flex-1 space-y-1.5 overflow-y-auto px-2.5 pb-2">
-          <li v-for="s in suggestions" :key="s.id" class="rounded border border-white/10 bg-white/[0.03] px-2 py-1.5">
+          <li v-for="s in suggestions" :key="s.id" class="rounded border border-border bg-muted/50 px-2 py-1.5">
             <div class="flex items-baseline gap-1.5">
               <span class="text-xs text-muted-foreground">{{ s.rule }}</span>
               <span class="min-w-0 flex-1 truncate text-body text-foreground">{{ s.title }}</span>

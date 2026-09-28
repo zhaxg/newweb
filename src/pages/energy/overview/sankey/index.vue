@@ -20,12 +20,13 @@
  *
  *  待接入：自定义节点拖拽、按工序聚合开关。
  */
+import { isDark } from "@/composables/useAppTheme";
 import { computed, onMounted, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { mediumApi, overviewApi } from "@/api/energy";
 import type { EnergyMedium, SankeyDto } from "@/api/energy/types";
 import EChart from "../../EChart.vue";
-import { FLOW_LEGEND, emsDarkClass, emsHeaderTextClass } from "../../emsTheme";
+import { FLOW_LEGEND, emsHeaderTextClass } from "../../emsTheme";
 import type { EChartsOption } from "echarts";
 
 const router = useRouter();
@@ -94,7 +95,7 @@ const option = computed<EChartsOption>(() => {
         layout: "none",
         emphasis: { focus: "adjacency" },
         /* 节点名字要读得清：工序 · 方向，13px 在 1920 上偏小 */
-        label: { color: "#CBD5E1", fontSize: 13 },
+        label: { color: isDark.value ? "#CBD5E1" : "#475569", fontSize: 13 },
         lineStyle: { color: "gradient", opacity: 0.35 },
         itemStyle: { borderWidth: 0 },
         data: d.nodes,
@@ -131,17 +132,17 @@ watch(media, () => void load());
 </script>
 
 <template>
-  <div class="flex min-h-0 flex-1 flex-col gap-2 p-3" :class="emsDarkClass">
+  <div class="flex min-h-0 flex-1 flex-col gap-2 p-3">
     <!-- 顶栏：介质切换 + 一句话账 + 图例 -->
-    <div class="flex shrink-0 flex-wrap items-center gap-4 rounded-md border border-white/10 bg-[#111A2C] px-4 py-2">
+    <div class="flex shrink-0 flex-wrap items-center gap-4 rounded-md border border-border bg-card px-4 py-2">
       <span :class="emsHeaderTextClass">能流网络图</span>
 
       <!-- 介质下拉：只列 `balanceParticipate` 的介质（不进平衡表的本来就不该有能流） -->
-      <select v-model="media" class="h-8 rounded border border-white/15 bg-[#0B1220] px-2 text-body text-foreground">
+      <select v-model="media" class="h-8 rounded border border-border bg-background px-2 text-body text-foreground">
         <option v-for="m in options" :key="m.code" :value="m.code">{{ m.name }}</option>
       </select>
 
-      <span class="text-xs text-slate-500">
+      <span class="text-xs text-muted-foreground">
         {{ current?.name ?? media }} · 合计
         <span class="tabular-nums text-foreground">
           {{
@@ -153,18 +154,18 @@ watch(media, () => void load());
 
       <!-- 图例读服务端 dirs：图里出现什么方向就挂什么，不挂空项 -->
       <div class="flex items-center gap-3">
-        <span v-for="l in legend" :key="l.label" class="flex items-center gap-1.5 text-xs text-slate-500">
+        <span v-for="l in legend" :key="l.label" class="flex items-center gap-1.5 text-xs text-muted-foreground">
           <span class="inline-block h-2.5 w-5 rounded-sm" :style="{ background: l.color }"></span>{{ l.label }}
         </span>
       </div>
 
-      <span class="ml-auto text-xs text-slate-500">点击节点下钻到对应监测页 · 量与 EP0003 平衡表同源</span>
+      <span class="ml-auto text-xs text-muted-foreground">点击节点下钻到对应监测页 · 量与 EP0003 平衡表同源</span>
     </div>
 
     <!-- 桑基主图 -->
-    <div class="min-h-0 flex-1 rounded-md border border-white/10 bg-[#111A2C] p-2">
-      <EChart v-if="dto" :option="option" force-dark class="h-full w-full" @click="onNodeClick" />
-      <div v-else class="flex h-full items-center justify-center text-sm text-slate-500">
+    <div class="min-h-0 flex-1 rounded-md border border-border bg-card p-2">
+      <EChart v-if="dto" :option="option" class="h-full w-full" @click="onNodeClick" />
+      <div v-else class="flex h-full items-center justify-center text-sm text-muted-foreground">
         {{ loading ? "能流图加载中…" : "该介质暂无可展示的能流（未进能源平衡表的介质不出现在这里）" }}
       </div>
     </div>

@@ -18,7 +18,18 @@
  */
 import { computed } from "vue";
 import type { StatTone, TopoNodeDto, TopoViewDto } from "@/api/energy/types";
+import { isDark } from "@/composables/useAppTheme";
 import { EMS_BAD, EMS_OK, EMS_PANEL, EMS_TEXT, EMS_TEXT_MUTE, EMS_WARN } from "./emsTheme";
+
+/**
+ * SVG 属性不吃 Tailwind class，跟随主题的两档只能在这里给色值：
+ * 深档用附录 B 常量，浅档是同族 slate——`#CBD5E1` 画在白底上是不可读的浅灰。
+ * 语义三档（TONE_STROKE）不动：`#22C55E/#F59E0B/#EF4444` 两档底上都够对比。
+ */
+const textFill = computed(() => (isDark.value ? EMS_TEXT : "#334155"));
+const panelFill = computed(() => (isDark.value ? EMS_PANEL : "#F1F5F9"));
+/** 负荷类图元的哑光底：深档近透明的白、浅档近透明的黑——两档都是「压一档不抢戏」 */
+const loadFill = computed(() => (isDark.value ? "rgba(148,163,184,0.07)" : "rgba(100,116,139,0.08)"));
 
 const props = defineProps<{ view: TopoViewDto }>();
 
@@ -85,12 +96,12 @@ function fmt(v: number) {
       <!-- 母线：一条粗线 + 上方的名字 -->
       <template v-if="n.kind === 'bus'">
         <rect :x="n.x" :y="n.y - BUS_H / 2" :width="n.w ?? 0" :height="BUS_H" :fill="TONE_STROKE[n.tone]" rx="2" />
-        <text :x="n.x + 4" :y="n.y - BUS_H / 2 - 6" :fill="EMS_TEXT" font-size="13">{{ n.label }}</text>
+        <text :x="n.x + 4" :y="n.y - BUS_H / 2 - 6" :fill="textFill" font-size="13">{{ n.label }}</text>
       </template>
 
       <!-- 柜：柜体 + 自底向上的填充 + 百分比。柜是这三张图上唯一「形状本身在说话」的图元 -->
       <template v-else-if="n.kind === 'holder'">
-        <rect :x="n.x" :y="n.y" :width="n.w" :height="n.h" :fill="EMS_PANEL" rx="3" />
+        <rect :x="n.x" :y="n.y" :width="n.w" :height="n.h" :fill="panelFill" rx="3" />
         <rect
           :x="n.x + 3"
           :y="holderFill(n).top + (holderFill(n).h - 6) - holderFill(n).bar"
@@ -110,7 +121,7 @@ function fmt(v: number) {
           stroke-width="1.4"
           rx="3"
         />
-        <text :x="cx(n)" :y="n.y + 16" :fill="EMS_TEXT" font-size="12" text-anchor="middle">{{ n.label }}</text>
+        <text :x="cx(n)" :y="n.y + 16" :fill="textFill" font-size="12" text-anchor="middle">{{ n.label }}</text>
         <text
           :x="cx(n)"
           :y="n.y + (n.h ?? 0) - 8"
@@ -130,7 +141,7 @@ function fmt(v: number) {
           :y="n.y"
           :width="n.w"
           :height="n.h"
-          :fill="n.kind === 'load' ? 'rgba(148,163,184,0.07)' : EMS_PANEL"
+          :fill="n.kind === 'load' ? loadFill : panelFill"
           :stroke="n.value === undefined ? EMS_TEXT_MUTE : TONE_STROKE[n.tone]"
           :stroke-width="n.kind === 'valve' ? 1.8 : 1.2"
           rx="4"
@@ -147,7 +158,7 @@ function fmt(v: number) {
         <text
           :x="cx(n)"
           :y="n.y + (n.value === undefined ? 24 : 17)"
-          :fill="EMS_TEXT"
+          :fill="textFill"
           font-size="12"
           text-anchor="middle"
         >

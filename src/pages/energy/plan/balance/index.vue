@@ -26,7 +26,7 @@ import { balanceApi } from "@/api/energy";
 import type { BalanceSheet } from "@/api/energy/types";
 import { useToast } from "@/composables/useToast";
 import { applyResult } from "../../rowActions";
-import { emsDarkClass, emsHeaderTextClass, emsPanelClass } from "../../emsTheme";
+import { emsHeaderTextClass, emsPanelClass } from "../../emsTheme";
 import { useNameMaps } from "../../nameMaps";
 
 const { toast } = useToast();
@@ -79,9 +79,9 @@ const fmt = (v: number | undefined) =>
 /** 红格：平衡差 ≠ 0。**标红阈值不是 0**——浮点残差 ±1 以内视作平，
  *  否则账面上永远挂着一片红，真差异反而看不出来 */
 const diffClass = (d: number | undefined) => {
-  if (d === undefined) return "text-[#64748B]";
-  if (Math.abs(d) <= 1) return "text-emerald-400";
-  return "text-red-400 font-semibold";
+  if (d === undefined) return "text-muted-foreground";
+  if (Math.abs(d) <= 1) return "text-emerald-600 dark:text-emerald-400";
+  return "text-red-600 dark:text-red-400 font-semibold";
 };
 
 /** 当前表（一次显示一张介质的表；多张时先给第一张并给切换） */
@@ -100,15 +100,15 @@ watch(
 </script>
 
 <template>
-  <div class="flex min-h-0 flex-1 flex-col gap-2 p-3" :class="emsDarkClass">
+  <div class="flex min-h-0 flex-1 flex-col gap-2 p-3">
     <!-- 顶栏 -->
-    <div class="flex shrink-0 items-center gap-4 rounded-md border border-white/10 bg-[#111A2C] px-4 py-2">
+    <div class="flex shrink-0 items-center gap-4 rounded-md border border-border bg-card px-4 py-2">
       <span :class="emsHeaderTextClass">能源平衡表</span>
-      <span class="text-xs text-slate-500">月度必出报表 · 行 = 工序 · 列 = 收/供/转/耗/外供/损/差</span>
+      <span class="text-xs text-muted-foreground">月度必出报表 · 行 = 工序 · 列 = 收/供/转/耗/外供/损/差</span>
 
       <select
         v-model="month"
-        class="ml-auto h-8 rounded border border-white/15 bg-[#0B1220] px-2 text-body text-foreground"
+        class="ml-auto h-8 rounded border border-border bg-background px-2 text-body text-foreground"
         @change="load"
       >
         <option value="">全部期别</option>
@@ -120,36 +120,41 @@ watch(
         class="cursor-pointer rounded border px-3 py-1.5 text-body disabled:cursor-not-allowed disabled:opacity-40"
         :class="
           current?.balanced
-            ? 'border-white/10 text-slate-500'
-            : 'border-[#38BDF8]/60 text-sky-400 hover:bg-[#38BDF8]/10'
+            ? 'border-border text-muted-foreground'
+            : 'border-primary/60 text-primary hover:bg-primary/10'
         "
         :disabled="busy || !current || current.balanced"
         @click="current && run(current)"
       >
         ▶ 执行平衡分摊
       </button>
-      <span class="text-xs text-slate-500">
+      <span class="text-xs text-muted-foreground">
         {{ current ? (current.balanced ? `${current.month} 已平` : `${current.month} 有残差，点分摊归零`) : "加载中…" }}
       </span>
     </div>
 
     <!-- 主表：行 = 工序 -->
-    <div class="min-h-0 flex-1 overflow-auto rounded-md border border-white/10 bg-[#111A2C]">
+    <div class="min-h-0 flex-1 overflow-auto rounded-md border border-border bg-card">
       <table v-if="current" class="w-full" style="font-size: 13px">
-        <thead class="sticky top-0 bg-[#111A2C]">
-          <tr class="text-slate-500">
+        <thead class="sticky top-0 bg-card">
+          <tr class="text-muted-foreground">
             <th class="px-3 py-2 text-left font-normal">工序</th>
             <th v-for="c in COLS" :key="c.key" class="px-3 py-2 text-right font-normal" :title="c.hint">
               {{ c.label }}
             </th>
             <!-- 结论列单独表头，颜色即语义 -->
-            <th class="px-3 py-2 text-right font-normal text-red-400">平衡差</th>
+            <th class="px-3 py-2 text-right font-normal text-red-600 dark:text-red-400">平衡差</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="r in current.rows" :key="r.unitId" class="border-t border-white/5">
-            <td class="px-3 py-2 text-slate-300">{{ unitMap[r.unitId] ?? r.unitId }}</td>
-            <td v-for="c in COLS" :key="c.key" class="px-3 py-2 text-right tabular-nums text-slate-300" :title="c.hint">
+          <tr v-for="r in current.rows" :key="r.unitId" class="border-t border-border/60">
+            <td class="px-3 py-2 text-foreground">{{ unitMap[r.unitId] ?? r.unitId }}</td>
+            <td
+              v-for="c in COLS"
+              :key="c.key"
+              class="px-3 py-2 text-right tabular-nums text-foreground"
+              :title="c.hint"
+            >
               {{ fmt((r as any)[c.key]) }}
             </td>
             <td class="px-3 py-2 text-right tabular-nums" :class="diffClass(r.diff)">
@@ -158,8 +163,8 @@ watch(
           </tr>
         </tbody>
         <tfoot>
-          <tr class="border-t border-white/10 text-slate-300">
-            <td class="px-3 py-2 text-xs text-slate-500">合计</td>
+          <tr class="border-t border-border text-foreground">
+            <td class="px-3 py-2 text-xs text-muted-foreground">合计</td>
             <td v-for="c in COLS" :key="c.key" class="px-3 py-2 text-right tabular-nums">
               {{ fmt(current.rows.reduce((s, r) => s + ((r as any)[c.key] ?? 0), 0)) }}
             </td>
@@ -172,15 +177,17 @@ watch(
           </tr>
         </tfoot>
       </table>
-      <div v-else class="p-8 text-center text-sm text-slate-500">加载中…</div>
+      <div v-else class="p-8 text-center text-sm text-muted-foreground">加载中…</div>
     </div>
 
     <!-- 介质名 + 分摊规则说明 -->
-    <div class="shrink-0 rounded-md border border-white/10 bg-[#111A2C] px-4 py-2 text-xs text-slate-500">
+    <div class="shrink-0 rounded-md border border-border bg-card px-4 py-2 text-xs text-muted-foreground">
       <template v-if="current">
-        <span class="text-slate-300">{{ mediumMap[current.mediaCode] ?? current.mediaCode }}</span>
+        <span class="text-foreground">{{ mediumMap[current.mediaCode] ?? current.mediaCode }}</span>
         · 单位 {{ current.unit }} ·
-        <span :class="current.balanced ? 'text-emerald-400' : 'text-amber-400'">
+        <span
+          :class="current.balanced ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'"
+        >
           {{ current.balanced ? "已按规则分摊，差值归零" : "未分摊，差值为红" }}
         </span>
         <template v-if="current.balanceRule"> · 规则：{{ current.balanceRule }}</template>

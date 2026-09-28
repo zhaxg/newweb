@@ -14,6 +14,7 @@
  *        后台轮询的问题，定时器归页面、只有推进演示时钟这件事在 store（`/ems/point/tick`）。
  *  待接入：秒级采样与降采样（演示按分钟推进，接真后端时 history 端点换成按时/按天两档，页面零改动）。 */
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { isDark } from "@/composables/useAppTheme";
 import Tree from "primevue/tree";
 import Button from "primevue/button";
 import ToggleSwitch from "primevue/toggleswitch";
@@ -206,15 +207,10 @@ onMounted(() => {
     pickDefault();
     resetTimer();
   });
-  readTheme();
-  mo = new MutationObserver(readTheme);
-  mo.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
 });
 onBeforeUnmount(() => {
-  /* 两个都得清：定时器漏清就是缓存页在后台替全站推进演示时钟（AGENTS 点过的 KeepAlive 问题），
-     observer 漏清就是每进一次这页多挂一个，永不回收 */
+  /* 定时器漏清就是缓存页在后台替全站推进演示时钟（AGENTS 点过的 KeepAlive 问题） */
   if (timer !== null) clearInterval(timer);
-  mo?.disconnect();
 });
 
 function allOpen(open: boolean) {
@@ -236,7 +232,6 @@ function allOpen(open: boolean) {
 }
 
 /* ── 曲线 option：多条逐日线，x 轴是**日期**（与 EP0002 的日行同一批日） ───── */
-const dark = ref(false);
 const option = computed<EChartsOption>(() => {
   const h = hist.value;
   if (!h?.series.length) {
@@ -249,15 +244,15 @@ const option = computed<EChartsOption>(() => {
     legend: {
       type: "scroll",
       top: 6,
-      textStyle: { color: dark.value ? EMS_TEXT : "#475569", fontSize: 12 },
+      textStyle: { color: isDark.value ? EMS_TEXT : "#475569", fontSize: 12 },
     },
     tooltip: { trigger: "axis" },
-    xAxis: { type: "category", data: h.dates.map((d) => d.slice(5)), ...emsChartAxis(dark.value) },
+    xAxis: { type: "category", data: h.dates.map((d) => d.slice(5)), ...emsChartAxis(isDark.value) },
     yAxis: {
       type: "value",
       name: h.series[0]?.unit ?? "",
-      nameTextStyle: { color: dark.value ? EMS_TEXT_MUTE : "#94A3B8", fontSize: 12 },
-      ...emsChartAxis(dark.value),
+      nameTextStyle: { color: isDark.value ? EMS_TEXT_MUTE : "#94A3B8", fontSize: 12 },
+      ...emsChartAxis(isDark.value),
     },
     series: h.series.map((s) => ({
       name: s.name,
@@ -269,12 +264,6 @@ const option = computed<EChartsOption>(() => {
     })),
   };
 });
-
-/** 主题翻转要重算轴色（`emsChartAxis` 不读 DOM，见 emsTheme 的文件头）。接线在下面的 onMounted */
-function readTheme() {
-  dark.value = document.documentElement.classList.contains("dark");
-}
-let mo: MutationObserver | null = null;
 
 /**
  * 读数不是 AG Grid 列，没有 `valueFormatter` 可挂，这里自己格式化一位小数。

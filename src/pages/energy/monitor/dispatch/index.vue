@@ -20,7 +20,7 @@ import { dispatchApi, personApi } from "@/api/energy";
 import { dashFmt, tagRenderer } from "../../cells";
 import { useNameMaps } from "../../nameMaps";
 import type { ListPageSpec } from "../../listTypes";
-import { emsDarkClass, emsPanelClass } from "../../emsTheme";
+import { emsPanelClass } from "../../emsTheme";
 
 const { ready } = useNameMaps();
 
@@ -70,11 +70,11 @@ const STATUSES = ["草拟", "已下达", "执行中", "已完成", "已回执"];
 
 /** 五态卡的措辞与色标：状态词直接取 `TAG_CLASS` 的那五档，卡与行同一个颜色 */
 const STATE_CARDS: Array<{ key: keyof NonNullable<typeof stat.value>; label: string; cls: string }> = [
-  { key: "draft", label: "草拟", cls: "text-slate-300" },
-  { key: "issued", label: "已下达", cls: "text-sky-300" },
-  { key: "running", label: "执行中", cls: "text-sky-200" },
-  { key: "done", label: "已完成", cls: "text-emerald-300" },
-  { key: "receipt", label: "已回执", cls: "text-slate-400" },
+  { key: "draft", label: "草拟", cls: "text-foreground" },
+  { key: "issued", label: "已下达", cls: "text-primary dark:text-sky-300" },
+  { key: "running", label: "执行中", cls: "text-primary dark:text-sky-200" },
+  { key: "done", label: "已完成", cls: "text-emerald-600 dark:text-emerald-300" },
+  { key: "receipt", label: "已回执", cls: "text-muted-foreground" },
 ];
 
 const spec = computed<ListPageSpec>(() => ({
@@ -110,7 +110,7 @@ const spec = computed<ListPageSpec>(() => ({
       minWidth: 152,
       valueFormatter: dashFmt,
       /** 逾期标红读的是行上的 `overdue`（mock 每次列表都按演示时钟重判），页面不比日期 */
-      cellClass: (p: any) => (p.data?.overdue ? "text-red-400 font-medium" : ""),
+      cellClass: (p: any) => (p.data?.overdue ? "text-red-600 dark:text-red-400 font-medium" : ""),
     },
     { field: "receiptAt", headerName: "回执时间", minWidth: 152, valueFormatter: dashFmt },
   ],
@@ -188,14 +188,14 @@ function pickStatus(status: string) {
 </script>
 
 <template>
-  <div :class="[emsDarkClass, 'flex min-h-0 flex-1 flex-col gap-2 p-2']">
+  <div :class="['flex min-h-0 flex-1 flex-col gap-2 p-2']">
     <section :class="[emsPanelClass, 'shrink-0 px-2.5 py-2']">
       <div class="flex flex-wrap items-center gap-2">
         <button
           v-for="c in STATE_CARDS"
           :key="c.key"
           type="button"
-          class="rounded border border-white/12 bg-white/[0.03] px-3 py-1.5 text-left transition-colors hover:bg-white/[0.07]"
+          class="rounded border border-border bg-muted/50 px-3 py-1.5 text-left transition-colors hover:bg-accent"
           @click="pickStatus(c.label)"
         >
           <div class="text-xs text-muted-foreground">{{ c.label }}</div>
@@ -203,7 +203,9 @@ function pickStatus(status: string) {
         </button>
         <div class="ml-auto flex items-center gap-3 text-xs tabular-nums">
           <span class="text-muted-foreground">总计 {{ stat?.total ?? 0 }}</span>
-          <span v-if="stat?.overdue" class="font-medium text-red-400">逾期未回执 {{ stat.overdue }}</span>
+          <span v-if="stat?.overdue" class="font-medium text-red-600 dark:text-red-400"
+            >逾期未回执 {{ stat.overdue }}</span
+          >
           <span v-else class="text-muted-foreground">无逾期单据</span>
         </div>
       </div>

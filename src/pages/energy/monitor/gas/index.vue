@@ -11,6 +11,7 @@
  *        而不是"我们算错了"——所以两处各自标了「月均 / 当班」四个字。
  *        切介质只换关注对象（`scenario.media`），三根总管在一张图上同时算、同时报警。
  *  待接入：柜位与放散的秒级 SCADA 采样（演示按分钟推进）。 */
+import { isDark } from "@/composables/useAppTheme";
 import { computed, onMounted, ref } from "vue";
 import Button from "primevue/button";
 import Select from "primevue/select";
@@ -81,20 +82,20 @@ const holderOption = computed<EChartsOption>(() => {
     backgroundColor: "transparent",
     animation: false,
     grid: { left: 46, right: 16, top: 30, bottom: 24 },
-    legend: { top: 2, textStyle: { color: "#CBD5E1", fontSize: 12 } },
+    legend: { top: 2, textStyle: { color: isDark.value ? "#CBD5E1" : "#475569", fontSize: 12 } },
     tooltip: { trigger: "axis", valueSuffix: "%" },
     xAxis: {
       type: "category",
       boundaryGap: false,
       data: Array.from({ length: n }, (_, i) => `${i - n + 1}`),
-      ...emsChartAxis(true),
+      ...emsChartAxis(isDark.value),
     },
     yAxis: {
       type: "value",
       max: 100,
       name: "%",
-      nameTextStyle: { color: "#64748B", fontSize: 12 },
-      ...emsChartAxis(true),
+      nameTextStyle: { color: isDark.value ? "#64748B" : "#94A3B8", fontSize: 12 },
+      ...emsChartAxis(isDark.value),
     },
     series: hs.map((h) => ({
       name: h.name,
@@ -107,7 +108,7 @@ const holderOption = computed<EChartsOption>(() => {
           ? {
               silent: true,
               symbol: "none",
-              label: { color: "#94A3B8", fontSize: 12 },
+              label: { color: isDark.value ? "#94A3B8" : "#64748B", fontSize: 12 },
               lineStyle: { type: "dashed", color: "#EF4444" },
               data: [
                 { yAxis: h.hiLimit, name: "高限" },
@@ -176,13 +177,13 @@ const countdown = computed(() => {
     <div class="flex min-h-0 flex-[4] gap-2">
       <section :class="[emsPanelClass, 'flex min-w-0 flex-[3] flex-col']">
         <div :class="[emsHeaderTextClass, 'shrink-0 px-2.5 py-1.5']">柜位近 1 小时与高低红线</div>
-        <EChart :option="holderOption" force-dark class="min-h-0 flex-1" />
+        <EChart :option="holderOption" class="min-h-0 flex-1" />
       </section>
 
       <section :class="[emsPanelClass, 'flex min-w-0 flex-[2] flex-col']">
         <div :class="[emsHeaderTextClass, 'shrink-0 px-2.5 py-1.5']">调度建议</div>
         <ul class="min-h-0 flex-1 space-y-1.5 overflow-y-auto px-2.5 pb-2">
-          <li v-for="s in suggestions" :key="s.id" class="rounded border border-white/10 bg-white/[0.03] px-2 py-1.5">
+          <li v-for="s in suggestions" :key="s.id" class="rounded border border-border bg-muted/50 px-2 py-1.5">
             <div class="flex items-baseline gap-1.5">
               <span class="text-xs text-muted-foreground">{{ s.rule }}</span>
               <span class="min-w-0 flex-1 truncate text-body text-foreground">{{ s.title }}</span>
@@ -256,7 +257,7 @@ const countdown = computed(() => {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="l in view?.lines ?? []" :key="l.media" class="border-t border-white/5">
+            <tr v-for="l in view?.lines ?? []" :key="l.media" class="border-t border-border/60">
               <td class="px-2.5 py-1">
                 <span class="mr-1.5 inline-block h-2 w-2 rounded-full align-middle" :style="{ background: l.color }" />
                 <span class="text-foreground">{{ l.name }}</span>

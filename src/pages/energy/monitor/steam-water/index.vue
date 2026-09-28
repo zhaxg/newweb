@@ -10,6 +10,7 @@
  *        汽包水位只画条、不给结论：这页没有汽包水位的报警阈值契约，硬编一个 50% 就是页面自己造口径
  *        （本域红线），所以颜色全部来自 DTO 的 tone，条子只做归一化展示。
  *  待接入：蒸汽管网的水击与疏水监测、减温减压装置的开度（真实 EMS 有、契约里没这些字段）。 */
+import { isDark } from "@/composables/useAppTheme";
 import { computed, onMounted, ref } from "vue";
 import EChart from "../../EChart.vue";
 import MonitorShell from "../MonitorShell.vue";
@@ -55,12 +56,12 @@ const useOption = computed<EChartsOption>(() => {
     animation: false,
     grid: { left: 130, right: 56, top: 12, bottom: 12 },
     tooltip: { trigger: "axis", axisPointer: { type: "shadow" }, valueFormatter: (v) => `${v} t/h` },
-    xAxis: { type: "value", ...emsChartAxis(true) },
+    xAxis: { type: "value", ...emsChartAxis(isDark.value) },
     yAxis: {
       type: "category",
       /** 从下往上画：加热炉这类大户排在最上面，条子才有"谁最能吃"的读感 */
       data: u.map((x) => x.name).toReversed(),
-      ...emsChartAxis(true),
+      ...emsChartAxis(isDark.value),
     },
     series: [
       {
@@ -68,7 +69,13 @@ const useOption = computed<EChartsOption>(() => {
         type: "bar",
         barWidth: 12,
         itemStyle: { color: "#38BDF8", borderRadius: [0, 3, 3, 0] },
-        label: { show: true, position: "right", color: "#94A3B8", fontSize: 12, formatter: "{c} t/h" },
+        label: {
+          show: true,
+          position: "right",
+          color: isDark.value ? "#94A3B8" : "#64748B",
+          fontSize: 12,
+          formatter: "{c} t/h",
+        },
         data: u.map((x) => x.tph).toReversed(),
       },
     ],
@@ -150,7 +157,7 @@ const tiles = computed(() => {
               </tr>
             </thead>
             <tbody>
-              <tr v-for="s in view?.sources ?? []" :key="s.id" class="border-t border-white/5">
+              <tr v-for="s in view?.sources ?? []" :key="s.id" class="border-t border-border/60">
                 <td class="px-2.5 py-1">
                   <span class="text-foreground">{{ s.name }}</span>
                   <span v-if="s.offNetwork" :class="TONE_TEXT.warn" class="ml-1.5 text-xs">{{ s.note }}</span>
@@ -174,7 +181,7 @@ const tiles = computed(() => {
 
       <section :class="[emsPanelClass, 'flex min-w-0 flex-[2] flex-col']">
         <div :class="[emsHeaderTextClass, 'shrink-0 px-2.5 py-1.5']">用汽去向</div>
-        <EChart :option="useOption" force-dark class="min-h-0 flex-1" />
+        <EChart :option="useOption" class="min-h-0 flex-1" />
       </section>
 
       <section :class="[emsPanelClass, 'flex min-w-0 flex-[2] flex-col']">
@@ -190,7 +197,7 @@ const tiles = computed(() => {
               </tr>
             </thead>
             <tbody>
-              <tr v-for="l in view?.water.loops ?? []" :key="l.id" class="border-t border-white/5">
+              <tr v-for="l in view?.water.loops ?? []" :key="l.id" class="border-t border-border/60">
                 <td class="px-2 py-1 text-foreground">{{ l.name }}</td>
                 <td class="px-2 py-1 text-right tabular-nums text-foreground">{{ fmt(l.circM3h) }}</td>
                 <td class="px-2 py-1 text-right tabular-nums text-muted-foreground">{{ l.makeupM3h }}</td>
@@ -200,11 +207,11 @@ const tiles = computed(() => {
               </tr>
             </tbody>
           </table>
-          <div class="border-t border-white/5 px-2 py-1.5 text-xs text-muted-foreground">
+          <div class="border-t border-border/60 px-2 py-1.5 text-xs text-muted-foreground">
             汽包水位
             <div v-for="d in view?.drums ?? []" :key="d.id" class="mt-1 flex items-center gap-2">
               <span class="w-20 shrink-0 truncate text-foreground">{{ d.name }}</span>
-              <div class="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-white/10">
+              <div class="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-muted-foreground/20">
                 <div
                   :class="TONE_BG.ok"
                   class="h-full rounded-full"
@@ -235,7 +242,7 @@ const tiles = computed(() => {
         <div v-for="t in view?.tiers ?? []" :key="t.id" class="flex items-baseline gap-2 py-0.5 text-xs">
           <span class="w-16 shrink-0 truncate text-foreground">{{ t.name }}</span>
           <span class="text-muted-foreground">{{ t.mpa }} MPa / {{ t.tempC }}℃</span>
-          <span class="ml-auto tabular-nums text-sky-400">{{ t.prodTph }} t/h</span>
+          <span class="ml-auto tabular-nums text-primary">{{ t.prodTph }} t/h</span>
         </div>
         <div class="mt-1.5 text-xs leading-5 text-muted-foreground">
           管损率 = 产汽 − 用汽，与 EP0003 平衡表的「损失」列同源；两级之间靠减温减压装置串接。

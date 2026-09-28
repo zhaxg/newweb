@@ -25,7 +25,7 @@
  * `setQuery` 给「看板卡点击即筛选」（EM0005 的五级卡）；`emit("changed")` 给「左树 + 右表是同一批行」。的页面（EG0002/EC0001）——写成功之后树不跟着重拉，
  * 刚新增的下级就只在表里、不在树上，客户会当成系统两处数据不一致。
  */
-import { computed, onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref, type ComputedRef } from "vue";
 import { useRouter } from "vue-router";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
@@ -38,6 +38,7 @@ import { autoSizeOnFirstData, makeHmxGridTheme } from "@/lib/agGrid";
 import { IconPlus, IconRotateClockwise, IconSearch } from "@tabler/icons-vue";
 import { useToast } from "@/composables/useToast";
 import { exportRows } from "@/api/energy";
+import type { ActionResult } from "@/api/energy/types";
 import { toDay, toStamp } from "./dateField";
 import Pager from "./Pager.vue";
 import DetailDialog from "./DetailDialog.vue";
@@ -155,7 +156,7 @@ function colFor(k: string): ColDef {
         width: 64,
         cellRenderer: (p: any) => {
           const el = document.createElement("span");
-          el.className = "inline-block h-3.5 w-6 rounded-sm border border-white/20 align-middle";
+          el.className = "inline-block h-3.5 w-6 rounded-sm border border-border align-middle";
           if (typeof p.value === "string") el.style.background = p.value;
           return el;
         },
@@ -223,7 +224,15 @@ const colDefs = computed<ColDef[]>(() => {
 });
 
 /* 详情段：按 key 自动生成中文分组（基本信息 / 时间 / 人员），页面传 detail 则整体替换 */
-const LBL_GROUPS: Record<string, string> = {
+/**
+ * 字段 → 中文分组（详情弹窗按这些 key 自动分段）。
+ *
+ * ⚠️ 值是 **string[]**（每组的字段名列表）。早先写成 `Record<string, string>`，
+ * 于是每个数组字面量都被当单个字符串，后面 `group.filter(...)`、`Object.entries`
+ * 全部连锁出 TS2339/TS2322/TS7006 —— **14 条错全是这一个注解错出来的**。
+ * 改类型注解，不改数据（数据一直是对的）。
+ */
+const LBL_GROUPS: Record<string, string[]> = {
   基本信息: [
     "id",
     "code",
@@ -300,7 +309,16 @@ const detailSections = computed(() => {
   return sections;
 });
 
-const spec = computed<ListPageSpec>(() => ({
+/**
+ * ⚠️ 必须给**显式类型标注**（`ComputedRef<ListPageSpec>`）：
+ * 这个 computed 的初始化器里调了 `exportCurrent()`（"导出"行的 run），而
+ * `exportCurrent` 又读 `spec.value` —— 形成 spec ⇄ exportCurrent 的引用环。
+ * 没有标注时 TS 用「初始化器」反推 spec 的类型，撞见环就报
+ * `'spec' implicitly has type 'any' ... in its own initializer`，并连锁出
+ * 4 条 TS7023/7024（`run`、`exportCurrent`、`x` 全是 any）。
+ * **运行期没有问题**（run 是点击时才调、那时 spec 已就绪），这是纯类型层的环。
+ */
+const spec: ComputedRef<ListPageSpec> = computed<ListPageSpec>(() => ({
   code: "EM",
   query: props.spec?.query ?? [],
   columns: [],
@@ -405,7 +423,9 @@ onMounted(query);
  * 页面只负责把 msg 弹出来。真接后端时这个端点换成返回下载链接，页面零改动。
  * 送的是**上次查询的实际参数**（含分页），保证导出的和看到的是什么口径说得清。
  */
-function exportCurrent() {
+/** 显式返回类型：`spec` 的 actions 里有 `run: () => exportCurrent()`，
+ *  没有这个标注推导会绕回 `spec` 的初始化器（见上方 spec 的说明） */
+function exportCurrent(): Promise<ActionResult> {
   return exportRows(spec.value.exportEntity ?? spec.value.code, lastParams.value);
 }
 

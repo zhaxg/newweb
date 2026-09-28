@@ -19,11 +19,12 @@
  *
  *  待接入：KPI 卡点击下钻到对应模块、导出。
  */
+import { isDark } from "@/composables/useAppTheme";
 import { computed, onMounted, ref, watch } from "vue";
 import { overviewApi } from "@/api/energy";
 import type { KpiBoardDto } from "@/api/energy/types";
 import EChart from "../../EChart.vue";
-import { emsDarkClass, emsHeaderTextClass, emsPanelClass } from "../../emsTheme";
+import { emsHeaderTextClass, emsPanelClass } from "../../emsTheme";
 import type { EChartsOption } from "echarts";
 
 const loading = ref(true);
@@ -189,7 +190,7 @@ function sparkOption(c: Card): EChartsOption {
         markLine: {
           silent: true,
           symbol: "none",
-          lineStyle: { type: "dashed", color: "#94A3B8", width: 1 },
+          lineStyle: { type: "dashed", color: isDark.value ? "#94A3B8" : "#64748B", width: 1 },
           label: { show: false },
           data: [{ yAxis: c.target }],
         },
@@ -216,80 +217,100 @@ const gapToTarget = computed(() => {
 </script>
 
 <template>
-  <div class="flex min-h-0 flex-1 flex-col gap-2 p-3" :class="emsDarkClass">
+  <div class="flex min-h-0 flex-1 flex-col gap-2 p-3">
     <!-- 顶部条：账期 + 收口状态 -->
-    <div class="flex shrink-0 items-center gap-4 rounded-md border border-white/10 bg-[#111A2C] px-4 py-2">
+    <div class="flex shrink-0 items-center gap-4 rounded-md border border-border bg-card px-4 py-2">
       <span :class="emsHeaderTextClass">能耗指标看板</span>
-      <span class="text-xs text-slate-500"> {{ data?.month ?? "—" }} · 与大屏 / 首页同一聚合口，三处永远同数 </span>
+      <span class="text-xs text-muted-foreground">
+        {{ data?.month ?? "—" }} · 与大屏 / 首页同一聚合口，三处永远同数
+      </span>
       <span
         class="ml-auto rounded px-2 py-0.5 text-xs"
-        :class="gapToTarget?.good ? 'bg-emerald-500/15 text-emerald-400' : 'bg-amber-500/15 text-amber-400'"
+        :class="
+          gapToTarget?.good
+            ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
+            : 'bg-amber-500/15 text-amber-600 dark:text-amber-400'
+        "
       >
         {{ loading ? "加载中…" : (gapToTarget?.text ?? "—") }}
       </span>
-      <span class="text-xs text-slate-500">{{ gapToTarget?.hint }}</span>
+      <span class="text-xs text-muted-foreground">{{ gapToTarget?.hint }}</span>
     </div>
 
     <!-- KPI 卡片矩阵：每卡 = 当前 + 目标 + 方向 + 近 6 期走势 -->
     <div class="grid shrink-0 grid-cols-2 gap-2 lg:grid-cols-3">
-      <div v-for="c in cards" :key="c.key" class="rounded-md border border-white/10 bg-[#111A2C] p-3">
+      <div v-for="c in cards" :key="c.key" class="rounded-md border border-border bg-card p-3">
         <div class="flex items-baseline gap-2">
-          <span class="text-xs text-slate-500">{{ c.label }}</span>
+          <span class="text-xs text-muted-foreground">{{ c.label }}</span>
           <!-- 达标色标只在「未达标」时出现红：全绿的看板看不出要盯哪张 -->
           <span
             class="ml-auto rounded px-1.5 py-0.5 text-xs"
-            :class="isGood(c) ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/15 text-red-400'"
+            :class="
+              isGood(c)
+                ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
+                : 'bg-red-500/15 text-red-600 dark:text-red-400'
+            "
           >
             {{ isGood(c) ? "达标" : "未达标" }}
           </span>
         </div>
         <div class="mt-1 flex items-baseline gap-2">
-          <span class="text-base font-semibold tabular-nums" :class="isGood(c) ? 'text-emerald-400' : 'text-amber-400'">
+          <span
+            class="text-base font-semibold tabular-nums"
+            :class="isGood(c) ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'"
+          >
             {{ c.value.toFixed(c.digits) }}
           </span>
-          <span class="text-xs text-slate-500">{{ c.unit }}</span>
+          <span class="text-xs text-muted-foreground">{{ c.unit }}</span>
           <span class="ml-auto text-xs tabular-nums" :class="deltaOf(c).tone">近6期 {{ deltaOf(c).text }}</span>
         </div>
-        <div class="mt-1 flex items-center gap-2 text-xs text-slate-500">
+        <div class="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
           <span>目标 {{ c.target }}</span>
-          <span class="tabular-nums" :class="rateOf(c) >= 0 ? 'text-emerald-400' : 'text-amber-400'">
+          <span
+            class="tabular-nums"
+            :class="rateOf(c) >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'"
+          >
             {{ rateOf(c) >= 0 ? "+" : "" }}{{ rateOf(c) }}%
           </span>
-          <span class="text-slate-500">{{ c.better === "low" ? "越低越好" : "越高越好" }}</span>
+          <span class="text-muted-foreground">{{ c.better === "low" ? "越低越好" : "越高越好" }}</span>
         </div>
-        <EChart :option="sparkOption(c)" force-dark class="mt-1 h-14" />
+        <EChart :option="sparkOption(c)" class="mt-1 h-14" />
       </div>
     </div>
 
     <!-- 底部：关键数的第二视角（与看板卡不重复，这里看"总量"而不是"单耗"） -->
     <div class="grid shrink-0 grid-cols-4 gap-2">
-      <div class="rounded-md border border-white/10 bg-[#111A2C] px-3 py-2">
-        <div class="text-xs text-slate-500">本月产量（钢）</div>
-        <div class="text-base font-semibold tabular-nums text-sky-400">
-          {{ ((data?.steelT ?? 0) / 10000).toFixed(1) }}<span class="ml-1 text-xs text-slate-500">万 t</span>
+      <div class="rounded-md border border-border bg-card px-3 py-2">
+        <div class="text-xs text-muted-foreground">本月产量（钢）</div>
+        <div class="text-base font-semibold tabular-nums text-primary">
+          {{ ((data?.steelT ?? 0) / 10000).toFixed(1) }}<span class="ml-1 text-xs text-muted-foreground">万 t</span>
         </div>
       </div>
-      <div class="rounded-md border border-white/10 bg-[#111A2C] px-3 py-2">
-        <div class="text-xs text-slate-500">外购能源费</div>
-        <div class="text-base font-semibold tabular-nums text-sky-400">
+      <div class="rounded-md border border-border bg-card px-3 py-2">
+        <div class="text-xs text-muted-foreground">外购能源费</div>
+        <div class="text-base font-semibold tabular-nums text-primary">
           ¥{{ (data?.elecAmount ?? 0).toLocaleString("zh-CN") }}
         </div>
       </div>
-      <div class="rounded-md border border-white/10 bg-[#111A2C] px-3 py-2">
-        <div class="text-xs text-slate-500">需量利用率</div>
+      <div class="rounded-md border border-border bg-card px-3 py-2">
+        <div class="text-xs text-muted-foreground">需量利用率</div>
         <div
           class="text-base font-semibold tabular-nums"
-          :class="(data?.demandRatioPct ?? 0) >= 95 ? 'text-red-400' : 'text-emerald-400'"
+          :class="
+            (data?.demandRatioPct ?? 0) >= 95
+              ? 'text-red-600 dark:text-red-400'
+              : 'text-emerald-600 dark:text-emerald-400'
+          "
         >
           {{ data?.demandRatioPct ?? "—" }}%
-          <span class="text-xs font-normal text-slate-500">申报上限 42000kVA</span>
+          <span class="text-xs font-normal text-muted-foreground">申报上限 42000kVA</span>
         </div>
       </div>
-      <div class="rounded-md border border-white/10 bg-[#111A2C] px-3 py-2">
-        <div class="text-xs text-slate-500">折标煤购入</div>
-        <div class="text-base font-semibold tabular-nums text-sky-400">
+      <div class="rounded-md border border-border bg-card px-3 py-2">
+        <div class="text-xs text-muted-foreground">折标煤购入</div>
+        <div class="text-base font-semibold tabular-nums text-primary">
           {{ (data?.energyPurchasedTce ?? 0).toLocaleString("zh-CN") }}
-          <span class="text-xs font-normal text-slate-500">tce</span>
+          <span class="text-xs font-normal text-muted-foreground">tce</span>
         </div>
       </div>
     </div>

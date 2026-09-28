@@ -240,7 +240,9 @@ watch(
     </div>
 
     <!-- 下半屏：产品能源定额（工序 × 介质 单耗定额）-->
-    <div class="min-h-0 flex-1 overflow-hidden">
+    <!-- 必须是 flex 容器：ListPage 根节点是 `flex-1`，父级不 display:flex 它就拿不到高度，
+         表格塌成 2px 被 overflow-hidden 裁掉（行在 DOM 里、看不见，就是「表格丢了」） -->
+    <div class="flex min-h-0 flex-1 flex-col overflow-hidden">
       <ListPage ref="listRef" :spec="spec" />
     </div>
   </div>

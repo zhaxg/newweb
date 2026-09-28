@@ -18,13 +18,14 @@
  *
  *  待接入：设备台账增改（主数据同步，本页只读）、月度曲线导出。
  */
+import { isDark } from "@/composables/useAppTheme";
 import { computed, onMounted, ref, watch } from "vue";
 import { keyEquipApi } from "@/api/energy";
 import type { KeyEquip } from "@/api/energy/types";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import EChart from "../../EChart.vue";
-import { emsDarkClass, emsHeaderTextClass } from "../../emsTheme";
+import { emsHeaderTextClass } from "../../emsTheme";
 import { useNameMaps } from "../../nameMaps";
 import type { EChartsOption } from "echarts";
 
@@ -60,12 +61,12 @@ const CATEGORIES = ["空压机", "变压器", "水泵", "煤气加压机", "锅�
  * 词色与 `cells.TAG_CLASS` 的 `1级/2级/3级/落后` 同值——同一个词两处不同色就是页间矛盾。
  */
 const GRADE_CLASS: Record<string, string> = {
-  "1级": "text-emerald-400",
-  "2级": "text-sky-400",
-  "3级": "text-amber-400",
-  落后: "text-red-400",
+  "1级": "text-emerald-600 dark:text-emerald-400",
+  "2级": "text-primary",
+  "3级": "text-amber-600 dark:text-amber-400",
+  落后: "text-red-600 dark:text-red-400",
 };
-const gradeOf = (g: string) => GRADE_CLASS[g] ?? "text-[#64748B]";
+const gradeOf = (g: string) => GRADE_CLASS[g] ?? "text-muted-foreground";
 
 const ranked = computed(() => rows.value.toSorted((a, b) => b.monthStdCoal - a.monthStdCoal).slice(0, 8));
 
@@ -94,14 +95,19 @@ const curveOption = computed<EChartsOption>(() => {
     animation: false,
     grid: { left: 56, right: 56, top: 40, bottom: 28 },
     tooltip: { trigger: "axis" },
-    legend: { top: 4, textStyle: { color: "#CBD5E1", fontSize: 12 } },
+    legend: { top: 4, textStyle: { color: isDark.value ? "#CBD5E1" : "#475569", fontSize: 12 } },
     xAxis: { type: "category", data: curveRows.map((r) => r.label ?? ""), ...axis() },
     yAxis: [
-      { type: "value", name: "tce", nameTextStyle: { color: "#64748B", fontSize: 11 }, ...axis() },
+      {
+        type: "value",
+        name: "tce",
+        nameTextStyle: { color: isDark.value ? "#64748B" : "#94A3B8", fontSize: 11 },
+        ...axis(),
+      },
       {
         type: "value",
         name: "单耗",
-        nameTextStyle: { color: "#64748B", fontSize: 11 },
+        nameTextStyle: { color: isDark.value ? "#64748B" : "#94A3B8", fontSize: 11 },
         ...axis(),
         splitLine: { show: false },
       },
@@ -129,9 +135,9 @@ const curveOption = computed<EChartsOption>(() => {
 
 function axis() {
   return {
-    axisLine: { lineStyle: { color: "rgba(148,163,184,0.35)" } },
-    axisLabel: { color: "#CBD5E1", fontSize: 11 },
-    splitLine: { lineStyle: { color: "rgba(148,163,184,0.16)" } },
+    axisLine: { lineStyle: { color: isDark.value ? "rgba(148,163,184,0.35)" : "rgba(100,116,139,0.45)" } },
+    axisLabel: { color: isDark.value ? "#CBD5E1" : "#475569", fontSize: 11 },
+    splitLine: { lineStyle: { color: isDark.value ? "rgba(148,163,184,0.16)" : "rgba(100,116,139,0.16)" } },
   };
 }
 
@@ -146,14 +152,14 @@ watch(
 </script>
 
 <template>
-  <div class="flex min-h-0 flex-1 flex-col gap-2 p-3" :class="emsDarkClass">
+  <div class="flex min-h-0 flex-1 flex-col gap-2 p-3">
     <!-- 顶栏：类别筛选 + 数量 -->
-    <div class="flex shrink-0 flex-wrap items-center gap-3 rounded-md border border-white/10 bg-[#111A2C] px-4 py-2">
+    <div class="flex shrink-0 flex-wrap items-center gap-3 rounded-md border border-border bg-card px-4 py-2">
       <span :class="emsHeaderTextClass">重点用能设备</span>
       <button
         type="button"
         class="cursor-pointer rounded px-2 py-1 text-xs"
-        :class="category === '' ? 'bg-[#38BDF8]/20 text-sky-400' : 'text-slate-500 hover:bg-white/10'"
+        :class="category === '' ? 'bg-primary/20 text-primary' : 'text-muted-foreground hover:bg-accent'"
         @click="
           category = '';
           load();
@@ -166,7 +172,7 @@ watch(
         :key="c"
         type="button"
         class="cursor-pointer rounded px-2 py-1 text-xs"
-        :class="category === c ? 'bg-[#38BDF8]/20 text-sky-400' : 'text-slate-500 hover:bg-white/10'"
+        :class="category === c ? 'bg-primary/20 text-primary' : 'text-muted-foreground hover:bg-accent'"
         @click="
           category = c;
           load();
@@ -174,16 +180,16 @@ watch(
       >
         {{ c }}
       </button>
-      <span class="ml-auto text-xs text-slate-500">{{ rows.length }} 台 · 点行看详情与近 6 期能效曲线</span>
+      <span class="ml-auto text-xs text-muted-foreground">{{ rows.length }} 台 · 点行看详情与近 6 期能效曲线</span>
     </div>
 
     <div class="grid min-h-0 flex-1 grid-cols-5 gap-2">
       <!-- 左：台账表（占大头） -->
-      <section class="col-span-3 flex min-h-0 flex-col rounded-md border border-white/10 bg-[#111A2C]">
-        <div class="shrink-0 px-3 py-2 text-sm text-sky-400">设备台账</div>
+      <section class="col-span-3 flex min-h-0 flex-col rounded-md border border-border bg-card">
+        <div class="shrink-0 px-3 py-2 text-sm text-primary">设备台账</div>
         <div class="min-h-0 flex-1 overflow-auto">
           <table class="w-full" style="font-size: 13px">
-            <thead class="sticky top-0 bg-[#111A2C] text-slate-500">
+            <thead class="sticky top-0 bg-card text-muted-foreground">
               <tr>
                 <th class="px-3 py-2 text-left font-normal">设备</th>
                 <th class="px-3 py-2 text-left font-normal">类别</th>
@@ -195,24 +201,24 @@ watch(
               </tr>
             </thead>
             <tbody>
-              <tr v-for="r in rows" :key="r.id" class="border-t border-white/5">
-                <td class="px-3 py-2 text-slate-300">
+              <tr v-for="r in rows" :key="r.id" class="border-t border-border/60">
+                <td class="px-3 py-2 text-foreground">
                   {{ r.name }}
-                  <span class="ml-1 text-xs text-slate-500">{{ r.model }}</span>
+                  <span class="ml-1 text-xs text-muted-foreground">{{ r.model }}</span>
                 </td>
-                <td class="px-3 py-2 text-slate-500">{{ r.category }}</td>
-                <td class="px-3 py-2 text-slate-500">{{ unitMap[r.unitId] ?? r.unitId }}</td>
-                <td class="px-3 py-2 text-right tabular-nums text-slate-300">
+                <td class="px-3 py-2 text-muted-foreground">{{ r.category }}</td>
+                <td class="px-3 py-2 text-muted-foreground">{{ unitMap[r.unitId] ?? r.unitId }}</td>
+                <td class="px-3 py-2 text-right tabular-nums text-foreground">
                   {{ r.monthStdCoal.toLocaleString("zh-CN") }}
                 </td>
-                <td class="px-3 py-2 text-right tabular-nums text-slate-500">
+                <td class="px-3 py-2 text-right tabular-nums text-muted-foreground">
                   {{ r.intensity }}<span class="ml-0.5 text-xs">{{ r.intensityUnit }}</span>
                 </td>
                 <td class="px-3 py-2 text-xs font-medium" :class="gradeOf(r.effGrade)">{{ r.effGrade }}</td>
                 <td class="px-3 py-2">
                   <button
                     type="button"
-                    class="cursor-pointer text-xs text-sky-400 hover:underline"
+                    class="cursor-pointer text-xs text-primary hover:underline"
                     @click="openCurve(r)"
                   >
                     能效曲线
@@ -220,7 +226,7 @@ watch(
                 </td>
               </tr>
               <tr v-if="!rows.length">
-                <td colspan="7" class="px-3 py-8 text-center text-sm text-slate-500">
+                <td colspan="7" class="px-3 py-8 text-center text-sm text-muted-foreground">
                   {{ loading ? "加载中…" : "该类别下没有设备" }}
                 </td>
               </tr>
@@ -230,11 +236,11 @@ watch(
       </section>
 
       <!-- 右：高耗排名（结论区） -->
-      <section class="col-span-2 flex min-h-0 flex-col rounded-md border border-white/10 bg-[#111A2C]">
-        <div class="shrink-0 px-3 py-2 text-sm text-sky-400">高耗设备排名（前 8）</div>
+      <section class="col-span-2 flex min-h-0 flex-col rounded-md border border-border bg-card">
+        <div class="shrink-0 px-3 py-2 text-sm text-primary">高耗设备排名（前 8）</div>
         <div class="min-h-0 flex-1 overflow-auto">
           <table class="w-full" style="font-size: 13px">
-            <thead class="sticky top-0 bg-[#111A2C] text-slate-500">
+            <thead class="sticky top-0 bg-card text-muted-foreground">
               <tr>
                 <th class="px-3 py-2 text-left font-normal">#</th>
                 <th class="px-3 py-2 text-left font-normal">设备</th>
@@ -243,23 +249,26 @@ watch(
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(r, i) in ranked" :key="r.id" class="border-t border-white/5">
-                <td class="px-3 py-2" :class="i === 0 ? 'text-red-400 font-semibold' : 'text-slate-500'">
+              <tr v-for="(r, i) in ranked" :key="r.id" class="border-t border-border/60">
+                <td
+                  class="px-3 py-2"
+                  :class="i === 0 ? 'text-red-600 dark:text-red-400 font-semibold' : 'text-muted-foreground'"
+                >
                   {{ i + 1 }}
                 </td>
-                <td class="px-3 py-2 text-slate-300">{{ r.name }}</td>
-                <td class="px-3 py-2 text-right tabular-nums text-slate-300">
+                <td class="px-3 py-2 text-foreground">{{ r.name }}</td>
+                <td class="px-3 py-2 text-right tabular-nums text-foreground">
                   {{ r.monthStdCoal.toLocaleString("zh-CN") }}
                 </td>
                 <td class="px-3 py-2 text-xs font-medium" :class="gradeOf(r.effGrade)">{{ r.effGrade }}</td>
               </tr>
               <tr v-if="!ranked.length">
-                <td colspan="4" class="px-3 py-8 text-center text-sm text-slate-500">加载中…</td>
+                <td colspan="4" class="px-3 py-8 text-center text-sm text-muted-foreground">加载中…</td>
               </tr>
             </tbody>
           </table>
         </div>
-        <div class="shrink-0 border-t border-white/10 px-3 py-2 text-xs text-slate-500">
+        <div class="shrink-0 border-t border-border px-3 py-2 text-xs text-muted-foreground">
           等级口径：`EFF_GRADE_FACTOR` 对**工序定额**的修正（1级 0.94 / 2级 1.0 / 3级 1.08 / 落后 1.2）—— 与 EP0001
           定额表同源，两页可互查
         </div>
@@ -270,7 +279,7 @@ watch(
          曲线自己开（`openCurve`），台账详情走表格的「详情」行动作。
          硬塞进没有插槽的组件 = 图画不出来，而页面上又"看起来配了" -->
     <Dialog v-model:visible="curveOpen" modal :header="curveTitle" :style="{ width: 'min(46rem, calc(100vw - 2rem))' }">
-      <EChart :option="curveOption" force-dark class="h-64" />
+      <EChart :option="curveOption" class="h-64" />
       <div class="mt-2 text-xs text-muted-foreground">
         柱 = 月折标煤（tce，左轴）· 线 = 单耗（右轴）。**两者量纲不同必须分轴**， 否则单耗会被柱子压成贴底的直线
       </div>

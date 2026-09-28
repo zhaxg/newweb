@@ -21,6 +21,7 @@ import { printReportRoutes } from "./mes4ddh/printReport";
 import { carbonRoutes } from "./carbon";
 import { equipmentRoutes } from "./equipment";
 import { energyRoutes } from "./energy";
+import { tqmesRoutes } from "./mes4tq";
 import { mesPlaceholderRoutes } from "./mes4ddh/placeholders";
 
 /**
@@ -52,6 +53,7 @@ const routes: RouteMap = {
   ...carbonRoutes,
   ...equipmentRoutes,
   ...energyRoutes,
+  ...tqmesRoutes,
   // 迁移占位放最后：同名端点若域文件里已有手写 mock，手写优先，占位只兜「还没注册」的那些
   ...mesPlaceholderRoutes,
 };

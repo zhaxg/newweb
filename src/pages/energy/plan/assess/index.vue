@@ -16,13 +16,14 @@
  *
  *  待接入：按月切换（当前出默认账期）、考核报表导出。
  */
+import { isDark } from "@/composables/useAppTheme";
 import { computed, onMounted, ref, watch } from "vue";
 import { assessApi } from "@/api/energy";
 import type { AssessRow } from "@/api/energy/types";
 import { useToast } from "@/composables/useToast";
 import { applyResult } from "../../rowActions";
 import EChart from "../../EChart.vue";
-import { emsDarkClass, emsHeaderTextClass } from "../../emsTheme";
+import { emsHeaderTextClass } from "../../emsTheme";
 import { useNameMaps } from "../../nameMaps";
 import type { EChartsOption } from "echarts";
 
@@ -74,13 +75,23 @@ const chartOption = computed<EChartsOption>(() => {
     animation: false,
     grid: { left: 56, right: 18, top: 34, bottom: 44 },
     tooltip: { trigger: "axis", valueFormatter: (v) => `${v} kgce/t` },
-    legend: { top: 4, textStyle: { color: "#CBD5E1", fontSize: 12 } },
+    legend: { top: 4, textStyle: { color: isDark.value ? "#CBD5E1" : "#475569", fontSize: 12 } },
     xAxis: {
       type: "category",
       data: list.map((r) => nameOf(r.unitId)),
-      axisLabel: { color: "#CBD5E1", fontSize: 11, interval: 0, rotate: list.length > 6 ? 24 : 0 },
+      axisLabel: {
+        color: isDark.value ? "#CBD5E1" : "#475569",
+        fontSize: 11,
+        interval: 0,
+        rotate: list.length > 6 ? 24 : 0,
+      },
     },
-    yAxis: { type: "value", name: "kgce/t", nameTextStyle: { color: "#64748B", fontSize: 12 }, ...axis() },
+    yAxis: {
+      type: "value",
+      name: "kgce/t",
+      nameTextStyle: { color: isDark.value ? "#64748B" : "#94A3B8", fontSize: 12 },
+      ...axis(),
+    },
     series: [
       {
         name: "实绩",
@@ -90,7 +101,13 @@ const chartOption = computed<EChartsOption>(() => {
           value: r.actual,
           itemStyle: { color: r.actual <= r.benchmark ? "#22C55E" : r.actual <= r.quota ? "#F59E0B" : "#EF4444" },
         })),
-        label: { show: true, position: "top" as const, color: "#94A3B8", fontSize: 10, formatter: "{c}" },
+        label: {
+          show: true,
+          position: "top" as const,
+          color: isDark.value ? "#94A3B8" : "#64748B",
+          fontSize: 10,
+          formatter: "{c}",
+        },
       },
       {
         name: "定额",
@@ -121,14 +138,15 @@ const chartOption = computed<EChartsOption>(() => {
 
 function axis() {
   return {
-    axisLine: { lineStyle: { color: "rgba(148,163,184,0.35)" } },
-    axisLabel: { color: "#CBD5E1", fontSize: 11 },
-    splitLine: { lineStyle: { color: "rgba(148,163,184,0.16)" } },
+    axisLine: { lineStyle: { color: isDark.value ? "rgba(148,163,184,0.35)" : "rgba(100,116,139,0.45)" } },
+    axisLabel: { color: isDark.value ? "#CBD5E1" : "#475569", fontSize: 11 },
+    splitLine: { lineStyle: { color: isDark.value ? "rgba(148,163,184,0.16)" : "rgba(100,116,139,0.16)" } },
   };
 }
 
 /** 排名色：只给第 1 名绿、2~3 名蓝——颜色标名次不标好坏（见文件头） */
-const rankTone = (r: number) => (r === 1 ? "text-emerald-400" : r <= 3 ? "text-sky-400" : "text-[#64748B]");
+const rankTone = (r: number) =>
+  r === 1 ? "text-emerald-600 dark:text-emerald-400" : r <= 3 ? "text-primary" : "text-muted-foreground";
 
 const fmt = (v: number, d = 1) => Number(v).toFixed(d);
 
@@ -143,14 +161,16 @@ watch(
 </script>
 
 <template>
-  <div class="flex min-h-0 flex-1 flex-col gap-2 p-3" :class="emsDarkClass">
+  <div class="flex min-h-0 flex-1 flex-col gap-2 p-3">
     <!-- 顶栏 -->
-    <div class="flex shrink-0 items-center gap-4 rounded-md border border-white/10 bg-[#111A2C] px-4 py-2">
+    <div class="flex shrink-0 items-center gap-4 rounded-md border border-border bg-card px-4 py-2">
       <span :class="emsHeaderTextClass">能耗考核与对标</span>
-      <span class="text-xs text-slate-500"> 对标 GB 21256 口径示意 · 实绩 vs 定额 vs 标杆（准入线以下为不合格） </span>
+      <span class="text-xs text-muted-foreground">
+        对标 GB 21256 口径示意 · 实绩 vs 定额 vs 标杆（准入线以下为不合格）
+      </span>
       <button
         type="button"
-        class="ml-auto cursor-pointer rounded border border-[#38BDF8]/60 px-3 py-1.5 text-body text-sky-400 hover:bg-[#38BDF8]/10 disabled:cursor-not-allowed disabled:opacity-40"
+        class="ml-auto cursor-pointer rounded border border-primary/60 px-3 py-1.5 text-body text-primary hover:bg-primary/10 disabled:cursor-not-allowed disabled:opacity-40"
         :disabled="busy"
         @click="generate"
       >
@@ -160,20 +180,20 @@ watch(
 
     <div class="grid min-h-0 flex-1 grid-cols-5 gap-2">
       <!-- 左：对标柱图 -->
-      <section class="col-span-3 flex min-h-0 flex-col rounded-md border border-white/10 bg-[#111A2C] p-2">
-        <div class="shrink-0 pb-1 text-sm text-sky-400">工序能耗对标（kgce/t）</div>
-        <EChart :option="chartOption" force-dark class="min-h-0 flex-1" />
-        <div class="shrink-0 pt-1 text-xs text-slate-500">
+      <section class="col-span-3 flex min-h-0 flex-col rounded-md border border-border bg-card p-2">
+        <div class="shrink-0 pb-1 text-sm text-primary">工序能耗对标（kgce/t）</div>
+        <EChart :option="chartOption" class="min-h-0 flex-1" />
+        <div class="shrink-0 pt-1 text-xs text-muted-foreground">
           柱色：绿 = 不高于标杆 · 琥珀 = 高于标杆但达准入 · 红 = 低于准入线（不合格）
         </div>
       </section>
 
       <!-- 右：排名 + 评分表 -->
-      <section class="col-span-2 flex min-h-0 flex-col rounded-md border border-white/10 bg-[#111A2C]">
-        <div class="shrink-0 px-3 py-2 text-sm text-sky-400">厂际排名与评分</div>
+      <section class="col-span-2 flex min-h-0 flex-col rounded-md border border-border bg-card">
+        <div class="shrink-0 px-3 py-2 text-sm text-primary">厂际排名与评分</div>
         <div class="min-h-0 flex-1 overflow-auto">
           <table class="w-full" style="font-size: 13px">
-            <thead class="sticky top-0 bg-[#111A2C] text-slate-500">
+            <thead class="sticky top-0 bg-card text-muted-foreground">
               <tr>
                 <th class="px-3 py-2 text-left font-normal">名次</th>
                 <th class="px-3 py-2 text-left font-normal">单位</th>
@@ -185,29 +205,33 @@ watch(
               </tr>
             </thead>
             <tbody>
-              <tr v-for="r in ranked" :key="r.unitId + r.mediaCode" class="border-t border-white/5">
+              <tr v-for="r in ranked" :key="r.unitId + r.mediaCode" class="border-t border-border/60">
                 <td class="px-3 py-2 font-semibold" :class="rankTone(r.rank)">{{ r.rank }}</td>
-                <td class="px-3 py-2 text-slate-300">
+                <td class="px-3 py-2 text-foreground">
                   {{ nameOf(r.unitId) }}
-                  <span class="ml-1 text-xs text-slate-500">{{ r.product }}</span>
+                  <span class="ml-1 text-xs text-muted-foreground">{{ r.product }}</span>
                 </td>
                 <td
                   class="px-3 py-2 text-right tabular-nums"
-                  :class="r.actual <= r.benchmark ? 'text-emerald-400' : 'text-amber-400'"
+                  :class="
+                    r.actual <= r.benchmark
+                      ? 'text-emerald-600 dark:text-emerald-400'
+                      : 'text-amber-600 dark:text-amber-400'
+                  "
                 >
                   {{ fmt(r.actual) }}
                 </td>
-                <td class="px-3 py-2 text-right tabular-nums text-slate-500">{{ fmt(r.quota) }}</td>
-                <td class="px-3 py-2 text-right tabular-nums text-red-400">
+                <td class="px-3 py-2 text-right tabular-nums text-muted-foreground">{{ fmt(r.quota) }}</td>
+                <td class="px-3 py-2 text-right tabular-nums text-red-600 dark:text-red-400">
                   {{ r.deduction > 0 ? `−${r.deduction}` : "0" }}
                 </td>
-                <td class="px-3 py-2 text-right tabular-nums text-emerald-400">
+                <td class="px-3 py-2 text-right tabular-nums text-emerald-600 dark:text-emerald-400">
                   {{ r.bonus > 0 ? `+${r.bonus}` : "0" }}
                 </td>
-                <td class="px-3 py-2 text-right font-semibold tabular-nums text-slate-300">{{ fmt(r.score, 0) }}</td>
+                <td class="px-3 py-2 text-right font-semibold tabular-nums text-foreground">{{ fmt(r.score, 0) }}</td>
               </tr>
               <tr v-if="!rows.length">
-                <td colspan="7" class="px-3 py-8 text-center text-sm text-slate-500">
+                <td colspan="7" class="px-3 py-8 text-center text-sm text-muted-foreground">
                   {{ loading ? "加载中…" : "暂无考核数据，点「▶ 生成考核月报」。" }}
                 </td>
               </tr>
@@ -218,7 +242,7 @@ watch(
     </div>
 
     <!-- 评分口径 -->
-    <div class="shrink-0 rounded-md border border-white/10 bg-[#111A2C] px-4 py-2 text-xs text-slate-500">
+    <div class="shrink-0 rounded-md border border-border bg-card px-4 py-2 text-xs text-muted-foreground">
       得分 = 基准分 − 超标扣分 + 节能加分（由 `store.runAssess` 算，页面不自算）· `direction=STD`
       表示「折标煤综合口径」——考核的是吨钢综合能耗，跨所有介质，没有单一介质可挂
     </div>

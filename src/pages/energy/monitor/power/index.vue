@@ -11,6 +11,7 @@
  *        三台主变的负载率常年不等：不是画错，是 B3 的 110kV 单母分段接线决定的，
  *        演示时这是一句很好的话——"我们的图能看出哪台该增容"。
  *  待接入：开关与刀闸位置（真实 EMS 由 SCADA 数字量点亮）、馈线规模到 20 路以上的折叠展示。 */
+import { isDark } from "@/composables/useAppTheme";
 import { computed, onMounted, ref } from "vue";
 import EChart from "../../EChart.vue";
 import MonitorShell from "../MonitorShell.vue";
@@ -63,9 +64,14 @@ const liveOption = computed<EChartsOption>(() => {
       type: "category",
       boundaryGap: false,
       data: h.map((_, i) => `${i - h.length + 1}`),
-      ...emsChartAxis(true),
+      ...emsChartAxis(isDark.value),
     },
-    yAxis: { type: "value", name: "MW", nameTextStyle: { color: "#64748B", fontSize: 12 }, ...emsChartAxis(true) },
+    yAxis: {
+      type: "value",
+      name: "MW",
+      nameTextStyle: { color: isDark.value ? "#64748B" : "#94A3B8", fontSize: 12 },
+      ...emsChartAxis(isDark.value),
+    },
     series: [
       {
         name: "外购负荷",
@@ -86,15 +92,20 @@ const curveOption = computed<EChartsOption>(() => {
     backgroundColor: "transparent",
     animation: false,
     grid: { left: 52, right: 52, top: 30, bottom: 24 },
-    legend: { top: 2, textStyle: { color: "#CBD5E1", fontSize: 12 } },
+    legend: { top: 2, textStyle: { color: isDark.value ? "#CBD5E1" : "#475569", fontSize: 12 } },
     tooltip: { trigger: "axis" },
-    xAxis: { type: "category", data: c.map((p) => `${p.hour}时`), ...emsChartAxis(true) },
+    xAxis: { type: "category", data: c.map((p) => `${p.hour}时`), ...emsChartAxis(isDark.value) },
     yAxis: [
-      { type: "value", name: "MW", nameTextStyle: { color: "#64748B", fontSize: 12 }, ...emsChartAxis(true) },
+      {
+        type: "value",
+        name: "MW",
+        nameTextStyle: { color: isDark.value ? "#64748B" : "#94A3B8", fontSize: 12 },
+        ...emsChartAxis(isDark.value),
+      },
       /* `splitLine` 必须写在展开**之后**：`emsChartAxis()` 自己也带 `splitLine`，
          写在前面会被它整个覆盖掉——那条轴的网格线就一直显示着（想让双轴图的右轴干净、
          却看不出为什么没生效）。顺序在这里是有语义的。 */
-      { type: "value", name: "元/kWh", ...emsChartAxis(true), splitLine: { show: false } },
+      { type: "value", name: "元/kWh", ...emsChartAxis(isDark.value), splitLine: { show: false } },
     ],
     series: [
       {
@@ -176,11 +187,11 @@ const maxRatio = computed(() => Math.max(1, ...(view.value?.transformers ?? []).
       <div class="flex min-h-0 flex-1 gap-2">
         <section :class="[emsPanelClass, 'flex min-w-0 flex-1 flex-col']">
           <div :class="[emsHeaderTextClass, 'shrink-0 px-2.5 py-1.5']">近 1 小时外购负荷</div>
-          <EChart :option="liveOption" force-dark class="min-h-0 flex-1" />
+          <EChart :option="liveOption" class="min-h-0 flex-1" />
         </section>
         <section :class="[emsPanelClass, 'flex min-w-0 flex-1 flex-col']">
           <div :class="[emsHeaderTextClass, 'shrink-0 px-2.5 py-1.5']">逐时负荷与分时电价</div>
-          <EChart :option="curveOption" force-dark class="min-h-0 flex-1" />
+          <EChart :option="curveOption" class="min-h-0 flex-1" />
         </section>
       </div>
 
@@ -198,7 +209,7 @@ const maxRatio = computed(() => Math.max(1, ...(view.value?.transformers ?? []).
             </tr>
           </thead>
           <tbody>
-            <tr v-for="u in view?.genUnits ?? []" :key="u.id" class="border-t border-white/5">
+            <tr v-for="u in view?.genUnits ?? []" :key="u.id" class="border-t border-border/60">
               <td class="px-2.5 py-1 text-foreground">{{ u.name }}</td>
               <td class="px-2.5 py-1 text-right font-medium tabular-nums" :class="TONE_TEXT[u.tone]">{{ u.mw }}</td>
               <td class="px-2.5 py-1 text-right tabular-nums text-foreground">{{ u.loadRatioPct }}%</td>
@@ -208,7 +219,7 @@ const maxRatio = computed(() => Math.max(1, ...(view.value?.transformers ?? []).
               <td class="px-2.5 py-1 text-muted-foreground">{{ u.running ? "运行" : "停机" }}</td>
               <td class="px-2.5 py-1 text-right text-muted-foreground">—</td>
             </tr>
-            <tr v-for="r in view?.recoveries ?? []" :key="r.id" class="border-t border-white/5">
+            <tr v-for="r in view?.recoveries ?? []" :key="r.id" class="border-t border-border/60">
               <td class="px-2.5 py-1 text-foreground">{{ r.name }}</td>
               <td class="px-2.5 py-1 text-right font-medium tabular-nums text-foreground">{{ r.mw }}</td>
               <td class="px-2.5 py-1 text-right text-muted-foreground">余能</td>
@@ -239,7 +250,7 @@ const maxRatio = computed(() => Math.max(1, ...(view.value?.transformers ?? []).
         <div class="mb-1.5 text-xs text-muted-foreground">主变负载率</div>
         <div v-for="t in view?.transformers ?? []" :key="t.id" class="flex items-center gap-2 py-0.5">
           <span class="w-20 shrink-0 truncate text-xs text-foreground">{{ t.name }}</span>
-          <div class="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-white/10">
+          <div class="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-muted-foreground/20">
             <div
               :class="TONE_BG[t.tone]"
               class="h-full rounded-full"

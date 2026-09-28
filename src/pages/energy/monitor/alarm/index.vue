@@ -19,7 +19,7 @@ import type { AlarmBoardDto } from "@/api/energy/types";
 import { ALARM_LEVEL_NAME, dashFmt, tagRenderer } from "../../cells";
 import { useNameMaps } from "../../nameMaps";
 import type { ListPageSpec } from "../../listTypes";
-import { emsDarkClass, emsPanelClass } from "../../emsTheme";
+import { emsPanelClass } from "../../emsTheme";
 
 const { mediumMap, unitMap, ready } = useNameMaps();
 const listRef = ref<InstanceType<typeof ListPage> | null>(null);
@@ -62,11 +62,11 @@ const MEDIA_VALUE_MAP = computed(() => Object.fromEntries(Object.entries(mediumM
 
 /** 级别 → 卡的强调色 class：读 `tagClass` 的同一批档位，卡与行不会分家 */
 const LEVEL_CARD: Record<string, string> = {
-  事故: "border-red-500/40 text-red-400",
-  重大: "border-red-500/30 text-red-300",
-  一般: "border-amber-500/35 text-amber-300",
-  提示: "border-sky-500/35 text-sky-300",
-  告知: "border-white/15 text-muted-foreground",
+  事故: "border-red-500/40 text-red-600 dark:text-red-400",
+  重大: "border-red-500/30 text-red-600 dark:text-red-300",
+  一般: "border-amber-500/35 text-amber-600 dark:text-amber-300",
+  提示: "border-sky-500/35 text-primary dark:text-sky-300",
+  告知: "border-border text-muted-foreground",
 };
 
 const spec = computed<ListPageSpec>(() => ({
@@ -206,7 +206,7 @@ function pickLevel(level: number) {
 </script>
 
 <template>
-  <div :class="[emsDarkClass, 'flex min-h-0 flex-1 flex-col gap-2 p-2']">
+  <div :class="['flex min-h-0 flex-1 flex-col gap-2 p-2']">
     <!-- 顶部：五级看板卡 + 状态计数。卡是筛选入口，不是装饰 -->
     <section :class="[emsPanelClass, 'shrink-0 px-2.5 py-2']">
       <div class="flex flex-wrap items-center gap-2">
@@ -215,7 +215,7 @@ function pickLevel(level: number) {
           :key="l.level"
           type="button"
           :class="[
-            'rounded border bg-white/[0.03] px-2.5 py-1.5 text-left transition-colors hover:bg-white/[0.07]',
+            'rounded border bg-muted/50 px-2.5 py-1.5 text-left transition-colors hover:bg-accent',
             LEVEL_CARD[ALARM_LEVEL_NAME[String(l.level)]] ?? '',
           ]"
           @click="pickLevel(l.level)"

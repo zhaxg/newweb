@@ -23,7 +23,7 @@ import { settlementApi } from "@/api/energy";
 import type { SettlementBill } from "@/api/energy/types";
 import { useToast } from "@/composables/useToast";
 import { applyResult } from "../../rowActions";
-import { emsDarkClass, emsHeaderTextClass, emsPanelClass } from "../../emsTheme";
+import { emsHeaderTextClass, emsPanelClass } from "../../emsTheme";
 import { useNameMaps } from "../../nameMaps";
 
 const { toast } = useToast();
@@ -80,9 +80,9 @@ const FLOW: Record<SettlementBill["status"], SettlementBill["status"]> = {
 const nextOf = (s: SettlementBill["status"]) => FLOW[s];
 
 const STATUS_TONE: Record<string, string> = {
-  已生成: "bg-sky-500/15 text-sky-400",
-  已核对: "bg-amber-500/15 text-amber-400",
-  已定稿: "bg-emerald-500/15 text-emerald-400",
+  已生成: "bg-sky-500/15 text-primary",
+  已核对: "bg-amber-500/15 text-amber-600 dark:text-amber-400",
+  已定稿: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
 };
 
 const fmtY = (v: number) => v.toLocaleString("zh-CN", { maximumFractionDigits: 0 });
@@ -112,15 +112,15 @@ watch(
 </script>
 
 <template>
-  <div class="flex min-h-0 flex-1 flex-col gap-2 p-3" :class="emsDarkClass">
+  <div class="flex min-h-0 flex-1 flex-col gap-2 p-3">
     <!-- 顶栏：生成动作 + 期别 + 汇总 -->
-    <div class="flex shrink-0 flex-wrap items-center gap-4 rounded-md border border-white/10 bg-[#111A2C] px-4 py-2">
+    <div class="flex shrink-0 flex-wrap items-center gap-4 rounded-md border border-border bg-card px-4 py-2">
       <span :class="emsHeaderTextClass">能源成本与结算</span>
-      <span class="text-xs text-slate-500">状态机：已生成 → 已核对 → 已定稿（定稿后锁死该月实绩）</span>
+      <span class="text-xs text-muted-foreground">状态机：已生成 → 已核对 → 已定稿（定稿后锁死该月实绩）</span>
 
       <select
         v-model="month"
-        class="h-8 rounded border border-white/15 bg-[#0B1220] px-2 text-body text-foreground"
+        class="h-8 rounded border border-border bg-background px-2 text-body text-foreground"
         @change="load"
       >
         <option value="">默认账期</option>
@@ -129,14 +129,14 @@ watch(
 
       <button
         type="button"
-        class="cursor-pointer rounded border border-[#38BDF8]/60 px-3 py-1.5 text-body text-sky-400 hover:bg-[#38BDF8]/10 disabled:cursor-not-allowed disabled:opacity-40"
+        class="cursor-pointer rounded border border-primary/60 px-3 py-1.5 text-body text-primary hover:bg-primary/10 disabled:cursor-not-allowed disabled:opacity-40"
         :disabled="busy"
         @click="generate"
       >
         ▶ 生成本月结算
       </button>
 
-      <span class="ml-auto text-xs text-slate-500">
+      <span class="ml-auto text-xs text-muted-foreground">
         共 {{ summary.count }} 张 · 合计 ¥{{ fmtY(summary.total) }} · 未定稿 {{ summary.openCount }} 张（¥{{
           fmtY(summary.openTotal)
         }}）
@@ -144,10 +144,10 @@ watch(
     </div>
 
     <!-- 结算单列表 -->
-    <div class="min-h-0 flex-1 overflow-auto rounded-md border border-white/10 bg-[#111A2C]">
+    <div class="min-h-0 flex-1 overflow-auto rounded-md border border-border bg-card">
       <table class="w-full" style="font-size: 13px">
-        <thead class="sticky top-0 bg-[#111A2C]">
-          <tr class="text-slate-500">
+        <thead class="sticky top-0 bg-card">
+          <tr class="text-muted-foreground">
             <th class="px-3 py-2 text-left font-normal">结算单</th>
             <th class="px-3 py-2 text-left font-normal">账期</th>
             <th class="px-3 py-2 text-left font-normal">成本中心</th>
@@ -159,25 +159,25 @@ watch(
           </tr>
         </thead>
         <tbody>
-          <tr v-for="b in rows" :key="b.id" class="border-t border-white/5">
-            <td class="px-3 py-2 text-slate-300">{{ b.id }}</td>
-            <td class="px-3 py-2 text-slate-300 tabular-nums">{{ b.month }}</td>
-            <td class="px-3 py-2 text-slate-300">{{ unitMap[b.unitId] ?? b.unitId }}</td>
-            <td class="px-3 py-2 text-slate-500">
+          <tr v-for="b in rows" :key="b.id" class="border-t border-border/60">
+            <td class="px-3 py-2 text-foreground">{{ b.id }}</td>
+            <td class="px-3 py-2 text-foreground tabular-nums">{{ b.month }}</td>
+            <td class="px-3 py-2 text-foreground">{{ unitMap[b.unitId] ?? b.unitId }}</td>
+            <td class="px-3 py-2 text-muted-foreground">
               {{ b.items.map((i) => `${mediumMap[i.mediaCode] ?? i.mediaCode} ${fmtY(i.amount)}`).join(" · ") }}
             </td>
-            <td class="px-3 py-2 text-right tabular-nums text-slate-500">{{ fmtY(b.extraFee) }}</td>
-            <td class="px-3 py-2 text-right tabular-nums font-semibold text-slate-300">{{ fmtY(b.total) }}</td>
+            <td class="px-3 py-2 text-right tabular-nums text-muted-foreground">{{ fmtY(b.extraFee) }}</td>
+            <td class="px-3 py-2 text-right tabular-nums font-semibold text-foreground">{{ fmtY(b.total) }}</td>
             <td class="px-3 py-2">
               <span class="rounded px-1.5 py-0.5 text-xs" :class="STATUS_TONE[b.status]">{{ b.status }}</span>
             </td>
             <!-- 已定稿的行不给任何按钮：没有按钮就是在说「这条路走完了」 -->
             <td class="px-3 py-2">
-              <span v-if="!nextOf(b.status)" class="text-xs text-slate-500">已锁定</span>
+              <span v-if="!nextOf(b.status)" class="text-xs text-muted-foreground">已锁定</span>
               <button
                 v-else
                 type="button"
-                class="cursor-pointer rounded border border-white/15 px-2 py-0.5 text-xs text-foreground hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+                class="cursor-pointer rounded border border-border px-2 py-0.5 text-xs text-foreground hover:bg-accent disabled:cursor-not-allowed disabled:opacity-40"
                 :disabled="busy"
                 :title="nextOf(b.status) === '已定稿' ? '锁定后该月实绩禁止再校正' : ''"
                 @click="
@@ -193,7 +193,7 @@ watch(
             </td>
           </tr>
           <tr v-if="!rows.length">
-            <td colspan="8" class="px-3 py-8 text-center text-sm text-slate-500">
+            <td colspan="8" class="px-3 py-8 text-center text-sm text-muted-foreground">
               {{ busy ? "处理中…" : "暂无结算单。点上方「▶ 生成本月结算」。" }}
             </td>
           </tr>
@@ -202,7 +202,7 @@ watch(
     </div>
 
     <!-- 状态机说明 -->
-    <div class="shrink-0 rounded-md border border-white/10 bg-[#111A2C] px-4 py-2 text-xs text-slate-500">
+    <div class="shrink-0 rounded-md border border-border bg-card px-4 py-2 text-xs text-muted-foreground">
       已生成（系统按实绩 × 单价出单）→ 已核对（成本中心确认）→ 已定稿（**锁定，不可再改实绩**）· 当前未定稿
       {{ summary.openCount }} 张 · 已定稿 {{ summary.lockedCount }} 张
       <span class="ml-3">定稿门控在 store：`correctActual`/`recalcActual` 对已定稿月直接拒</span>

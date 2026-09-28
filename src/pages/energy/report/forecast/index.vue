@@ -18,11 +18,12 @@
  *
  *  待接入：15min 短期 / 4h 超短期的分段视图（当前是 24h 小时粒度的连续曲线）。
  */
+import { isDark } from "@/composables/useAppTheme";
 import { computed, onMounted, ref } from "vue";
 import Button from "primevue/button";
 import EChart from "../../EChart.vue";
 import { forecastApi } from "@/api/energy";
-import { TONE_TEXT, emsChartAxis, emsDarkClass, emsHeaderTextClass } from "../../emsTheme";
+import { TONE_TEXT, emsChartAxis, emsHeaderTextClass } from "../../emsTheme";
 import type { EChartsOption } from "echarts";
 
 const loading = ref(true);
@@ -85,9 +86,14 @@ const loadChart = computed<EChartsOption>(() => {
     animation: false,
     grid: { left: 62, right: 18, top: 34, bottom: 30 },
     tooltip: { trigger: "axis" },
-    legend: { top: 4, textStyle: { color: "#CBD5E1", fontSize: 12 } },
-    xAxis: { type: "category", boundaryGap: false, data: x.value, ...emsChartAxis(true) },
-    yAxis: { type: "value", name: "MW", nameTextStyle: { color: "#64748B", fontSize: 11 }, ...emsChartAxis(true) },
+    legend: { top: 4, textStyle: { color: isDark.value ? "#CBD5E1" : "#475569", fontSize: 12 } },
+    xAxis: { type: "category", boundaryGap: false, data: x.value, ...emsChartAxis(isDark.value) },
+    yAxis: {
+      type: "value",
+      name: "MW",
+      nameTextStyle: { color: isDark.value ? "#64748B" : "#94A3B8", fontSize: 11 },
+      ...emsChartAxis(isDark.value),
+    },
     series: [
       {
         name: "上界",
@@ -143,9 +149,14 @@ const gasChart = computed<EChartsOption>(() => {
     animation: false,
     grid: { left: 84, right: 18, top: 34, bottom: 30 },
     tooltip: { trigger: "axis", valueFormatter: (v) => `${Number(v).toLocaleString("zh-CN")} m³/h` },
-    legend: { top: 4, textStyle: { color: "#CBD5E1", fontSize: 12 } },
-    xAxis: { type: "category", boundaryGap: false, data: x.value, ...emsChartAxis(true) },
-    yAxis: { type: "value", name: "m³/h", nameTextStyle: { color: "#64748B", fontSize: 11 }, ...emsChartAxis(true) },
+    legend: { top: 4, textStyle: { color: isDark.value ? "#CBD5E1" : "#475569", fontSize: 12 } },
+    xAxis: { type: "category", boundaryGap: false, data: x.value, ...emsChartAxis(isDark.value) },
+    yAxis: {
+      type: "value",
+      name: "m³/h",
+      nameTextStyle: { color: isDark.value ? "#64748B" : "#94A3B8", fontSize: 11 },
+      ...emsChartAxis(isDark.value),
+    },
     series: paint.map((p) => ({
       name: p.name,
       type: "line" as const,
@@ -166,9 +177,14 @@ const weekChart = computed<EChartsOption>(() => {
     animation: false,
     grid: { left: 52, right: 18, top: 30, bottom: 26 },
     tooltip: { trigger: "axis", valueFormatter: (v) => `${v}%` },
-    legend: { top: 4, textStyle: { color: "#CBD5E1", fontSize: 12 } },
-    xAxis: { type: "category", data: weeks.map((w) => w.week), ...emsChartAxis(true) },
-    yAxis: { type: "value", name: "%", nameTextStyle: { color: "#64748B", fontSize: 11 }, ...emsChartAxis(true) },
+    legend: { top: 4, textStyle: { color: isDark.value ? "#CBD5E1" : "#475569", fontSize: 12 } },
+    xAxis: { type: "category", data: weeks.map((w) => w.week), ...emsChartAxis(isDark.value) },
+    yAxis: {
+      type: "value",
+      name: "%",
+      nameTextStyle: { color: isDark.value ? "#64748B" : "#94A3B8", fontSize: 11 },
+      ...emsChartAxis(isDark.value),
+    },
     series: [
       {
         name: "负荷 MAPE",
@@ -201,16 +217,16 @@ onMounted(() => void reload());
 </script>
 
 <template>
-  <div class="flex min-h-0 flex-1 flex-col gap-2 p-3" :class="emsDarkClass">
+  <div class="flex min-h-0 flex-1 flex-col gap-2 p-3">
     <!-- 顶栏：时长 + 重查 + 那句必须显示的口径说明 -->
-    <div class="flex shrink-0 flex-wrap items-center gap-3 rounded-md border border-white/10 bg-[#111A2C] px-4 py-2">
+    <div class="flex shrink-0 flex-wrap items-center gap-3 rounded-md border border-border bg-card px-4 py-2">
       <span :class="emsHeaderTextClass">负荷与煤气预测</span>
 
-      <label class="flex items-center gap-1.5 text-xs text-slate-500">
+      <label class="flex items-center gap-1.5 text-xs text-muted-foreground">
         时长
         <select
           v-model.number="hours"
-          class="h-8 rounded border border-white/15 bg-[#0B1220] px-2 text-body text-foreground tabular-nums"
+          class="h-8 rounded border border-border bg-background px-2 text-body text-foreground tabular-nums"
           @change="reload"
         >
           <option :value="12">12h</option>
@@ -223,75 +239,82 @@ onMounted(() => void reload());
       <Button variant="outlined" label="重查" @click="reload" />
 
       <!-- 口径说明必须在：把自评写成实测是最坏的一种说谎（见文件头第 3 条） -->
-      <span class="text-xs text-slate-500">
+      <span class="text-xs text-muted-foreground">
         {{ acc?.note ?? "" }}
       </span>
     </div>
 
     <!-- 精度三卡 -->
     <div class="grid shrink-0 grid-cols-3 gap-2">
-      <div class="rounded-md border border-white/10 bg-[#111A2C] px-3 py-2">
-        <div class="text-xs text-slate-500">负荷预测 MAPE</div>
-        <div class="text-base font-semibold tabular-nums" :class="acc ? mapeTone(acc.loadMape) : 'text-slate-500'">
-          {{ acc ? acc.loadMape.toFixed(2) : "—" }}<span class="text-xs font-normal text-slate-500">%</span>
+      <div class="rounded-md border border-border bg-card px-3 py-2">
+        <div class="text-xs text-muted-foreground">负荷预测 MAPE</div>
+        <div
+          class="text-base font-semibold tabular-nums"
+          :class="acc ? mapeTone(acc.loadMape) : 'text-muted-foreground'"
+        >
+          {{ acc ? acc.loadMape.toFixed(2) : "—" }}<span class="text-xs font-normal text-muted-foreground">%</span>
         </div>
-        <div class="text-xs text-slate-500">≤5% 可用于调度 · 从置信带反推</div>
+        <div class="text-xs text-muted-foreground">≤5% 可用于调度 · 从置信带反推</div>
       </div>
-      <div class="rounded-md border border-white/10 bg-[#111A2C] px-3 py-2">
-        <div class="text-xs text-slate-500">煤气预测 MAPE</div>
-        <div class="text-base font-semibold tabular-nums" :class="acc ? mapeTone(acc.gasMape) : 'text-slate-500'">
-          {{ acc ? acc.gasMape.toFixed(2) : "—" }}<span class="text-xs font-normal text-slate-500">%</span>
+      <div class="rounded-md border border-border bg-card px-3 py-2">
+        <div class="text-xs text-muted-foreground">煤气预测 MAPE</div>
+        <div
+          class="text-base font-semibold tabular-nums"
+          :class="acc ? mapeTone(acc.gasMape) : 'text-muted-foreground'"
+        >
+          {{ acc ? acc.gasMape.toFixed(2) : "—" }}<span class="text-xs font-normal text-muted-foreground">%</span>
         </div>
-        <div class="text-xs text-slate-500">3% 固定相对带（模型自评）</div>
+        <div class="text-xs text-muted-foreground">3% 固定相对带（模型自评）</div>
       </div>
-      <div class="rounded-md border border-white/10 bg-[#111A2C] px-3 py-2">
-        <div class="text-xs text-slate-500">置信带宽度</div>
-        <div class="text-base font-semibold tabular-nums text-sky-400">
-          {{ load[0] ? load[0].band.toFixed(1) : "—" }}<span class="text-xs font-normal text-slate-500"> MW</span>
+      <div class="rounded-md border border-border bg-card px-3 py-2">
+        <div class="text-xs text-muted-foreground">置信带宽度</div>
+        <div class="text-base font-semibold tabular-nums text-primary">
+          {{ load[0] ? load[0].band.toFixed(1) : "—"
+          }}<span class="text-xs font-normal text-muted-foreground"> MW</span>
         </div>
-        <div class="text-xs text-slate-500">±band，图上画成阴影带</div>
+        <div class="text-xs text-muted-foreground">±band，图上画成阴影带</div>
       </div>
     </div>
 
     <!-- 双面板：左负荷（带置信带）、右煤气三条线 -->
     <div class="grid min-h-0 flex-1 grid-cols-1 gap-2 lg:grid-cols-2">
-      <section class="flex min-h-[14rem] flex-col rounded-md border border-white/10 bg-[#111A2C] p-2">
-        <div class="shrink-0 pb-1 text-sm text-sky-400">
+      <section class="flex min-h-[14rem] flex-col rounded-md border border-border bg-card p-2">
+        <div class="shrink-0 pb-1 text-sm text-primary">
           电力负荷预测（MW）
-          <span class="ml-2 text-xs text-slate-500">阴影 = ±置信带 · 红段 = 尖峰时段</span>
+          <span class="ml-2 text-xs text-muted-foreground">阴影 = ±置信带 · 红段 = 尖峰时段</span>
         </div>
-        <EChart v-if="load.length" :option="loadChart" force-dark class="min-h-0 flex-1" />
-        <div v-else class="flex flex-1 items-center justify-center text-sm text-slate-500">
+        <EChart v-if="load.length" :option="loadChart" class="min-h-0 flex-1" />
+        <div v-else class="flex flex-1 items-center justify-center text-sm text-muted-foreground">
           {{ loading ? "加载中…" : "暂无预测数据" }}
         </div>
       </section>
 
-      <section class="flex min-h-[14rem] flex-col rounded-md border border-white/10 bg-[#111A2C] p-2">
-        <div class="shrink-0 pb-1 text-sm text-sky-400">
+      <section class="flex min-h-[14rem] flex-col rounded-md border border-border bg-card p-2">
+        <div class="shrink-0 pb-1 text-sm text-primary">
           煤气发生量预测（m³/h）
-          <span class="ml-2 text-xs text-slate-500">三种煤气同量纲可同轴</span>
+          <span class="ml-2 text-xs text-muted-foreground">三种煤气同量纲可同轴</span>
         </div>
-        <EChart v-if="gas.length" :option="gasChart" force-dark class="min-h-0 flex-1" />
-        <div v-else class="flex flex-1 items-center justify-center text-sm text-slate-500">
+        <EChart v-if="gas.length" :option="gasChart" class="min-h-0 flex-1" />
+        <div v-else class="flex flex-1 items-center justify-center text-sm text-muted-foreground">
           {{ loading ? "加载中…" : "暂无预测数据" }}
         </div>
       </section>
     </div>
 
     <!-- 精度按周趋势 -->
-    <section class="shrink-0 rounded-md border border-white/10 bg-[#111A2C] p-2">
-      <div class="shrink-0 pb-1 text-sm text-sky-400">
+    <section class="shrink-0 rounded-md border border-border bg-card p-2">
+      <div class="shrink-0 pb-1 text-sm text-primary">
         预测精度按周趋势（MAPE %）
-        <span class="ml-2 text-xs text-slate-500">一条 MAPE 答不了「在变好还是变坏」</span>
+        <span class="ml-2 text-xs text-muted-foreground">一条 MAPE 答不了「在变好还是变坏」</span>
       </div>
-      <EChart v-if="acc?.weeks?.length" :option="weekChart" force-dark class="h-40" />
-      <div v-else class="flex h-40 items-center justify-center text-sm text-slate-500">
+      <EChart v-if="acc?.weeks?.length" :option="weekChart" class="h-40" />
+      <div v-else class="flex h-40 items-center justify-center text-sm text-muted-foreground">
         {{ loading ? "加载中…" : "暂无精度数据" }}
       </div>
     </section>
 
     <!-- 底部口径 -->
-    <div class="shrink-0 rounded-md border border-white/10 bg-[#111A2C] px-4 py-2 text-xs text-slate-500">
+    <div class="shrink-0 rounded-md border border-border bg-card px-4 py-2 text-xs text-muted-foreground">
       预测可信的用法：**带宽 ≤5% 的时段才拿去排计划**（EM0007 的调度建议会引用这里的带宽口径）·
       {{ acc?.note ?? "精度口径加载中…" }}
     </div>

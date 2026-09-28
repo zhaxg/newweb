@@ -35,7 +35,7 @@ const levelName = (lv: number) => ALARM_LEVEL_NAME[String(lv)] ?? String(lv);
 
 <template>
   <section :class="[emsPanelClass, 'flex min-h-0 flex-1 flex-col']">
-    <div class="flex shrink-0 items-center gap-2 border-b border-white/10 px-2.5 py-1.5">
+    <div class="flex shrink-0 items-center gap-2 border-b border-border px-2.5 py-1.5">
       <span :class="emsHeaderTextClass">{{ props.title ?? "活动报警" }}</span>
       <span class="ml-auto text-xs tabular-nums text-muted-foreground">{{ props.alarms.length }}</span>
     </div>
@@ -43,8 +43,8 @@ const levelName = (lv: number) => ALARM_LEVEL_NAME[String(lv)] ?? String(lv);
       <li
         v-for="a in props.alarms"
         :key="a.id"
-        class="flex items-start gap-2 border-b border-white/5 px-2.5 py-1.5"
-        :class="flash(a) ? 'animate-pulse bg-[#EF4444]/10' : ''"
+        class="flex items-start gap-2 border-b border-border/60 px-2.5 py-1.5"
+        :class="flash(a) ? 'animate-pulse bg-red-500/10' : ''"
       >
         <span :class="tagClass(levelName(a.level))">{{ levelName(a.level) }}</span>
         <div class="min-w-0 flex-1">
@@ -56,7 +56,7 @@ const levelName = (lv: number) => ALARM_LEVEL_NAME[String(lv)] ?? String(lv);
         <div class="flex shrink-0 items-center gap-1">
           <button
             v-if="a.status === '活动'"
-            class="rounded border border-white/15 px-1.5 py-0.5 text-xs text-foreground hover:bg-white/10"
+            class="rounded border border-border px-1.5 py-0.5 text-xs text-foreground hover:bg-accent"
             type="button"
             @click="emit('ack', a.id)"
           >
@@ -64,7 +64,7 @@ const levelName = (lv: number) => ALARM_LEVEL_NAME[String(lv)] ?? String(lv);
           </button>
           <button
             v-if="a.status === '活动' || a.status === '已确认'"
-            class="rounded border border-[#38BDF8]/50 px-1.5 py-0.5 text-xs text-sky-400 hover:bg-[#38BDF8]/12"
+            class="rounded border border-primary/50 px-1.5 py-0.5 text-xs text-primary hover:bg-primary/10"
             type="button"
             @click="emit('toDispatch', a)"
           >

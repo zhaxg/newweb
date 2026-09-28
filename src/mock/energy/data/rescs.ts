@@ -314,7 +314,7 @@ if (import.meta.env?.DEV) {
     bad.push(`叶子数 ${energyRescs.filter((r) => r.cResSubPath).length}，应为 ${LEAF_COUNT}`);
   for (const r of energyRescs) {
     if (r.cPid && !ids.includes(r.cPid)) bad.push(`${r.id} 的父节点 ${r.cPid} 不存在`);
-    if (r.cResPath.includes("/")) bad.push(`${r.id} 的 cResPath「${r.cResPath}」不是单段`);
+    if (String(r.cResPath ?? "").includes("/")) bad.push(`${r.id} 的 cResPath「${r.cResPath}」不是单段`);
     if (r.cResSubPath && !r.cResSubPath.startsWith("/energy/")) bad.push(`${r.id} 的 cResSubPath 未以 /energy/ 开头`);
   }
   /* 编码唯一：一次性颁发的前提是同一个码不会出现在两页上 */

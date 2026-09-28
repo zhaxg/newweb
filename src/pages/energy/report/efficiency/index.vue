@@ -17,11 +17,12 @@
  *
  *  待接入：同比环比的历史期（当前是单期对标；历史由 ER0003 的预测趋势承担）。
  */
+import { isDark } from "@/composables/useAppTheme";
 import { computed, onMounted, ref } from "vue";
 import EChart from "../../EChart.vue";
 import Button from "primevue/button";
 import { reportApi } from "@/api/energy";
-import { TONE_TEXT, emsChartAxis, emsDarkClass, emsHeaderTextClass } from "../../emsTheme";
+import { TONE_TEXT, emsChartAxis, emsHeaderTextClass } from "../../emsTheme";
 import { moneyFmt } from "../../cells";
 import type { EChartsOption } from "echarts";
 
@@ -130,13 +131,17 @@ const compareChart = computed<EChartsOption>(() => {
     tooltip: { trigger: "axis", valueFormatter: (v) => `¥${Number(v).toLocaleString("zh-CN")}` },
     xAxis: {
       type: "value",
-      ...emsChartAxis(true),
-      axisLabel: { color: "#CBD5E1", fontSize: 11, formatter: (v: number) => `${(v / 1e4).toFixed(0)}万` },
+      ...emsChartAxis(isDark.value),
+      axisLabel: {
+        color: isDark.value ? "#CBD5E1" : "#475569",
+        fontSize: 11,
+        formatter: (v: number) => `${(v / 1e4).toFixed(0)}万`,
+      },
     },
     yAxis: {
       type: "category",
       data: entries.map(([k]) => k).toReversed(),
-      axisLabel: { color: "#CBD5E1", fontSize: 12 },
+      axisLabel: { color: isDark.value ? "#CBD5E1" : "#475569", fontSize: 12 },
     },
     series: [
       {
@@ -147,7 +152,7 @@ const compareChart = computed<EChartsOption>(() => {
         label: {
           show: true,
           position: "right" as const,
-          color: "#94A3B8",
+          color: isDark.value ? "#94A3B8" : "#64748B",
           fontSize: 10,
           formatter: (p: any) => `¥${(p.value / 1e4).toFixed(0)}万`,
         },
@@ -180,11 +185,16 @@ const lossChart = computed<EChartsOption>(() => {
     animation: false,
     grid: { left: 76, right: 64, top: 26, bottom: 26 },
     tooltip: { trigger: "axis", valueFormatter: (v) => `${v}%` },
-    xAxis: { type: "value", name: "%", nameTextStyle: { color: "#64748B", fontSize: 11 }, ...emsChartAxis(true) },
+    xAxis: {
+      type: "value",
+      name: "%",
+      nameTextStyle: { color: isDark.value ? "#64748B" : "#94A3B8", fontSize: 11 },
+      ...emsChartAxis(isDark.value),
+    },
     yAxis: {
       type: "category",
       data: rows.map((r) => r.mediaCode).toReversed(),
-      axisLabel: { color: "#CBD5E1", fontSize: 12 },
+      axisLabel: { color: isDark.value ? "#CBD5E1" : "#475569", fontSize: 12 },
     },
     series: [
       {
@@ -205,7 +215,13 @@ const lossChart = computed<EChartsOption>(() => {
             borderRadius: [0, 3, 3, 0],
           },
         })),
-        label: { show: true, position: "right" as const, color: "#94A3B8", fontSize: 10, formatter: "{c}%" },
+        label: {
+          show: true,
+          position: "right" as const,
+          color: isDark.value ? "#94A3B8" : "#64748B",
+          fontSize: 10,
+          formatter: "{c}%",
+        },
       },
     ],
   };
@@ -244,86 +260,86 @@ onMounted(() => void loadAll());
 </script>
 
 <template>
-  <div class="flex min-h-0 flex-1 flex-col gap-2 p-3" :class="emsDarkClass">
+  <div class="flex min-h-0 flex-1 flex-col gap-2 p-3">
     <!-- 顶栏：三个选择器（对象 / 介质 / 基准） -->
-    <div class="flex shrink-0 flex-wrap items-center gap-3 rounded-md border border-white/10 bg-[#111A2C] px-4 py-2">
+    <div class="flex shrink-0 flex-wrap items-center gap-3 rounded-md border border-border bg-card px-4 py-2">
       <span :class="emsHeaderTextClass">能效分析</span>
 
-      <label class="flex items-center gap-1.5 text-xs text-slate-500">
+      <label class="flex items-center gap-1.5 text-xs text-muted-foreground">
         对象
-        <select v-model="unitId" class="h-8 rounded border border-white/15 bg-[#0B1220] px-2 text-body text-foreground">
+        <select v-model="unitId" class="h-8 rounded border border-border bg-background px-2 text-body text-foreground">
           <option value="">全部工序</option>
           <option v-for="u in unitOptions" :key="u.id" :value="u.id">{{ u.name }}</option>
         </select>
       </label>
 
-      <label class="flex items-center gap-1.5 text-xs text-slate-500">
+      <label class="flex items-center gap-1.5 text-xs text-muted-foreground">
         介质
         <select
           v-model="mediaCode"
-          class="h-8 rounded border border-white/15 bg-[#0B1220] px-2 text-body text-foreground"
+          class="h-8 rounded border border-border bg-background px-2 text-body text-foreground"
         >
           <option value="">全部介质</option>
           <option v-for="m in mediaOptions" :key="m.code" :value="m.code">{{ m.name }}</option>
         </select>
       </label>
 
-      <label class="flex items-center gap-1.5 text-xs text-slate-500">
+      <label class="flex items-center gap-1.5 text-xs text-muted-foreground">
         基准 ¥
         <input
           v-model.number="baseline"
           type="number"
-          class="h-28 w-28 rounded border border-white/15 bg-[#0B1220] px-2 text-body text-foreground tabular-nums"
+          class="h-28 w-28 rounded border border-border bg-background px-2 text-body text-foreground tabular-nums"
           placeholder="留空不画基准线"
         />
       </label>
 
       <Button variant="outlined" label="重查" @click="loadAll" />
-      <span class="ml-auto text-xs text-slate-500"> 三选答三件事：谁 · 哪一种能 · 跟谁比 </span>
+      <span class="ml-auto text-xs text-muted-foreground"> 三选答三件事：谁 · 哪一种能 · 跟谁比 </span>
     </div>
 
     <!-- KPI 行 -->
     <div class="grid shrink-0 grid-cols-2 gap-2 lg:grid-cols-4">
-      <div v-for="k in kpiCards" :key="k.label" class="rounded-md border border-white/10 bg-[#111A2C] px-3 py-2">
-        <div class="text-xs text-slate-500">{{ k.label }}</div>
+      <div v-for="k in kpiCards" :key="k.label" class="rounded-md border border-border bg-card px-3 py-2">
+        <div class="text-xs text-muted-foreground">{{ k.label }}</div>
         <div class="text-base font-semibold tabular-nums" :class="k.tone">
-          {{ k.value }}<span class="text-xs font-normal text-slate-500">{{ k.unit ?? "" }}</span>
+          {{ k.value }}<span class="text-xs font-normal text-muted-foreground">{{ k.unit ?? "" }}</span>
         </div>
-        <div class="truncate text-xs text-slate-500">{{ k.hint }}</div>
+        <div class="truncate text-xs text-muted-foreground">{{ k.hint }}</div>
       </div>
     </div>
 
     <!-- 双图区：左对标、右损耗 -->
     <div class="grid min-h-0 flex-1 grid-cols-1 gap-2 lg:grid-cols-2">
-      <section class="flex min-h-[14rem] flex-col rounded-md border border-white/10 bg-[#111A2C] p-2">
-        <div class="shrink-0 pb-1 text-sm text-sky-400">
+      <section class="flex min-h-[14rem] flex-col rounded-md border border-border bg-card p-2">
+        <div class="shrink-0 pb-1 text-sm text-primary">
           单耗对标（能源成本 · 元）
-          <span class="ml-2 text-xs text-slate-500">
+          <span class="ml-2 text-xs text-muted-foreground">
             {{ baseline !== null && Number.isFinite(baseline) ? "虚线 = 你给的基准" : "填基准值后出现虚线" }}
           </span>
         </div>
-        <EChart v-if="filteredSubs.length" :option="compareChart" force-dark class="min-h-0 flex-1" />
-        <div v-else class="flex flex-1 items-center justify-center text-sm text-slate-500">
+        <EChart v-if="filteredSubs.length" :option="compareChart" class="min-h-0 flex-1" />
+        <div v-else class="flex flex-1 items-center justify-center text-sm text-muted-foreground">
           {{ loading ? "加载中…" : "当前筛选下没有数据" }}
         </div>
       </section>
 
-      <section class="flex min-h-[14rem] flex-col rounded-md border border-white/10 bg-[#111A2C] p-2">
-        <div class="shrink-0 pb-1 text-sm text-sky-400">
+      <section class="flex min-h-[14rem] flex-col rounded-md border border-border bg-card p-2">
+        <div class="shrink-0 pb-1 text-sm text-primary">
           损耗分析（%）
-          <span class="ml-2 text-xs text-slate-500">红 = 本批最差 · 绿 = 最优（按介质相对排位）</span>
+          <span class="ml-2 text-xs text-muted-foreground">红 = 本批最差 · 绿 = 最优（按介质相对排位）</span>
         </div>
-        <EChart v-if="lossByMedia.length" :option="lossChart" force-dark class="min-h-0 flex-1" />
-        <div v-else class="flex flex-1 items-center justify-center text-sm text-slate-500">
+        <EChart v-if="lossByMedia.length" :option="lossChart" class="min-h-0 flex-1" />
+        <div v-else class="flex flex-1 items-center justify-center text-sm text-muted-foreground">
           {{ loading ? "加载中…" : "暂无损耗数据" }}
         </div>
       </section>
     </div>
 
     <!-- 损耗明细：供应 / 用 / 损耗 三列（差值可验算） -->
-    <div class="shrink-0 overflow-auto rounded-md border border-white/10 bg-[#111A2C]">
+    <div class="shrink-0 overflow-auto rounded-md border border-border bg-card">
       <table class="w-full" style="font-size: 13px">
-        <thead class="bg-[#111A2C] text-slate-500">
+        <thead class="bg-card text-muted-foreground">
           <tr>
             <th class="px-3 py-2 text-left font-normal">介质</th>
             <th class="px-3 py-2 text-right font-normal">供应侧</th>
@@ -334,35 +350,38 @@ onMounted(() => void loadAll());
           </tr>
         </thead>
         <tbody>
-          <tr v-for="r in lossByMedia" :key="r.mediaCode" class="border-t border-white/5">
-            <td class="px-3 py-2 text-slate-300">{{ r.mediaCode }}</td>
-            <td class="px-3 py-2 text-right tabular-nums text-slate-300">
+          <tr v-for="r in lossByMedia" :key="r.mediaCode" class="border-t border-border/60">
+            <td class="px-3 py-2 text-foreground">{{ r.mediaCode }}</td>
+            <td class="px-3 py-2 text-right tabular-nums text-foreground">
               {{ Math.round(r.supply).toLocaleString("zh-CN") }}
             </td>
-            <td class="px-3 py-2 text-right tabular-nums text-slate-300">
+            <td class="px-3 py-2 text-right tabular-nums text-foreground">
               {{ Math.round(r.use).toLocaleString("zh-CN") }}
             </td>
-            <td class="px-3 py-2 text-right tabular-nums" :class="r.loss > 0 ? 'text-amber-400' : 'text-emerald-400'">
+            <td
+              class="px-3 py-2 text-right tabular-nums"
+              :class="r.loss > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-emerald-600 dark:text-emerald-400'"
+            >
               {{ Math.round(r.loss).toLocaleString("zh-CN") }}
             </td>
             <td
               class="px-3 py-2 text-right tabular-nums"
-              :class="r.lossPct >= 0.5 ? 'text-red-400' : 'text-emerald-400'"
+              :class="r.lossPct >= 0.5 ? 'text-red-600 dark:text-red-400' : 'text-emerald-600 dark:text-emerald-400'"
             >
               {{ r.lossPct.toFixed(2) }}%
             </td>
-            <td class="px-3 py-2 text-xs text-slate-500">
+            <td class="px-3 py-2 text-xs text-muted-foreground">
               {{ r.lossPct >= 0.5 ? "偏差偏大，查管网与计量" : r.loss > 0 ? "正常损耗区间" : "两端平衡" }}
             </td>
           </tr>
           <tr v-if="!lossByMedia.length">
-            <td colspan="6" class="px-3 py-6 text-center text-sm text-slate-500">
+            <td colspan="6" class="px-3 py-6 text-center text-sm text-muted-foreground">
               {{ loading ? "加载中…" : "暂无损耗数据" }}
             </td>
           </tr>
         </tbody>
       </table>
-      <div class="border-t border-white/10 px-3 py-2 text-xs text-slate-500">
+      <div class="border-t border-border px-3 py-2 text-xs text-muted-foreground">
         损耗 = 供应 − 用（口径同 EP0003 平衡表，但**按介质聚合**，EP0003 按工序聚合——两个切面）
       </div>
     </div>

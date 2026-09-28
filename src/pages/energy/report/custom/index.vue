@@ -26,7 +26,7 @@ import Button from "primevue/button";
 import { templateApi } from "@/api/energy";
 import type { ReportTemplate } from "@/api/energy/types";
 import { useToast } from "@/composables/useToast";
-import { emsDarkClass, emsHeaderTextClass } from "../../emsTheme";
+import { emsHeaderTextClass } from "../../emsTheme";
 
 const { toast } = useToast();
 
@@ -124,37 +124,41 @@ watch(activeTemplate, (t) => {
 </script>
 
 <template>
-  <div class="flex min-h-0 flex-1 gap-2 p-3" :class="emsDarkClass">
+  <div class="flex min-h-0 flex-1 gap-2 p-3">
     <!-- ① 左：模板列表 -->
     <aside class="flex w-56 shrink-0 flex-col gap-2">
-      <div class="rounded-md border border-white/10 bg-[#111A2C] px-3 py-2 text-sm text-sky-400">
+      <div class="rounded-md border border-border bg-card px-3 py-2 text-sm text-primary">
         报表模板
-        <span class="ml-2 text-xs text-slate-500">真源 EG0003 维护</span>
+        <span class="ml-2 text-xs text-muted-foreground">真源 EG0003 维护</span>
       </div>
-      <div class="min-h-0 flex-1 overflow-auto rounded-md border border-white/10 bg-[#111A2C]">
+      <div class="min-h-0 flex-1 overflow-auto rounded-md border border-border bg-card">
         <button
           v-for="t in templates"
           :key="t.id"
           type="button"
-          class="block w-full cursor-pointer border-b border-white/5 px-3 py-2 text-left transition-colors"
-          :class="activeTemplate?.id === t.id ? 'bg-[#38BDF8]/15' : 'hover:bg-white/5'"
+          class="block w-full cursor-pointer border-b border-border/60 px-3 py-2 text-left transition-colors"
+          :class="activeTemplate?.id === t.id ? 'bg-primary/15' : 'hover:bg-accent'"
           @click="pickTemplate(t)"
         >
           <div class="flex items-baseline gap-2">
-            <span class="truncate text-body text-slate-300">{{ t.name }}</span>
+            <span class="truncate text-body text-foreground">{{ t.name }}</span>
             <span
               class="ml-auto shrink-0 rounded px-1.5 py-0.5 text-xs"
-              :class="t.status === '已发布' ? 'bg-emerald-500/15 text-emerald-400' : 'bg-amber-500/15 text-amber-400'"
+              :class="
+                t.status === '已发布'
+                  ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
+                  : 'bg-amber-500/15 text-amber-600 dark:text-amber-400'
+              "
             >
               {{ t.status }}
             </span>
           </div>
-          <div class="truncate text-xs text-slate-500">
+          <div class="truncate text-xs text-muted-foreground">
             {{ t.granularity }}粒度 · {{ t.dims.length }} 维 · {{ t.metrics.length }} 标
             <template v-if="t.lastPublishAt"> · {{ t.lastPublishAt }}</template>
           </div>
         </button>
-        <div v-if="!templates.length" class="px-3 py-6 text-center text-sm text-slate-500">
+        <div v-if="!templates.length" class="px-3 py-6 text-center text-sm text-muted-foreground">
           {{ loading ? "加载中…" : "暂无模板（去 EG0003 维护）" }}
         </div>
       </div>
@@ -162,13 +166,13 @@ watch(activeTemplate, (t) => {
 
     <!-- ② 中：组态 -->
     <section class="flex min-w-0 flex-1 flex-col gap-2">
-      <div class="rounded-md border border-white/10 bg-[#111A2C] px-3 py-2 text-sm text-sky-400">
+      <div class="rounded-md border border-border bg-card px-3 py-2 text-sm text-primary">
         简易组态
-        <span class="ml-2 text-xs text-slate-500"> 模板是起点不是牢笼——勾选在模板定义之外的组合就是自定义 </span>
+        <span class="ml-2 text-xs text-muted-foreground"> 模板是起点不是牢笼——勾选在模板定义之外的组合就是自定义 </span>
       </div>
 
-      <div class="rounded-md border border-white/10 bg-[#111A2C] p-3">
-        <div class="mb-2 text-xs font-medium text-slate-300">维度（行的分组方式）</div>
+      <div class="rounded-md border border-border bg-card p-3">
+        <div class="mb-2 text-xs font-medium text-foreground">维度（行的分组方式）</div>
         <div class="flex flex-wrap gap-1.5">
           <button
             v-for="d in dimPool"
@@ -177,17 +181,17 @@ watch(activeTemplate, (t) => {
             class="cursor-pointer rounded border px-2 py-1 text-xs transition-colors"
             :class="
               dimensions.includes(d)
-                ? 'border-[#38BDF8]/60 bg-[#38BDF8]/15 text-sky-400'
-                : 'border-white/15 text-slate-500 hover:bg-white/10'
+                ? 'border-primary/60 bg-primary/15 text-primary'
+                : 'border-border text-muted-foreground hover:bg-accent'
             "
             @click="toggle(dimensions, d)"
           >
             {{ d }}
           </button>
-          <span v-if="!dimPool.length" class="text-xs text-slate-500">该模板没有定义维度</span>
+          <span v-if="!dimPool.length" class="text-xs text-muted-foreground">该模板没有定义维度</span>
         </div>
 
-        <div class="mt-3 mb-2 text-xs font-medium text-slate-300">指标（列里放什么数）</div>
+        <div class="mt-3 mb-2 text-xs font-medium text-foreground">指标（列里放什么数）</div>
         <div class="flex flex-wrap gap-1.5">
           <button
             v-for="m in metricPool"
@@ -196,17 +200,17 @@ watch(activeTemplate, (t) => {
             class="cursor-pointer rounded border px-2 py-1 text-xs transition-colors"
             :class="
               metrics.includes(m)
-                ? 'border-[#38BDF8]/60 bg-[#38BDF8]/15 text-sky-400'
-                : 'border-white/15 text-slate-500 hover:bg-white/10'
+                ? 'border-primary/60 bg-primary/15 text-primary'
+                : 'border-border text-muted-foreground hover:bg-accent'
             "
             @click="toggle(metrics, m)"
           >
             {{ m }}
           </button>
-          <span v-if="!metricPool.length" class="text-xs text-slate-500">该模板没有定义指标</span>
+          <span v-if="!metricPool.length" class="text-xs text-muted-foreground">该模板没有定义指标</span>
         </div>
 
-        <div class="mt-3 mb-2 text-xs font-medium text-slate-300">时间粒度</div>
+        <div class="mt-3 mb-2 text-xs font-medium text-foreground">时间粒度</div>
         <div class="flex gap-1.5">
           <button
             v-for="g in GRANULARITIES"
@@ -215,8 +219,8 @@ watch(activeTemplate, (t) => {
             class="cursor-pointer rounded border px-3 py-1 text-xs transition-colors"
             :class="
               granularity === g
-                ? 'border-[#38BDF8]/60 bg-[#38BDF8]/15 text-sky-400'
-                : 'border-white/15 text-slate-500 hover:bg-white/10'
+                ? 'border-primary/60 bg-primary/15 text-primary'
+                : 'border-border text-muted-foreground hover:bg-accent'
             "
             @click="
               granularity = g;
@@ -230,33 +234,35 @@ watch(activeTemplate, (t) => {
         <div class="mt-3 flex gap-2">
           <Button label="生成预览" @click="buildPreview" />
           <Button label="▶ 发布日报" variant="outlined" :loading="publishing" @click="publish" />
-          <span v-if="published" class="self-center text-xs text-emerald-400"> 最近发布：{{ published }}（模拟） </span>
+          <span v-if="published" class="self-center text-xs text-emerald-600 dark:text-emerald-400">
+            最近发布：{{ published }}（模拟）
+          </span>
         </div>
       </div>
 
       <!-- ③ 右下：预览骨架 -->
-      <div class="min-h-0 flex-1 overflow-auto rounded-md border border-white/10 bg-[#111A2C]">
-        <div class="flex h-8 items-center gap-2 border-b border-white/10 px-3 text-sm text-sky-400">
+      <div class="min-h-0 flex-1 overflow-auto rounded-md border border-border bg-card">
+        <div class="flex h-8 items-center gap-2 border-b border-border px-3 text-sm text-primary">
           预览
-          <span class="text-xs text-slate-500">
+          <span class="text-xs text-muted-foreground">
             {{ preview ? `骨架 · ${preview.granularity}粒度 · 行待发布时按模板查` : "选好组态后点「生成预览」" }}
           </span>
         </div>
         <div v-if="preview" class="overflow-x-auto p-3">
           <table class="min-w-full" style="font-size: 13px">
             <thead>
-              <tr class="text-slate-500">
+              <tr class="text-muted-foreground">
                 <th
                   v-for="c in preview.columns"
                   :key="c"
-                  class="border-b border-white/10 px-3 py-2 text-left font-normal"
+                  class="border-b border-border px-3 py-2 text-left font-normal"
                 >
                   {{ c }}
                 </th>
                 <th
                   v-for="m in preview.metrics"
                   :key="m"
-                  class="border-b border-white/10 px-3 py-2 text-right font-normal"
+                  class="border-b border-border px-3 py-2 text-right font-normal"
                 >
                   {{ m }}
                 </th>
@@ -267,23 +273,27 @@ watch(activeTemplate, (t) => {
               <tr v-if="!preview.rows.length">
                 <td
                   :colspan="preview.columns.length + preview.metrics.length"
-                  class="border-b border-white/5 px-3 py-6 text-center text-sm text-slate-500"
+                  class="border-b border-border/60 px-3 py-6 text-center text-sm text-muted-foreground"
                 >
                   骨架就绪 · 0 行（真实行在发布时按模板查，预览不给假数据）
                 </td>
               </tr>
-              <tr v-for="(row, i) in preview.rows" :key="i" class="border-b border-white/5">
-                <td v-for="(c, j) in preview.columns" :key="j" class="px-3 py-2 text-slate-300">
+              <tr v-for="(row, i) in preview.rows" :key="i" class="border-b border-border/60">
+                <td v-for="(c, j) in preview.columns" :key="j" class="px-3 py-2 text-foreground">
                   {{ row[j] ?? "" }}
                 </td>
-                <td v-for="(m, j) in preview.metrics" :key="m" class="px-3 py-2 text-right tabular-nums text-slate-300">
+                <td
+                  v-for="(m, j) in preview.metrics"
+                  :key="m"
+                  class="px-3 py-2 text-right tabular-nums text-foreground"
+                >
                   {{ row[preview.columns.length + j] ?? "" }}
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
-        <div v-else class="p-6 text-center text-sm text-slate-500">维度与指标至少各选一项，再生成预览</div>
+        <div v-else class="p-6 text-center text-sm text-muted-foreground">维度与指标至少各选一项，再生成预览</div>
       </div>
     </section>
   </div>

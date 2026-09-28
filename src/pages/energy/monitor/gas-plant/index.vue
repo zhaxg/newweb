@@ -106,7 +106,7 @@ const maxTank = computed(() => Math.max(1, ...(view.value?.tanks ?? []).map((t) 
               </tr>
             </thead>
             <tbody>
-              <tr v-for="u in view?.units ?? []" :key="u.id" class="border-t border-white/5">
+              <tr v-for="u in view?.units ?? []" :key="u.id" class="border-t border-border/60">
                 <td class="px-2.5 py-1 text-foreground">{{ u.name }}</td>
                 <td class="px-2.5 py-1 text-right tabular-nums text-foreground">{{ fmt(u.o2Nm3h) }}</td>
                 <td class="px-2.5 py-1 text-right font-medium tabular-nums" :class="TONE_TEXT[u.tone]">
@@ -137,7 +137,7 @@ const maxTank = computed(() => Math.max(1, ...(view.value?.tanks ?? []).map((t) 
               </tr>
             </thead>
             <tbody>
-              <tr v-for="p in view?.products ?? []" :key="p.media" class="border-t border-white/5">
+              <tr v-for="p in view?.products ?? []" :key="p.media" class="border-t border-border/60">
                 <td class="px-2 py-1">
                   <span
                     class="mr-1.5 inline-block h-2 w-2 rounded-full align-middle"
@@ -157,7 +157,7 @@ const maxTank = computed(() => Math.max(1, ...(view.value?.tanks ?? []).map((t) 
         <div class="shrink-0 px-2.5 pb-2">
           <div v-for="h in view?.headers ?? []" :key="h.id" class="flex items-center gap-2 py-0.5">
             <span class="w-24 shrink-0 truncate text-xs text-foreground">{{ h.name }}</span>
-            <div class="relative h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-white/10">
+            <div class="relative h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-muted-foreground/20">
               <div
                 :class="TONE_BG.ok"
                 class="h-full rounded-full"
@@ -171,7 +171,7 @@ const maxTank = computed(() => Math.max(1, ...(view.value?.tanks ?? []).map((t) 
           </div>
           <div v-for="t in view?.tanks ?? []" :key="t.id" class="flex items-center gap-2 py-0.5">
             <span class="w-24 shrink-0 truncate text-xs text-foreground">{{ t.name }}</span>
-            <div class="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-white/10">
+            <div class="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-muted-foreground/20">
               <div :class="TONE_BG.ok" class="h-full rounded-full" :style="{ width: `${(t.pct / maxTank) * 100}%` }" />
             </div>
             <span class="w-28 shrink-0 text-right text-xs tabular-nums text-muted-foreground">

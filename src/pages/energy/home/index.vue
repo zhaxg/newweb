@@ -23,7 +23,7 @@
 import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { overviewApi } from "@/api/energy";
-import { EMS_BAD, EMS_OK, EMS_WARN, TONE_TEXT, emsDarkClass, emsHeaderTextClass, emsPanelClass } from "../emsTheme";
+import { EMS_BAD, EMS_OK, EMS_WARN, TONE_TEXT, emsHeaderTextClass, emsPanelClass } from "../emsTheme";
 
 const router = useRouter();
 const loading = ref(true);
@@ -180,40 +180,40 @@ function go(to: string) {
 </script>
 
 <template>
-  <div class="min-h-0 flex-1 overflow-auto" :class="emsDarkClass">
+  <div class="min-h-0 flex-1 overflow-auto">
     <!-- 页头 -->
-    <div class="border-b border-white/10 px-5 py-4">
+    <div class="border-b border-border px-5 py-4">
       <div class="flex items-baseline gap-3">
         <span :class="emsHeaderTextClass">钢铁能源管理（EMS）</span>
-        <span class="text-xs text-slate-500">钢城钢铁 · 年产钢约 300 万吨</span>
-        <span class="ml-auto text-xs text-slate-500">
+        <span class="text-xs text-muted-foreground">钢城钢铁 · 年产钢约 300 万吨</span>
+        <span class="ml-auto text-xs text-muted-foreground">
           {{ MODULES.length }} 个模块 · {{ totalLeaves }} 个功能页 · 数据截止 {{ kpi?.at ?? "—" }}
         </span>
       </div>
-      <div class="mt-1 text-xs text-slate-500">
-        演示账号 <code class="rounded bg-white/10 px-1">energy</code> · 四个顶栏数与大屏 / KPI
+      <div class="mt-1 text-xs text-muted-foreground">
+        演示账号 <code class="rounded bg-muted px-1">energy</code> · 四个顶栏数与大屏 / KPI
         看板**同一个聚合口**，三处永远同数
       </div>
     </div>
 
     <!-- 顶栏四卡 -->
     <div class="grid grid-cols-2 gap-3 px-5 py-4 lg:grid-cols-4">
-      <div v-for="t in tiles" :key="t.label" class="rounded-md border border-white/10 bg-[#111A2C] px-4 py-3">
-        <div class="text-xs text-slate-500">{{ t.label }}</div>
+      <div v-for="t in tiles" :key="t.label" class="rounded-md border border-border bg-card px-4 py-3">
+        <div class="text-xs text-muted-foreground">{{ t.label }}</div>
         <div class="mt-1 flex items-baseline gap-2">
           <span class="text-base font-semibold tabular-nums" :class="t.tone">{{ loading ? "…" : t.value }}</span>
-          <span v-if="t.unit" class="text-xs text-slate-500">{{ t.unit }}</span>
-          <span class="ml-auto text-xs text-slate-500">{{ t.target }}</span>
+          <span v-if="t.unit" class="text-xs text-muted-foreground">{{ t.unit }}</span>
+          <span class="ml-auto text-xs text-muted-foreground">{{ t.target }}</span>
         </div>
-        <div class="mt-0.5 truncate text-xs text-slate-500">{{ t.hint }}</div>
+        <div class="mt-0.5 truncate text-xs text-muted-foreground">{{ t.hint }}</div>
       </div>
     </div>
 
     <!-- 六个模块入口（顺序 = 开发顺序 = 讲解顺序） -->
     <div class="px-5 pb-5">
       <div class="mb-2 flex items-center gap-3">
-        <span class="text-xs font-medium text-slate-300">模块入口</span>
-        <span class="text-xs text-slate-500">
+        <span class="text-xs font-medium text-foreground">模块入口</span>
+        <span class="text-xs text-muted-foreground">
           顺序即讲解顺序：先有口径（EG）、再有数据（EC）、才有账（EP）、最后收口（EO）
         </span>
       </div>
@@ -222,44 +222,48 @@ function go(to: string) {
           v-for="m in MODULES"
           :key="m.code"
           type="button"
-          class="cursor-pointer rounded-md border border-white/10 bg-[#111A2C] px-4 py-3 text-left transition-colors hover:border-sky-400/60"
+          class="cursor-pointer rounded-md border border-border bg-card px-4 py-3 text-left transition-colors hover:border-primary/60"
           @click="go(m.to)"
         >
           <div class="flex items-center gap-2">
-            <span class="text-sm font-semibold text-sky-400">{{ m.name }}</span>
-            <span class="rounded bg-white/10 px-1.5 py-0.5 text-xs text-slate-500">{{ m.code }}</span>
+            <span class="text-sm font-semibold text-primary">{{ m.name }}</span>
+            <span class="rounded bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">{{ m.code }}</span>
             <span
               class="ml-auto rounded px-1.5 py-0.5 text-xs"
-              :class="m.done ? 'bg-emerald-500/15 text-emerald-400' : 'bg-amber-500/15 text-amber-400'"
+              :class="
+                m.done
+                  ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
+                  : 'bg-amber-500/15 text-amber-600 dark:text-amber-400'
+              "
             >
               {{ m.prio }}
             </span>
           </div>
-          <div class="mt-1 text-xs text-slate-500">{{ m.desc }}</div>
+          <div class="mt-1 text-xs text-muted-foreground">{{ m.desc }}</div>
           <div class="mt-1 flex items-baseline gap-2 text-xs">
-            <span class="text-slate-300 tabular-nums">{{ m.leaves }}</span>
-            <span class="text-slate-500">页</span>
-            <span class="ml-auto text-sky-400">进入 →</span>
+            <span class="text-foreground tabular-nums">{{ m.leaves }}</span>
+            <span class="text-muted-foreground">页</span>
+            <span class="ml-auto text-primary">进入 →</span>
           </div>
-          <div class="mt-1 truncate text-xs text-slate-500">{{ m.why }}</div>
+          <div class="mt-1 truncate text-xs text-muted-foreground">{{ m.why }}</div>
         </button>
       </div>
     </div>
 
     <!-- 演示走查五步（给销售照着念） -->
     <div class="px-5 pb-8">
-      <div class="rounded-md border border-white/10 bg-[#111A2C] px-4 py-3">
-        <div class="text-sm font-semibold text-sky-400">演示走查（15 分钟 · 照着念）</div>
+      <div class="rounded-md border border-border bg-card px-4 py-3">
+        <div class="text-sm font-semibold text-primary">演示走查（15 分钟 · 照着念）</div>
         <ol class="mt-2 space-y-1.5">
           <li v-for="w in WALK" :key="w.n" class="flex items-baseline gap-3 text-body">
-            <span class="w-5 shrink-0 text-xs tabular-nums text-slate-500">{{ w.n }}</span>
-            <button type="button" class="shrink-0 cursor-pointer text-sky-400 hover:underline" @click="go(w.to)">
+            <span class="w-5 shrink-0 text-xs tabular-nums text-muted-foreground">{{ w.n }}</span>
+            <button type="button" class="shrink-0 cursor-pointer text-primary hover:underline" @click="go(w.to)">
               {{ w.page }}
             </button>
-            <span class="min-w-0 flex-1 text-slate-300">{{ w.line }}</span>
+            <span class="min-w-0 flex-1 text-foreground">{{ w.line }}</span>
           </li>
         </ol>
-        <div class="mt-2 text-xs text-slate-500">
+        <div class="mt-2 text-xs text-muted-foreground">
           原则：任何「▶ 模拟触发」都必须能在别的页面看到后果——报警中心、平衡表、结算、大屏四处是后果展示区。
         </div>
       </div>
