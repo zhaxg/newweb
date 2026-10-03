@@ -82,6 +82,29 @@ function makeRamp(hex: string): PrimaryRamp | null {
   return ramp;
 }
 
+/** WCAG 相对亮度（sRGB 线性化），用于主色上的文字选色 */
+function relativeLuminance(hex: string): number | null {
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex.trim());
+  if (!m) return null;
+  const n = parseInt(m[1], 16);
+  const lin = (c: number) => {
+    const v = c / 255;
+    return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+  };
+  return 0.2126 * lin((n >> 16) & 255) + 0.7152 * lin((n >> 8) & 255) + 0.0722 * lin(n & 255);
+}
+
+/** 主色上的文字：白与 #18181b 取 WCAG 对比更高者。
+ *  clay 类浅暖色（安思睿米 #e37756）白字对比仅 2.99 不达 AA(4.5)，必须深字；
+ *  brand/violet/black 及其余预设主色算出来仍是白，行为与旧版一致 */
+function contrastOn(hex: string): string {
+  const L = relativeLuminance(hex);
+  if (L === null) return "#ffffff";
+  const onWhite = 1.05 / (L + 0.05);
+  const onDark = (L + 0.05) / 0.061; // #18181b 相对亮度约 0.011
+  return onWhite >= onDark ? "#ffffff" : "#18181b";
+}
+
 export function resolveRamp(id: string): PrimaryRamp | null {
   const opt = findPrimaryOption(id);
   return opt.ramp ?? makeRamp(opt.base);
@@ -100,6 +123,7 @@ export function applyPrimaryColor(id: string) {
   const isHex = /^#[0-9a-f]{6}$/i.test(id.trim());
   const ramp = (isHex ? makeRamp(id) : resolveRamp(id)) ?? resolveRamp("brand")!;
   const hex = isHex ? id.trim() : findPrimaryOption(id).base;
+  const contrast = contrastOn(hex);
   style.textContent = `
 html:root {
   --p-primary-50:${ramp[50]};--p-primary-100:${ramp[100]};--p-primary-200:${ramp[200]};
@@ -107,7 +131,7 @@ html:root {
   --p-primary-600:${ramp[600]};--p-primary-700:${ramp[700]};--p-primary-800:${ramp[800]};
   --p-primary-900:${ramp[900]};--p-primary-950:${ramp[950]};
   --p-primary-color:${hex};--p-primary-hover-color:${ramp[600]};--p-primary-active-color:${ramp[700]};
-  --p-primary-contrast-color:#ffffff;--p-primary-inset-contrast-color:#ffffff;--p-link-color:${hex};
+  --p-primary-contrast-color:${contrast};--p-primary-inset-contrast-color:${contrast};--p-link-color:${hex};
 }
 html.dark {
   --p-primary-color:${ramp[400]};--p-primary-hover-color:${ramp[300]};--p-primary-active-color:${ramp[200]};

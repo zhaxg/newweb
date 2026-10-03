@@ -201,7 +201,9 @@ export function makeHmxGridTheme(): ComputedRef<Theme> {
       backgroundColor: "var(--background)",
       oddRowBackgroundColor: "transparent",
       cellHorizontalPadding: 8,
-      headerBackgroundColor: "rgb(229 230 235)",
+      /* 表头底 = --sidebar：浅色真源与原硬编码 rgb(229 230 235) 仅差 1（观感不变），
+         预设 TINTED/安思睿米覆盖 sidebar 后表头随配色方案染色，暗色随 .dark 自动翻转 */
+      headerBackgroundColor: "var(--sidebar)",
       headerTextColor: "var(--muted-foreground)",
       selectedRowBackgroundColor: "var(--accent)",
       rangeSelectionBorderColor: "var(--p-primary-color)",

@@ -49,10 +49,14 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-900 dark:to-slate-800">
+  <div
+    class="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-900 dark:to-slate-800"
+  >
     <div class="flex flex-col items-center gap-4">
       <!-- 纯 CSS 旋转环（本页无 PrimeVue Toast 之外的组件依赖，保持零加载负担） -->
-      <div class="h-9 w-9 animate-spin rounded-full border-[3px] border-slate-300 border-t-primary dark:border-slate-600"></div>
+      <div
+        class="h-9 w-9 animate-spin rounded-full border-[3px] border-slate-300 border-t-primary dark:border-slate-600"
+      ></div>
       <div class="text-sm text-slate-500 dark:text-slate-400">正在完成统一认证登录…</div>
     </div>
   </div>

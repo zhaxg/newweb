@@ -143,7 +143,9 @@ onBeforeUnmount(() => document.removeEventListener("fullscreenchange", onFullscr
 </script>
 
 <template>
-  <header class="flex h-12 shrink-0 items-center justify-between border-b border-border bg-[#F4F4F4] px-3 dark:bg-card">
+  <header
+    class="flex h-12 shrink-0 items-center justify-between border-b border-border bg-[var(--dbx-chrome)] px-3 dark:bg-card"
+  >
     <div class="flex min-w-0 items-center gap-2.5">
       <!-- logo：点击切换侧栏收起/展开（与侧栏钮同行为） -->
       <div

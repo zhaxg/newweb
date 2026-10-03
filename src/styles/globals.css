@@ -53,10 +53,11 @@
     --border: oklch(0.922 0 0);
     --input: oklch(0.922 0 0);
     --ring: oklch(0.708 0 0);
-    --sidebar: oklch(0.985 0 0);
+    --sidebar: oklch(0.928 0.006 264.53); /* #e5e7eb，与 tokens.css 浅色真源一致 */
     --sidebar-accent: oklch(0.97 0 0);
     --success: oklch(0.62 0.17 150);
-    --success-bg: color-mix(in oklch, var(--success) 12%, transparent);
+    /* --success-bg 不在此重申：oklch 环形插值与 transparent(H=0) 混合会把绿色
+       拉向粉红方向（同 themePresets.ts 头注释的坑），沿用 tokens.css 的 in srgb 版 */
     --dbx-chrome: oklch(0.97 0 0);
   }
 
@@ -77,7 +78,6 @@
     --sidebar: oklch(0.215 0.005 285);
     --sidebar-accent: oklch(0.295 0.006 285);
     --success: oklch(0.78 0.16 150);
-    --success-bg: color-mix(in oklch, var(--success) 16%, transparent);
     --dbx-chrome: oklch(0.225 0.005 285);
   }
 }

@@ -10,21 +10,12 @@
   justify-content: center;
 }
 
+/* 表头/行号列头底色统一走 --sidebar（见 lib/agGrid.ts 注释）：
+   预设染色 + 明暗翻转全由该变量携带，此处不再按 .dark 写死深色 */
 .hmx-ag-grid .ag-row-number-header {
-  background-color: rgb(229 230 235);
+  background-color: var(--sidebar);
   color: var(--muted-foreground);
   justify-content: center;
-}
-
-.dark .hmx-ag-grid.ag-theme,
-.dark .hmx-ag-grid .ag-theme,
-.dark .hmx-ag-grid.ag-root-wrapper,
-.dark .hmx-ag-grid .ag-root-wrapper {
-  --ag-header-background-color: rgb(31 41 55);
-}
-
-.dark .hmx-ag-grid .ag-row-number-header {
-  background-color: rgb(31 41 55);
 }
 
 /* 数字等宽字形，右对齐由 numericColumn 处理 */

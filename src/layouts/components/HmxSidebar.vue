@@ -196,7 +196,7 @@ function onNodeUnselect(node: TreeNode) {
 <template>
   <!-- z-[11]：高于标签栏（HmxTabBar z-10），保证骑在边框上的分割条热区不被遮挡 -->
   <aside
-    class="relative z-[11] flex h-full shrink-0 select-none flex-col border-r border-border bg-[#e5e7eb] dark:bg-sidebar"
+    class="relative z-[11] flex h-full shrink-0 select-none flex-col border-r border-border bg-sidebar"
     :style="{ width: sidebarWidth + 'px' }"
   >
     <div class="flex h-9 shrink-0 items-center gap-1 border-b border-border/60 px-2 py-1.5">
@@ -211,7 +211,7 @@ function onNodeUnselect(node: TreeNode) {
           autocapitalize="off"
           autocorrect="off"
           spellcheck="false"
-          class="!h-6 w-full !rounded border border-[#cdd2d9] !bg-[#dde0e5] !pl-7 !pr-6 !text-xs shadow-none dark:!bg-input/30"
+          class="!h-6 w-full !rounded border border-[color-mix(in_srgb,var(--foreground)_10%,var(--sidebar))] !bg-[color-mix(in_srgb,var(--foreground)_5%,var(--sidebar))] !pl-7 !pr-6 !text-xs shadow-none dark:!bg-input/30 dark:border-[#cdd2d9]"
         />
         <button
           v-if="search"

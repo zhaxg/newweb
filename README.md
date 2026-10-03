@@ -47,7 +47,7 @@
 - 多标签页（Chrome Tabs 风格，原生 Custom Element）导航 + KeepAlive 缓存
   （`:max="25"` LRU 兜底；关签即该页代号世代 +1 使缓存键失效，重开 = 全新挂载）
 - 常驻 iframe 池承载外嵌链接（切页签只显隐不卸载，规避 Chromium 反挂载重载）
-- 浅色/深色主题、运行时主题色、中英文字体自定义、字号三档缩放（`standard/large/xlarge` = 1/1.15/1.3）
+- 浅色/深色主题、运行时主题色、配色方案预设（默认 + 安思睿米/暗夜之境/玫瑰花园/森林低语/海风徐来/薰衣草梦）、中英文字体自定义、字号三档缩放（`standard/large/xlarge` = 1/1.15/1.3）
 - 四档字阶 + `audit:ui` 机检；PrimeVue 紧凑预设 `HmxCompact`；每个 `<Dialog>` 强制标 `autofocus` 初始焦点
 - Mock 模式与真实后端模式走同一条前端链路
 - 刷新白屏过渡动画（路由守卫驱动）、新版本检测、全局错误兜底、全局点击连击闸（500ms 吞同一按钮第二击）
@@ -218,7 +218,7 @@ src/
 │   ├── components/         # HmxHeader / HmxSidebar / HmxTabBar / HmxIframeHost / SettingsDialog
 │   ├── composables/        # layouts.ts 布局注册表 · menuFromRoutes.ts 菜单投影
 │   └── pages/              # 框架自带页（ForbiddenPage 403 / PlaceholderPage 占位 / IframePage 外链承载）
-├── lib/                    # agGrid · primeTheme(HmxCompact) · themeSettings · encryptedStorage
+├── lib/                    # agGrid · primeTheme(HmxCompact) · themeSettings · themePresets · encryptedStorage
 │                           # clickGuard(连击闸) · globalError · effectsPerf · fontSettings
 │                           # tablerIcons(壳层白名单) · tablerIconRegistry(全量,勿进首屏) · menuQuery
 │                           # yitIdHelper · primeLcmgr(许可桩)

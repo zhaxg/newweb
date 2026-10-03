@@ -8,6 +8,7 @@
 import { reactive, watch } from "vue";
 import { defineStore } from "pinia";
 import { applyPrimaryColor } from "@/lib/themeSettings";
+import { applyThemePreset } from "@/lib/themePresets";
 
 /** 字体缩放档位（系统设置 → 字体大小）。standard = 现有视觉（年轻紧凑档）。 */
 export type FontScale = "standard" | "large" | "xlarge";
@@ -32,6 +33,8 @@ type EditorSettings = {
   fontEnglishFamily: string;
   /** 主题色：预设 id（themeSettings.primaryOptions）或自定义 hex */
   primaryColor: string;
+  /** 配色方案预设 id（lib/themePresets）；"default" = 无表面覆盖 */
+  themePreset: string;
   [key: string]: unknown;
 };
 
@@ -53,6 +56,7 @@ const defaults: EditorSettings = {
   /* 默认拉丁字体：@fontsource 本地引入 400/500/700（见 main.ts），下拉选「系统默认」即回落 fontSettings.BASE_STACK */
   fontEnglishFamily: "IBM Plex Sans",
   primaryColor: "brand",
+  themePreset: "default",
 };
 
 function load(): EditorSettings {
@@ -93,6 +97,14 @@ export const useSettingsStore = defineStore("settings", () => {
   watch(
     () => editorSettings.primaryColor,
     (v) => applyPrimaryColor(v),
+    { immediate: true },
+  );
+
+  // 配色方案预设 → 运行时覆盖表面 token（immediate：刷新后启动即恢复）。
+  // 注册在主题色 watch 之后：两者写不同 <style> 标签、内容互不覆盖，顺序只为语义清晰
+  watch(
+    () => editorSettings.themePreset,
+    (v) => applyThemePreset(v),
     { immediate: true },
   );
 
