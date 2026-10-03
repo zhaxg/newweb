@@ -140,7 +140,7 @@ async function onSsoLogin() {
     const state = randomSsoState();
     const url = await authApi.ssoAuthorizeUrl(state);
     if (!url) {
-      toast("统一认证未启用，请使用本地登录", 2400, "warn");
+      toast("统一认证暂不可用，请使用本地登录", 2400, "warn");
       return;
     }
     saveSsoStart(state, safeLocalPath(typeof route.query.redirect === "string" ? route.query.redirect : null));
