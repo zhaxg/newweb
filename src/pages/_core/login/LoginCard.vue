@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /** 悬浮亚克力登录小卡：表单状态、验证码、登录与回跳全部自包含，LoginPage 只负责背景与轮播。 */
-import { computed, nextTick, ref, watch, type ComponentPublicInstance } from "vue";
+import { computed, nextTick, onMounted, ref, watch, type ComponentPublicInstance } from "vue";
 import {
   IconEye,
   IconEyeOff,
@@ -21,6 +21,8 @@ import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/authStore";
 import { useToast } from "@/composables/useToast";
 import { CaptchaType } from "@/api/admin/enums";
+import { authApi } from "@/api/admin/request";
+import { randomSsoState, safeLocalPath, saveSsoStart } from "@/lib/sso";
 
 const auth = useAuthStore();
 const { toast } = useToast();
@@ -126,6 +128,47 @@ function onPwModelUpdate(v: unknown) {
   password.value = v == null ? "" : String(v);
 }
 
+/* ── SSO 统一认证入口（与守卫 tryStartSso 同款起跳）──
+   守卫在未登录导航时会自动跳中心，本按钮服务于落在登录页的手动场景：
+   回跳失败回落、SSO 恢复后重试、以及显式想走统一认证的用户。 */
+const ssoLoading = ref(false);
+
+async function onSsoLogin() {
+  if (ssoLoading.value) return;
+  ssoLoading.value = true;
+  try {
+    const state = randomSsoState();
+    const url = await authApi.ssoAuthorizeUrl(state);
+    if (!url) {
+      toast("统一认证未启用，请使用本地登录", 2400, "warn");
+      return;
+    }
+    saveSsoStart(state, safeLocalPath(typeof route.query.redirect === "string" ? route.query.redirect : null));
+    location.href = url;
+  } catch {
+    /* 取地址失败：请求层已 toast，留在本地登录页 */
+  } finally {
+    ssoLoading.value = false;
+  }
+}
+
+/* SSO 可用性探测：拿到非空授权地址才显示「统一认证登录」按钮——
+   mock 模式 / 后端未启用 / 后端不可达 = 普通模式，按钮隐藏、卡片保持原留白（h-6）。
+   探测只定显隐；点击时重新取地址换新 state，避免拿陈旧地址起跳。 */
+const ssoAvailable = ref(false);
+
+onMounted(async () => {
+  /* SSO 回跳校验失败落回本页时带出原因（state 校验等非请求层错误，传输层不会 toast） */
+  const err = route.query.ssoError;
+  if (typeof err === "string" && err) toast(err, 3200, "error", "统一认证");
+
+  try {
+    ssoAvailable.value = !!(await authApi.ssoAuthorizeUrl(randomSsoState()));
+  } catch {
+    /* 普通模式：按钮不显示 */
+  }
+});
+
 async function onLogin() {
   if (loading.value) return;
   /* 前置校验：用户名/密码必填、验证码须先通过挑战 */
@@ -165,8 +208,9 @@ async function onLogin() {
 <template>
   <!-- 右缘 50px、上下 80px（≈50×1.618 取整到刻度 20），弹性空白吸收富余高度；
        移动端大卡退为透明铺满层，小卡居中占满宽度 -->
+  <!-- 桌面纵向内边距 80→55：卡片高度上限 480→530（+10%，取 5 的倍数）；移动端仍走 max-md:p-4 -->
   <div
-    class="absolute inset-0 flex items-stretch justify-end px-12.5 py-20 max-md:items-center max-md:justify-center max-md:p-4"
+    class="absolute inset-0 flex items-stretch justify-end px-12.5 py-[55px] max-md:items-center max-md:justify-center max-md:p-4"
   >
     <div
       class="login-acrylic flex max-h-full w-[36%] min-w-76 max-w-104 flex-col overflow-y-auto rounded-2xl border border-white/50 bg-white/55 p-5 shadow-[0_16px_48px_rgba(15,40,80,0.28)] backdrop-blur-2xl dark:border-white/10 dark:bg-slate-900/45 max-md:w-full max-md:min-w-0 max-md:max-w-96"
@@ -174,10 +218,12 @@ async function onLogin() {
       <div class="text-2xl leading-none">👏</div>
       <div class="mt-2 text-base font-semibold text-foreground">HiMind工业互联网平台</div>
       <div class="mb-2 mt-1 text-xs text-muted-foreground">欢迎！即刻登录，体验数字化智慧制造的强大赋能感！</div>
-      <div class="h-6 shrink-0"></div>
+      <!-- 同族留白：有统一认证按钮时一并收 h-2（否则卡片仍差数像素、出滚动条） -->
+      <div :class="ssoAvailable ? 'h-2 shrink-0' : 'h-6 shrink-0'"></div>
 
       <div class="login-form flex flex-1 flex-col space-y-2.5">
-        <IconField>
+        <!-- 用户名上方留白：固定 h-6（24px），不随统一认证按钮显隐变化 -->
+        <IconField class="mt-6">
           <InputIcon>
             <IconUser />
           </InputIcon>
@@ -243,14 +289,27 @@ async function onLogin() {
           <label for="rememberMe" class="text-sm text-muted-foreground">记住账号</label>
         </div>
 
-        <div class="min-h-6 flex-1"></div>
+        <!-- 上下留白：普通模式 h-6；出现统一认证登录按钮时收到 h-2（吸收多出的按钮高度，避免卡片出滚动条） -->
+        <div :class="ssoAvailable ? 'min-h-2 flex-1' : 'min-h-6 flex-1'"></div>
 
         <Button raised rounded class="h-10 w-full shrink-0 text-base" :loading="loading" @click="onLogin">
           <component :is="loading ? IconLoader : IconLogin2" :class="['h-4 w-4', loading && 'animate-spin']" />
           登 录
         </Button>
 
-        <div class="h-6 shrink-0"></div>
+        <!-- 统一认证：跳认证中心登录（免登/换票见 lib/sso 与 SsoCallbackPage）；本地表单保留为降级通道 -->
+        <Button
+          v-if="ssoAvailable"
+          outlined
+          rounded
+          class="h-10 w-full shrink-0 text-base"
+          :loading="ssoLoading"
+          @click="onSsoLogin"
+        >
+          统一认证登录
+        </Button>
+
+        <div :class="ssoAvailable ? 'h-2 shrink-0' : 'h-6 shrink-0'"></div>
       </div>
 
       <div class="pt-1 text-center text-[11px] text-muted-foreground">

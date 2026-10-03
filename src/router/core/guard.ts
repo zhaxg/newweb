@@ -1,6 +1,8 @@
 import type { RouteRecordRaw, Router } from "vue-router";
 import { toRouteRecords } from "@/router/core/fromMenu";
 import { setAuthFailureHandler } from "@/api/_core/request";
+import { authApi } from "@/api/admin/request";
+import { randomSsoState, safeLocalPath, saveSsoStart } from "@/lib/sso";
 import { useAuthStore } from "@/stores/authStore";
 import { usePermissionStore } from "@/stores/permissionStore";
 import { useTabsStore } from "@/stores/tabsStore";
@@ -13,9 +15,26 @@ import { loadingScreen } from "@/components/loading/loading";
  *
  * 动态注册能力由 index.ts 注入 —— guard 若反向 import index 会形成循环引用。
  *
- * 引用约束：⛔ **仅 @/router/index 引用**。本文件依赖三个 store（auth/permission/tabs）与 loading，
+ * 引用约束：⛔ **仅 @/router/index 引用**。本文件依赖三个 store（auth/permission/tabs）、loading
+ * 与 authApi（SSO 起跳，见下方 tryStartSso；api 层不反向依赖 router，不构成环），
  * 从 router 外部引用会精确复现 AGENTS §4.2 记录的 `request → router → guard → store → api → request` 环。
  */
+
+/** 尝试启动 SSO 统一认证：true = 已触发整页跳转（本导航随即中止，浏览器离开）；
+ *  false = 统一认证未启用或取地址失败 → 调用方回落本地登录页（降级通道）。
+ *  后端退出登录不走这里——登出必须停在登录页，不能被自动弹回中心。 */
+async function tryStartSso(redirect: string): Promise<boolean> {
+  try {
+    const state = randomSsoState();
+    const url = await authApi.ssoAuthorizeUrl(state);
+    if (!url) return false;
+    saveSsoStart(state, redirect);
+    location.href = url;
+    return true;
+  } catch {
+    return false;
+  }
+}
 export function setupRouterGuards(
   router: Router,
   api: {
@@ -62,6 +81,9 @@ export function setupRouterGuards(
     if (!auth.session) {
       perm.reset();
       api.resetUserRoutes();
+      /* SSO 统一认证优先：启用则整页跳中心（免登由中心 Cookie 静默续）；
+         未启用/取地址失败 → 原逻辑落本地登录页（降级通道，保留 MathPow 表单） */
+      if (await tryStartSso(safeLocalPath(to.fullPath))) return false;
       return { name: "login", query: { redirect: to.fullPath }, replace: true };
     }
 

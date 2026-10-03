@@ -11,6 +11,7 @@ import type { HmxMenuNode } from "@/layouts/composables/menuFromRoutes";
 import { useAuthStore } from "@/stores/authStore";
 import { useTabsStore } from "@/stores/tabsStore";
 import { useToast } from "@/composables/useToast";
+import { authApi } from "@/api/admin/request";
 
 /* 壳层：Header + Sidebar + 标签栏 + 页面区（RouterView 渲染权限内页面）。
    导航真源是 router：菜单点击 → push；router.afterEach → 开/激活 tab。 */
@@ -46,13 +47,24 @@ function openPage(node: HmxMenuNode) {
   router.push(`/${node.page}`);
 }
 
-/* 登出：只清本地会话与页签，动态路由与权限的清理交给守卫——落到 /login 时它会就地执行
-   （见 core/guard.ts 的 public 分支）。这样本组件不必 import router 内部模块。 */
-function logout() {
+/* 登出：清本地会话与页签，再跳认证中心 /logout 清 SSO 会话与 Cookie（主动退出 = 本系统 +
+   SSO 都清，§5.4）——不清中心的话 SSO Cookie 还在，下次导航会被静默发码自动登回来，
+   等于没退。取地址失败/统一认证未启用时按纯本地退出落登录页（降级通道）。
+   动态路由与权限的清理交给守卫——落到 /login 时它会就地执行（见 core/guard.ts 的 public 分支）。 */
+async function logout() {
   auth.logout();
   tabs.reset();
-  router.replace("/login");
   toast("已退出登录", 1800);
+  try {
+    const url = await authApi.ssoLogoutUrl(`${location.origin}/login`);
+    if (url) {
+      location.href = url;
+      return;
+    }
+  } catch {
+    /* 取退出地址失败：静默回落本地登录页 */
+  }
+  router.replace("/login");
 }
 
 /* 页签状态缓存（KeepAlive）：切页签不丢页面态；关闭页签 → 该页代号世代 +1 →

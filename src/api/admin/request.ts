@@ -251,6 +251,28 @@ export const authApi = {
       params: { token },
     });
   },
+  /* ── SSO 统一认证（后端 SsoAuthAppService，两接口均匿名）──
+     ssoAuthorizeUrl：返回中心 /authorize 整跳地址；空串 = 统一认证未启用（回落本地登录）。
+     ssoExchange：授权码换本地 token，随后仍走 getUserInfo 构造会话（与本地登录同构）。 */
+  ssoAuthorizeUrl(state: string) {
+    return requestClient.request<string>(`${API_BASE}/sso/getAuthorizeUrl`, {
+      method: "post",
+      params: { state },
+    });
+  },
+  ssoExchange(code: string) {
+    return requestClient.request<string>(`${API_BASE}/sso/exchange`, {
+      method: "post",
+      params: { code },
+    });
+  },
+  /** 中心退出地址（清 SSO Cookie 后回跳）；空串 = 统一认证未启用，仅做本地退出 */
+  ssoLogoutUrl(returnUrl: string) {
+    return requestClient.request<string>(`${API_BASE}/sso/getLogoutUrl`, {
+      method: "post",
+      params: { returnUrl },
+    });
+  },
   getUserRescList(data: GetUserResourceListInput) {
     return requestClient.request<HmxRes[]>(`${API_BASE}/auth/getUserRescList`, {
       method: "post",
