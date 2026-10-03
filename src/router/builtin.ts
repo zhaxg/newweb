@@ -1,4 +1,5 @@
 import LoginPage from "@/pages/_core/login/LoginPage.vue";
+import SsoCallbackPage from "@/pages/_core/login/SsoCallbackPage.vue";
 import HomePage from "@/pages/_core/home/HomePage.vue";
 import ForbiddenPage from "@/layouts/pages/ForbiddenPage.vue";
 import type { RouteRecordRaw } from "vue-router";
@@ -15,12 +16,21 @@ import type { RouteRecordRaw } from "vue-router";
 /** 根路径 → 首页（首页是壳层静态路由 /home，pageId 约定下不再有 "" 特例） */
 export const rootRedirectRoute: RouteRecordRaw = { path: "/", redirect: "/home" };
 
-/** 登录页：唯一公开路由，已登录访问由守卫拦回 /home */
+/** 登录页：公开路由（本地降级通道），已登录访问由守卫拦回 /home */
 export const loginRoute: RouteRecordRaw = {
   path: "/login",
   name: "login",
   component: LoginPage,
   meta: { public: true },
+};
+
+/** SSO 回跳落地页：认证中心授权后 302 到此（?code&state），核 state → 换票 → 进系统。
+ *  公开路由（此刻尚无本地会话）；meta.hidden 不进菜单 */
+export const ssoCallbackRoute: RouteRecordRaw = {
+  path: "/sso/callback",
+  name: "sso-callback",
+  component: SsoCallbackPage,
+  meta: { public: true, hidden: true },
 };
 
 /** 壳层首页（内置兜底）：不再静态注册——归属由阶段二定夺，资源树没有一级叶子 "home" 时

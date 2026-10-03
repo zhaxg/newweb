@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import type { RouteRecordRaw } from "vue-router";
 /* RouteMeta 模块增强：那个文件无运行时导出，靠这行 side-effect import 生效，勿删（见其文件头） */
 import "@/router/core/routeMeta";
-import { rootRedirectRoute, loginRoute, forbiddenRoute, notFoundRoute } from "@/router/builtin";
+import { rootRedirectRoute, loginRoute, ssoCallbackRoute, forbiddenRoute, notFoundRoute } from "@/router/builtin";
 import { businessRoutes } from "@/router/business";
 import { layouts, defaultLayoutName } from "@/layouts/composables/layouts";
 import { initMenuShell } from "@/layouts/composables/menuFromRoutes";
@@ -33,7 +33,7 @@ const layoutParents: RouteRecordRaw[] = layouts.map((l) => ({
 /* 菜单投影的静态部分：默认（壳层）布局的静态子路由即菜单候选，meta.hidden 排除（见 @/layouts/composables/menuFromRoutes） */
 initMenuShell(childrenOf(defaultLayoutName));
 
-const routes: RouteRecordRaw[] = [rootRedirectRoute, loginRoute, ...layoutParents, notFoundRoute];
+const routes: RouteRecordRaw[] = [rootRedirectRoute, loginRoute, ssoCallbackRoute, ...layoutParents, notFoundRoute];
 
 export const router = createRouter({ history: createWebHistory(), routes });
 

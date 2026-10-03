@@ -116,6 +116,24 @@ export const useAuthStore = defineStore("auth", () => {
     );
   }
 
+  /** SSO 换票成功后的会话落地：与 loginWithServer 同构（getUserInfo → applySession），
+   *  不涉及本地密码与验证码——密码在认证中心，本系统只认 token 换回的身份 */
+  async function loginWithSso(token: string) {
+    const info = await authApi.getUserInfo(token);
+    if (!info?.userId || !info.isAuthenticated) throw new Error("无法正常获取用户信息");
+    applySession(
+      {
+        userId: info.userId,
+        userName: info.userName ?? info.userId,
+        token: info.token ?? token,
+        userType: info.userType,
+      },
+      info.userId,
+      "",
+      false,
+    );
+  }
+
   function logout() {
     const s = session.value;
     /* 后端：显式带 token 注销（服务端将 HmxUserToken.CStatus 置 0 并清缓存）；
@@ -124,5 +142,5 @@ export const useAuthStore = defineStore("auth", () => {
     session.value = null;
   }
 
-  return { session, history, rememberedPassword, removeLoginUser, loginWithServer, logout };
+  return { session, history, rememberedPassword, removeLoginUser, loginWithServer, loginWithSso, logout };
 });
