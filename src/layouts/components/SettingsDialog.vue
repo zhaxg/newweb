@@ -81,7 +81,7 @@ function isPresetActive(id: string) {
     <div class="space-y-3 text-xs text-muted-foreground">
       <div>
         <div class="mb-2">· 配色方案</div>
-        <div class="grid grid-cols-4 gap-2" role="radiogroup" aria-label="配色方案">
+        <div class="grid grid-cols-5 gap-2" role="radiogroup" aria-label="配色方案">
           <button
             v-for="card in presetCards"
             :key="card.id"
