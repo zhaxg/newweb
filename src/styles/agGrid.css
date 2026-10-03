@@ -23,11 +23,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* 外边框直角（themeQuartz 默认 4px 圆角只作用于根容器） */
-.hmx-ag-grid .ag-root-wrapper {
-  border-radius: 0;
-}
-
 /* 内置状态栏：弱化文字 + 等宽数字，贴近销售订单页脚观感 */
 .hmx-ag-grid .ag-status-bar {
   border-top: 1px solid var(--border);
