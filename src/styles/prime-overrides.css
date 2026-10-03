@@ -8,10 +8,13 @@ html:root,
 html.dark {
   /* 主色唯一真源在 --p-primary-* 侧：primeTheme.ts 预设推导 Aura 全色阶，
      applyPrimaryColor 运行时覆盖明暗两套；Tailwind 的 --primary 轨反向读
-     var(--p-primary-color)（见 tokens.css），「系统设置→主题色」一处动、两轨全跟。此处不覆盖 */
+     var(--p-primary-color)（见 tokens.css），「系统设置→配色方案」一处动、两轨全跟。此处不覆盖 */
 
   /* 内容面（Dialog/Listbox/Panel 等） */
   --p-content-background: var(--popover);
+  /* Aura 给 Dialog 单独定义了 light-dark(#ffffff, …) 背景（不走 content-background），
+     不接线则预设下弹窗永远白底、浮在染色画布上突兀 */
+  --p-dialog-background: var(--popover);
   --p-content-border-color: var(--border);
   --p-content-color: var(--popover-foreground);
   --p-content-hover-background: var(--accent);

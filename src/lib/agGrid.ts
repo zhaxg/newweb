@@ -196,16 +196,24 @@ export function makeHmxGridTheme(): ComputedRef<Theme> {
       headerFontSize: "0.75rem", // 表头 = 控件/辅助档 12px（rem 同上）
       headerFontWeight: 500,
       borderColor: "var(--border)",
-      borderRadius: "0px",
+      borderRadius: 6,
+      wrapperBorderRadius: 6,
       foregroundColor: "var(--foreground)",
       backgroundColor: "var(--background)",
       oddRowBackgroundColor: "transparent",
       cellHorizontalPadding: 8,
-      headerBackgroundColor: "rgb(229 230 235)",
+      /* 表头底 = --sidebar：浅色真源与原硬编码 rgb(229 230 235) 仅差 1（观感不变），
+         预设 TINTED/安思睿米覆盖 sidebar 后表头随配色方案染色，暗色随 .dark 自动翻转 */
+      headerBackgroundColor: "var(--sidebar)",
       headerTextColor: "var(--muted-foreground)",
       selectedRowBackgroundColor: "var(--accent)",
+      /* v36 强调色（默认 Material Blue #2196f3 = 行/菜单 hover 淡蓝的总源头）：
+         行 hover、右键/列菜单项 hover、复选框、焦点框、框选、拖拽指示线全由它
+         派生——接主色一处覆盖，明暗与配色方案自动跟随 */
+      accentColor: "var(--p-primary-color)",
       rangeSelectionBorderColor: "var(--p-primary-color)",
-      rangeSelectionBackgroundColor: "rgba(59,130,246,0.12)",
+      /* 框选底色显式给主色同浓度（字面参数直接进生成样式，不走 accentColor 派生） */
+      rangeSelectionBackgroundColor: "color-mix(in srgb, var(--p-primary-color) 12%, transparent)",
       menuShadow: {
         radius: 8, // 模糊半径，shadcn 通常用 4-8px
         spread: 0, // 扩散，shadcn 通常为 0

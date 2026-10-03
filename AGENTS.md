@@ -169,8 +169,9 @@ setAuthFailureHandler(() => { auth.logout(); return router.replace({ name: "logi
 | token 从哪来 | `setTokenProvider`，注册在 `src/stores/authStore.ts` |
 | 全局点击连击闸（防双击） | `src/lib/clickGuard.ts`（main.ts 挂载） |
 | mock 开关、mock 路由 | `src/api/_core/request.ts` 的 `USE_MOCK` · `src/mock/mockAdapter.ts` |
-| 主题预设 / PrimeVue locale | `src/lib/primeTheme.ts`（`HmxCompact`） |
+| PrimeVue 主题预设 / locale | `src/lib/primeTheme.ts`（`HmxCompact`） |
 | 主题色运行时覆盖 | `src/lib/themeSettings.ts` + `src/stores/settingsStore.ts` |
+| 配色方案预设（成套氛围表面） | `src/lib/themePresets.ts` · `settingsStore.themePreset` |
 | 设计 token / 字阶 | `src/styles/tokens.css` · `globals.css`（`@theme`） |
 | AG Grid 全局默认 | `src/lib/agGrid.ts`（`hmxDefaultColDef` / `makeHmxGridTheme`） |
 | 图标解析（壳层，首屏链） | `src/lib/tablerIcons.ts`（白名单 + 兜底） |

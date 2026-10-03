@@ -82,12 +82,42 @@ function makeRamp(hex: string): PrimaryRamp | null {
   return ramp;
 }
 
+/** WCAG 相对亮度（sRGB 线性化），用于主色上的文字选色 */
+function relativeLuminance(hex: string): number | null {
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex.trim());
+  if (!m) return null;
+  const n = parseInt(m[1], 16);
+  const lin = (c: number) => {
+    const v = c / 255;
+    return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+  };
+  return 0.2126 * lin((n >> 16) & 255) + 0.7152 * lin((n >> 8) & 255) + 0.0722 * lin(n & 255);
+}
+
+/** 主色上的文字：白与 #18181b 取 WCAG 对比更高者。
+ *  clay 类浅暖色（安思睿米 #e37756）白字对比仅 2.99 不达 AA(4.5)，必须深字；
+ *  brand/violet/black 及其余预设主色算出来仍是白，行为与旧版一致 */
+function contrastOn(hex: string): string {
+  const L = relativeLuminance(hex);
+  if (L === null) return "#ffffff";
+  const onWhite = 1.05 / (L + 0.05);
+  const onDark = (L + 0.05) / 0.061; // #18181b 相对亮度约 0.011
+  return onWhite >= onDark ? "#ffffff" : "#18181b";
+}
+
 export function resolveRamp(id: string): PrimaryRamp | null {
   const opt = findPrimaryOption(id);
   return opt.ramp ?? makeRamp(opt.base);
 }
 
 const STYLE_ID = "hmx-primary-color";
+
+/** 暗色主色手调表，键 = 联动写入的 primaryHex（预设选卡写入的就是 hex，非预设 id）。
+ *  黑白 shadcn（#18181b 近黑）按 ramp[400] 提亮只会得到中灰，达不到 shadcn 暗色
+ *  「白底黑字」的按钮反转——单独指定白按钮（含 hover/active/contrast）。 */
+const DARK_PRIMARY: Record<string, { color: string; hover: string; active: string; contrast: string }> = {
+  "#18181b": { color: "#fafafa", hover: "#f0f0f0", active: "#e4e4e5", contrast: "#18181b" },
+};
 
 /** 把色阶写进运行时 <style>；非法值回落品牌蓝 */
 export function applyPrimaryColor(id: string) {
@@ -100,17 +130,27 @@ export function applyPrimaryColor(id: string) {
   const isHex = /^#[0-9a-f]{6}$/i.test(id.trim());
   const ramp = (isHex ? makeRamp(id) : resolveRamp(id)) ?? resolveRamp("brand")!;
   const hex = isHex ? id.trim() : findPrimaryOption(id).base;
+  const contrast = contrastOn(hex);
+  /* hover/active 用 color-mix 相对微调而非 ramp 固定档：深色 primary（如森林
+     #166534）本身已低于 500 档，按 LIGHTNESS 推的 600/700 会反向跳亮；
+     黑混 15%/28% 与 brand 走 ramp 的历史观感一致（#0052d9→#0046b7 ≈ 原 #0047bc） */
+  const dark = DARK_PRIMARY[hex] ?? {
+    color: ramp[400],
+    hover: `color-mix(in srgb, ${ramp[400]} 88%, #ffffff)`,
+    active: `color-mix(in srgb, ${ramp[400]} 78%, #ffffff)`,
+    contrast: "#18181b",
+  };
   style.textContent = `
 html:root {
   --p-primary-50:${ramp[50]};--p-primary-100:${ramp[100]};--p-primary-200:${ramp[200]};
   --p-primary-300:${ramp[300]};--p-primary-400:${ramp[400]};--p-primary-500:${ramp[500]};
   --p-primary-600:${ramp[600]};--p-primary-700:${ramp[700]};--p-primary-800:${ramp[800]};
   --p-primary-900:${ramp[900]};--p-primary-950:${ramp[950]};
-  --p-primary-color:${hex};--p-primary-hover-color:${ramp[600]};--p-primary-active-color:${ramp[700]};
-  --p-primary-contrast-color:#ffffff;--p-primary-inset-contrast-color:#ffffff;--p-link-color:${hex};
+  --p-primary-color:${hex};--p-primary-hover-color:color-mix(in srgb, ${hex} 85%, #000000);--p-primary-active-color:color-mix(in srgb, ${hex} 72%, #000000);
+  --p-primary-contrast-color:${contrast};--p-primary-inset-contrast-color:${contrast};--p-link-color:${hex};
 }
 html.dark {
-  --p-primary-color:${ramp[400]};--p-primary-hover-color:${ramp[300]};--p-primary-active-color:${ramp[200]};
-  --p-primary-contrast-color:#18181b;--p-primary-inset-contrast-color:#18181b;--p-link-color:${ramp[400]};
+  --p-primary-color:${dark.color};--p-primary-hover-color:${dark.hover};--p-primary-active-color:${dark.active};
+  --p-primary-contrast-color:${dark.contrast};--p-primary-inset-contrast-color:${dark.contrast};--p-link-color:${dark.color};
 }`;
 }

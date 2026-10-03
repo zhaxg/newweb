@@ -137,7 +137,7 @@ hmx-chrome-tabs {
   --chrome-tab-max-width: 15rem;
   /* 144px@16 = 8汉字96 + 内边距20 + 关闭钮16+5 + 富余 */
   --chrome-tab-radius: 0.3125rem;
-  --chrome-tabs-background: #e5e7eb;
+  --chrome-tabs-background: var(--sidebar);
   --chrome-tab-text-color: #4b5563;
   --chrome-tab-active-text-color: #111827;
   --chrome-tab-hover-background: #d1d5db;
@@ -150,7 +150,7 @@ hmx-chrome-tabs {
   --chrome-tabs-menu-hover-background: #f3f4f6;
   --chrome-tabs-menu-text-color: #111827;
   --chrome-tabs-menu-icon-color: #111827;
-  --chrome-tabs-menu-icon-background: #e5e7eb;
+  --chrome-tabs-menu-icon-background: var(--sidebar);
 }
 
 /* 暗色模式：CSS 自定义属性可穿透 shadow DOM，直接覆盖组件的配色变量 */

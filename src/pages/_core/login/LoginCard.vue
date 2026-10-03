@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /** 悬浮亚克力登录小卡：表单状态、验证码、登录与回跳全部自包含，LoginPage 只负责背景与轮播。 */
-import { computed, nextTick, onMounted, ref, watch, type ComponentPublicInstance } from "vue";
+import { computed, nextTick, onMounted, ref, type ComponentPublicInstance } from "vue";
 import {
   IconEye,
   IconEyeOff,
@@ -14,7 +14,6 @@ import {
 import InputText from "primevue/inputtext";
 import IconField from "primevue/iconfield";
 import InputIcon from "primevue/inputicon";
-import Checkbox from "primevue/checkbox";
 import Button from "primevue/button";
 import Captcha from "@/components/common/Captcha.vue";
 import { useRoute, useRouter } from "vue-router";
@@ -30,38 +29,21 @@ const route = useRoute();
 const router = useRouter();
 
 const userId = ref(auth.history.lastUserId ?? "");
-// 启动回填已记住的密码（对应 LoadUserLoginHistory）
-const saved0 = auth.rememberedPassword(userId.value);
-const password = ref(saved0 ?? "");
+/* 「记住账号」已移除：不再留存/回填密码（loginWithServer 的 remember 恒 false，
+   authStore 的历史结构保留不动），仅回填上次登录的用户名 */
+const password = ref("");
 const masked = ref(true);
-const rememberMe = ref(!!saved0);
 const captchaSignature = ref("");
 const captchaChallenge = ref("");
 const captchaType = ref<CaptchaType>(CaptchaType.MathPow);
 const captchaPassed = ref(false);
 const loading = ref(false);
 
-// 输入命中已记住的账号 → 回填密码（对应 UserIDValueChanged）
-watch(userId, (id) => {
-  const saved = auth.rememberedPassword(id.trim());
-  if (saved) {
-    password.value = saved;
-    rememberMe.value = true;
-  }
-});
-
-/* 勾上「记住账号」= 把密码一并留存本机浏览器（encryptedStorage 只是混淆不是保护），
-   风险知情走 toast 一行带过——登录卡片高度钉死，不留内联提示位。
-   输入账号命中记住态触发的自动勾选也弹：那是在给新账号存密码，同样该知情 */
-watch(rememberMe, (v, old) => {
-  if (v && !old) toast("账号密码将保存在本机浏览器 公用电脑请勿勾选", 2600, "warn", "记住密码");
-});
-
 /* ── 掩码输入层（方案三）──
    masked 时输入框是 type=text，显示串 = 每个真实字符一个 #（1:1 长度映射，
    光标/选区下标可直接换算回明文）。所有编辑在 beforeinput 里拦截并改写明文，
    IME 组合文本由 compositionend 收编；代价是不再拥有 type=password 语义
-   （本站 autocomplete=off + 自有记住密码，不依赖浏览器密码管理器），
+   （本站 autocomplete=off 且已无记住密码，不依赖浏览器密码管理器），
    原生 Ctrl+Z（historyUndo）走兜底分支一并拦截，避免明文与显示串脱同步。 */
 const pwRef = ref<ComponentPublicInstance | null>(null);
 const pwDisplay = computed(() => (masked.value ? "#".repeat(Array.from(password.value).length) : password.value));
@@ -186,7 +168,7 @@ async function onLogin() {
   }
   loading.value = true;
   try {
-    await auth.loginWithServer(userId.value.trim(), password.value, rememberMe.value, {
+    await auth.loginWithServer(userId.value.trim(), password.value, false, {
       code: captchaChallenge.value,
       signature: captchaSignature.value,
       type: captchaType.value,
@@ -283,11 +265,6 @@ async function onLogin() {
             <span>{{ caption }}</span>
           </button>
         </Captcha>
-
-        <div class="flex items-center gap-2">
-          <Checkbox v-model="rememberMe" binary input-id="rememberMe" />
-          <label for="rememberMe" class="text-sm text-muted-foreground">记住账号</label>
-        </div>
 
         <!-- 上下留白：普通模式 h-6；出现统一认证登录按钮时收到 h-2（吸收多出的按钮高度，避免卡片出滚动条） -->
         <div :class="ssoAvailable ? 'min-h-2 flex-1' : 'min-h-6 flex-1'"></div>

@@ -6,6 +6,7 @@ import Button from "primevue/button";
 import InputPassword from "primevue/inputpassword";
 import IconField from "primevue/iconfield";
 import InputIcon from "primevue/inputicon";
+import Message from "primevue/message";
 
 import { adminApi } from "@/api/admin/request";
 import { useAuthStore } from "@/stores/authStore";
@@ -102,12 +103,14 @@ defineExpose({ openModal });
     :style="{ width: 'min(24rem, calc(100vw - 2rem))' }"
     @update:visible="visible = $event"
   >
-    <p class="mb-4 text-xs leading-relaxed text-muted-foreground">
+    <p class="mb-3 text-xs leading-relaxed text-muted-foreground">
       为保障账号安全，建议定期更换密码。修改成功后请使用新密码重新登录。
     </p>
-    <form @submit.prevent="handleSubmit">
-      <div v-for="f in fields" :key="f.name" class="mb-3.5 last:mb-0">
-        <label class="mb-1 block text-xs font-medium text-foreground">{{ f.label }}</label>
+    <!-- PrimeVue 标准表单节奏：flex-col gap-2 + Message 错误条（官方 form 演示同款结构），
+         替代此前的自定义固定占位方案——出错时 Message 自然流式展开，观感规范 -->
+    <form class="flex flex-col gap-2" @submit.prevent="handleSubmit">
+      <div v-for="f in fields" :key="f.name" class="flex flex-col gap-2">
+        <label class="text-xs font-medium text-foreground">{{ f.label }}</label>
         <IconField>
           <InputIcon>
             <component :is="f.icon" />
@@ -125,8 +128,7 @@ defineExpose({ openModal });
             @update:model-value="onInput(f.name)"
           />
         </IconField>
-        <!-- 固定高度占位：报错出现/消失不引起布局跳动 -->
-        <p class="mt-0.5 h-4 text-xs leading-4 text-destructive">{{ errors[f.name] }}</p>
+        <Message v-if="errors[f.name]" size="small" severity="error" class="w-full">{{ errors[f.name] }}</Message>
       </div>
     </form>
     <template #footer>

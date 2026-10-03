@@ -89,7 +89,9 @@
   --dbx-radius-md: 4px;
   --dbx-radius-lg: 6px;
   --dbx-radius-xl: 6px;
-  --sidebar: rgb(250 250 250);
+  /* 侧栏底 = 壳层一直显示的 #e5e7eb（原硬编码值，改真源不改观感），
+     配色方案预设覆盖此变量即可染侧栏（此前近白值无消费方、预设染不进来） */
+  --sidebar: rgb(229 231 235);
   --sidebar-accent: rgb(245 245 245);
   --success: rgb(22 163 74);
   --success-bg: color-mix(in srgb, var(--success) 12%, transparent);
